@@ -5,16 +5,38 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.PhotonVision;
+import frc.thunder.LightningContainer;
 
-public class RobotContainer {
-  public RobotContainer() {
-    configureBindings();
-  }
+public class RobotContainer extends LightningContainer {
 
-  private void configureBindings() {}
+    // public Swerve drivetrain;
+    public PhotonVision vision;
 
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
+    @Override
+    protected void initializeSubsystems() {
+        // drivetrain = getDrivetrain();
+        // vision = new PhotonVision();
+    }
+    
+    @Override
+    protected void initializeNamedCommands() {
+    }
+
+    @Override
+    protected void configureButtonBindings() {
+    }
+
+    @Override
+    protected void configureDefaultCommands() {
+    }
+
+    public Command getAutonomousCommand() {
+        return null;
+    }
+
+    // public Swerve getDrivetrain() {
+    //     return drivetrain == null ? TunerConstants.getDrivetrain() : drivetrain;
+    // }
+
 }

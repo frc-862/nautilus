@@ -9,15 +9,21 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -25,6 +31,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.TunerConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -46,6 +53,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
+
+
+    //other swerve requests are in Constants.java/DrivetrainConstants/DriveRequests
+    private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
     
 
     /**
@@ -66,6 +77,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        configurePathPlanner();
     }
 
     /**
@@ -124,6 +137,37 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
     }
 
+    private void configurePathPlanner() {        
+        AutoBuilder.configure(
+            () -> getPose(), // Supplier of current robot pose
+            this::resetPose, // Consumer for seeding pose against auto
+            this::getCurrentRobotChassisSpeeds, (speeds, feedforwards) -> this.setControl(autoRequest.withSpeeds(speeds).withDriveRequestType(DriveRequestType.Velocity).withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX()).withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY())), // Consumer of ChassisSpeeds to drive the robot
+            new PPHolonomicDriveController(AutonomousConstants.TRANSLATION_PID, AutonomousConstants.ROTATION_PID),
+            AutonomousConstants.CONFIG,
+            () -> {
+                // Boolean supplier that controls when the path will be mirrored for the red
+                // alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                } 
+                DataLogManager.log("[AUTON] Alliance not found");
+                return false;
+            }, this); // Subsystem for requirements
+    }
+
+
+    public Pose2d getPose() {
+        var state = getState();
+        if (state == null || getState().Pose == null) {
+            return new Pose2d();
+        }
+        return state.Pose;
+    }
+    
     /**
      * Returns a command that applies the specified control request to this swerve drivetrain.
      *
@@ -155,6 +199,21 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
     }
 
+    /**
+     * Resets the field relative heading to the current robot heading
+     * 
+     * @return the SequentialCommandGroup to reset the field relative heading
+     */
+    public Command resetForward() {
+        return runOnce(this::seedFieldCentric).andThen(
+                runOnce(() -> this.setOperatorPerspectiveForward(new Rotation2d(Math.toRadians(0)))));
+    }
+
+    public ChassisSpeeds getCurrentRobotChassisSpeeds() {
+        return getKinematics().toChassisSpeeds(getState().ModuleStates);
+    }
+
+
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
 
@@ -168,6 +227,12 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
+    @Override
+    public void simulationPeriodic() {        
+        /* Assume 20ms update rate, get battery voltage from WPILib */
+        updateSimState(0.020, RobotController.getBatteryVoltage());
     }
 
 

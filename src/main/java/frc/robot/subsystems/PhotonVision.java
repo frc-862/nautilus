@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
@@ -22,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Pose4d;
+
+import edu.wpi.first.wpilibj.DataLogManager;
 
 public class PhotonVision extends SubsystemBase {
     
@@ -90,18 +93,20 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // try {
-            result = camera.getLatestResult();
-        // } catch (IndexOutOfBoundsException e) {
-        //     System.out.println("[VISION] Failed to gather camera result");
-        // }
+        try {
+            //get the latest result
+            List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+            result = results.get(results.size() - 1);
+        } catch (IndexOutOfBoundsException e) {
+            DataLogManager.log("[VISION] Pose Estimator Failed to update");
+        }
 
 
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
         LightningShuffleboard.set("Vision", "timestamp", result.getTimestampSeconds());
 
         if (result.hasTargets()) {
-            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse((m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose), () -> System.out.println("[VISION] god freaking dang it"));
+            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse((m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose), () -> DataLogManager.log("[VISION] Pose Estimator Failed to update"));
         
             lastEstimatedRobotPose = estimatedRobotPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
@@ -111,7 +116,7 @@ public class PhotonVision extends SubsystemBase {
 
         } else {
             if (!DriverStation.isFMSAttached()) {
-                System.out.println("[VISION] Pose Estimator Failed to update");
+                DataLogManager.log("[VISION] Pose Estimator Failed to update");
             }
         }
 

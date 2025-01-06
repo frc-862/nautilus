@@ -1,11 +1,16 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.MassUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.Swerve;
@@ -21,6 +26,10 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 
@@ -41,6 +50,85 @@ public class Constants {
 
 
     }
+
+    public class DrivetrainConstants {
+        public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+        public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+
+        public class DriveRequests {
+            private static final SwerveRequest.FieldCentric DRIVE = new SwerveRequest.FieldCentric();
+            private static final SwerveRequest.FieldCentric SLOW = new SwerveRequest.FieldCentric();
+            private static final SwerveRequest.RobotCentric ROBO_CENTRIC = new SwerveRequest.RobotCentric();
+            private static final SwerveRequest.SwerveDriveBrake BRAKE = new SwerveRequest.SwerveDriveBrake();
+
+            public static Supplier<SwerveRequest> getDrive(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
+                return () -> DRIVE
+                                .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                                .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                                .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
+                                .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1).withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
+                                .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative X (left)
+                            
+            }
+
+            public static Supplier<SwerveRequest> getSlow(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
+                return () -> SLOW
+                                .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                                .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                                .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
+                                .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1).withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
+                                .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative X (left)
+                            
+            }
+
+            public static Supplier<SwerveRequest> getRobotCentric(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
+                return () -> ROBO_CENTRIC
+                                .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                                .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                                .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
+                                .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1).withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
+                                .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative X (left)
+            }
+
+
+            public static Supplier<SwerveRequest> getBrake() {
+                return () -> BRAKE;
+            }
+
+
+            //auto request exists in Swerve.java
+        }
+
+    }
+
+    public static class AutonomousConstants {
+        public static final PIDConstants TRANSLATION_PID = new PIDConstants(10, 0, 0);
+        public static final PIDConstants ROTATION_PID = new PIDConstants(5, 0, 0);
+
+        private static final double TRACK_WIDTH = Units.inchesToMeters(27); //TODO: make more accurate
+        private static final Mass ROBOT_MASS = Mass.ofBaseUnits(147, Pounds);
+        private static final MomentOfInertia ROBOT_MOI = KilogramSquareMeters.of(5.2268411); //TODO: this assumes even weight distribution; should be calculated w/ SYSID or CAD
+        private static final ModuleConfig MODULE_CONFIG = new ModuleConfig(Inches.of(2), TunerConstants.kSpeedAt12Volts, 1.916, DCMotor.getKrakenX60Foc(1).withReduction(6.75), Amps.of(120), 1);
+
+        public static final RobotConfig CONFIG = new RobotConfig(ROBOT_MASS, ROBOT_MOI, MODULE_CONFIG, new Translation2d[]{new Translation2d(TRACK_WIDTH/2, TRACK_WIDTH/2), new Translation2d(TRACK_WIDTH/2, -TRACK_WIDTH/2), new Translation2d(-TRACK_WIDTH/2, TRACK_WIDTH/2), new Translation2d(-TRACK_WIDTH/2, -TRACK_WIDTH/2)});
+
+        public static final double CONTROL_LOOP_PERIOD = 0.02;
+
+        public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);
+        public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(2.0, 1, 1.0, 0.5);
+
+        public static final Pose2d AMP_LOCATION_RED = new Pose2d(new Translation2d(14.4, 7.62), new Rotation2d(90));
+    }
+
+    public static class VisionConstants {
+        public static final String camera1Name = "cam1";
+    }
+
+    public static class PoseConstants {
+        public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
+                Units.feetToMeters(26.0));
+    }
+
 
     public class TunerConstants {
         // Both sets of gains need to be tuned to your individual robot.
@@ -98,7 +186,7 @@ public class Constants {
 
         // Theoretical free speed (m/s) at 12 V applied output;
         // This needs to be tuned to your individual robot
-        public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.73);
+        public static final LinearVelocity kSpeedAt12Volts = FeetPerSecond.of(15.01);
 
         // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
         // This may need to be tuned to your individual robot
@@ -224,36 +312,5 @@ public class Constants {
                 DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight
             );
         }
-    }
-
-    public class DrivetrainConstants {
-        public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-        public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-
-        public class DriveRequests {
-            public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
-            public static final SwerveRequest.FieldCentric slow = new SwerveRequest.FieldCentric();
-            public static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-
-            public static Supplier<SwerveRequest> getDrive(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
-                return () -> drive
-                                .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
-                                .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
-                                .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
-                                .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1).withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
-                                .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative X (left)
-                            
-            }
-        }
-
-    }
-
-    public static class VisionConstants {
-        public static final String camera1Name = "cam1";
-    }
-
-    public static class PoseConstants {
-        public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
-                Units.feetToMeters(26.0));
     }
 }

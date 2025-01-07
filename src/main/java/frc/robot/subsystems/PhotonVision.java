@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
@@ -23,9 +24,11 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Constants.VisionConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Pose4d;
@@ -51,17 +54,17 @@ public class PhotonVision extends SubsystemBase {
     private PhotonCameraSim cameraSim;
 
     public PhotonVision() {
-        if(!DriverStation.isEnabled()) {
+        camera = new PhotonCamera(VisionConstants.camera1Name);
+        
+        AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+
+        poseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                    new Transform3d());
+
+        if(!Robot.isReal()) {
             visionTarget = new VisionTargetSim(VisionConstants.targetPose, VisionConstants.targetModel);
             cameraProp = new SimCameraProperties();
             visionSim = new VisionSystemSim("test");
-
-            camera = new PhotonCamera(VisionConstants.camera1Name);
-
-            AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
-
-            poseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    new Transform3d());
 
             visionSim.addVisionTargets(visionTarget);
             visionSim.addAprilTags(VisionConstants.tagLayout);
@@ -90,10 +93,6 @@ public class PhotonVision extends SubsystemBase {
             // This is extremely resource-intensive and is disabled by default.
             cameraSim.enableDrawWireframe(true);
         }
-    }
-
-    public void initLogging() {
-
     }
 
     public boolean hasTarget() {
@@ -136,18 +135,20 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // try {
-        result = camera.getLatestResult();
-        // } catch (IndexOutOfBoundsException e) {
-        //     System.out.println("[VISION] Failed to gather camera result");
-        // }
+        try {
+            //get the latest result
+            List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+            result = results.get(results.size() - 1);
+        } catch (IndexOutOfBoundsException e) {
+            DataLogManager.log("[VISION] Pose Estimator Failed to update");
+        }
 
 
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
         LightningShuffleboard.set("Vision", "timestamp", result.getTimestampSeconds());
 
         if (result.hasTargets()) {
-            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse((m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose), () -> System.out.println("[VISION] god freaking dang it"));
+            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse((m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose), () -> DataLogManager.log("[VISION] Pose Estimator Failed to update"));
         
             lastEstimatedRobotPose = estimatedRobotPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
@@ -157,7 +158,7 @@ public class PhotonVision extends SubsystemBase {
 
         } else {
             if (!DriverStation.isFMSAttached()) {
-                System.out.println("[VISION] Pose Estimator Failed to update");
+                DataLogManager.log("[VISION] Pose Estimator Failed to update");
             }
         }
 

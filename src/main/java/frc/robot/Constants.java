@@ -66,7 +66,7 @@ public class Constants {
     }
 
     public class DrivetrainConstants {
-        public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+        public static final double MAX_SPEED = TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
         public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
         public static final double SLOW_MODE_MULT = 0.3; // 3/4 of a rotation per second max angular velocity
 
@@ -130,7 +130,7 @@ public class Constants {
         private static final double TRACK_WIDTH = Units.inchesToMeters(27); //TODO: make more accurate
         private static final Mass ROBOT_MASS = Pounds.of(147);
         private static final MomentOfInertia ROBOT_MOI = KilogramSquareMeters.of(5.2268411); //TODO: this assumes even weight distribution; should be calculated w/ SYSID or CAD
-        private static final ModuleConfig MODULE_CONFIG = new ModuleConfig(TunerConstants.kWheelRadius, TunerConstants.kSpeedAt12Volts, 1.916, DCMotor.getKrakenX60Foc(1).withReduction(TunerConstants.kDriveGearRatio), Amps.of(120), 1);
+        private static final ModuleConfig MODULE_CONFIG = new ModuleConfig(TunerConstants.TritonTunerConstants.kWheelRadius, TunerConstants.TritonTunerConstants.kSpeedAt12Volts, 1.916, DCMotor.getKrakenX60Foc(1).withReduction(TunerConstants.TritonTunerConstants.kDriveGearRatio), Amps.of(120), 1);
 
         public static final RobotConfig CONFIG = new RobotConfig(ROBOT_MASS, ROBOT_MOI, MODULE_CONFIG, new Translation2d[]{new Translation2d(TRACK_WIDTH/2, TRACK_WIDTH/2), new Translation2d(TRACK_WIDTH/2, -TRACK_WIDTH/2), new Translation2d(-TRACK_WIDTH/2, TRACK_WIDTH/2), new Translation2d(-TRACK_WIDTH/2, -TRACK_WIDTH/2)});
     }

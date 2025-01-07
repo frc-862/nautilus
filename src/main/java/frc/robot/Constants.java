@@ -39,6 +39,29 @@ public class Constants {
 
     public static class RobotMap {
         public static final int FL_DRIVE = 1;
+        public static final int FL_TURN = 2;
+
+        public static final int FR_DRIVE = 3;
+        public static final int FR_TURN = 4;
+
+        public static final int BL_DRIVE = 5;
+        public static final int BL_TURN = 6;
+
+        public static final int BR_DRIVE = 7;
+        public static final int BR_TURN = 8;
+
+        public static final int PIDGEON = 23;
+    
+    }
+
+    public class RobotSpecificDriveConstants {
+        private static class Nautlius {
+
+        }
+
+        private static class Triton {
+
+        }
 
     }
 
@@ -199,7 +222,7 @@ public class Constants {
         private static final boolean kInvertLeftSide = false;
         private static final boolean kInvertRightSide = true;
 
-        private static final int kPigeonId = 23;
+        private static final int kPigeonId = RobotMap.PIDGEON;
 
         // These are only used for simulation
         private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.01);
@@ -238,8 +261,8 @@ public class Constants {
 
 
         // Front Left
-        private static final int kFrontLeftDriveMotorId = 1;
-        private static final int kFrontLeftSteerMotorId = 2;
+        private static final int kFrontLeftDriveMotorId = RobotMap.FL_DRIVE;
+        private static final int kFrontLeftSteerMotorId = RobotMap.FL_TURN;
         private static final int kFrontLeftEncoderId = 31;
         private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.2353515625);
         private static final boolean kFrontLeftSteerMotorInverted = true;
@@ -249,8 +272,8 @@ public class Constants {
         private static final Distance kFrontLeftYPos = Inches.of(13.5);
 
         // Front Right
-        private static final int kFrontRightDriveMotorId = 3;
-        private static final int kFrontRightSteerMotorId = 4;
+        private static final int kFrontRightDriveMotorId = RobotMap.FR_DRIVE;
+        private static final int kFrontRightSteerMotorId = RobotMap.FR_TURN;
         private static final int kFrontRightEncoderId = 32;
         private static final Angle kFrontRightEncoderOffset = Rotations.of(0.391357421875);
         private static final boolean kFrontRightSteerMotorInverted = true;
@@ -260,8 +283,8 @@ public class Constants {
         private static final Distance kFrontRightYPos = Inches.of(-13.5);
 
         // Back Left
-        private static final int kBackLeftDriveMotorId = 5;
-        private static final int kBackLeftSteerMotorId = 6;
+        private static final int kBackLeftDriveMotorId = RobotMap.BL_DRIVE;
+        private static final int kBackLeftSteerMotorId = RobotMap.BL_TURN;
         private static final int kBackLeftEncoderId = 33;
         private static final Angle kBackLeftEncoderOffset = Rotations.of(0.14404296875);
         private static final boolean kBackLeftSteerMotorInverted = true;
@@ -271,8 +294,8 @@ public class Constants {
         private static final Distance kBackLeftYPos = Inches.of(13.5);
 
         // Back Right
-        private static final int kBackRightDriveMotorId = 7;
-        private static final int kBackRightSteerMotorId = 8;
+        private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
+        private static final int kBackRightSteerMotorId = RobotMap.BR_TURN;
         private static final int kBackRightEncoderId = 34;
         private static final Angle kBackRightEncoderOffset = Rotations.of(0.0126953125);
         private static final boolean kBackRightSteerMotorInverted = true;

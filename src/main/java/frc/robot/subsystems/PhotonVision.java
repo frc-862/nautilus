@@ -34,10 +34,10 @@ public class PhotonVision extends SubsystemBase {
     
     private PhotonCamera camera;
     private PhotonPoseEstimator poseEstimator;
-    private VisionSystemSim visionSim = new VisionSystemSim("test");
+    private VisionSystemSim visionSim;
 
     private VisionTargetSim visionTarget;
-    private SimCameraProperties cameraProp = new SimCameraProperties();
+    private SimCameraProperties cameraProp;
 
     private PhotonPipelineResult result;
 
@@ -54,6 +54,7 @@ public class PhotonVision extends SubsystemBase {
         if(!DriverStation.isEnabled()) {
             visionTarget = new VisionTargetSim(VisionConstants.targetPose, VisionConstants.targetModel);
             cameraProp = new SimCameraProperties();
+            visionSim = new VisionSystemSim("test");
 
             camera = new PhotonCamera(VisionConstants.camera1Name);
 

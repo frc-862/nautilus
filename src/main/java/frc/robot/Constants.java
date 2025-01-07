@@ -50,7 +50,7 @@ public class Constants {
         public static final int BR_TURN = 8;
         public static final int BR_ENCODER = 34;
 
-        public static final int PIDGEON = 23;
+        public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
 
@@ -248,7 +248,7 @@ public class Constants {
             private static final boolean kInvertLeftSide = false;
             private static final boolean kInvertRightSide = true;
 
-            private static final int kPigeonId = RobotMap.PIDGEON;
+            private static final int kPigeonId = RobotMap.PIGEON;
 
             // These are only used for simulation
             private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.01);

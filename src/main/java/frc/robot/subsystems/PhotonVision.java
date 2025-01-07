@@ -36,7 +36,7 @@ public class PhotonVision extends SubsystemBase {
     private PhotonPoseEstimator poseEstimator;
     private VisionSystemSim visionSim = new VisionSystemSim("test");
 
-    private VisionTargetSim visionTarget = new VisionTargetSim(VisionConstants.targetPose, VisionConstants.targetModel);
+    private VisionTargetSim visionTarget;
     private SimCameraProperties cameraProp = new SimCameraProperties();
 
     private PhotonPipelineResult result;
@@ -52,7 +52,9 @@ public class PhotonVision extends SubsystemBase {
 
     public PhotonVision() {
         if(!DriverStation.isEnabled()) {
-                //init stuff idk
+            visionTarget = new VisionTargetSim(VisionConstants.targetPose, VisionConstants.targetModel);
+            cameraProp = new SimCameraProperties();
+
             camera = new PhotonCamera(VisionConstants.camera1Name);
 
             AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);

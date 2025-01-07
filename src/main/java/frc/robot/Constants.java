@@ -1,6 +1,12 @@
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -10,13 +16,19 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DataLogManager;
 import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
 
 import java.nio.file.Paths;
+import java.io.IOException;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import org.photonvision.estimation.TargetModel;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionTargetSim;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
@@ -162,6 +174,17 @@ public class Constants {
 
     public static class VisionConstants {
         public static final String camera1Name = "cam1";
+        public static final TargetModel targetModel = new TargetModel(0.5, 0.25);
+        public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
+        public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
+        public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+        public static final SimCameraProperties cameraProp = new SimCameraProperties();
+        public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
+        public static final Rotation3d robotToCameraRot = new Rotation3d(0, Math.toRadians(-15), 0);
+        public static final Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
+        public static final Rotation3d turretRotation = new Rotation3d(0, 0, Math.toRadians(5));
+
+
     }
 
     public static class PoseConstants {

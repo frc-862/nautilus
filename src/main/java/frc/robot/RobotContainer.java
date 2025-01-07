@@ -27,7 +27,7 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void initializeSubsystems() {
         drivetrain = TunerConstants.createDrivetrain();
-        // vision = new PhotonVision();
+        vision = new PhotonVision();
         logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
     }
@@ -36,6 +36,8 @@ public class RobotContainer extends LightningContainer {
     protected void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(DriveRequests.getDrive(()-> -driver.getLeftX(), ()-> -driver.getLeftY(), ()-> driver.getRightX())));
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        vision.setDefaultCommand(vision.updateOdometry(drivetrain));
     }
 
 

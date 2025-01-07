@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.MassUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -13,7 +12,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Constants.SwerveConstants.Triton;
+import frc.robot.Constants.RobotSpecificTunerConstants.TritonTunerConstants;
 import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
@@ -59,12 +58,12 @@ public class Constants {
 
     }
 
-    public class SwerveConstants {
-        public static class Nautlius {
+    public class RobotSpecificTunerConstants {
+        public static class NautilusTunerConstants {
 
         }
 
-        public static class Triton {
+        public static class TritonTunerConstants {
             private static final boolean kInvertLeftSide = false;
             private static final boolean kInvertRightSide = true;
 
@@ -427,7 +426,7 @@ public class Constants {
          * This should only be called once in your robot program,.
          */
         public static Swerve createDrivetrain() {
-            return IS_TRITON ? Triton.createDrivetrain(ConstantCreator, DrivetrainConstants) : null;
+            return IS_TRITON ? TritonTunerConstants.createDrivetrain(ConstantCreator, DrivetrainConstants) : null;
         }
     }
 }

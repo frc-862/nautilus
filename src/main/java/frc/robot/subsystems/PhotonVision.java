@@ -51,39 +51,42 @@ public class PhotonVision extends SubsystemBase {
     private PhotonCameraSim cameraSim;
 
     public PhotonVision() {
-        camera = new PhotonCamera(VisionConstants.camera1Name);
+        if(!DriverStation.isEnabled()) {
+                //init stuff idk
+            camera = new PhotonCamera(VisionConstants.camera1Name);
 
-        AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+            AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
 
-        poseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                new Transform3d());
+            poseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                    new Transform3d());
 
-        visionSim.addVisionTargets(visionTarget);
-        visionSim.addAprilTags(VisionConstants.tagLayout);
-        // A 640 x 480 camera with a 100 degree diagonal FOV.
-        cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
-        // Approximate detection noise with average and standard deviation error in pixels.
-        cameraProp.setCalibError(0.25, 0.08);
-        // Set the camera image capture framerate (Note: this is limited by robot loop rate).
-        cameraProp.setFPS(20);
-        // The average and standard deviation in milliseconds of image data latency.
-        cameraProp.setAvgLatencyMs(35);
-        cameraProp.setLatencyStdDevMs(5);
+            visionSim.addVisionTargets(visionTarget);
+            visionSim.addAprilTags(VisionConstants.tagLayout);
+            // A 640 x 480 camera with a 100 degree diagonal FOV.
+            cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
+            // Approximate detection noise with average and standard deviation error in pixels.
+            cameraProp.setCalibError(0.25, 0.08);
+            // Set the camera image capture framerate (Note: this is limited by robot loop rate).
+            cameraProp.setFPS(20);
+            // The average and standard deviation in milliseconds of image data latency.
+            cameraProp.setAvgLatencyMs(35);
+            cameraProp.setLatencyStdDevMs(5);
 
-        cameraSim = new PhotonCameraSim(camera, cameraProp);
-        visionSim.addCamera(cameraSim, VisionConstants.robotToCamera);
-        Transform3d rotatedRobotToCamera = new Transform3d(
-            VisionConstants.robotToCameraTrl.rotateBy(VisionConstants.turretRotation),
-            VisionConstants.robotToCameraRot.rotateBy(VisionConstants.turretRotation));
-        visionSim.adjustCamera(cameraSim, rotatedRobotToCamera);
+            cameraSim = new PhotonCameraSim(camera, cameraProp);
+            visionSim.addCamera(cameraSim, VisionConstants.robotToCamera);
+            Transform3d rotatedRobotToCamera = new Transform3d(
+                VisionConstants.robotToCameraTrl.rotateBy(VisionConstants.turretRotation),
+                VisionConstants.robotToCameraRot.rotateBy(VisionConstants.turretRotation));
+            visionSim.adjustCamera(cameraSim, rotatedRobotToCamera);
 
-        // Enable the raw and processed streams. These are enabled by default.
-        cameraSim.enableRawStream(true);
-        cameraSim.enableProcessedStream(true);
+            // Enable the raw and processed streams. These are enabled by default.
+            cameraSim.enableRawStream(true);
+            cameraSim.enableProcessedStream(true);
 
-        // Enable drawing a wireframe visualization of the field to the camera streams.
-        // This is extremely resource-intensive and is disabled by default.
-        cameraSim.enableDrawWireframe(true);
+            // Enable drawing a wireframe visualization of the field to the camera streams.
+            // This is extremely resource-intensive and is disabled by default.
+            cameraSim.enableDrawWireframe(true);
+        }
     }
 
     public void initLogging() {
@@ -130,11 +133,11 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        try {
-            result = camera.getLatestResult();
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("[VISION] Failed to gather camera result");
-        }
+        // try {
+        result = camera.getLatestResult();
+        // } catch (IndexOutOfBoundsException e) {
+        //     System.out.println("[VISION] Failed to gather camera result");
+        // }
 
 
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());

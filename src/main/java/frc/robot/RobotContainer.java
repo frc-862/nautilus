@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.TritonTunerConstants;
+import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
@@ -26,9 +26,9 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeSubsystems() {
-        drivetrain = TritonTunerConstants.createDrivetrain();
+        drivetrain = TunerConstants.createDrivetrain();
         // vision = new PhotonVision();
-        logger = new Telemetry(TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
+        logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
     
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
     }

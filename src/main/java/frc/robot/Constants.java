@@ -350,8 +350,12 @@ public class Constants {
              * This should only be called once in your robot program,.
              */
             public static Swerve createDrivetrain() {
-                return IS_TRITON ? new Swerve(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight) : null;
+                return new Swerve(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
             }
+        }
+
+        public static Swerve createDrivetrain() {
+            return IS_TRITON ? TritonTunerConstants.createDrivetrain() : null;
         }
     }
 }

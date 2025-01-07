@@ -17,7 +17,7 @@ import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.function.DoubleConsumer;
+import java.nio.file.Paths;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -32,12 +32,13 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
-
-
 public class Constants {
 
-    public static class RobotMap {
+    public static final String TRITON_IDENTIFIER = "/home/lvuser/triton"; // Differentiate between Triton and Nautlius
+    public static final boolean IS_TRITON = Paths.get(TRITON_IDENTIFIER).toFile().exists();
 
+    public static class RobotMap {
+        public static final int FL_DRIVE = 1;
 
     }
 
@@ -47,7 +48,6 @@ public class Constants {
 
         public static final double JOYSTICK_DEADBAND = 0.1; 
         public static final double TRIGGER_DEADBAND = 0.05; 
-
 
     }
 
@@ -308,9 +308,9 @@ public class Constants {
          * This should only be called once in your robot program,.
          */
         public static Swerve createDrivetrain() {
-            return new Swerve(
+            return IS_TRITON ? new Swerve(
                 DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight
-            );
+            ) : null;
         }
     }
 }

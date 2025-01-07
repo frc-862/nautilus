@@ -170,6 +170,10 @@ public class Constants {
 
     public class TunerConstants {
 
+        public class NautliusTunerConstants {
+            
+        }
+
         public class TritonTunerConstants {
             // Both sets of gains need to be tuned to your individual robot.
     

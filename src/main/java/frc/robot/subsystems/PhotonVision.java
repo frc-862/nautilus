@@ -84,9 +84,6 @@ public class PhotonVision extends SubsystemBase {
         // Enable drawing a wireframe visualization of the field to the camera streams.
         // This is extremely resource-intensive and is disabled by default.
         cameraSim.enableDrawWireframe(true);
-
-
-
     }
 
     public void initLogging() {

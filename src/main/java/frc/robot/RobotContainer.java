@@ -1,3 +1,4 @@
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -6,7 +7,10 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
@@ -15,12 +19,14 @@ import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.LightningContainer;
+import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class RobotContainer extends LightningContainer {
 
     public Swerve drivetrain;
     public PhotonVision vision;
     private Telemetry logger;
+    private SendableChooser<Command> autoChooser;
 
     private XboxController driver;
 
@@ -51,12 +57,13 @@ public class RobotContainer extends LightningContainer {
     
     @Override
     protected void initializeNamedCommands() {
-    }
 
 
-    
+        autoChooser = AutoBuilder.buildAutoChooser();
+        LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);
+    }    
 
     public Command getAutonomousCommand() {
-        return null;
+        return autoChooser.getSelected();
     }
 }

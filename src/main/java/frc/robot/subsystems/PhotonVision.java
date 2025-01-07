@@ -130,11 +130,11 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // try {
+        try {
             result = camera.getLatestResult();
-        // } catch (IndexOutOfBoundsException e) {
-        //     System.out.println("[VISION] Failed to gather camera result");
-        // }
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("[VISION] Failed to gather camera result");
+        }
 
 
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());

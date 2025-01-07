@@ -4,18 +4,24 @@
 
 package frc.robot.subsystems;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
+import org.photonvision.simulation.VisionTargetSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -24,12 +30,14 @@ import frc.robot.Constants.VisionConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Pose4d;
 
-import edu.wpi.first.wpilibj.DataLogManager;
-
 public class PhotonVision extends SubsystemBase {
     
     private PhotonCamera camera;
     private PhotonPoseEstimator poseEstimator;
+    private VisionSystemSim visionSim = new VisionSystemSim("test");
+
+    private VisionTargetSim visionTarget = new VisionTargetSim(VisionConstants.targetPose, VisionConstants.targetModel);
+    private SimCameraProperties cameraProp = new SimCameraProperties();
 
     private PhotonPipelineResult result;
 
@@ -40,6 +48,8 @@ public class PhotonVision extends SubsystemBase {
 
     private double lastPoseTime = 0;
 
+    private PhotonCameraSim cameraSim;
+
     public PhotonVision() {
         camera = new PhotonCamera(VisionConstants.camera1Name);
 
@@ -47,6 +57,36 @@ public class PhotonVision extends SubsystemBase {
 
         poseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                 new Transform3d());
+
+        visionSim.addVisionTargets(visionTarget);
+        visionSim.addAprilTags(VisionConstants.tagLayout);
+        // A 640 x 480 camera with a 100 degree diagonal FOV.
+        cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
+        // Approximate detection noise with average and standard deviation error in pixels.
+        cameraProp.setCalibError(0.25, 0.08);
+        // Set the camera image capture framerate (Note: this is limited by robot loop rate).
+        cameraProp.setFPS(20);
+        // The average and standard deviation in milliseconds of image data latency.
+        cameraProp.setAvgLatencyMs(35);
+        cameraProp.setLatencyStdDevMs(5);
+
+        cameraSim = new PhotonCameraSim(camera, cameraProp);
+        visionSim.addCamera(cameraSim, VisionConstants.robotToCamera);
+        Transform3d rotatedRobotToCamera = new Transform3d(
+            VisionConstants.robotToCameraTrl.rotateBy(VisionConstants.turretRotation),
+            VisionConstants.robotToCameraRot.rotateBy(VisionConstants.turretRotation));
+        visionSim.adjustCamera(cameraSim, rotatedRobotToCamera);
+
+        // Enable the raw and processed streams. These are enabled by default.
+        cameraSim.enableRawStream(true);
+        cameraSim.enableProcessedStream(true);
+
+        // Enable drawing a wireframe visualization of the field to the camera streams.
+        // This is extremely resource-intensive and is disabled by default.
+        cameraSim.enableDrawWireframe(true);
+
+
+
     }
 
     public void initLogging() {
@@ -93,20 +133,18 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        try {
-            //get the latest result
-            List<PhotonPipelineResult> results = camera.getAllUnreadResults();
-            result = results.get(results.size() - 1);
-        } catch (IndexOutOfBoundsException e) {
-            DataLogManager.log("[VISION] Pose Estimator Failed to update");
-        }
+        // try {
+            result = camera.getLatestResult();
+        // } catch (IndexOutOfBoundsException e) {
+        //     System.out.println("[VISION] Failed to gather camera result");
+        // }
 
 
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
         LightningShuffleboard.set("Vision", "timestamp", result.getTimestampSeconds());
 
         if (result.hasTargets()) {
-            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse((m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose), () -> DataLogManager.log("[VISION] Pose Estimator Failed to update"));
+            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse((m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose), () -> System.out.println("[VISION] god freaking dang it"));
         
             lastEstimatedRobotPose = estimatedRobotPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
@@ -116,9 +154,16 @@ public class PhotonVision extends SubsystemBase {
 
         } else {
             if (!DriverStation.isFMSAttached()) {
-                DataLogManager.log("[VISION] Pose Estimator Failed to update");
+                System.out.println("[VISION] Pose Estimator Failed to update");
             }
         }
 
+    }
+
+    @Override
+    public void simulationPeriodic(){
+        visionSim.update(lastEstimatedRobotPose);
+
+        visionSim.getDebugField();
     }
 }

@@ -26,7 +26,9 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Constants.VisionConstants;
@@ -42,7 +44,7 @@ public class PhotonVision extends SubsystemBase {
     private VisionTargetSim visionTarget;
     private SimCameraProperties cameraProp;
 
-    private PhotonPipelineResult result;
+    private PhotonPipelineResult result = new PhotonPipelineResult();
 
     private Pose2d lastEstimatedRobotPose = new Pose2d();
 
@@ -68,22 +70,16 @@ public class PhotonVision extends SubsystemBase {
 
             visionSim.addVisionTargets(visionTarget);
             visionSim.addAprilTags(VisionConstants.tagLayout);
-            // A 640 x 480 camera with a 100 degree diagonal FOV.
-            cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
-            // Approximate detection noise with average and standard deviation error in pixels.
-            cameraProp.setCalibError(0.25, 0.08);
-            // Set the camera image capture framerate (Note: this is limited by robot loop rate).
-            cameraProp.setFPS(20);
-            // The average and standard deviation in milliseconds of image data latency.
-            cameraProp.setAvgLatencyMs(35);
-            cameraProp.setLatencyStdDevMs(5);
+            
+            //TODO: set camera properties
+            // cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
+            // cameraProp.setCalibError(0.25, 0.08);
+            // cameraProp.setFPS(20);
+            // cameraProp.setAvgLatencyMs(35);
+            // cameraProp.setLatencyStdDevMs(5);
 
             cameraSim = new PhotonCameraSim(camera, cameraProp);
             visionSim.addCamera(cameraSim, VisionConstants.robotToCamera);
-            Transform3d rotatedRobotToCamera = new Transform3d(
-                VisionConstants.robotToCameraTrl.rotateBy(VisionConstants.turretRotation),
-                VisionConstants.robotToCameraRot.rotateBy(VisionConstants.turretRotation));
-            visionSim.adjustCamera(cameraSim, rotatedRobotToCamera);
 
             // Enable the raw and processed streams. These are enabled by default.
             cameraSim.enableRawStream(true);
@@ -91,7 +87,7 @@ public class PhotonVision extends SubsystemBase {
 
             // Enable drawing a wireframe visualization of the field to the camera streams.
             // This is extremely resource-intensive and is disabled by default.
-            cameraSim.enableDrawWireframe(true);
+            // cameraSim.enableDrawWireframe(true);
         }
     }
 
@@ -127,11 +123,18 @@ public class PhotonVision extends SubsystemBase {
         lastPoseTime = pose.timestampSeconds;
     }
 
-    // public Command updateOdometry(Swerve swerve) {
-    //     return run(() -> {
-    //         swerve.applyVisionPose(estimatedRobotPose);
-    //     }).ignoringDisable(true);
-    // }
+    public Command updateOdometry(Swerve swerve) {
+        if(Robot.isReal()) {
+            return run(() -> {
+                swerve.addVisionMeasurement(estimatedRobotPose);
+            }).ignoringDisable(true);
+        } else {
+            return run(() -> {
+                visionSim.update(swerve.getPose());
+                swerve.addVisionMeasurement(estimatedRobotPose);
+            }).ignoringDisable(true);
+        }
+    }
 
     @Override
     public void periodic() {
@@ -139,8 +142,8 @@ public class PhotonVision extends SubsystemBase {
             //get the latest result
             List<PhotonPipelineResult> results = camera.getAllUnreadResults();
             result = results.get(results.size() - 1);
-        } catch (IndexOutOfBoundsException e) {
-            DataLogManager.log("[VISION] Pose Estimator Failed to update");
+        } catch (Exception e) {
+            DataLogManager.log("[VISION] Pose Estimator Failed to update" + e.getLocalizedMessage());
         }
 
 
@@ -166,8 +169,6 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void simulationPeriodic(){
-        visionSim.update(lastEstimatedRobotPose);
-
-        visionSim.getDebugField();
+        LightningShuffleboard.set("Vision", "Field_SIM", visionSim.getDebugField());
     }
 }

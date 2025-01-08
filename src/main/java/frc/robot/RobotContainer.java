@@ -40,25 +40,22 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void configureDefaultCommands() {
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(DriveRequests.getDrive(()-> -driver.getLeftX(), ()-> -driver.getLeftY(), ()-> driver.getRightX())));
+        drivetrain.setDefaultCommand(drivetrain.applyRequest(DriveRequests.getDrive(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         drivetrain.registerTelemetry(logger::telemeterize);
 
         vision.setDefaultCommand(vision.updateOdometry(drivetrain));
     }
 
-
     @Override
     protected void configureButtonBindings() {
-        (new Trigger(driver::getAButton)).whileTrue(drivetrain.applyRequest(DriveRequests.getSlow(()-> -driver.getLeftX(), ()-> -driver.getLeftY(), ()-> driver.getRightX())));
-        (new Trigger(driver::getBButton)).whileTrue(drivetrain.applyRequest(DriveRequests.getRobotCentric(()-> -driver.getLeftX(), ()-> -driver.getLeftY(), ()-> driver.getRightX())));
+        (new Trigger(driver::getAButton)).whileTrue(drivetrain.applyRequest(DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+        (new Trigger(driver::getBButton)).whileTrue(drivetrain.applyRequest(DriveRequests.getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         (new Trigger(driver::getXButton)).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
     }
     
     @Override
     protected void initializeNamedCommands() {
-
-
         autoChooser = AutoBuilder.buildAutoChooser();
         LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);
     }    

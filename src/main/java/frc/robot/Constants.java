@@ -65,6 +65,9 @@ public class Constants {
         public static final int L_ELEVATOR = 9; // temp
         public static final int R_ELEVATOR = 10; // temp
 
+        public static final int WRIST = 11; // temp
+        public static final int WRIST_ENCODER = 35; // temp
+
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
@@ -76,6 +79,31 @@ public class Constants {
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
         public static final boolean L_INVERTED = false; // temp
         public static final boolean R_INVERTED = false; // temp
+
+
+        public static final double GEAR_RATIO = 1d / 10d; // output shaft gear reduction / Motor gear reduction
+        public static final double ROTOR_TO_SENSOR_RATIO = GEAR_RATIO * Math.PI * 12d; // temp
+        public static final double ENCODER_TO_MECHANISM_RATIO = 1d; // temp
+
+        public static final double MOTORS_KP = 0; // temp
+        public static final double MOTORS_KI = 0; // temp
+        public static final double MOTORS_KD = 0; // temp
+        public static final double MOTORS_KF = 0; // temp
+        public static final double MOTORS_KS = 0; // temp
+        public static final double MOTORS_KV = 0; // temp
+        public static final double MOTORS_KA = 0; // temp
+        public static final double MOTORS_KG = 0; // temp
+    }
+
+    public static class WristConstants {
+        public static final boolean BRAKE_MODE = true;
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
+        public static final boolean INVERTED = false; // temp
+
+
+        public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
+        public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
+        public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
         public static final double MOTORS_KP = 0; // temp
         public static final double MOTORS_KI = 0; // temp

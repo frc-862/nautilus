@@ -37,6 +37,9 @@ public class Elevator extends SubsystemBase {
         config.Slot0.kA = ElevatorConstants.MOTORS_KA;
         config.Slot0.kG = ElevatorConstants.MOTORS_KG;
 
+        config.Feedback.RotorToSensorRatio = ElevatorConstants.ROTOR_TO_SENSOR_RATIO;
+        config.Feedback.SensorToMechanismRatio = ElevatorConstants.ENCODER_TO_MECHANISM_RATIO;
+
         leftMotor.applyConfig(config);
         rightMotor.setControl(new Follower(RobotMap.L_ELEVATOR, true));
     }    

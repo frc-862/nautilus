@@ -2,7 +2,9 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -62,10 +64,57 @@ public class Constants {
         public static final int BR_TURN = 8;
         public static final int BR_ENCODER = 34;
 
+        public static final int L_ELEVATOR = 9; // temp
+        public static final int R_ELEVATOR = 10; // temp
+
+        public static final int WRIST = 11; // temp
+        public static final int WRIST_ENCODER = 35; // temp
+
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
 
+    }
+
+    public static class ElevatorConstants {
+        public static final boolean BRAKE_MODE = true;
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
+        public static final boolean L_INVERTED = false; // temp
+        public static final boolean R_INVERTED = false; // temp
+
+
+        public static final double GEAR_RATIO = 1d / 10d; // output shaft gear reduction / Motor gear reduction
+        public static final double ROTOR_TO_SENSOR_RATIO = GEAR_RATIO * Math.PI * 12d; // temp
+        public static final double ENCODER_TO_MECHANISM_RATIO = 1d; // temp
+
+        public static final double MOTORS_KP = 0; // temp
+        public static final double MOTORS_KI = 0; // temp
+        public static final double MOTORS_KD = 0; // temp
+        public static final double MOTORS_KF = 0; // temp
+        public static final double MOTORS_KS = 0; // temp
+        public static final double MOTORS_KV = 0; // temp
+        public static final double MOTORS_KA = 0; // temp
+        public static final double MOTORS_KG = 0; // temp
+    }
+
+    public static class WristConstants {
+        public static final boolean BRAKE_MODE = true;
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
+        public static final boolean INVERTED = false; // temp
+
+
+        public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
+        public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
+        public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
+
+        public static final double MOTORS_KP = 0; // temp
+        public static final double MOTORS_KI = 0; // temp
+        public static final double MOTORS_KD = 0; // temp
+        public static final double MOTORS_KF = 0; // temp
+        public static final double MOTORS_KS = 0; // temp
+        public static final double MOTORS_KV = 0; // temp
+        public static final double MOTORS_KA = 0; // temp
+        public static final double MOTORS_KG = 0; // temp
     }
 
     public static class ControllerConstants {
@@ -174,15 +223,14 @@ public class Constants {
 
     public static class VisionConstants {
         public static final String camera1Name = "cam1";
-        public static final TargetModel targetModel = new TargetModel(0.5, 0.25);
+        public static final TargetModel targetModel = TargetModel.kAprilTag36h11;
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
         public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
-        public static final Rotation3d robotToCameraRot = new Rotation3d(0, Math.toRadians(-15), 0);
+        public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, 0);
         public static final Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
-        public static final Rotation3d turretRotation = new Rotation3d(0, 0, Math.toRadians(5));
 
 
     }
@@ -190,6 +238,19 @@ public class Constants {
     public static class PoseConstants {
         public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
                 Units.feetToMeters(26.0));
+
+        public static final Pose2d REEFSCORE1_1 = new Pose2d(4.864, 5.235, new Rotation2d(240));
+        public static final Pose2d REEFSCORE1_2 = new Pose2d(5.283, 5.069, new Rotation2d(240));
+        public static final Pose2d REEFSCORE2_1 = new Pose2d(5.837, 4.203, new Rotation2d(180));
+        public static final Pose2d REEFSCORE2_2 = new Pose2d(5.89, 3.876, new Rotation2d(180));
+        public static final Pose2d REEFSCORE3_1 = new Pose2d(5.327, 2.935, new Rotation2d(120));
+        public static final Pose2d REEFSCORE3_2 = new Pose2d(5.019, 2.803, new Rotation2d(120));
+        public static final Pose2d REEFSCORE4_1 = new Pose2d(3.881, 2.728, new Rotation2d(60));
+        public static final Pose2d REEFSCORE4_2 = new Pose2d(3.639, 2.904, new Rotation2d(60));
+        public static final Pose2d REEFSCORE5_1 = new Pose2d(3.072, 3.875, new Rotation2d(0));
+        public static final Pose2d REEFSCORE5_2 = new Pose2d(3.101, 4.175, new Rotation2d(0));
+        public static final Pose2d REEFSCORE6_1 = new Pose2d(3.656, 5.122, new Rotation2d(300));
+        public static final Pose2d REEFSCORE6_2 = new Pose2d(3.949, 5.282, new Rotation2d(300));
     }
 
     public class TunerConstants {

@@ -5,47 +5,63 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CANcoderConfigurator;
-import com.ctre.phoenix6.controls.ControlRequest;
-import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotMap;
+import frc.robot.Constants.WristConstants;
 import frc.thunder.hardware.ThunderBird;
 public class Wrist extends SubsystemBase {
     
-    public ThunderBird wristMotor;
-    private CANcoder angleEncoder;
+    private ThunderBird motor;
+    private CANcoder encoder;
 
     public final PositionVoltage positionPID = new PositionVoltage(0);
 
     public Wrist() {
-        wristMotor = new ThunderBird(44, RobotMap.CANIVORE_CAN_NAME, false, 60, true);
+        motor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME, WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
+        
+        TalonFXConfiguration motorConfig = motor.getConfig();
+        motorConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+        motorConfig.Slot0.kP = ElevatorConstants.MOTORS_KP;
+        motorConfig.Slot0.kI = ElevatorConstants.MOTORS_KI;
+        motorConfig.Slot0.kD = ElevatorConstants.MOTORS_KD;
+        motorConfig.Slot0.kS = ElevatorConstants.MOTORS_KS;
+        motorConfig.Slot0.kV = ElevatorConstants.MOTORS_KV;
+        motorConfig.Slot0.kA = ElevatorConstants.MOTORS_KA;
+        motorConfig.Slot0.kG = ElevatorConstants.MOTORS_KG;
+
+        motorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
+        motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        motorConfig.Feedback.SensorToMechanismRatio = WristConstants.ENCODER_TO_MECHANISM_RATIO;
+        motorConfig.Feedback.RotorToSensorRatio = WristConstants.ROTOR_TO_ENCODER_RATIO;
 
         CANcoderConfiguration angleConfig = new CANcoderConfiguration();
         angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-        angleEncoder = new CANcoder(45, RobotMap.CANIVORE_CAN_NAME);
-        angleEncoder.getConfigurator().apply(angleConfig);
+        encoder = new CANcoder(RobotMap.WRIST_ENCODER, RobotMap.CANIVORE_CAN_NAME);
+        encoder.getConfigurator().apply(angleConfig);
     }
 
     @Override
     public void periodic() {
         
-
     }
+
     public void setPosition(double position) {
-        position = (10d * position) / 360d;
-        wristMotor.setPosition(position);
+        motor.setPosition(position);
     }
 
     public double getPosition() {
-        return wristMotor.getPosition().getValueAsDouble();
+        return motor.getPosition().getValueAsDouble();
     }
 
     public void setPower(double power) {
-        wristMotor.set(power);
+        motor.set(power);
     }
 
     public void stop() {

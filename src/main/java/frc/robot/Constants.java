@@ -74,6 +74,7 @@ public class Constants {
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
 
+        public static final double UPDATE_FREQ = 0.02;
     }
 
     public static class ElevatorConstants {
@@ -81,7 +82,6 @@ public class Constants {
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
         public static final boolean L_INVERTED = false; // temp
         public static final boolean R_INVERTED = false; // temp
-
 
         public static final double GEAR_RATIO = 1d / 10d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_SENSOR_RATIO = GEAR_RATIO * Math.PI * 12d; // temp
@@ -95,6 +95,16 @@ public class Constants {
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
         public static final double MOTORS_KG = 0; // temp
+
+
+        public static final Distance MIN_EXTENSION = Inches.of(0);
+        public static final Distance MAX_EXTENSION = Inches.of(90);
+
+
+        //SIM
+        public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
+        public static final Distance DRUM_RADIUS = Inches.of(0.5); // TODO: ask mr hurley abt this because i have no clue
+
     }
 
     public static class WristConstants {
@@ -447,7 +457,7 @@ public class Constants {
         }
 
         public static Swerve createDrivetrain() {
-            return IS_TRITON ? TritonTunerConstants.createDrivetrain() : null;
+            return IS_TRITON || Robot.isSimulation() ? TritonTunerConstants.createDrivetrain() : null;
         }
     }
 }

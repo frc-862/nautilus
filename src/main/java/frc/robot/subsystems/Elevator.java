@@ -4,11 +4,21 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.sim.ChassisReference;
+import com.ctre.phoenix6.sim.TalonFXSimState;
+
+import frc.robot.Robot;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotMap;
 import frc.thunder.hardware.ThunderBird;
@@ -20,7 +30,13 @@ public class Elevator extends SubsystemBase {
 
     private final PositionVoltage elevatorPID = new PositionVoltage(0).withSlot(0);
 
-    /** Creates a new Lift. */
+    //sim stuff
+    private final DCMotor gearbox = DCMotor.getKrakenX60(2);
+    private ElevatorSim elevatorSim;
+    private TalonFXSimState leftSim;
+    private TalonFXSimState rightSim;
+
+
     public Elevator() {
         leftMotor = new ThunderBird(RobotMap.L_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
             ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
@@ -42,10 +58,31 @@ public class Elevator extends SubsystemBase {
 
         leftMotor.applyConfig(config);
         rightMotor.setControl(new Follower(RobotMap.L_ELEVATOR, true));
+
+        if(Robot.isSimulation()) {
+            elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.ROTOR_TO_SENSOR_RATIO, ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters), ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 0, 0d, 0,1, 0d); //TODO: make starting height home, and figure out what std devs are ideal
+            leftSim = new TalonFXSimState(leftMotor);
+            rightSim = new TalonFXSimState(rightMotor);
+
+            leftSim.Orientation = ElevatorConstants.L_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
+            rightSim.Orientation = ElevatorConstants.R_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
+        }
     }    
 
     @Override
     public void periodic() {}
+
+    @Override
+    public void simulationPeriodic() {
+        double batteryVoltage = RobotController.getBatteryVoltage();
+        leftSim.setSupplyVoltage(batteryVoltage);
+        rightSim.setSupplyVoltage(batteryVoltage);
+
+        elevatorSim.setInput(leftSim.getMotorVoltage(), rightSim.getMotorVoltage());
+        elevatorSim.update(RobotMap.UPDATE_FREQ);
+
+        leftSim.setRawRotorPosition(elevatorSim.getPositionMeters()); //TODO: see how raw setRawRotorPosition actually is
+    }
 
     /**
      * sets the target position for the elevator

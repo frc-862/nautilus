@@ -72,10 +72,10 @@ public class Constants {
     }
 
     public static class ElevatorConstants {
-        public static boolean BRAKE_MODE = true;
-        public static double STATOR_CURRENT_LIMIT = 0d; // temp 
-        public static boolean L_INVERTED = false; // temp
-        public static boolean R_INVERTED = false; // temp
+        public static final boolean BRAKE_MODE = true;
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
+        public static final boolean L_INVERTED = false; // temp
+        public static final boolean R_INVERTED = false; // temp
 
         public static final double MOTORS_KP = 0; // temp
         public static final double MOTORS_KI = 0; // temp

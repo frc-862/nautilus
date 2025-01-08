@@ -1,9 +1,6 @@
 package frc.robot.commands;
 
-import org.opencv.features2d.FlannBasedMatcher;
-
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -44,9 +41,10 @@ public class TestAutoAlign extends Command {
 
         }
 
-        if (!DriverStation.isFMSAttached())
+        if (!DriverStation.isFMSAttached()){
             LightningShuffleboard.setDouble("TestAutoAlign", "tX", tx);
             LightningShuffleboard.setDouble("TestAutoAlign", "calculatedspeed", calculatedSpeed);
+        }
 
     }
 

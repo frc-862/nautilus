@@ -74,18 +74,19 @@ public class Constants {
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
 
-        public static final double UPDATE_FREQ = 0.02;
+        // 20ms default loop time
+        public static final double UPDATE_FREQ = 0.020;
     }
 
     public static class ElevatorConstants {
         public static final boolean BRAKE_MODE = true;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
         public static final boolean L_INVERTED = false; // temp
-        public static final boolean R_INVERTED = false; // temp
+        public static final boolean R_INVERTED = true; // temp
 
-        public static final double GEAR_RATIO = 1d / 10d; // output shaft gear reduction / Motor gear reduction
-        public static final double ROTOR_TO_SENSOR_RATIO = GEAR_RATIO * Math.PI * 12d; // temp
-        public static final double ENCODER_TO_MECHANISM_RATIO = 1d; // temp
+        public static final double GEAR_RATIO = 1/4d; // temp
+        public static final double ROTOR_TO_SENSOR_RATIO = 1; // temp
+        public static final double ENCODER_TO_MECHANISM_RATIO = GEAR_RATIO * Math.PI * 2 * (7/11);  // TODO: i dont know why the 7/11 made it work, but it did. this is temporary.
 
         public static final double MOTORS_KP = 0; // temp
         public static final double MOTORS_KI = 0; // temp
@@ -97,13 +98,13 @@ public class Constants {
         public static final double MOTORS_KG = 0; // temp
 
 
-        public static final Distance MIN_EXTENSION = Inches.of(0);
-        public static final Distance MAX_EXTENSION = Inches.of(90);
+        public static final Distance MIN_EXTENSION = Inches.of(33);
+        public static final Distance MAX_EXTENSION = Inches.of(82);
 
 
         //SIM
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
-        public static final Distance DRUM_RADIUS = Inches.of(0.5); // TODO: ask mr hurley abt this because i have no clue
+        public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no clue
 
     }
 

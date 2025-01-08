@@ -5,13 +5,17 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -22,6 +26,7 @@ import frc.robot.Robot;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotMap;
 import frc.thunder.hardware.ThunderBird;
+import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class Elevator extends SubsystemBase {
 
@@ -31,11 +36,10 @@ public class Elevator extends SubsystemBase {
     private final PositionVoltage elevatorPID = new PositionVoltage(0).withSlot(0);
 
     //sim stuff
-    private final DCMotor gearbox = DCMotor.getKrakenX60(2);
+    private DCMotor gearbox;
     private ElevatorSim elevatorSim;
     private TalonFXSimState leftSim;
     private TalonFXSimState rightSim;
-
 
     public Elevator() {
         leftMotor = new ThunderBird(RobotMap.L_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
@@ -60,10 +64,20 @@ public class Elevator extends SubsystemBase {
         rightMotor.setControl(new Follower(RobotMap.L_ELEVATOR, true));
 
         if(Robot.isSimulation()) {
-            elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.ROTOR_TO_SENSOR_RATIO, ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters), ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 0, 0d, 0,1, 0d); //TODO: make starting height home, and figure out what std devs are ideal
+            /* TODO:(for simulation)
+             * Determine what Drum Radius Means for our mechanism (Mr. Hurley question)
+             * Determine what Standard Deviations are ideal for noise
+             * Make Starting Height = HOME position when implemented
+             */
+
+
+            gearbox = DCMotor.getKrakenX60(2);
+            elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.GEAR_RATIO, ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters), ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 33, 0d, 1d); 
+
             leftSim = new TalonFXSimState(leftMotor);
             rightSim = new TalonFXSimState(rightMotor);
 
+            // TalonFX sim states do not retain inverts. 
             leftSim.Orientation = ElevatorConstants.L_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
             rightSim.Orientation = ElevatorConstants.R_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
         }
@@ -78,10 +92,17 @@ public class Elevator extends SubsystemBase {
         leftSim.setSupplyVoltage(batteryVoltage);
         rightSim.setSupplyVoltage(batteryVoltage);
 
-        elevatorSim.setInput(leftSim.getMotorVoltage(), rightSim.getMotorVoltage());
+        //TODO: I'm unclear if rightsim is necessary, or if this is correct. The WPILib example code only implements one motor, even though it's attached to a 4-motor gearbox
+        elevatorSim.setInputVoltage(leftSim.getMotorVoltage()); 
         elevatorSim.update(RobotMap.UPDATE_FREQ);
 
-        leftSim.setRawRotorPosition(elevatorSim.getPositionMeters()); //TODO: see how raw setRawRotorPosition actually is
+        leftSim.setRawRotorPosition(Units.metersToInches(elevatorSim.getPositionMeters()));
+
+        LightningShuffleboard.setDouble("elevator", "getPose", getPosition());
+        LightningShuffleboard.setDouble("elevator", "getRawPose", Units.metersToInches(elevatorSim.getPositionMeters()));
+        setPower(LightningShuffleboard.getDouble("elevator", "setPower", 1));
+
+
     }
 
     /**
@@ -89,7 +110,6 @@ public class Elevator extends SubsystemBase {
      * @param target height value for the elevator
      */
     public void setPosition(double target) {
-        // we dont know exactly how far the elevator will move in one rotation, so no math is done here
         leftMotor.setControl(elevatorPID.withPosition(target));
     }
 
@@ -98,7 +118,7 @@ public class Elevator extends SubsystemBase {
      * @param power
      */
     public void setPower(double power) {
-        leftMotor.set(power);
+        leftMotor.setControl(new DutyCycleOut(power));
     }
 
     /**

@@ -36,7 +36,7 @@ public class Wrist extends SubsystemBase {
 
     }
     public void setPosition(double position) {
-        position *= 36;
+        position = (10d * position) / 360d;
         wristMotor.setPosition(position);
     }
 

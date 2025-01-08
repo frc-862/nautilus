@@ -62,10 +62,29 @@ public class Constants {
         public static final int BR_TURN = 8;
         public static final int BR_ENCODER = 34;
 
+        public static final int L_ELEVATOR = 9; // temp
+        public static final int R_ELEVATOR = 10; // temp
+
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
 
+    }
+
+    public static class ElevatorConstants {
+        public static final boolean BRAKE_MODE = true;
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
+        public static final boolean L_INVERTED = false; // temp
+        public static final boolean R_INVERTED = false; // temp
+
+        public static final double MOTORS_KP = 0; // temp
+        public static final double MOTORS_KI = 0; // temp
+        public static final double MOTORS_KD = 0; // temp
+        public static final double MOTORS_KF = 0; // temp
+        public static final double MOTORS_KS = 0; // temp
+        public static final double MOTORS_KV = 0; // temp
+        public static final double MOTORS_KA = 0; // temp
+        public static final double MOTORS_KG = 0; // temp
     }
 
     public static class ControllerConstants {
@@ -174,15 +193,14 @@ public class Constants {
 
     public static class VisionConstants {
         public static final String camera1Name = "cam1";
-        public static final TargetModel targetModel = new TargetModel(0.5, 0.25);
+        public static final TargetModel targetModel = TargetModel.kAprilTag36h11;
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
         public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
-        public static final Rotation3d robotToCameraRot = new Rotation3d(0, Math.toRadians(-15), 0);
+        public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, 0);
         public static final Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
-        public static final Rotation3d turretRotation = new Rotation3d(0, 0, Math.toRadians(5));
 
 
     }

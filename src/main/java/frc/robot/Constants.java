@@ -83,7 +83,7 @@ public class Constants {
 
         public static final double GEAR_RATIO = 1d / 10d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_SENSOR_RATIO = GEAR_RATIO * Math.PI * 12d; // temp
-        public static final double ENCODER_TO_MECHANISM_RATIO = GEAR_RATIO * Math.PI * 12d; // temp
+        public static final double ENCODER_TO_MECHANISM_RATIO = 1d; // temp
 
         public static final double MOTORS_KP = 0; // temp
         public static final double MOTORS_KI = 0; // temp

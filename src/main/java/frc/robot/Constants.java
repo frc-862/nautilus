@@ -105,7 +105,7 @@ public class Constants {
         //SIM
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
         public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no clue
-
+        public static final double CUSHION = 2.25; //stages don't line up perfectly
     }
 
     public static class WristConstants {

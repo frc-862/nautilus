@@ -58,10 +58,10 @@ public class RobotContainer extends LightningContainer {
     
     @Override
     protected void initializeNamedCommands() {
-        NamedCommands.registerCommand("ElevatorHome", StandinCommands.moveElevator(0));
+        NamedCommands.registerCommand("ElevatorHome", StandinCommands.moveElevator(1));
         NamedCommands.registerCommand("AlgaeCollect", StandinCommands.moveAlgaeCollector());
         NamedCommands.registerCommand("IntakeCoral", StandinCommands.intakeCoral());
-        NamedCommands.registerCommand("MoveWrist", StandinCommands.moveWrist(0));
+        NamedCommands.registerCommand("MoveWrist", StandinCommands.moveWrist(1));
 
         autoChooser = AutoBuilder.buildAutoChooser();
         LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);

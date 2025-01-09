@@ -31,6 +31,6 @@ public class StandinCommands {
 
     public static Command intakeCoral() {
         //random number between 0.5 and 2s
-        return new WaitCommand(0);
+        return new WaitCommand(0.5);
     }
 }

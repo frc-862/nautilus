@@ -19,7 +19,7 @@ public class LEDs extends SubsystemBase {
 	AddressableLED leds;
 	AddressableLEDBuffer ledBuffer;
 	LED_STATES state;
-	private final PriorityQueue<LED_STATES> ledStates;
+	PriorityQueue<LED_STATES> ledStates;
 
 	public LEDs() {
 		leds = new AddressableLED(LEDConstants.LED_PWM_PORT);
@@ -27,25 +27,27 @@ public class LEDs extends SubsystemBase {
 		leds.setLength(ledBuffer.getLength());
 		leds.start();
 		ledStates = new PriorityQueue<>();
+    	ledStates.add(LED_STATES.OFF);
 	}
 
 	@Override
 	public void periodic() {
 		Thread ledThread = new Thread(() -> updateLEDs());
 		ledThread.start();
+
 	}
 
 	public void updateLEDs() {
 		state = ledStates.peek();
 
+    	System.out.println("LED State: " + state);
+
 		switch (state) {
-      case OFF -> swirl(LEDConstants.SWRIL_SEGMENT_SIZE);
+      		case OFF -> swirl(LEDConstants.SWRIL_SEGMENT_SIZE);
 
-      case DISABLED -> setSolidHSV(0, 0, 0);
+      		case DISABLED -> setSolidHSV(0, 0, 0);
 
-      case RAINBOW -> rainbow();
-
-      case BREAK -> pulse(LEDConstants.RED_HUE);
+      		case RAINBOW -> rainbow();
 
 			case MIXER -> {}
 		}

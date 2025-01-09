@@ -6,22 +6,18 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.TunerConstants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.LightningContainer;
-import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class RobotContainer extends LightningContainer {
 
@@ -41,6 +37,8 @@ public class RobotContainer extends LightningContainer {
         vision = new PhotonVision();
         logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
+        
+        leds = new LEDs();
     }
 
     @Override
@@ -57,7 +55,6 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests.getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
         
-
     }
     
     @Override

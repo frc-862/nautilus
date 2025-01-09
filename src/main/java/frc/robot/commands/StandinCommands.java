@@ -25,7 +25,7 @@ public class StandinCommands {
     }
 
     public static Command moveWrist(double position) {
-        return new WaitCommand(position * 0.0002222d); //assumed frequency was 1/4500 
+        return new WaitCommand(position * 0.0002222d); //assumed frequency was 1/4500
     }
 
     public static Command moveAlgaeCollector() {
@@ -37,19 +37,19 @@ public class StandinCommands {
         return new WaitCommand(0.5);
     }
 
-    public static Command Stow(){
+    public static Command stow(){
         return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.STOW)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.STOW)));
     }
 
-    public static Command L1(){
+    public static Command l1(){
         return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L1)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L1)));
     }
     
-    public static Command L2(){
+    public static Command l2(){
         return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L2)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L2)));
     }
 
-    public static Command L3(){
+    public static Command l3(){
         return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L3)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L3)));
     }
 

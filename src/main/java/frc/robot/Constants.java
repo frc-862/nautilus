@@ -111,7 +111,7 @@ public class Constants {
     }
 
     public static class FishingRodConstants {
-        public static enum states {
+        public enum states {
             STOW, L1, L2, L3, L4, SOURCE
         }
 

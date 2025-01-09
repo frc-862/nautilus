@@ -1,7 +1,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.FishingRodConstants;
+import frc.robot.Constants.FishingRodConstants.states;
 
 public class StandinCommands {
     /*
@@ -33,4 +36,22 @@ public class StandinCommands {
         //random number between 0.5 and 2s
         return new WaitCommand(0.5);
     }
+
+    public static Command Stow(){
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.STOW)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.STOW)));
+    }
+
+    public static Command L1(){
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L1)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L1)));
+    }
+    
+    public static Command L2(){
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L2)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L2)));
+    }
+
+    public static Command L3(){
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L3)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L3)));
+    }
+
+
 }

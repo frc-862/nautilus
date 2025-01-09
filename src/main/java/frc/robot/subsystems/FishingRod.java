@@ -23,7 +23,17 @@ public class FishingRod extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
+    public void periodic() {}
+
+    /**
+     * Sets the state of the fishing rod
+     * @param state
+     */
+    public void setState(states state) {
+        if(onTarget()) {
+            currState = state;
+        }
+
         switch(currState) {
             case STOW:
                 wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
@@ -51,16 +61,6 @@ public class FishingRod extends SubsystemBase {
                 break;
             default:
                 break;    
-        }
-    }
-
-    /**
-     * Sets the state of the fishing rod
-     * @param state
-     */
-    public void setState(states state) {
-        if(onTarget()) {
-            currState = state;
         }
     }
 

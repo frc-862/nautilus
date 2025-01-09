@@ -8,6 +8,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.commands.StandinCommands;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
@@ -61,6 +63,11 @@ public class RobotContainer extends LightningContainer {
     
     @Override
     protected void initializeNamedCommands() {
+        NamedCommands.registerCommand("ElevatorHome", StandinCommands.moveElevator(1));
+        NamedCommands.registerCommand("AlgaeCollect", StandinCommands.moveAlgaeCollector());
+        NamedCommands.registerCommand("IntakeCoral", StandinCommands.intakeCoral());
+        NamedCommands.registerCommand("MoveWrist", StandinCommands.moveWrist(1));
+
         autoChooser = AutoBuilder.buildAutoChooser();
         LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);
     }    

@@ -102,8 +102,7 @@ public class Constants {
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
         public static final boolean INVERTED = false; // temp
 
-
-        public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
+        public static final double GEAR_RATIO = 1d / 4d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
@@ -115,6 +114,15 @@ public class Constants {
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
         public static final double MOTORS_KG = 0; // temp
+
+        public static final Angle MIN_ANGLE = Degrees.of(-85);
+        public static final Angle MAX_ANGLE = Degrees.of(85);
+
+        //sim stuff
+        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.00045725); // 5lb, 2.5in rad, 9in height
+        public static final Distance LENGTH = Inches.of(7); // TODO: ask mr hurley abt this because i have no clue
+        public static final double CUSHION = 2.25; //stages don't line up perfectly
+
     }
 
     public static class ControllerConstants {

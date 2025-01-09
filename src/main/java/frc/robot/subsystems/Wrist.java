@@ -4,18 +4,42 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.sim.CANcoderSimState;
+import com.ctre.phoenix6.sim.ChassisReference;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.WristConstants;
+import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
+import frc.thunder.shuffleboard.LightningShuffleboard;
+import edu.wpi.first.units.Units.*;
+import edu.wpi.first.units.measure.Angle;
+
 public class Wrist extends SubsystemBase {
     
     private ThunderBird motor;
@@ -23,28 +47,66 @@ public class Wrist extends SubsystemBase {
 
     public final PositionVoltage positionPID = new PositionVoltage(0);
 
+    //Sim stuff
+    private DCMotor gearbox;
+    private SingleJointedArmSim wristSim;
+    private TalonFXSimState motorSim;
+    private CANcoderSimState encoderSim;
+
+    private Mechanism2d mech2d;
+    private MechanismRoot2d root;
+    private MechanismLigament2d wrist;
+
+
     public Wrist() {
         motor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME, WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
         
         TalonFXConfiguration motorConfig = motor.getConfig();
+        CANcoderConfiguration angleConfig = new CANcoderConfiguration();
+
+        angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
+        encoder = new CANcoder(RobotMap.WRIST_ENCODER, RobotMap.CANIVORE_CAN_NAME);
+        encoder.getConfigurator().apply(angleConfig);
+
+
         motorConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
-        motorConfig.Slot0.kP = ElevatorConstants.MOTORS_KP;
-        motorConfig.Slot0.kI = ElevatorConstants.MOTORS_KI;
-        motorConfig.Slot0.kD = ElevatorConstants.MOTORS_KD;
-        motorConfig.Slot0.kS = ElevatorConstants.MOTORS_KS;
-        motorConfig.Slot0.kV = ElevatorConstants.MOTORS_KV;
-        motorConfig.Slot0.kA = ElevatorConstants.MOTORS_KA;
-        motorConfig.Slot0.kG = ElevatorConstants.MOTORS_KG;
+        motorConfig.Slot0.kP = WristConstants.MOTORS_KP;
+        motorConfig.Slot0.kI = WristConstants.MOTORS_KI;
+        motorConfig.Slot0.kD = WristConstants.MOTORS_KD;
+        motorConfig.Slot0.kS = WristConstants.MOTORS_KS;
+        motorConfig.Slot0.kV = WristConstants.MOTORS_KV;
+        motorConfig.Slot0.kA = WristConstants.MOTORS_KA;
+        motorConfig.Slot0.kG = WristConstants.MOTORS_KG;
 
         motorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
         motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         motorConfig.Feedback.SensorToMechanismRatio = WristConstants.ENCODER_TO_MECHANISM_RATIO;
         motorConfig.Feedback.RotorToSensorRatio = WristConstants.ROTOR_TO_ENCODER_RATIO;
 
-        CANcoderConfiguration angleConfig = new CANcoderConfiguration();
-        angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-        encoder = new CANcoder(RobotMap.WRIST_ENCODER, RobotMap.CANIVORE_CAN_NAME);
-        encoder.getConfigurator().apply(angleConfig);
+
+        if(Robot.isSimulation()) {
+            /* TODO:(for simulation)
+             * Determine what Drum Radius Means for our mechanism (Mr. Hurley question)
+             * Determine what Standard Deviations are ideal for noise
+             * Make Starting Height = HOME position when implemented
+             */
+
+            gearbox = DCMotor.getKrakenX60(2);
+            wristSim = new SingleJointedArmSim(gearbox, WristConstants.GEAR_RATIO, WristConstants.MOI.magnitude(), WristConstants.LENGTH.in(Meters), WristConstants.MIN_ANGLE.in(Radians), WristConstants.MAX_ANGLE.in(Radians), true, 0, 0d, 1d); 
+
+            motorSim = new TalonFXSimState(motor);
+            encoderSim = new CANcoderSimState(encoder);
+
+            wrist = new MechanismLigament2d("wrist", WristConstants.LENGTH.magnitude(), 0d, 5d, new Color8Bit(Color.kWhite));
+            
+            mech2d = new Mechanism2d(20, 20);
+            root = mech2d.getRoot("arm root", 5, 10);
+
+            encoderSim.setRawPosition(-85);
+            motorSim.setRawRotorPosition(-85);
+
+            root.append(wrist);
+        }
     }
 
     @Override
@@ -52,11 +114,37 @@ public class Wrist extends SubsystemBase {
         
     }
 
+    @Override
+    public void simulationPeriodic() {
+        double batteryVoltage = RobotController.getBatteryVoltage();
+        motorSim.setSupplyVoltage(batteryVoltage);
+        encoderSim.setSupplyVoltage(batteryVoltage);
+
+        wristSim.setInputVoltage(motorSim.getMotorVoltage()); 
+        wristSim.update(RobotMap.UPDATE_FREQ);
+
+        double simAngle = Units.radiansToDegrees(wristSim.getAngleRads());
+        motorSim.setRawRotorPosition(simAngle / WristConstants.ROTOR_TO_ENCODER_RATIO);
+        encoderSim.setRawPosition(Units.degreesToRotations(simAngle));
+        encoderSim.setVelocity(Units.degreesToRotations(wristSim.getVelocityRadPerSec()));
+
+        LightningShuffleboard.setDouble("wrist", "CANCoder angle", encoder.getAbsolutePosition().getValue().in(Degrees));
+        LightningShuffleboard.setDouble("wrist", "getPose", getAngle());
+        LightningShuffleboard.setDouble("wrist", "getRawPose", simAngle);
+        setPower(LightningShuffleboard.getDouble("wrist", "setPower", 0));
+
+        wristSim.setState(Units.degreesToRadians(getAngle()), motor.getVelocity().getValue().in(RadiansPerSecond));
+
+        wrist.setAngle(simAngle);
+
+        LightningShuffleboard.set("wrist", "Mech2d", mech2d);
+    }
+
     public void setPosition(double position) {
         motor.setPosition(position);
     }
 
-    public double getPosition() {
+    public double getAngle() {
         return motor.getPosition().getValueAsDouble();
     }
 

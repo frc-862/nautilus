@@ -100,6 +100,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        configurePathPlanner();
     }
 
     /**

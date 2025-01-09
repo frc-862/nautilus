@@ -17,7 +17,7 @@ import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.WristConstants;
 import frc.thunder.hardware.ThunderBird;
 public class Wrist extends SubsystemBase {
-    
+  
     private ThunderBird motor;
     private CANcoder encoder;
 

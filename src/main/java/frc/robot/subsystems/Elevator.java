@@ -17,11 +17,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.configs.CANrangeConfiguration;
+import com.ctre.phoenix6.configs.CANrangeConfigurator;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.UpdateModeValue;
+import com.ctre.phoenix6.sim.CANrangeSimState;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -35,6 +40,10 @@ public class Elevator extends SubsystemBase {
 
     private ThunderBird leftMotor;
     private ThunderBird rightMotor;
+    private CANrange rangeSensor;
+
+    private double targetPosition = 0;
+    private double currentPosition = 0;
 
     private final PositionVoltage elevatorPID = new PositionVoltage(0).withSlot(0);
 
@@ -43,6 +52,7 @@ public class Elevator extends SubsystemBase {
     private ElevatorSim elevatorSim;
     private TalonFXSimState leftSim;
     private TalonFXSimState rightSim;
+    private CANrangeSimState rangeSensorSim;
 
     private Mechanism2d mech2d;
     private MechanismRoot2d root;
@@ -71,10 +81,17 @@ public class Elevator extends SubsystemBase {
         config.Feedback.RotorToSensorRatio = ElevatorConstants.ROTOR_TO_SENSOR_RATIO;
         config.Feedback.SensorToMechanismRatio = ElevatorConstants.ENCODER_TO_MECHANISM_RATIO;
 
+        rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE);
+
+        CANrangeConfiguration rangeConfig = new CANrangeConfiguration();
+        rangeConfig.ToFParams.UpdateFrequency = 50;
+        rangeConfig.ToFParams.UpdateMode = UpdateModeValue.LongRangeUserFreq;
+        rangeSensor.getConfigurator().apply(rangeConfig);
+
         leftMotor.applyConfig(config);
         rightMotor.setControl(new Follower(RobotMap.L_ELEVATOR, true));
 
-        if(Robot.isSimulation()) {
+        if (Robot.isSimulation()) {
             /* TODO:(for simulation)
              * Determine what Drum Radius Means for our mechanism (Mr. Hurley question)
              * Determine what Standard Deviations are ideal for noise
@@ -86,6 +103,7 @@ public class Elevator extends SubsystemBase {
 
             leftSim = new TalonFXSimState(leftMotor);
             rightSim = new TalonFXSimState(rightMotor);
+            rangeSensorSim = new CANrangeSimState(rangeSensor);
 
             // TalonFX sim states do not retain inverts. 
             leftSim.Orientation = ElevatorConstants.L_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
@@ -105,19 +123,23 @@ public class Elevator extends SubsystemBase {
     }    
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+        currentPosition = getPosition();
+    }
 
     @Override
     public void simulationPeriodic() {
         double batteryVoltage = RobotController.getBatteryVoltage();
         leftSim.setSupplyVoltage(batteryVoltage);
         rightSim.setSupplyVoltage(batteryVoltage);
+        rangeSensorSim.setSupplyVoltage(batteryVoltage);
 
         //TODO: I'm unclear if rightsim is necessary, or if this is correct. The WPILib example code only implements one motor, even though it's attached to a 4-motor gearbox
         elevatorSim.setInputVoltage(leftSim.getMotorVoltage()); 
         elevatorSim.update(RobotMap.UPDATE_FREQ);
 
         leftSim.setRawRotorPosition(Units.metersToInches(elevatorSim.getPositionMeters()));
+        rangeSensorSim.setDistance(elevatorSim.getPositionMeters());
 
         LightningShuffleboard.setDouble("elevator", "getPose", getPosition());
         LightningShuffleboard.setDouble("elevator", "getRawPose", Units.metersToInches(elevatorSim.getPositionMeters()));
@@ -139,6 +161,7 @@ public class Elevator extends SubsystemBase {
      */
     public void setPosition(double target) {
         leftMotor.setControl(elevatorPID.withPosition(target));
+        targetPosition = target;
     }
 
     /**
@@ -157,6 +180,14 @@ public class Elevator extends SubsystemBase {
     }
 
     /**
+     * checks if the elevator is on target
+     * @return true if the elevator is within the tolerance of the target position
+     */
+    public boolean isOnTarget() {
+        return Math.abs(targetPosition - currentPosition) <= ElevatorConstants.TOLERANCE;
+    }
+
+    /**
      * gets the position of the elevator motors
      * @return left motor position (which the right is synced to)
      */
@@ -168,7 +199,8 @@ public class Elevator extends SubsystemBase {
      * gets the basic percentage power of the elevator motors
      * @return left motor power (which the right is synced to)
      */
-    public double getCurrentLeftPower() {
+    public double getCurrentPower() {
         return leftMotor.get();
     }
 }
+

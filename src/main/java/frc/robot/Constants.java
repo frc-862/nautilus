@@ -99,6 +99,15 @@ public class Constants {
         public static final double MOTORS_KG = 0; // temp
 
         public static final double TOLERANCE = 0.1; // temp
+
+        public static final Distance MIN_EXTENSION = Inches.of(33);
+        public static final Distance MAX_EXTENSION = Inches.of(82);
+
+
+        //SIM
+        public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
+        public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no clue
+        public static final double CUSHION = 2.25; //stages don't line up perfectly
     }
 
     public static class FishingRodConstants {
@@ -127,15 +136,6 @@ public class Constants {
                 put(states.SOURCE, 0d);
             }
         };
-
-        public static final Distance MIN_EXTENSION = Inches.of(33);
-        public static final Distance MAX_EXTENSION = Inches.of(82);
-
-
-        //SIM
-        public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
-        public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no clue
-        public static final double CUSHION = 2.25; //stages don't line up perfectly
     }
 
     public static class WristConstants {

@@ -55,6 +55,10 @@ public class Wrist extends SubsystemBase {
         currentPosition = getPosition();
     }
 
+    /**
+     * Sets the target position for the wrist
+    * @param position is the angle of the motor
+    */
     public void setPosition(double position) {
         motor.setPosition(position);
         targetPosition = position;
@@ -63,15 +67,26 @@ public class Wrist extends SubsystemBase {
     public boolean isOnTarget() {
         return Math.abs(targetPosition - currentPosition) < ElevatorConstants.TOLERANCE;
     }
-
+    
+    /**
+     * Gets the position of the wrist motor
+     * @return Wrist motor position
+     */
     public double getPosition() {
         return motor.getPosition().getValueAsDouble();
     }
-
+   
+    /**
+     * Sets the power to the Wrist motor
+     * @param power Wrist motor power
+     */
     public void setPower(double power) {
         motor.set(power);
     }
-
+   
+    /**
+     * Stops the wrist motors
+     */
     public void stop() {
         setPower(0);
 

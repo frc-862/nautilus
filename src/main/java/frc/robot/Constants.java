@@ -120,25 +120,24 @@ public class Constants {
             {
                 put(states.STOW, 0d);
                 put(states.L1, 0d);
-                put(states.L2, 0d);
-                put(states.L3, 0d);
-                put(states.L4, 0d);
+                put(states.L2, -20d);
+                put(states.L3, -20d);
+                put(states.L4, -80d);
                 put(states.SOURCE, 0d);
             }
         };
 
         public static final HashMap<states, Double> ELEVATOR_MAP = new HashMap<states, Double>() {
             {
-                put(states.STOW, 0d);
-                put(states.L1, 0d);
-                put(states.L2, 0d);
-                put(states.L3, 0d);
-                put(states.L4, 0d);
-                put(states.SOURCE, 0d);
+                put(states.STOW, 1d);
+                put(states.L1, 17.88d);
+                put(states.L2, 31.72d);
+                put(states.L3, 47.59d);
+                put(states.L4, 71.87d);
+                put(states.SOURCE, 36.5d);
             }
         };
     }
-
     public static class WristConstants {
         public static final boolean BRAKE_MODE = true;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp 

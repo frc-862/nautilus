@@ -27,6 +27,7 @@ import java.nio.file.Paths;
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import java.util.HashMap;
 
 import org.photonvision.estimation.TargetModel;
 import org.photonvision.simulation.SimCameraProperties;
@@ -66,6 +67,7 @@ public class Constants {
 
         public static final int L_ELEVATOR = 9; // temp
         public static final int R_ELEVATOR = 10; // temp
+        public static final int ELEVATOR_CANRANGE = 41; // temp
 
         public static final int WRIST = 11; // temp
         public static final int WRIST_ENCODER = 35; // temp
@@ -74,18 +76,19 @@ public class Constants {
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
 
+        // 20ms default loop time
+        public static final double UPDATE_FREQ = 0.020;
     }
 
     public static class ElevatorConstants {
         public static final boolean BRAKE_MODE = true;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
         public static final boolean L_INVERTED = false; // temp
-        public static final boolean R_INVERTED = false; // temp
+        public static final boolean R_INVERTED = true; // temp
 
-
-        public static final double GEAR_RATIO = 1d / 10d; // output shaft gear reduction / Motor gear reduction
-        public static final double ROTOR_TO_SENSOR_RATIO = GEAR_RATIO * Math.PI * 12d; // temp
-        public static final double ENCODER_TO_MECHANISM_RATIO = 1d; // temp
+        public static final double GEAR_RATIO = 1/4d; // temp
+        public static final double ROTOR_TO_SENSOR_RATIO = 1; // temp
+        public static final double ENCODER_TO_MECHANISM_RATIO = GEAR_RATIO * Math.PI * 2 * (7/11);  // TODO: i dont know why the 7/11 made it work, but it did. this is temporary.
 
         public static final double MOTORS_KP = 0; // temp
         public static final double MOTORS_KI = 0; // temp
@@ -95,6 +98,45 @@ public class Constants {
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
         public static final double MOTORS_KG = 0; // temp
+
+        public static final double TOLERANCE = 0.1; // temp
+
+        public static final Distance MIN_EXTENSION = Inches.of(33);
+        public static final Distance MAX_EXTENSION = Inches.of(82);
+
+
+        //SIM
+        public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
+        public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no clue
+        public static final double CUSHION = 2.25; //stages don't line up perfectly
+    }
+
+    public static class FishingRodConstants {
+        public enum states {
+            STOW, L1, L2, L3, L4, SOURCE
+        }
+
+        public static final HashMap<states, Double> WRIST_MAP = new HashMap<states, Double>() {
+            {
+                put(states.STOW, 0d);
+                put(states.L1, 0d);
+                put(states.L2, 0d);
+                put(states.L3, 0d);
+                put(states.L4, 0d);
+                put(states.SOURCE, 0d);
+            }
+        };
+
+        public static final HashMap<states, Double> ELEVATOR_MAP = new HashMap<states, Double>() {
+            {
+                put(states.STOW, 0d);
+                put(states.L1, 0d);
+                put(states.L2, 0d);
+                put(states.L3, 0d);
+                put(states.L4, 0d);
+                put(states.SOURCE, 0d);
+            }
+        };
     }
 
     public static class WristConstants {
@@ -447,7 +489,7 @@ public class Constants {
         }
 
         public static Swerve createDrivetrain() {
-            return IS_TRITON ? TritonTunerConstants.createDrivetrain() : null;
+            return IS_TRITON || Robot.isSimulation() ? TritonTunerConstants.createDrivetrain() : null;
         }
     }
 }

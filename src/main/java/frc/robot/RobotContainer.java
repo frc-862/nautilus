@@ -18,6 +18,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.commands.StandinCommands;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.LightningContainer;
@@ -30,6 +31,8 @@ public class RobotContainer extends LightningContainer {
     private Telemetry logger;
     private SendableChooser<Command> autoChooser;
 
+    private Elevator elevator;
+
     private XboxController driver;
 
     @Override
@@ -38,6 +41,8 @@ public class RobotContainer extends LightningContainer {
         vision = new PhotonVision();
         logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
+
+        elevator = new Elevator();
     }
 
     @Override

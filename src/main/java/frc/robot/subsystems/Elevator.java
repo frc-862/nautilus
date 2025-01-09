@@ -36,6 +36,9 @@ public class Elevator extends SubsystemBase {
     private ThunderBird leftMotor;
     private ThunderBird rightMotor;
 
+    private double targetPosition = 0;
+    private double currentPosition = 0;
+
     private final PositionVoltage elevatorPID = new PositionVoltage(0).withSlot(0);
 
     //sim stuff
@@ -105,7 +108,9 @@ public class Elevator extends SubsystemBase {
     }    
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+        currentPosition = getPosition();
+    }
 
     @Override
     public void simulationPeriodic() {
@@ -139,6 +144,7 @@ public class Elevator extends SubsystemBase {
      */
     public void setPosition(double target) {
         leftMotor.setControl(elevatorPID.withPosition(target));
+        targetPosition = target;
     }
 
     /**
@@ -157,6 +163,14 @@ public class Elevator extends SubsystemBase {
     }
 
     /**
+     * checks if the elevator is on target
+     * @return true if the elevator is within the tolerance of the target position
+     */
+    public boolean isOnTarget() {
+        return Math.abs(targetPosition - currentPosition) <= ElevatorConstants.TOLERANCE;
+    }
+
+    /**
      * gets the position of the elevator motors
      * @return left motor position (which the right is synced to)
      */
@@ -168,7 +182,8 @@ public class Elevator extends SubsystemBase {
      * gets the basic percentage power of the elevator motors
      * @return left motor power (which the right is synced to)
      */
-    public double getCurrentLeftPower() {
+    public double getCurrentPower() {
         return leftMotor.get();
     }
 }
+

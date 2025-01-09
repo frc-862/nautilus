@@ -27,6 +27,7 @@ import java.nio.file.Paths;
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import java.util.HashMap;
 
 import org.photonvision.estimation.TargetModel;
 import org.photonvision.simulation.SimCameraProperties;
@@ -97,6 +98,7 @@ public class Constants {
         public static final double MOTORS_KA = 0; // temp
         public static final double MOTORS_KG = 0; // temp
 
+        public static final double TOLERANCE = 0.1; // temp
 
         public static final Distance MIN_EXTENSION = Inches.of(33);
         public static final Distance MAX_EXTENSION = Inches.of(82);
@@ -106,6 +108,34 @@ public class Constants {
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
         public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no clue
         public static final double CUSHION = 2.25; //stages don't line up perfectly
+    }
+
+    public static class FishingRodConstants {
+        public enum states {
+            STOW, L1, L2, L3, L4, SOURCE
+        }
+
+        public static final HashMap<states, Double> WRIST_MAP = new HashMap<states, Double>() {
+            {
+                put(states.STOW, 0d);
+                put(states.L1, 0d);
+                put(states.L2, 0d);
+                put(states.L3, 0d);
+                put(states.L4, 0d);
+                put(states.SOURCE, 0d);
+            }
+        };
+
+        public static final HashMap<states, Double> ELEVATOR_MAP = new HashMap<states, Double>() {
+            {
+                put(states.STOW, 0d);
+                put(states.L1, 0d);
+                put(states.L2, 0d);
+                put(states.L3, 0d);
+                put(states.L4, 0d);
+                put(states.SOURCE, 0d);
+            }
+        };
     }
 
     public static class WristConstants {

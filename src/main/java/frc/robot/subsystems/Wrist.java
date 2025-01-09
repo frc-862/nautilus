@@ -17,9 +17,12 @@ import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.WristConstants;
 import frc.thunder.hardware.ThunderBird;
 public class Wrist extends SubsystemBase {
-    
+  
     private ThunderBird motor;
     private CANcoder encoder;
+
+    private double targetPosition = 0;
+    private double currentPosition = 0;
 
     public final PositionVoltage positionPID = new PositionVoltage(0);
 
@@ -49,11 +52,16 @@ public class Wrist extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
+        currentPosition = getPosition();
     }
 
     public void setPosition(double position) {
         motor.setPosition(position);
+        targetPosition = position;
+    }
+
+    public boolean isOnTarget() {
+        return Math.abs(targetPosition - currentPosition) < ElevatorConstants.TOLERANCE;
     }
 
     public double getPosition() {

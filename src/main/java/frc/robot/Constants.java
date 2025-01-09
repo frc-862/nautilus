@@ -66,6 +66,7 @@ public class Constants {
 
         public static final int L_ELEVATOR = 9; // temp
         public static final int R_ELEVATOR = 10; // temp
+        public static final int ELEVATOR_CANRANGE = 41; // temp
 
         public static final int WRIST = 11; // temp
         public static final int WRIST_ENCODER = 35; // temp

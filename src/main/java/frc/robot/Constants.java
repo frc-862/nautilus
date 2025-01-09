@@ -73,6 +73,7 @@ public class Constants {
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
+        public static final double UPDATE_FREQ = 0.1d;
 
     }
 

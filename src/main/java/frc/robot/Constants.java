@@ -138,6 +138,7 @@ public class Constants {
             }
         };
     }
+    
     public static class WristConstants {
         public static final boolean BRAKE_MODE = true;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp 

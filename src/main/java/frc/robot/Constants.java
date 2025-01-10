@@ -120,13 +120,18 @@ public class Constants {
 
     public static class ElevatorConstants {
         public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final boolean L_INVERTED = false; // temp
         public static final boolean R_INVERTED = true; // temp
 
-        public static final double GEAR_RATIO = 1/4d; // temp
+        public static final double GEAR_RATIO = 1 / 4d; // temp
         public static final double ROTOR_TO_SENSOR_RATIO = 1; // temp
-        public static final double ENCODER_TO_MECHANISM_RATIO = GEAR_RATIO * Math.PI * 2 * (7/11);  // TODO: i dont know why the 7/11 made it work, but it did. this is temporary.
+        public static final double ENCODER_TO_MECHANISM_RATIO = GEAR_RATIO * Math.PI * 2 * (7 / 11); // TODO: i dont
+                                                                                                     // know why the
+                                                                                                     // 7/11 made it
+                                                                                                     // work, but it
+                                                                                                     // did. this is
+                                                                                                     // temporary.
 
         public static final double MOTORS_KP = 0; // temp
         public static final double MOTORS_KI = 0; // temp
@@ -142,11 +147,11 @@ public class Constants {
         public static final Distance MIN_EXTENSION = Inches.of(33);
         public static final Distance MAX_EXTENSION = Inches.of(82);
 
-
-        //SIM
+        // SIM
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
-        public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no clue
-        public static final double CUSHION = 2.25; //stages don't line up perfectly
+        public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no
+                                                                    // clue
+        public static final double CUSHION = 2.25; // stages don't line up perfectly
     }
 
     public static class FishingRodConstants {
@@ -176,12 +181,11 @@ public class Constants {
             }
         };
     }
-    
+
     public static class WristConstants {
         public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final boolean INVERTED = false; // temp
-
 
         public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
@@ -306,12 +310,12 @@ public class Constants {
         public static final TargetModel targetModel = TargetModel.kAprilTag36h11;
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
-        public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+        public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout
+                .loadField(AprilTagFields.k2024Crescendo);
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
         public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, 0);
         public static final Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
-
 
     }
 
@@ -545,6 +549,7 @@ public class Constants {
             /**
              * Creates a CommandSwerveDrivetrain instance.
              * This should only be called once in your robot program,.
+             * 
              * @return Swerve
              */
             public static Swerve createDrivetrain() {
@@ -557,14 +562,13 @@ public class Constants {
         }
     }
 
-    
     public class LEDConstants {
         public static final int LED_PWM_PORT = 0;
         public static final int LED_LENGTH = 13;
         public static final int LED_BUFFER_TIME = 60;
 
         public static final int SWRIL_SEGMENT_SIZE = 5;
-        
+
         public static final int RED_HUE = 0;
         public static final int ORANGE_HUE = 5;
         public static final int YELLOW_HUE = 15;
@@ -577,6 +581,10 @@ public class Constants {
             DISABLED(),
             MIXER(),
             RAINBOW(),
+            ROD_ON_TARGET(),
+            ROD_MOVING(),
+            ALEGE_COLLECT(),
+            CORAL_COLLECT(),
             OFF();
         }
 

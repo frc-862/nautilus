@@ -27,7 +27,7 @@ public class LEDs extends SubsystemBase {
 		leds.setLength(ledBuffer.getLength());
 		leds.start();
 		ledStates = new PriorityQueue<>();
-    	ledStates.add(LED_STATES.OFF);
+		ledStates.add(LED_STATES.OFF);
 	}
 
 	@Override
@@ -40,16 +40,25 @@ public class LEDs extends SubsystemBase {
 	public void updateLEDs() {
 		state = ledStates.peek();
 
-    	System.out.println("LED State: " + state);
+		System.out.println("LED State: " + state);
 
 		switch (state) {
-      		case OFF -> swirl(LEDConstants.SWRIL_SEGMENT_SIZE);
+			case OFF -> swirl(LEDConstants.SWRIL_SEGMENT_SIZE);
 
-      		case DISABLED -> setSolidHSV(0, 0, 0);
+			case DISABLED -> setSolidHSV(0, 0, 0);
 
-      		case RAINBOW -> rainbow();
+			case RAINBOW -> rainbow();
 
-			case MIXER -> {}
+			case ROD_MOVING -> pulse(LEDConstants.YELLOW_HUE);
+
+			case ROD_ON_TARGET -> setSolidHSV(LEDConstants.GREEN_HUE, 255, 255);
+
+			case ALEGE_COLLECT -> blink(LEDConstants.PINK_HUE);
+
+			case CORAL_COLLECT -> blink(LEDConstants.PURPLE_HUE);
+
+			case MIXER -> {
+			}
 		}
 
 		leds.setData(ledBuffer);
@@ -57,16 +66,17 @@ public class LEDs extends SubsystemBase {
 
 	public Command enableState(LED_STATES state) {
 		return new StartEndCommand(() -> {
-			ledStates.add(state); 
+			ledStates.add(state);
 		},
-		() -> {
-			ledStates.remove(state);
-		}, null, null).ignoringDisable(true);
+				() -> {
+					ledStates.remove(state);
+				}, null, null).ignoringDisable(true);
 	}
 
 	public void rainbow() {
 		for (int i = 0; i < LEDConstants.LED_LENGTH; i++) {
-			ledBuffer.setHSV(i, (i + (int)(Timer.getFPGATimestamp() * 20)) % ledBuffer.getLength() * 180 / 14, 255, 100);
+			ledBuffer.setHSV(i, (i + (int) (Timer.getFPGATimestamp() * 20)) % ledBuffer.getLength() * 180 / 14, 255,
+					100);
 		}
 	}
 
@@ -75,7 +85,7 @@ public class LEDs extends SubsystemBase {
 	 */
 	public void swirl(int segmentSize) {
 		for (int i = 0; i < LEDConstants.LED_LENGTH; i++) {
-			if (((i + (int)(Timer.getFPGATimestamp() * 10)) / segmentSize) % 2 == 0) {
+			if (((i + (int) (Timer.getFPGATimestamp() * 10)) / segmentSize) % 2 == 0) {
 				ledBuffer.setHSV(i, LEDConstants.BLUE_HUE, 255, 255);
 			} else {
 				ledBuffer.setHSV(i, LEDConstants.ORANGE_HUE, 255, 255);
@@ -87,13 +97,13 @@ public class LEDs extends SubsystemBase {
 	 * @param hue the hue to blink
 	 */
 	public void blink(int hue) {
-		if ((int)(Timer.getFPGATimestamp() * 10) % 2 == 0) {
+		if ((int) (Timer.getFPGATimestamp() * 10) % 2 == 0) {
 			setSolidHSV(hue, 255, 255);
 		} else {
 			setSolidHSV(0, 0, 0);
 		}
 	}
-	
+
 	/**
 	 * @param hue the hue to blink
 	 */

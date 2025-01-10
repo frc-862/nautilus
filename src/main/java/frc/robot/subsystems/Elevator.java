@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -36,6 +38,7 @@ import frc.robot.Constants.RobotMap;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
+
 public class Elevator extends SubsystemBase {
 
     private ThunderBird leftMotor;
@@ -61,6 +64,7 @@ public class Elevator extends SubsystemBase {
     private MechanismLigament2d stage2;
     private MechanismLigament2d stage3;
     private MechanismLigament2d carriage;
+
 
     public Elevator() {
         leftMotor = new ThunderBird(RobotMap.L_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
@@ -123,6 +127,7 @@ public class Elevator extends SubsystemBase {
     }    
 
     @Override
+
     public void periodic() {
         currentPosition = getPosition();
     }
@@ -191,6 +196,7 @@ public class Elevator extends SubsystemBase {
      * gets the position of the elevator motors
      * @return left motor position (which the right is synced to)
      */
+    @Logged(importance = Importance.DEBUG)
     public double getPosition() {
         return leftMotor.getPosition().getValueAsDouble();
     }
@@ -199,8 +205,15 @@ public class Elevator extends SubsystemBase {
      * gets the basic percentage power of the elevator motors
      * @return left motor power (which the right is synced to)
      */
+
+    @Logged(importance = Importance.DEBUG)
     public double getCurrentPower() {
         return leftMotor.get();
+    }
+
+    @Logged(importance = Importance.DEBUG)
+    public double getTargetPosition(){
+        return targetPosition;
     }
 }
 

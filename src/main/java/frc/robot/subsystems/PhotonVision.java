@@ -19,6 +19,8 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -95,22 +97,27 @@ public class PhotonVision extends SubsystemBase {
         return result.hasTargets();
     }
 
+    @Logged(importance = Importance.DEBUG)
     public double getXBestTarget() {
         return result.getBestTarget().getYaw();
     }
 
+    @Logged(importance = Importance.DEBUG)
     public double getYBestTarget() {
         return result.getBestTarget().getPitch();
     }
 
+    @Logged(importance = Importance.DEBUG)
     public double getSkewBestTarget() {
         return result.getBestTarget().getSkew();
     }
 
+    @Logged(importance = Importance.DEBUG)
     public Transform3d getTransformBestTarget() {
         return result.getBestTarget().getBestCameraToTarget();
     }
 
+    @Logged(importance = Importance.DEBUG)
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         poseEstimator.setReferencePose(prevEstimatedRobotPose);
         return poseEstimator.update(result);

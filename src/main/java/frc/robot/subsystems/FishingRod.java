@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.Elevator;
@@ -33,6 +35,7 @@ public class FishingRod extends SubsystemBase {
         if(onTarget()) {
             currState = state;
         }
+
 
         switch(currState) {
             case STOW:
@@ -68,6 +71,8 @@ public class FishingRod extends SubsystemBase {
      * Gets the state of the fishing rod
      * @return the current state of the fishing rod
      */
+
+    @Logged(importance = Importance.DEBUG)
     public states getState() {
         return currState;
     }

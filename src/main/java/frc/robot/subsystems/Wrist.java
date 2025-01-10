@@ -11,6 +11,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotMap;
@@ -63,15 +65,26 @@ public class Wrist extends SubsystemBase {
     public boolean isOnTarget() {
         return Math.abs(targetPosition - currentPosition) < ElevatorConstants.TOLERANCE;
     }
-
+    
+    /**
+     * Gets the position of the wrist motor
+     * @return Wrist motor position
+     */
     public double getPosition() {
         return motor.getPosition().getValueAsDouble();
     }
-
+   
+    /**
+     * Sets the power to the Wrist motor
+     * @param power Wrist motor power
+     */
     public void setPower(double power) {
         motor.set(power);
     }
-
+   
+    /**
+     * Stops the wrist motors
+     */
     public void stop() {
         setPower(0);
 

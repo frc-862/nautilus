@@ -70,7 +70,7 @@ public class LEDs extends SubsystemBase {
 		},
 				() -> {
 					ledStates.remove(state);
-				}, null, null).ignoringDisable(true);
+				}).ignoringDisable(true);
 	}
 
 	public void rainbow() {

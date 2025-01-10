@@ -5,10 +5,11 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -65,15 +66,12 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests
                 .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
-
-        // TODO: Remove Standin Command
-        new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
-                .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
-
+        
     }
 
     @Override
     protected void initializeNamedCommands() {
+
         NamedCommands.registerCommand("ElevatorHome",
                 StandinCommands.moveElevator(1).withDeadline(leds.enableState(LED_STATES.ROD_MOVING)));
         NamedCommands.registerCommand("AlgaeCollect",

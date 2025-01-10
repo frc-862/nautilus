@@ -22,7 +22,12 @@ public class PoseBasedAutoAlign extends Command {
   Pose2d pose;
   poses poseEnum; 
 
-  public PoseBasedAutoAlign(Swerve drivetrain, Pose2d pose) {
+  /**
+   * Move to pose using path
+ * @param drivetrain
+ * @param pose
+ */
+public PoseBasedAutoAlign(Swerve drivetrain, Pose2d pose) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.drivetrain = drivetrain;
@@ -31,6 +36,11 @@ public class PoseBasedAutoAlign extends Command {
     addRequirements(drivetrain);
   }
 
+  /**
+   * Move to pose using path
+   * @param drivetrain
+   * @param enum from PoseConstants
+   */
   public PoseBasedAutoAlign(poses poseEnum, Swerve drivetrain){
 
     this.drivetrain = drivetrain;
@@ -43,7 +53,11 @@ public class PoseBasedAutoAlign extends Command {
   @Override
   public void initialize() {
 
+    // create a path command using a pose2d
+
     pathCommand = AutoBuilder.pathfindToPose(pose, PoseConstants.PATHFINDING_CONSTRAINTS);
+
+    // schedule that pathcommand
 
     pathCommand.schedule();
 

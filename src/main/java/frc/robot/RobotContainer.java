@@ -14,8 +14,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.PoseConstants.poses;
 import frc.robot.Constants.TunerConstants;
+import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.StandinCommands;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LEDs;
@@ -60,6 +63,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests.getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
         
+        new Trigger(driver::getYButton).whileTrue(new PoseBasedAutoAlign(poses.REEFSCORE1_1, drivetrain));
     }
     
     @Override

@@ -4,26 +4,56 @@
 
 package frc.robot.commands;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Swerve;
+import frc.robot.Constants.PoseConstants;
+import frc.robot.Constants.PoseConstants.poses;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PoseBasedAutoAlign extends Command {
   /** Creates a new PoseBasedAutoAlign. */
-  public PoseBasedAutoAlign() {
+
+  Command pathCommand;
+  Swerve drivetrain;
+  Pose2d pose;
+  poses poseEnum; 
+
+  public PoseBasedAutoAlign(Swerve drivetrain, Pose2d pose) {
     // Use addRequirements() here to declare subsystem dependencies.
+
+    this.drivetrain = drivetrain;
+    this.pose = pose;
+
+    addRequirements(drivetrain);
+  }
+
+  public PoseBasedAutoAlign(poses poseEnum, Swerve drivetrain){
+
+    this.drivetrain = drivetrain;
+    this.poseEnum = poseEnum;
+    this.pose = PoseConstants.poseHashMap.get(poseEnum);
+    addRequirements(drivetrain);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
+    pathCommand = AutoBuilder.pathfindToPose(pose, PoseConstants.PATHFINDING_CONSTRAINTS);
+
+    pathCommand.schedule();
+
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    pathCommand.cancel();
+  }
 
   // Returns true when the command should end.
   @Override

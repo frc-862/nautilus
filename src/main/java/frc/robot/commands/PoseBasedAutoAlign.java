@@ -38,8 +38,8 @@ public PoseBasedAutoAlign(Swerve drivetrain, Pose2d pose) {
 
   /**
    * Move to pose using path
-   * @param drivetrain
-   * @param enum from PoseConstants
+   * @param poseEnumd
+   * @param drivetrain from PoseConstants
    */
   public PoseBasedAutoAlign(poses poseEnum, Swerve drivetrain){
 

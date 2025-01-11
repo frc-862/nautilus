@@ -8,12 +8,12 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -68,9 +68,9 @@ public class RobotContainer extends LightningContainer {
                 .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
-        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(drivetrain
-				.runOnce(drivetrain::seedFieldCentric).andThen(new InstantCommand(() -> drivetrain
-						.setOperatorPerspectiveForward(new Rotation2d(Math.toRadians(0))))));
+        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(new InstantCommand(() -> {
+            drivetrain.resetForward();
+        }));
 
         // // TODO: Remove Standin Command
         // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
@@ -89,10 +89,11 @@ public class RobotContainer extends LightningContainer {
                 StandinCommands.intakeCoral().withDeadline(leds.enableState(LED_STATES.CORAL_COLLECT)));
         NamedCommands.registerCommand("MoveWrist",
                 StandinCommands.moveWrist(1).withDeadline(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("Rainbow LEDs", new WaitCommand(1).withDeadline(leds.enableState(LED_STATES.RAINBOW)));
 
         autoChooser = AutoBuilder.buildAutoChooser();
         LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);
-    }
+}      
 
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();

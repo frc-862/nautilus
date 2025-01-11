@@ -74,15 +74,6 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(drivetrain
 				.runOnce(drivetrain::resetForward));
 
-        
-        // new Trigger(driver::getLeftBumperButton).onTrue(Commands.runOnce(SignalLogger::start));
-        // new Trigger(driver::getRightBumperButton).onTrue(Commands.runOnce(SignalLogger::stop));
-
-        // new Trigger(driver::getYButton).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        // new Trigger(driver::getAButton).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        // new Trigger(driver::getBButton).whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        // new Trigger(driver::getXButton).whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
         // // TODO: Remove Standin Command
         // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
         //         .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));

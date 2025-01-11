@@ -41,9 +41,12 @@ import edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.Angle;
 
 public class Wrist extends SubsystemBase {
-    
+  
     private ThunderBird motor;
     private CANcoder encoder;
+
+    private double targetPosition = 0;
+    private double currentPosition = 0;
 
     public final PositionVoltage positionPID = new PositionVoltage(0);
 
@@ -111,7 +114,7 @@ public class Wrist extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
+        currentPosition = getPosition();
     }
 
     @Override
@@ -142,16 +145,33 @@ public class Wrist extends SubsystemBase {
 
     public void setPosition(double position) {
         motor.setPosition(position);
+        targetPosition = position;
     }
 
     public double getAngle() {
+    public boolean isOnTarget() {
+        return Math.abs(targetPosition - currentPosition) < ElevatorConstants.TOLERANCE;
+    }
+    
+    /**
+     * Gets the position of the wrist motor
+     * @return Wrist motor position
+     */
+    public double getPosition() {
         return motor.getPosition().getValueAsDouble();
     }
-
+   
+    /**
+     * Sets the power to the Wrist motor
+     * @param power Wrist motor power
+     */
     public void setPower(double power) {
         motor.set(power);
     }
-
+   
+    /**
+     * Stops the wrist motors
+     */
     public void stop() {
         setPower(0);
 

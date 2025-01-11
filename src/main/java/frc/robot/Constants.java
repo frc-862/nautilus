@@ -1,5 +1,33 @@
 package frc.robot;
 
+import java.nio.file.Paths;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import org.photonvision.estimation.TargetModel;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionTargetSim;
+
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.ClosedLoopOutputType;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,6 +39,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -18,7 +56,6 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DataLogManager;
 import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
@@ -27,6 +64,7 @@ import java.nio.file.Paths;
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import java.util.HashMap;
 
 import org.photonvision.estimation.TargetModel;
 import org.photonvision.simulation.SimCameraProperties;
@@ -66,6 +104,7 @@ public class Constants {
 
         public static final int L_ELEVATOR = 9; // temp
         public static final int R_ELEVATOR = 10; // temp
+        public static final int ELEVATOR_CANRANGE = 41; // temp
 
         public static final int WRIST = 11; // temp
         public static final int WRIST_ENCODER = 35; // temp
@@ -81,13 +120,18 @@ public class Constants {
 
     public static class ElevatorConstants {
         public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final boolean L_INVERTED = false; // temp
         public static final boolean R_INVERTED = true; // temp
 
-        public static final double GEAR_RATIO = 1/4d; // temp
+        public static final double GEAR_RATIO = 1 / 4d; // temp
         public static final double ROTOR_TO_SENSOR_RATIO = 1; // temp
-        public static final double ENCODER_TO_MECHANISM_RATIO = GEAR_RATIO * Math.PI * 2 * (7/11);  // TODO: i dont know why the 7/11 made it work, but it did. this is temporary.
+        public static final double ENCODER_TO_MECHANISM_RATIO = GEAR_RATIO * Math.PI * 2 * (7 / 11); // TODO: i dont
+                                                                                                     // know why the
+                                                                                                     // 7/11 made it
+                                                                                                     // work, but it
+                                                                                                     // did. this is
+                                                                                                     // temporary.
 
         public static final double MOTORS_KP = 0; // temp
         public static final double MOTORS_KI = 0; // temp
@@ -98,20 +142,49 @@ public class Constants {
         public static final double MOTORS_KA = 0; // temp
         public static final double MOTORS_KG = 0; // temp
 
+        public static final double TOLERANCE = 0.1; // temp
 
         public static final Distance MIN_EXTENSION = Inches.of(33);
         public static final Distance MAX_EXTENSION = Inches.of(82);
 
-
-        //SIM
+        // SIM
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
-        public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no clue
-        public static final double CUSHION = 2.25; //stages don't line up perfectly
+        public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no
+                                                                    // clue
+        public static final double CUSHION = 2.25; // stages don't line up perfectly
+    }
+
+    public static class FishingRodConstants {
+        public enum states {
+            STOW, L1, L2, L3, L4, SOURCE
+        }
+
+        public static final HashMap<states, Double> WRIST_MAP = new HashMap<states, Double>() {
+            {
+                put(states.STOW, 0d);
+                put(states.L1, 0d);
+                put(states.L2, -20d);
+                put(states.L3, -20d);
+                put(states.L4, -80d);
+                put(states.SOURCE, 0d);
+            }
+        };
+
+        public static final HashMap<states, Double> ELEVATOR_MAP = new HashMap<states, Double>() {
+            {
+                put(states.STOW, 1d);
+                put(states.L1, 17.88d);
+                put(states.L2, 31.72d);
+                put(states.L3, 47.59d);
+                put(states.L4, 71.87d);
+                put(states.SOURCE, 36.5d);
+            }
+        };
     }
 
     public static class WristConstants {
         public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 0d; // temp 
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final boolean INVERTED = false; // temp
 
         public static final double GEAR_RATIO = 1d / 4d; // output shaft gear reduction / Motor gear reduction
@@ -246,12 +319,12 @@ public class Constants {
         public static final TargetModel targetModel = TargetModel.kAprilTag36h11;
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
-        public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+        public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout
+                .loadField(AprilTagFields.k2024Crescendo);
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
         public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, 0);
         public static final Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
-
 
     }
 
@@ -392,7 +465,7 @@ public class Constants {
             private static final int kFrontLeftDriveMotorId = RobotMap.FL_DRIVE;
             private static final int kFrontLeftSteerMotorId = RobotMap.FL_TURN;
             private static final int kFrontLeftEncoderId = RobotMap.FL_ENCODER;
-            private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.2353515625);
+            private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.0073);
             private static final boolean kFrontLeftSteerMotorInverted = true;
             private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -403,7 +476,7 @@ public class Constants {
             private static final int kFrontRightDriveMotorId = RobotMap.FR_DRIVE;
             private static final int kFrontRightSteerMotorId = RobotMap.FR_TURN;
             private static final int kFrontRightEncoderId = RobotMap.FR_ENCODER;
-            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.391357421875);
+            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.0222);
             private static final boolean kFrontRightSteerMotorInverted = true;
             private static final boolean kFrontRightEncoderInverted = false;
 
@@ -414,7 +487,7 @@ public class Constants {
             private static final int kBackLeftDriveMotorId = RobotMap.BL_DRIVE;
             private static final int kBackLeftSteerMotorId = RobotMap.BL_TURN;
             private static final int kBackLeftEncoderId = RobotMap.BL_ENCODER;
-            private static final Angle kBackLeftEncoderOffset = Rotations.of(0.14404296875);
+            private static final Angle kBackLeftEncoderOffset = Rotations.of(0.1350);
             private static final boolean kBackLeftSteerMotorInverted = true;
             private static final boolean kBackLeftEncoderInverted = false;
 
@@ -425,7 +498,7 @@ public class Constants {
             private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
             private static final int kBackRightSteerMotorId = RobotMap.BR_TURN;
             private static final int kBackRightEncoderId = RobotMap.BR_ENCODER;
-            private static final Angle kBackRightEncoderOffset = Rotations.of(0.0126953125);
+            private static final Angle kBackRightEncoderOffset = Rotations.of(0.1448);
             private static final boolean kBackRightSteerMotorInverted = true;
             private static final boolean kBackRightEncoderInverted = false;
 
@@ -459,6 +532,7 @@ public class Constants {
             /**
              * Creates a CommandSwerveDrivetrain instance.
              * This should only be called once in your robot program,.
+             * 
              * @return Swerve
              */
             public static Swerve createDrivetrain() {
@@ -469,5 +543,34 @@ public class Constants {
         public static Swerve createDrivetrain() {
             return IS_TRITON || Robot.isSimulation() ? TritonTunerConstants.createDrivetrain() : null;
         }
+    }
+
+    public class LEDConstants {
+        public static final int LED_PWM_PORT = 0;
+        public static final int LED_LENGTH = 13;
+        public static final int LED_BUFFER_TIME = 60;
+
+        public static final int SWRIL_SEGMENT_SIZE = 5;
+
+        public static final int RED_HUE = 0;
+        public static final int ORANGE_HUE = 5;
+        public static final int YELLOW_HUE = 15;
+        public static final int GREEN_HUE = 240;
+        public static final int BLUE_HUE = 120;
+        public static final int PURPLE_HUE = 315;
+        public static final int PINK_HUE = 355;
+
+        public enum LED_STATES {
+            DISABLED(),
+            MIXER(),
+            RAINBOW(),
+            ROD_ON_TARGET(),
+            ROD_MOVING(),
+            ALEGE_COLLECT(),
+            CORAL_COLLECT(),
+            CORAL_SCORE(),
+            OFF();
+        }
+
     }
 }

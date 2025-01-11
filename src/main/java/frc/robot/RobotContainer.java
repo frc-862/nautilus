@@ -9,12 +9,11 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -70,8 +69,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(drivetrain
-				.runOnce(drivetrain::seedFieldCentric).andThen(new InstantCommand(() -> drivetrain
-						.setOperatorPerspectiveForward(new Rotation2d(Math.toRadians(0))))));
+				.runOnce(drivetrain::resetForward));
 
         
 
@@ -84,20 +82,33 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeNamedCommands() {
+
         NamedCommands.registerCommand("ElevatorHome",
-                StandinCommands.moveElevator(1).withDeadline(leds.enableState(LED_STATES.ROD_MOVING)));
+                StandinCommands.elevatorStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL1",
+                StandinCommands.elevatorL1().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL2",
+                StandinCommands.elevatorL2().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL3",
+                StandinCommands.elevatorL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL4",
+                StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
         NamedCommands.registerCommand("AlgaeCollect",
-                StandinCommands.moveAlgaeCollector().withDeadline(leds.enableState(LED_STATES.ALEGE_COLLECT)));
+                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALEGE_COLLECT)));
         NamedCommands.registerCommand("IntakeCoral",
-                StandinCommands.intakeCoral().withDeadline(leds.enableState(LED_STATES.CORAL_COLLECT)));
+                StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
+        NamedCommands.registerCommand("ScoreCoral", 
+                StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
         NamedCommands.registerCommand("MoveWrist",
-                StandinCommands.moveWrist(1).withDeadline(leds.enableState(LED_STATES.ROD_MOVING)));
+                StandinCommands.moveWrist(1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("RainbowLEDs", 
+                new WaitCommand(1).deadlineFor(leds.enableState(LED_STATES.RAINBOW)));
 
         autoChooser = AutoBuilder.buildAutoChooser();
         LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);
-    }
+}
 
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
+        public Command getAutonomousCommand() {
+                return autoChooser.getSelected();
+        }
 }

@@ -76,9 +76,9 @@ public class RobotContainer extends LightningContainer {
         
 
 
-        // TODO: Remove Standin Command
-        new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
-                .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+        // // TODO: Remove Standin Command
+        // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
+        //         .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
 
     }
 

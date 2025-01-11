@@ -188,6 +188,7 @@ public class Elevator extends SubsystemBase {
      * checks if the elevator is on target
      * @return true if the elevator is within the tolerance of the target position
      */
+    @Logged(importance = Importance.DEBUG)
     public boolean isOnTarget() {
         return Math.abs(targetPosition - currentPosition) <= ElevatorConstants.TOLERANCE;
     }

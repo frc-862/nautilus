@@ -117,7 +117,6 @@ public class PhotonVision extends SubsystemBase {
         return result.getBestTarget().getBestCameraToTarget();
     }
 
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         poseEstimator.setReferencePose(prevEstimatedRobotPose);
         return poseEstimator.update(result);
     }

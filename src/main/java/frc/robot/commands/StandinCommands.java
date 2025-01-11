@@ -37,7 +37,6 @@ public class StandinCommands {
         return new WaitCommand(0.5);
     }
 
-    
     public static Command scoreCoral() {
         return new WaitCommand(0.5);
     }

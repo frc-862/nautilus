@@ -30,56 +30,55 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class RobotContainer extends LightningContainer {
 
-        public Swerve drivetrain;
-        public PhotonVision vision;
-        private Telemetry logger;
-        private LEDs leds;
-        private SendableChooser<Command> autoChooser;
+    public Swerve drivetrain;
+    public PhotonVision vision;
+    private Telemetry logger;
+    private LEDs leds;
+    private SendableChooser<Command> autoChooser;
 
-        private Elevator elevator;
-        private Wrist wrist;
+    private Elevator elevator;
+    private Wrist wrist;
 
-        private XboxController driver;
+    private XboxController driver;
 
-        @Override
-        protected void initializeSubsystems() {
-                drivetrain = TunerConstants.createDrivetrain();
-                vision = new PhotonVision();
-                logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
-                driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
+    @Override
+    protected void initializeSubsystems() {
+        drivetrain = TunerConstants.createDrivetrain();
+        vision = new PhotonVision();
+        logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
+        driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
 
-                leds = new LEDs();
-        }
+        leds = new LEDs();
+    }
 
-        @Override
-        protected void configureDefaultCommands() {
-                drivetrain.setDefaultCommand(drivetrain.applyRequest(
-                                DriveRequests.getDrive(() -> -driver.getLeftX(), () -> -driver.getLeftY(),
-                                                () -> driver.getRightX())));
-                drivetrain.registerTelemetry(logger::telemeterize);
+    @Override
+    protected void configureDefaultCommands() {
+        drivetrain.setDefaultCommand(drivetrain.applyRequest(
+                DriveRequests.getDrive(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+        drivetrain.registerTelemetry(logger::telemeterize);
 
-                vision.setDefaultCommand(vision.updateOdometry(drivetrain));
-        }
+        vision.setDefaultCommand(vision.updateOdometry(drivetrain));
+    }
 
-        @Override
-        protected void configureButtonBindings() {
-                new Trigger(driver::getAButton).whileTrue(drivetrain.applyRequest(
-                                DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(),
-                                                () -> driver.getRightX())));
-                new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests
-                                .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(),
-                                                () -> driver.getRightX())));
-                new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
+    @Override
+    protected void configureButtonBindings() {
+        new Trigger(driver::getAButton).whileTrue(drivetrain.applyRequest(
+                DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+        new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests
+                .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+        new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
-                new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(new InstantCommand(() -> {
-                        drivetrain.resetForward();
-                }));
+        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(drivetrain
+				.runOnce(drivetrain::resetForward));
 
-                // // TODO: Remove Standin Command
-                // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
-                // .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+        
 
-        }
+
+        // // TODO: Remove Standin Command
+        // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
+        //         .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+
+    }
 
     @Override
     protected void initializeNamedCommands() {

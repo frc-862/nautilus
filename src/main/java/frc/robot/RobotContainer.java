@@ -5,14 +5,15 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -66,7 +67,15 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests
                 .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
-        
+
+        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(drivetrain
+				.runOnce(drivetrain::seedFieldCentric).andThen(new InstantCommand(() -> drivetrain
+						.setOperatorPerspectiveForward(new Rotation2d(Math.toRadians(0))))));
+
+        // // TODO: Remove Standin Command
+        // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
+        //         .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+
     }
 
     @Override

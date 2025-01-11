@@ -9,6 +9,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,8 +70,8 @@ public class RobotContainer extends LightningContainer {
                 .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
-        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(drivetrain
-				.runOnce(drivetrain::resetForward));
+        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
+                new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
         // // TODO: Remove Standin Command
         // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))

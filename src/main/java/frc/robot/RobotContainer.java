@@ -30,72 +30,86 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class RobotContainer extends LightningContainer {
 
-    public Swerve drivetrain;
-    public PhotonVision vision;
-    private Telemetry logger;
-    private LEDs leds;
-    private SendableChooser<Command> autoChooser;
+        public Swerve drivetrain;
+        public PhotonVision vision;
+        private Telemetry logger;
+        private LEDs leds;
+        private SendableChooser<Command> autoChooser;
 
-    private Elevator elevator;
-    private Wrist wrist;
+        private Elevator elevator;
+        private Wrist wrist;
 
-    private XboxController driver;
+        private XboxController driver;
 
-    @Override
-    protected void initializeSubsystems() {
-        drivetrain = TunerConstants.createDrivetrain();
-        vision = new PhotonVision();
-        logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
-        driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
+        @Override
+        protected void initializeSubsystems() {
+                drivetrain = TunerConstants.createDrivetrain();
+                vision = new PhotonVision();
+                logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
+                driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
 
-        leds = new LEDs();
-    }
+                leds = new LEDs();
+        }
 
-    @Override
-    protected void configureDefaultCommands() {
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(
-                DriveRequests.getDrive(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
-        drivetrain.registerTelemetry(logger::telemeterize);
+        @Override
+        protected void configureDefaultCommands() {
+                drivetrain.setDefaultCommand(drivetrain.applyRequest(
+                                DriveRequests.getDrive(() -> -driver.getLeftX(), () -> -driver.getLeftY(),
+                                                () -> driver.getRightX())));
+                drivetrain.registerTelemetry(logger::telemeterize);
 
-        vision.setDefaultCommand(vision.updateOdometry(drivetrain));
-    }
+                vision.setDefaultCommand(vision.updateOdometry(drivetrain));
+        }
 
-    @Override
-    protected void configureButtonBindings() {
-        new Trigger(driver::getAButton).whileTrue(drivetrain.applyRequest(
-                DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
-        new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests
-                .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
-        new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
+        @Override
+        protected void configureButtonBindings() {
+                new Trigger(driver::getAButton).whileTrue(drivetrain.applyRequest(
+                                DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(),
+                                                () -> driver.getRightX())));
+                new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests
+                                .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(),
+                                                () -> driver.getRightX())));
+                new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
-        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(new InstantCommand(() -> {
-            drivetrain.resetForward();
-        }));
+                new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(new InstantCommand(() -> {
+                        drivetrain.resetForward();
+                }));
 
-        // // TODO: Remove Standin Command
-        // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
-        //         .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+                // // TODO: Remove Standin Command
+                // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
+                // .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
 
-    }
+        }
 
     @Override
     protected void initializeNamedCommands() {
 
         NamedCommands.registerCommand("ElevatorHome",
-                StandinCommands.moveElevator(1).withDeadline(leds.enableState(LED_STATES.ROD_MOVING)));
+                StandinCommands.elevatorStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL1",
+                StandinCommands.elevatorL1().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL2",
+                StandinCommands.elevatorL2().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL3",
+                StandinCommands.elevatorL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL4",
+                StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
         NamedCommands.registerCommand("AlgaeCollect",
-                StandinCommands.moveAlgaeCollector().withDeadline(leds.enableState(LED_STATES.ALEGE_COLLECT)));
+                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALEGE_COLLECT)));
         NamedCommands.registerCommand("IntakeCoral",
-                StandinCommands.intakeCoral().withDeadline(leds.enableState(LED_STATES.CORAL_COLLECT)));
+                StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
+        NamedCommands.registerCommand("ScoreCoral", 
+                StandinCommands.ScoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
         NamedCommands.registerCommand("MoveWrist",
-                StandinCommands.moveWrist(1).withDeadline(leds.enableState(LED_STATES.ROD_MOVING)));
-        NamedCommands.registerCommand("Rainbow LEDs", new WaitCommand(1).withDeadline(leds.enableState(LED_STATES.RAINBOW)));
+                StandinCommands.moveWrist(1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("RainbowLEDs", 
+                new WaitCommand(1).deadlineFor(leds.enableState(LED_STATES.RAINBOW)));
 
         autoChooser = AutoBuilder.buildAutoChooser();
         LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);
-}      
+}
 
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
+        public Command getAutonomousCommand() {
+                return autoChooser.getSelected();
+        }
 }

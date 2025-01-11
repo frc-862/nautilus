@@ -558,6 +558,7 @@ public class Constants {
             ROD_MOVING(),
             ALEGE_COLLECT(),
             CORAL_COLLECT(),
+            CORAL_SCORE(),
             OFF();
         }
 

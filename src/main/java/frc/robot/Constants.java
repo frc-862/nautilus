@@ -195,8 +195,7 @@ public class Constants {
 
         //sim stuff
         public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.003841); // 5lb, 2.5in rad, 9in height
-        public static final Distance LENGTH = Inches.of(9); // TODO: ask mr hurley abt this because i have no clue
-        public static final double CUSHION = 2.25; //stages don't line up perfectly
+        public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
 
     }
 

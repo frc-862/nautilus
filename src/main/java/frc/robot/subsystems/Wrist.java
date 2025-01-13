@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -17,19 +16,12 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
-import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotMap;
@@ -37,8 +29,6 @@ import frc.robot.Constants.WristConstants;
 import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
-import edu.wpi.first.units.Units.*;
-import edu.wpi.first.units.measure.Angle;
 
 public class Wrist extends SubsystemBase {
   
@@ -55,10 +45,6 @@ public class Wrist extends SubsystemBase {
     private SingleJointedArmSim wristSim;
     private TalonFXSimState motorSim;
     private CANcoderSimState encoderSim;
-
-    private Mechanism2d mech2d;
-    private MechanismRoot2d root;
-    private MechanismLigament2d wrist;
 
 
     public Wrist() {
@@ -94,21 +80,14 @@ public class Wrist extends SubsystemBase {
              * Make Starting Height = HOME position when implemented
              */
 
-            gearbox = DCMotor.getKrakenX60(2);
+            gearbox = DCMotor.getKrakenX60(1);
             wristSim = new SingleJointedArmSim(gearbox, WristConstants.GEAR_RATIO, WristConstants.MOI.magnitude(), WristConstants.LENGTH.in(Meters), WristConstants.MIN_ANGLE.in(Radians), WristConstants.MAX_ANGLE.in(Radians), true, 0, 0d, 1d); 
 
             motorSim = new TalonFXSimState(motor);
             encoderSim = new CANcoderSimState(encoder);
 
-            wrist = new MechanismLigament2d("wrist", WristConstants.LENGTH.magnitude(), 0d, 5d, new Color8Bit(Color.kWhite));
-            
-            mech2d = new Mechanism2d(20, 20);
-            root = mech2d.getRoot("arm root", 5, 10);
-
             encoderSim.setRawPosition(-85);
             motorSim.setRawRotorPosition(-85);
-
-            root.append(wrist);
         }
     }
 
@@ -127,7 +106,7 @@ public class Wrist extends SubsystemBase {
         wristSim.update(RobotMap.UPDATE_FREQ);
 
         double simAngle = Units.radiansToDegrees(wristSim.getAngleRads());
-        motorSim.setRawRotorPosition(simAngle / WristConstants.ROTOR_TO_ENCODER_RATIO);
+        motorSim.setRawRotorPosition(simAngle);
         encoderSim.setRawPosition(Units.degreesToRotations(simAngle));
         encoderSim.setVelocity(Units.degreesToRotations(wristSim.getVelocityRadPerSec()));
 
@@ -137,10 +116,6 @@ public class Wrist extends SubsystemBase {
         setPower(LightningShuffleboard.getDouble("wrist", "setPower", 0));
 
         wristSim.setState(Units.degreesToRadians(getAngle()), motor.getVelocity().getValue().in(RadiansPerSecond));
-
-        wrist.setAngle(simAngle);
-
-        LightningShuffleboard.set("wrist", "Mech2d", mech2d);
     }
 
     public void setPosition(double position) {
@@ -149,7 +124,7 @@ public class Wrist extends SubsystemBase {
     }
 
     public double getAngle() {
-        return wrist.getAngle();
+        return motor.getPosition().getValueAsDouble();
     }
     
     public boolean isOnTarget() {

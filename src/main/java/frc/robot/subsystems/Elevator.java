@@ -109,15 +109,15 @@ public class Elevator extends SubsystemBase {
             leftSim.Orientation = ElevatorConstants.L_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
             rightSim.Orientation = ElevatorConstants.R_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
             
-            stage0 = new MechanismLigament2d("STAGE 0", ElevatorConstants.MIN_EXTENSION.magnitude() + ElevatorConstants.CUSHION, 90, 27, new Color8Bit(Color.kWhite));
-            stage1 = new MechanismLigament2d("STAGE 1", ElevatorConstants.CUSHION, 90, 25, new Color8Bit(Color.kChocolate));
-            stage2 = new MechanismLigament2d("STAGE 2", ElevatorConstants.CUSHION, 0, 22, new Color8Bit(Color.kDarkRed));
-            stage3 = new MechanismLigament2d("STAGE 3", ElevatorConstants.CUSHION, 0, 20, new Color8Bit(Color.kDarkBlue));
-
-            mech2d = new Mechanism2d(27, 90);
-            root = mech2d.getRoot("ele root", 10/2, 0);
-
-            root.append(stage0);
+            // stage0 = new MechanismLigament2d("STAGE 0", ElevatorConstants.MIN_EXTENSION.magnitude() + ElevatorConstants.CUSHION, 90, 27, new Color8Bit(Color.kWhite));
+            stage1 = new MechanismLigament2d("STAGE 1", ElevatorConstants.CUSHION_METERS, 90, 20, new Color8Bit(Color.kSeaGreen));
+            stage2 = new MechanismLigament2d("STAGE 2", ElevatorConstants.CUSHION_METERS, 0, 5, new Color8Bit(Color.kDarkRed));
+            stage2 = new MechanismLigament2d("STAGE 3", ElevatorConstants.CUSHION_METERS, 0, 0, new Color8Bit(Color.kDarkBlue));
+         
+            mech2d = new Mechanism2d(0.69, 2.29);
+            root = mech2d.getRoot("ele root", 0.35, 0);
+            
+            // root.append(stage0);
             root.append(stage1).append(stage2).append(stage3);
         }
     }    
@@ -145,11 +145,18 @@ public class Elevator extends SubsystemBase {
         LightningShuffleboard.setDouble("elevator", "getRawPose", Units.metersToInches(elevatorSim.getPositionMeters()));
         setPower(LightningShuffleboard.getDouble("elevator", "setPower", 1));
 
-        double stageLen = getPosition() / 3;
+        double stageLen = elevatorSim.getPositionMeters();
 
-        stage1.setLength(stageLen);
-        stage2.setLength(stageLen);
-        stage3.setLength(stageLen);
+        if(stageLen < ElevatorConstants.STAGE_LEN_METERS) {
+            stage1.setLength(stageLen);
+            stage2.setLength(ElevatorConstants.CUSHION_METERS);
+            stage3.setLength(ElevatorConstants.CUSHION_METERS);
+        } else if(stageLen < ElevatorConstants.STAGE_LEN_METERS * 2) {
+            stage2.setLength(stageLen  - ElevatorConstants.STAGE_LEN_METERS);
+            stage3.setLength(ElevatorConstants.CUSHION_METERS);
+        } else {
+            stage3.setLength(stageLen  - ElevatorConstants.STAGE_LEN_METERS * 2);
+        }
 
 
         LightningShuffleboard.set("elevator", "Mech2d", mech2d);

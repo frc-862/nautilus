@@ -48,6 +48,9 @@ public class RobotContainer extends LightningContainer {
         logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
 
+        elevator = new Elevator();
+        wrist = new Wrist();
+
         leds = new LEDs();
     }
 

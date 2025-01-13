@@ -149,6 +149,9 @@ public class Wrist extends SubsystemBase {
     }
 
     public double getAngle() {
+        return wrist.getAngle();
+    }
+    
     public boolean isOnTarget() {
         return Math.abs(targetPosition - currentPosition) < ElevatorConstants.TOLERANCE;
     }

@@ -39,16 +39,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.FeetPerSecond;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -143,14 +133,15 @@ public class Constants {
 
         public static final double TOLERANCE = 0.1; // temp
 
-        public static final Distance MIN_EXTENSION = Inches.of(33);
+        public static final Distance MIN_EXTENSION = Inches.of(0);
         public static final Distance MAX_EXTENSION = Inches.of(82);
 
         // SIM
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
         public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no
                                                                     // clue
-        public static final double CUSHION = 2.25; // stages don't line up perfectly
+        public static final double CUSHION_METERS = 0.05; // stages don't line up perfectly
+        public static final double STAGE_LEN_METERS = MAX_EXTENSION.in(Meters) / 3; 
     }
 
     public static class FishingRodConstants {
@@ -198,6 +189,14 @@ public class Constants {
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
         public static final double MOTORS_KG = 0; // temp
+
+        public static final Angle MIN_ANGLE = Degrees.of(-85);
+        public static final Angle MAX_ANGLE = Degrees.of(85);
+
+        //sim stuff
+        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.003841); // 5lb, 2.5in rad, 9in height
+        public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
+
     }
 
     public static class ControllerConstants {

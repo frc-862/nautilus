@@ -116,14 +116,14 @@ public class FishingRod extends SubsystemBase {
         double stageLen = Units.inchesToMeters(elevator.getPosition());
 
         if(stageLen < ElevatorConstants.STAGE_LEN_METERS) {
-            stage1.setLength(stageLen);
+            stage1.setLength(stageLen + ElevatorConstants.CUSHION_METERS);
             stage2.setLength(ElevatorConstants.CUSHION_METERS);
             stage3.setLength(ElevatorConstants.CUSHION_METERS);
         } else if(stageLen < ElevatorConstants.STAGE_LEN_METERS * 2) {
-            stage2.setLength(stageLen  - ElevatorConstants.STAGE_LEN_METERS);
+            stage2.setLength(stageLen  - ElevatorConstants.STAGE_LEN_METERS + ElevatorConstants.CUSHION_METERS);
             stage3.setLength(ElevatorConstants.CUSHION_METERS);
         } else {
-            stage3.setLength(stageLen  - ElevatorConstants.STAGE_LEN_METERS * 2);
+            stage3.setLength(stageLen  - ElevatorConstants.STAGE_LEN_METERS * 2 + ElevatorConstants.CUSHION_METERS);
         }
 
         wristSim.setAngle(wrist.getAngle()-90);

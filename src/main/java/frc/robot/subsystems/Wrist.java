@@ -113,7 +113,7 @@ public class Wrist extends SubsystemBase {
         LightningShuffleboard.setDouble("wrist", "CANCoder angle", encoder.getAbsolutePosition().getValue().in(Degrees));
         LightningShuffleboard.setDouble("wrist", "getPose", getAngle());
         LightningShuffleboard.setDouble("wrist", "getRawPose", simAngle);
-        setPower(LightningShuffleboard.getDouble("wrist", "setPower", 0));
+        // setPower(LightningShuffleboard.getDouble("wrist", "setPower", 0));
 
         wristSim.setState(Units.degreesToRadians(getAngle()), motor.getVelocity().getValue().in(RadiansPerSecond));
     }

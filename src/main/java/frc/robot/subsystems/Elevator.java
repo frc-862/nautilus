@@ -118,7 +118,7 @@ public class Elevator extends SubsystemBase {
 
         LightningShuffleboard.setDouble("elevator", "getPose", getPosition());
         LightningShuffleboard.setDouble("elevator", "getRawPose", Units.metersToInches(elevatorSim.getPositionMeters()));
-        setPower(LightningShuffleboard.getDouble("elevator", "setPower", 0));
+        // setPower(LightningShuffleboard.getDouble("elevator", "setPower", 0));
     }
 
     /**

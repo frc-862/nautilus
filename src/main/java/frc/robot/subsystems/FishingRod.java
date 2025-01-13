@@ -79,4 +79,12 @@ public class FishingRod extends SubsystemBase {
     public boolean onTarget() {
         return wrist.isOnTarget() && elevator.isOnTarget();
     }
+
+    public Elevator getElevator() {
+        return elevator;
+    }
+
+    public Wrist getWrist() {
+        return wrist;
+    }
 }

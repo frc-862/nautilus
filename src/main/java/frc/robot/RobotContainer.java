@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -21,8 +22,10 @@ import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.StandinCommands;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
+import frc.robot.subsystems.SimGamePeices;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
@@ -35,9 +38,8 @@ public class RobotContainer extends LightningContainer {
     private Telemetry logger;
     private LEDs leds;
     private SendableChooser<Command> autoChooser;
-
-    private Elevator elevator;
-    private Wrist wrist;
+    private FishingRod fishingRod;
+    private SimGamePeices simGamePeices;
 
     private XboxController driver;
 
@@ -49,6 +51,8 @@ public class RobotContainer extends LightningContainer {
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
 
         leds = RobotBase.isReal() ? new LEDs() : null;
+        fishingRod = new FishingRod();
+        simGamePeices = RobotBase.isReal() ? new SimGamePeices(fishingRod, drivetrain) : null;
     }
 
     @Override
@@ -71,6 +75,10 @@ public class RobotContainer extends LightningContainer {
         // TODO: Remove Standin Command
         // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
         //         .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+
+        if (RobotBase.isSimulation()) {
+            new Trigger(driver::getYButton).whileTrue(new RunCommand(SimGamePeices.dropOrCollect(simGamePeices)));
+        }
 
     }
 

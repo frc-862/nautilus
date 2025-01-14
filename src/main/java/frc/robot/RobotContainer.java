@@ -9,9 +9,13 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.PoseConstants;
@@ -21,6 +25,7 @@ import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.StandinCommands;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
@@ -38,6 +43,7 @@ public class RobotContainer extends LightningContainer {
 
     private Elevator elevator;
     private Wrist wrist;
+    private FishingRod rod;
 
     private XboxController driver;
 
@@ -47,6 +53,13 @@ public class RobotContainer extends LightningContainer {
         vision = new PhotonVision();
         logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
+
+        //this is temporary
+        if(Robot.isSimulation()) {
+            elevator = new Elevator();
+            wrist = new Wrist();
+            rod = new FishingRod(wrist, elevator);
+        }
 
         leds = new LEDs();
     }
@@ -68,28 +81,55 @@ public class RobotContainer extends LightningContainer {
                 .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
-        // TODO: Remove Standin Command
-        new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
-                .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
+                new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
+                
+        // // TODO: Remove Standin Command
+        // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
+        //         .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+
+
+
+        //sim stuff
+        if(Robot.isSimulation()) {
+            new Trigger(driver::getLeftBumperButtonPressed).whileTrue(new InstantCommand((() -> wrist.setPower(-0.75)))).onFalse(new InstantCommand(wrist::stop));
+            new Trigger(driver::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(0.75)))).onFalse(new InstantCommand(wrist::stop));
+
+            new Trigger(()-> driver.getPOV() == 0).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
+            new Trigger(() -> driver.getPOV() == 180).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
+        }
     }
 
     @Override
     protected void initializeNamedCommands() {
+
         NamedCommands.registerCommand("ElevatorHome",
-                StandinCommands.moveElevator(1).withDeadline(leds.enableState(LED_STATES.ROD_MOVING)));
+                StandinCommands.elevatorStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL1",
+                StandinCommands.elevatorL1().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL2",
+                StandinCommands.elevatorL2().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL3",
+                StandinCommands.elevatorL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ElevatorL4",
+                StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
         NamedCommands.registerCommand("AlgaeCollect",
-                StandinCommands.moveAlgaeCollector().withDeadline(leds.enableState(LED_STATES.ALEGE_COLLECT)));
+                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALEGE_COLLECT)));
         NamedCommands.registerCommand("IntakeCoral",
-                StandinCommands.intakeCoral().withDeadline(leds.enableState(LED_STATES.CORAL_COLLECT)));
+                StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
+        NamedCommands.registerCommand("ScoreCoral", 
+                StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
         NamedCommands.registerCommand("MoveWrist",
-                StandinCommands.moveWrist(1).withDeadline(leds.enableState(LED_STATES.ROD_MOVING)));
+                StandinCommands.moveWrist(1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("RainbowLEDs", 
+                new WaitCommand(1).deadlineFor(leds.enableState(LED_STATES.RAINBOW)));
 
         autoChooser = AutoBuilder.buildAutoChooser();
         LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);
-    }
+}
 
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
+        public Command getAutonomousCommand() {
+                return autoChooser.getSelected();
+        }
 }

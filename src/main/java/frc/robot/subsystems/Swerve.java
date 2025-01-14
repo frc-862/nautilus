@@ -176,16 +176,6 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     public void periodic() {
     }
 
-    /**
-     * Resets the field relative heading to the current robot heading
-     * 
-     * @return the SequentialCommandGroup to reset the field relative heading
-     */
-    public Command resetForward() {
-        return runOnce(this::seedFieldCentric).andThen(
-                runOnce(() -> this.setOperatorPerspectiveForward(new Rotation2d(Math.toRadians(0)))));
-    }
-
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return getState().Speeds;
     }

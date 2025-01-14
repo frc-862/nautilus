@@ -40,16 +40,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.FeetPerSecond;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -144,14 +134,15 @@ public class Constants {
 
         public static final double TOLERANCE = 0.1; // temp
 
-        public static final Distance MIN_EXTENSION = Inches.of(33);
+        public static final Distance MIN_EXTENSION = Inches.of(0);
         public static final Distance MAX_EXTENSION = Inches.of(82);
 
         // SIM
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
         public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no
                                                                     // clue
-        public static final double CUSHION = 2.25; // stages don't line up perfectly
+        public static final double CUSHION_METERS = 0.05; // stages don't line up perfectly
+        public static final double STAGE_LEN_METERS = MAX_EXTENSION.in(Meters) / 3; 
     }
 
     public static class FishingRodConstants {
@@ -199,6 +190,14 @@ public class Constants {
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
         public static final double MOTORS_KG = 0; // temp
+
+        public static final Angle MIN_ANGLE = Degrees.of(-85);
+        public static final Angle MAX_ANGLE = Degrees.of(85);
+
+        //sim stuff
+        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.003841); // 5lb, 2.5in rad, 9in height
+        public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
+
     }
 
     public static class ControllerConstants {
@@ -382,8 +381,8 @@ public class Constants {
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                    .withKP(0.1).withKI(0).withKD(0)
-                    .withKS(0).withKV(0.124);
+                    .withKP(0.34807).withKI(0).withKD(0)
+                    .withKS(0.18408).withKV(0.11928).withKA(0.0022307);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
@@ -482,7 +481,7 @@ public class Constants {
             private static final int kFrontLeftDriveMotorId = RobotMap.FL_DRIVE;
             private static final int kFrontLeftSteerMotorId = RobotMap.FL_TURN;
             private static final int kFrontLeftEncoderId = RobotMap.FL_ENCODER;
-            private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.2353515625);
+            private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.0073);
             private static final boolean kFrontLeftSteerMotorInverted = true;
             private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -493,7 +492,7 @@ public class Constants {
             private static final int kFrontRightDriveMotorId = RobotMap.FR_DRIVE;
             private static final int kFrontRightSteerMotorId = RobotMap.FR_TURN;
             private static final int kFrontRightEncoderId = RobotMap.FR_ENCODER;
-            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.391357421875);
+            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.0222);
             private static final boolean kFrontRightSteerMotorInverted = true;
             private static final boolean kFrontRightEncoderInverted = false;
 
@@ -504,7 +503,7 @@ public class Constants {
             private static final int kBackLeftDriveMotorId = RobotMap.BL_DRIVE;
             private static final int kBackLeftSteerMotorId = RobotMap.BL_TURN;
             private static final int kBackLeftEncoderId = RobotMap.BL_ENCODER;
-            private static final Angle kBackLeftEncoderOffset = Rotations.of(0.14404296875);
+            private static final Angle kBackLeftEncoderOffset = Rotations.of(0.1350);
             private static final boolean kBackLeftSteerMotorInverted = true;
             private static final boolean kBackLeftEncoderInverted = false;
 
@@ -515,7 +514,7 @@ public class Constants {
             private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
             private static final int kBackRightSteerMotorId = RobotMap.BR_TURN;
             private static final int kBackRightEncoderId = RobotMap.BR_ENCODER;
-            private static final Angle kBackRightEncoderOffset = Rotations.of(0.0126953125);
+            private static final Angle kBackRightEncoderOffset = Rotations.of(0.1448);
             private static final boolean kBackRightSteerMotorInverted = true;
             private static final boolean kBackRightEncoderInverted = false;
 
@@ -585,6 +584,7 @@ public class Constants {
             ROD_MOVING(),
             ALEGE_COLLECT(),
             CORAL_COLLECT(),
+            CORAL_SCORE(),
             OFF();
         }
 

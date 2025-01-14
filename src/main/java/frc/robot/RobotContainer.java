@@ -22,6 +22,7 @@ import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.StandinCommands;
+import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
@@ -81,6 +82,8 @@ public class RobotContainer extends LightningContainer {
 
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
+
+        new Trigger(driver::getYButton).whileTrue(new TestAutoAlign(vision, drivetrain));
 
                 
         // // TODO: Remove Standin Command

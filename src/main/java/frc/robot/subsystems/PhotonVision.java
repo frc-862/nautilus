@@ -58,10 +58,10 @@ public class PhotonVision extends SubsystemBase {
     public PhotonVision() {
         camera = new PhotonCamera(VisionConstants.camera1Name);
         
-        AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+        AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
         poseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    new Transform3d());
+                    new Transform3d()); //TODO: set transform
 
         if(!Robot.isReal()) {
             visionTarget = new VisionTargetSim(VisionConstants.targetPose, VisionConstants.targetModel);
@@ -95,18 +95,30 @@ public class PhotonVision extends SubsystemBase {
         return result.hasTargets();
     }
 
+    /**
+     * @return yaw rotation to best target
+     */
     public double getXBestTarget() {
         return result.getBestTarget().getYaw();
     }
 
+    /**
+     * @return pitch rotation to best target
+     */
     public double getYBestTarget() {
         return result.getBestTarget().getPitch();
     }
 
+    /**
+     * @return The skew of the target in degrees
+     */
     public double getSkewBestTarget() {
         return result.getBestTarget().getSkew();
     }
 
+    /**
+     * @return The camera to target transform
+     */
     public Transform3d getTransformBestTarget() {
         return result.getBestTarget().getBestCameraToTarget();
     }

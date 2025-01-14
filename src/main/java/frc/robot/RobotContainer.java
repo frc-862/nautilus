@@ -12,7 +12,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
@@ -71,9 +70,6 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(drivetrain
 				.runOnce(drivetrain::resetForward));
 
-        
-
-
         // // TODO: Remove Standin Command
         // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
         //         .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
@@ -93,8 +89,10 @@ public class RobotContainer extends LightningContainer {
                 StandinCommands.elevatorL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
         NamedCommands.registerCommand("ElevatorL4",
                 StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        NamedCommands.registerCommand("AlgaeCollect",
-                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALEGE_COLLECT)));
+        NamedCommands.registerCommand("IntakeAlgae",
+                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALGAE_COLLECT)));
+        NamedCommands.registerCommand("ScoreAlgae", 
+                StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.ALGAE_SCORE)));
         NamedCommands.registerCommand("IntakeCoral",
                 StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
         NamedCommands.registerCommand("ScoreCoral", 

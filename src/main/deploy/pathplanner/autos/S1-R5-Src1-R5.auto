@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "S1-R6"
+                  "pathName": "S1-R5"
                 }
               },
               {
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "R6-P1"
+                  "pathName": "R5-Src1"
                 }
               },
               {
@@ -52,6 +52,31 @@
           "type": "named",
           "data": {
             "name": "IntakeCoral"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Src1-R5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ElevatorL3"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoral"
           }
         }
       ]

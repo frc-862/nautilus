@@ -240,6 +240,17 @@ public class Constants {
 
             }
 
+            public static SwerveRequest getDrive(double x, double y, double rot) {
+                return DRIVE
+                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                        .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
+                        .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
+                        .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative X
+                                                                                 // (left)
+            }
+
             public static Supplier<SwerveRequest> getSlow(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
                 return () -> SLOW
                         .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive

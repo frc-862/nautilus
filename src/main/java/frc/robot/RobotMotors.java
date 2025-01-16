@@ -10,6 +10,6 @@ import frc.robot.Constants.WristConstants;
 
 /** Add your docs here. */
 public class RobotMotors {
-    static public ThunderBird wristMotor = new ThunderBird(RobotMap.WRIST, 
-        RobotMap.CANIVORE_CAN_NAME, WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
+    public static ThunderBird wristMotor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME,
+        WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
 }

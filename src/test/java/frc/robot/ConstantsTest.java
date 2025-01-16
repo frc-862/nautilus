@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 /** Add your docs here. */
 public class ConstantsTest {
     @Test
-    public void testConstantsTest () {
+    public void testConstantsTests() {
         assertEquals("cam1", Constants.VisionConstants.camera1Name, "camera1Name should be 'cam1'");
     }
 }

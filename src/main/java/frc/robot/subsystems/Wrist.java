@@ -62,6 +62,7 @@ public class Wrist extends SubsystemBase {
         targetPosition = position;
     }
 
+    @Logged(importance = Importance.DEBUG)
     public boolean isOnTarget() {
         return Math.abs(targetPosition - currentPosition) < ElevatorConstants.TOLERANCE;
     }

@@ -72,7 +72,7 @@ public class FishingRod extends SubsystemBase {
      * @return the current state of the fishing rod
      */
 
-    @Logged(importance = Importance.DEBUG)
+    @Logged(importance = Importance.CRITICAL)
     public states getState() {
         return currState;
     }

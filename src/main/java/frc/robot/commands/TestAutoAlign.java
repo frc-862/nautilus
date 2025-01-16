@@ -1,6 +1,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,13 +16,15 @@ public class TestAutoAlign extends Command {
     Swerve drivetrain;
 
     Transform3d diffFromTag;
-    PIDController controllerRot = new PIDController(0.5d, 0, 0);
-    PIDController controllerX = new PIDController(0.5d, 0, 0);
-    PIDController controllerY = new PIDController(0.5d, 0, 0);
+    PIDController controllerRot = new PIDController(0.d, 0, 0);
+    PIDController controllerX = new PIDController(0.2d, 0, 0.2);
+    PIDController controllerY = new PIDController(0.2d, 0, 0.2);
 
     double dr_dt;
     double dx_dt;
     double dy_dt;
+
+    boolean isFinished = false;
 
     public TestAutoAlign(PhotonVision vision, Swerve drivetrain) {
         this.vision = vision;
@@ -49,16 +53,22 @@ public class TestAutoAlign extends Command {
         } catch (Exception e){
             System.out.println("Error in getting transform from tag");
             diffFromTag = new Transform3d();
+            isFinished = true;
             return;
-        } 
+        }
     }
 
     @Override
     public void execute() {
+        dr_dt = 0;
+        dx_dt = 0;
+        dy_dt = 0;
+
         try{
             diffFromTag = vision.getTransformBestTarget();
         } catch (Exception e){
             System.out.println("Error in getting transform from tag");
+            isFinished = true;
             return;
         } 
               
@@ -67,9 +77,9 @@ public class TestAutoAlign extends Command {
             Math.abs(diffFromTag.getTranslation().getX()) > 0.2d 
             || Math.abs(diffFromTag.getTranslation().getY()) > 0.2d) {
 
-                dx_dt = -controllerX.calculate(diffFromTag.getTranslation().getX());
-                dy_dt = -controllerY.calculate(diffFromTag.getTranslation().getY());
-                dr_dt = -controllerRot.calculate(diffFromTag.getRotation().getZ());
+                dy_dt = -controllerX.calculate(diffFromTag.getTranslation().getX());
+                dx_dt = controllerY.calculate(diffFromTag.getTranslation().getY());
+                dr_dt = controllerRot.calculate(diffFromTag.getRotation().getZ());
         }
 
         if (!DriverStation.isFMSAttached()){
@@ -83,15 +93,9 @@ public class TestAutoAlign extends Command {
             LightningShuffleboard.setDouble("TestAutoAlign", "X speed", dx_dt);
             LightningShuffleboard.setDouble("TestAutoAlign", "Y speed", dy_dt);
             LightningShuffleboard.setDouble("TestAutoAlign", "yaw speed", dr_dt);
-
-            LightningShuffleboard.setBool("TestAutoAlign", "HasTarget", vision.hasTarget());
-
         }
 
-        drivetrain.setControl(DriveRequests.getDrive(dx_dt, dy_dt, dr_dt));
-        // drivetrain.setControl(DriveRequests.getDrive(0.7, 0.7, 0.7));
-
-        System.out.println("CodeIsRunning" + "1:57");
+        drivetrain.setControl(DriveRequests.getRobotCentricRequest(dx_dt, dy_dt, dr_dt));
     }
 
 
@@ -102,9 +106,8 @@ public class TestAutoAlign extends Command {
 
     @Override
     public boolean isFinished() {
-        // return Math.abs(diffFromTag.getRotation().getZ()) > 0.2d && 
-        //     Math.abs(diffFromTag.getTranslation().getX()) > 0.2d && 
-        //     Math.abs(diffFromTag.getTranslation().getY()) > 0.2d;
-        return false;
+        return Math.abs(diffFromTag.getRotation().getZ()) < 0.2d && 
+            Math.abs(diffFromTag.getTranslation().getX()) < 0.2d && 
+            Math.abs(diffFromTag.getTranslation().getY()) < 0.2d;
     }
 }

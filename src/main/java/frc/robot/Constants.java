@@ -106,6 +106,21 @@ public class Constants {
 
         // 20ms default loop time
         public static final double UPDATE_FREQ = 0.020;
+
+        public static class ButtonBox {
+            public static final int GRAY_TOPLEFT = 5;
+            public static final int PINK = 3;
+            public static final int GREEN = 4;
+            public static final int GRAY_TOPRIGHT = 6;
+            public static final int GRAY_BOTTOMLEFT = 2; // AXIS
+            public static final int PURPLE = 1;
+            public static final int RED = 2;
+            public static final int GRAY_BOTTOMRIGHT = 3; // AXIS
+            public static final int SHARE = 7;
+            public static final int OPTIONS = 8;
+            public static final int L3_SL = 9;
+            public static final int R3_SL = 10;
+        }
     }
 
     public static class ElevatorConstants {

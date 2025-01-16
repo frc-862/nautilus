@@ -24,6 +24,7 @@ import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.StandinCommands;
+import frc.robot.commands.SetWristPosition;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
@@ -95,6 +96,8 @@ public class RobotContainer extends LightningContainer {
         if(Robot.isSimulation()) {
             new Trigger(driver::getLeftBumperButtonPressed).whileTrue(new InstantCommand((() -> wrist.setPower(-0.75)))).onFalse(new InstantCommand(wrist::stop));
             new Trigger(driver::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(0.75)))).onFalse(new InstantCommand(wrist::stop));
+
+            new Trigger(driver::getYButton).whileTrue(new SetWristPosition(wrist, 40));
 
             new Trigger(()-> driver.getPOV() == 0).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
             new Trigger(() -> driver.getPOV() == 180).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));

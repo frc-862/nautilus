@@ -47,6 +47,7 @@ public class RobotContainer extends LightningContainer {
     private FishingRod rod;
 
     private XboxController driver;
+    private XboxController copilot;
 
     @Override
     protected void initializeSubsystems() {
@@ -54,11 +55,12 @@ public class RobotContainer extends LightningContainer {
         vision = new PhotonVision();
         logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
+        copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
 
         //this is temporary
         if(Robot.isSimulation()) {
             elevator = new Elevator();
-            wrist = new Wrist();
+            wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
         }
 
@@ -97,10 +99,8 @@ public class RobotContainer extends LightningContainer {
             new Trigger(driver::getLeftBumperButtonPressed).whileTrue(new InstantCommand((() -> wrist.setPower(-0.75)))).onFalse(new InstantCommand(wrist::stop));
             new Trigger(driver::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(0.75)))).onFalse(new InstantCommand(wrist::stop));
 
-            new Trigger(driver::getYButton).whileTrue(new SetWristPosition(wrist, 40));
-
-            new Trigger(()-> driver.getPOV() == 0).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
-            new Trigger(() -> driver.getPOV() == 180).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
+            new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
+            new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
         }
     }
 

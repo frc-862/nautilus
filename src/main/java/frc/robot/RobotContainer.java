@@ -18,9 +18,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.TunerConstants;
+import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.StandinCommands;
 import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
@@ -45,6 +47,7 @@ public class RobotContainer extends LightningContainer {
     private FishingRod rod;
 
     private XboxController driver;
+    private XboxController copilot;
 
     @Override
     protected void initializeSubsystems() {
@@ -52,11 +55,12 @@ public class RobotContainer extends LightningContainer {
         vision = new PhotonVision();
         logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
+        copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
 
         //this is temporary
         if(Robot.isSimulation()) {
             elevator = new Elevator();
-            wrist = new Wrist();
+            wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
         }
 
@@ -94,11 +98,11 @@ public class RobotContainer extends LightningContainer {
 
         //sim stuff
         if(Robot.isSimulation()) {
-            new Trigger(driver::getLeftBumperButtonPressed).whileTrue(new InstantCommand((() -> wrist.setPower(-0.75)))).onFalse(new InstantCommand(wrist::stop));
-            new Trigger(driver::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(0.75)))).onFalse(new InstantCommand(wrist::stop));
+            new Trigger(copilot::getLeftBumperButtonPressed).whileTrue(new InstantCommand((() -> wrist.setPower(-0.75)))).onFalse(new InstantCommand(wrist::stop));
+            new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(0.75)))).onFalse(new InstantCommand(wrist::stop));
 
-            new Trigger(()-> driver.getPOV() == 0).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
-            new Trigger(() -> driver.getPOV() == 180).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
+            new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
+            new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
         }
     }
 

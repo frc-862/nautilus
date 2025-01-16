@@ -47,8 +47,9 @@ public class Wrist extends SubsystemBase {
     private CANcoderSimState encoderSim;
 
 
-    public Wrist() {
-        motor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME, WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
+    public Wrist(ThunderBird motor) {
+        this.motor = motor;
+        //new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME, WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
         
         TalonFXConfiguration motorConfig = motor.getConfig();
         CANcoderConfiguration angleConfig = new CANcoderConfiguration();

@@ -27,6 +27,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -105,6 +106,21 @@ public class Constants {
 
         // 20ms default loop time
         public static final double UPDATE_FREQ = 0.020;
+
+        public static class ButtonBox {
+            public static final int GRAY_TOPLEFT = 5;
+            public static final int PINK = 3;
+            public static final int GREEN = 4;
+            public static final int GRAY_TOPRIGHT = 6;
+            public static final int GRAY_BOTTOMLEFT = 2; // AXIS
+            public static final int PURPLE = 1;
+            public static final int RED = 2;
+            public static final int GRAY_BOTTOMRIGHT = 3; // AXIS
+            public static final int SHARE = 7;
+            public static final int OPTIONS = 8;
+            public static final int L3_SL = 9;
+            public static final int R3_SL = 10;
+        }
     }
 
     public static class ElevatorConstants {
@@ -355,6 +371,32 @@ public class Constants {
         public static final Pose2d REEFSCORE5_2 = new Pose2d(3.101, 4.175, new Rotation2d(0));
         public static final Pose2d REEFSCORE6_1 = new Pose2d(3.656, 5.122, new Rotation2d(300));
         public static final Pose2d REEFSCORE6_2 = new Pose2d(3.949, 5.282, new Rotation2d(300));
+
+        public enum ScoringPoses {
+            REEFSCORE1_1, REEFSCORE1_2, REEFSCORE2_1, REEFSCORE2_2, REEFSCORE3_1, REEFSCORE3_2, 
+            REEFSCORE4_1, REEFSCORE4_2, REEFSCORE5_1, REEFSCORE5_2, REEFSCORE6_1, REEFSCORE6_2
+        }
+
+        public static HashMap<ScoringPoses, Pose2d> poseHashMap = new HashMap<ScoringPoses, Pose2d>(){
+            {
+                put(ScoringPoses.REEFSCORE1_1, REEFSCORE1_1);
+                put(ScoringPoses.REEFSCORE1_2, REEFSCORE1_2);
+                put(ScoringPoses.REEFSCORE2_1, REEFSCORE2_1);
+                put(ScoringPoses.REEFSCORE2_2, REEFSCORE2_2);
+                put(ScoringPoses.REEFSCORE3_1, REEFSCORE3_1);
+                put(ScoringPoses.REEFSCORE3_2, REEFSCORE3_2);
+                put(ScoringPoses.REEFSCORE4_1, REEFSCORE4_1);
+                put(ScoringPoses.REEFSCORE4_2, REEFSCORE4_2);
+                put(ScoringPoses.REEFSCORE5_1, REEFSCORE5_1);
+                put(ScoringPoses.REEFSCORE5_2, REEFSCORE5_2);
+                put(ScoringPoses.REEFSCORE6_1, REEFSCORE6_1);
+                put(ScoringPoses.REEFSCORE6_2, REEFSCORE6_2);
+
+            }
+        };
+
+        public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);
+
     }
 
     public class TunerConstants {

@@ -117,10 +117,6 @@ public class PhotonVision extends SubsystemBase {
         return result.getBestTarget().getBestCameraToTarget();
     }
 
-        poseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return poseEstimator.update(result);
-    }
-
     public void setEstimatedPose(EstimatedRobotPose pose) {
         estimatedRobotPose = new Pose4d(pose.estimatedPose.getTranslation(), pose.estimatedPose.getRotation(),
                 pose.timestampSeconds - lastPoseTime);
@@ -155,9 +151,7 @@ public class PhotonVision extends SubsystemBase {
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
         LightningShuffleboard.set("Vision", "timestamp", result.getTimestampSeconds());
 
-        if (result.hasTargets()) {
-            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse((m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose), () -> DataLogManager.log("[VISION] Pose Estimator Failed to update"));
-        
+        if (result.hasTargets()) {        
             lastEstimatedRobotPose = estimatedRobotPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
 

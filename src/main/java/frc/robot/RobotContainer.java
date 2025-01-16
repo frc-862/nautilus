@@ -57,7 +57,7 @@ public class RobotContainer extends LightningContainer {
         //this is temporary
         if(Robot.isSimulation()) {
             elevator = new Elevator();
-            wrist = new Wrist();
+            wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
         }
 

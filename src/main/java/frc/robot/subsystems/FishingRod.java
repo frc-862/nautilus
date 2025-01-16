@@ -81,6 +81,7 @@ public class FishingRod extends SubsystemBase {
      * Checks if the whole fishing rod system is on target
      * @return true if the wrist and elevator are on target false otherwise
      */
+    @Logged(importance = Importance.DEBUG)
     public boolean onTarget() {
         return wrist.isOnTarget() && elevator.isOnTarget();
     }

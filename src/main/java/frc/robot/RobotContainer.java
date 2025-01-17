@@ -124,8 +124,7 @@ public class RobotContainer extends LightningContainer {
                         StandinCommands.elevatorL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("ElevatorL4",
                         StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        }
-        else if(Robot.isSimulation()){
+        } else if(Robot.isSimulation()){
                 NamedCommands.registerCommand("ElevatorHome", new SetRodState(rod, states.STOW));
                 NamedCommands.registerCommand("ElevatorL1", new SetRodState(rod, states.L1));
                 NamedCommands.registerCommand("ElevatorL2", new SetRodState(rod, states.L2));

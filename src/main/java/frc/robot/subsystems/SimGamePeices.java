@@ -4,14 +4,18 @@
 
 package frc.robot.subsystems;
 
+import java.security.PermissionCollection;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.Constants.SimGamePeiceConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Constants.FishingRodConstants.states;
-import java.lang.Runnable;
 
 public class SimGamePeices extends SubsystemBase {
 
@@ -28,6 +32,7 @@ public class SimGamePeices extends SubsystemBase {
     public class Peice{
         protected Pose3d pose;
         protected boolean inRobot;
+        public double peiceNumber;
 
         public Pose3d getPose(){
             return pose;
@@ -44,23 +49,37 @@ public class SimGamePeices extends SubsystemBase {
         public void setInRobot(boolean inRobot){
             this.inRobot = inRobot;
         }
+
+        public void publish(){
+            LightningShuffleboard.setDoubleArray(this instanceof Coral ? "Corals" : "Algae", 
+                "Peice# " + (peiceNumber), 
+                () -> new double[] {pose.getX(), pose.getY(), pose.getZ(),
+                Units.radiansToDegrees(pose.getRotation().getX()), 
+                Units.radiansToDegrees(pose.getRotation().getY()),
+                Units.radiansToDegrees(pose.getRotation().getZ())});
+
+        }
     }
 
     public class Coral extends Peice {
 
         public Coral(Pose3d pose){
-            this.pose = super.pose;
+            setPose(pose);;
         }
 
-        public Coral(){}
+        public Coral(){
+            setPose(SimGamePeiceConstants.DefaultPose);
+        }
     }
 
     public class Algae extends Peice {
         public Algae(Pose3d pose){
-            this.pose = super.pose;
+            setPose(pose);
         }
 
-        public Algae(){}
+        public Algae(){
+            setPose(SimGamePeiceConstants.DefaultPose);
+        }
     }
 
   /** Creates a new SimGamePeices. */
@@ -77,6 +96,8 @@ public class SimGamePeices extends SubsystemBase {
 
         this.fishingRod = fishingRod;
         this.drivetrain = drivetrain;
+        this.elevator = elevator;
+        this.wrist = wrist;
         
         addPeice(new Algae(SimGamePeiceConstants.A1B));
         addPeice(new Algae(SimGamePeiceConstants.A2B));
@@ -86,6 +107,8 @@ public class SimGamePeices extends SubsystemBase {
         addPeice(new Algae(SimGamePeiceConstants.A3R));
         addPeice(new Coral());
         corals[0].setInRobot(true);
+
+        System.out.println("Peices added to SimGamePeices");
   }
 
     @Override
@@ -101,15 +124,12 @@ public class SimGamePeices extends SubsystemBase {
             newPeices[i] = peices[i];
         }
         newPeices[peices.length] = peice;
+        peice.peiceNumber = peices.length;
         peices = newPeices;
 
-        if (peice instanceof Coral){
+        peice.publish();
 
-            LightningShuffleboard.setDoubleArray("Corals", "Peice# " + (peices.length - 1), 
-                () -> new double[] {peice.pose.getX(), peice.pose.getY(), peice.pose.getZ(),
-                Units.radiansToDegrees(peice.pose.getRotation().getX()), 
-                Units.radiansToDegrees(peice.pose.getRotation().getY()),
-                Units.radiansToDegrees(peice.pose.getRotation().getZ())});
+        if (peice instanceof Coral){
 
             Coral[] newCorals = new Coral[corals.length + 1];
             for(int i = 0; i < corals.length; i++){
@@ -119,22 +139,17 @@ public class SimGamePeices extends SubsystemBase {
             corals = newCorals;
             return;
 
-        } else /*if (peice instanceof Algae)*/{
-
-            LightningShuffleboard.setDoubleArray("Algae", "Peice# " + (peices.length - 2), 
-                () -> new double[] {peice.pose.getX(), peice.pose.getY(), peice.pose.getZ(),
-                Units.radiansToDegrees(peice.pose.getRotation().getX()), 
-                Units.radiansToDegrees(peice.pose.getRotation().getY()),
-                Units.radiansToDegrees(peice.pose.getRotation().getZ())});
+        } else if (peice instanceof Algae){
 
             Algae[] newAlgae = new Algae[algaes.length + 1];
 
-        for(int i = 0; i < algaes.length; i++){
-            newAlgae[i] = algaes[i];
+            for(int i = 0; i < algaes.length; i++){
+                newAlgae[i] = algaes[i];
+            }
+            newAlgae[algaes.length] = (Algae) peice;
+            algaes = newAlgae;
         }
-        newAlgae[algaes.length] = (Algae) peice;
-        algaes = newAlgae;
-    }
+
     }
 
     public void removePeice(Peice peice){
@@ -192,25 +207,11 @@ public class SimGamePeices extends SubsystemBase {
         heldPeice = closestPeice;
     }
 
-    public static class DropOrCollect implements Runnable{
-
-        private SimGamePeices simGamePeices;
-
-        public DropOrCollect(SimGamePeices simGamePeices){
-            this.simGamePeices = simGamePeices;
+    public void dropOrCollect(){
+        if (hasPeice = true){
+            forceDrop();
+        } else {
+            forceCollect();
         }
-
-        public void run(){
-
-            if (simGamePeices.hasPeice = true){
-                simGamePeices.forceDrop();
-            } else {
-                simGamePeices.forceCollect();
-            }
-        }
-    }
-
-    public static Runnable dropOrCollect(SimGamePeices simGamePeices){
-        return new DropOrCollect(simGamePeices);
     }
 }

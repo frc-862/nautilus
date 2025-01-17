@@ -606,11 +606,13 @@ public class Constants {
     }
 
     public class SimGamePeiceConstants {
-        public static final Pose3d A1B = new Pose3d(1.216, 5.850, 1, new Rotation3d());
-        public static final Pose3d A2B = new Pose3d(1.216, 4.020, 1, new Rotation3d());
-        public static final Pose3d A3B = new Pose3d(1.216, 2.190, 1, new Rotation3d());
-        public static final Pose3d A1R = new Pose3d(16.330, 2.190, 1,  new Rotation3d());
-        public static final Pose3d A2R = new Pose3d(16.330, 4.020, 1, new Rotation3d());
-        public static final Pose3d A3R = new Pose3d(16.330, 5.850, 1, new Rotation3d());
+        public static final Pose3d A1B = new Pose3d(1.216, 5.850, 1, new Rotation3d(0, 0, 0));
+        public static final Pose3d A2B = new Pose3d(1.216, 4.020, 1, new Rotation3d(0, 0, 0));
+        public static final Pose3d A3B = new Pose3d(1.216, 2.190, 1, new Rotation3d(0, 0, 0));
+        public static final Pose3d A1R = new Pose3d(16.330, 2.190, 1,  new Rotation3d(0, 0, 0));
+        public static final Pose3d A2R = new Pose3d(16.330, 4.020, 1, new Rotation3d(0, 0, 0));
+        public static final Pose3d A3R = new Pose3d(16.330, 5.850, 1, new Rotation3d(0, 0, 0));
+
+        public static final Pose3d DefaultPose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
     }
 }

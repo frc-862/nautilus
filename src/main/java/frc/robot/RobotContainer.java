@@ -107,9 +107,7 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeNamedCommands() {
-        if (Robot.isReal()){
-
-                NamedCommands.registerCommand("ElevatorHome",
+        NamedCommands.registerCommand("ElevatorHome",
                         StandinCommands.elevatorStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("ElevatorL1",
                         StandinCommands.elevatorL1().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
@@ -129,6 +127,18 @@ public class RobotContainer extends LightningContainer {
                         StandinCommands.moveWrist(1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RainbowLEDs", 
                         new WaitCommand(1).deadlineFor(leds.enableState(LED_STATES.RAINBOW)));
+        if (Robot.isReal()){
+
+                NamedCommands.registerCommand("ElevatorHome",
+                        StandinCommands.elevatorStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("ElevatorL1",
+                        StandinCommands.elevatorL1().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("ElevatorL2",
+                        StandinCommands.elevatorL2().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("ElevatorL3",
+                        StandinCommands.elevatorL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("ElevatorL4",
+                        StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
         }
         else if(Robot.isSimulation()){
                 NamedCommands.registerCommand("ElevatorHome", new SetRodState(rod, states.STOW));
@@ -137,8 +147,6 @@ public class RobotContainer extends LightningContainer {
                 NamedCommands.registerCommand("ElevatorL3", new SetRodState(rod, states.L3));
                 NamedCommands.registerCommand("ElevatorL4", new SetRodState(rod, states.L4));
                 NamedCommands.registerCommand("ElevatorSource", new SetRodState(rod, states.SOURCE));
-
-
         }
 
         autoChooser = AutoBuilder.buildAutoChooser();

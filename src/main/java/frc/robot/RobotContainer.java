@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.FishingRodConstants.states;
 import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.PoseBasedAutoAlign;
@@ -32,6 +33,7 @@ import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.robot.commands.SetRodState;
 
 public class RobotContainer extends LightningContainer {
 
@@ -105,27 +107,39 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeNamedCommands() {
+        if (Robot.isReal()){
 
-        NamedCommands.registerCommand("ElevatorHome",
-                StandinCommands.elevatorStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        NamedCommands.registerCommand("ElevatorL1",
-                StandinCommands.elevatorL1().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        NamedCommands.registerCommand("ElevatorL2",
-                StandinCommands.elevatorL2().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        NamedCommands.registerCommand("ElevatorL3",
-                StandinCommands.elevatorL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        NamedCommands.registerCommand("ElevatorL4",
-                StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        NamedCommands.registerCommand("AlgaeCollect",
-                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALEGE_COLLECT)));
-        NamedCommands.registerCommand("IntakeCoral",
-                StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
-        NamedCommands.registerCommand("ScoreCoral", 
-                StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
-        NamedCommands.registerCommand("MoveWrist",
-                StandinCommands.moveWrist(1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        NamedCommands.registerCommand("RainbowLEDs", 
-                new WaitCommand(1).deadlineFor(leds.enableState(LED_STATES.RAINBOW)));
+                NamedCommands.registerCommand("ElevatorHome",
+                        StandinCommands.elevatorStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("ElevatorL1",
+                        StandinCommands.elevatorL1().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("ElevatorL2",
+                        StandinCommands.elevatorL2().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("ElevatorL3",
+                        StandinCommands.elevatorL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("ElevatorL4",
+                        StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("AlgaeCollect",
+                        StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALEGE_COLLECT)));
+                NamedCommands.registerCommand("IntakeCoral",
+                        StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
+                NamedCommands.registerCommand("ScoreCoral", 
+                        StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
+                NamedCommands.registerCommand("MoveWrist",
+                        StandinCommands.moveWrist(1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RainbowLEDs", 
+                        new WaitCommand(1).deadlineFor(leds.enableState(LED_STATES.RAINBOW)));
+        }
+        else if(Robot.isSimulation()){
+                NamedCommands.registerCommand("ElevatorHome", new SetRodState(rod, states.STOW));
+                NamedCommands.registerCommand("ElevatorL1", new SetRodState(rod, states.L1));
+                NamedCommands.registerCommand("ElevatorL2", new SetRodState(rod, states.L2));
+                NamedCommands.registerCommand("ElevatorL3", new SetRodState(rod, states.L3));
+                NamedCommands.registerCommand("ElevatorL4", new SetRodState(rod, states.L4));
+                NamedCommands.registerCommand("ElevatorSource", new SetRodState(rod, states.SOURCE));
+
+
+        }
 
         autoChooser = AutoBuilder.buildAutoChooser();
         LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);

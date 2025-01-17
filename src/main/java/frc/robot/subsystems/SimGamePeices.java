@@ -64,17 +64,16 @@ public class SimGamePeices extends SubsystemBase {
     }
 
   /** Creates a new SimGamePeices. */
-    public SimGamePeices(FishingRod fishingRod, Swerve drivetrain, Peice[] peices) {
+    public SimGamePeices(Elevator elevator, Wrist wrist, FishingRod fishingRod, Swerve drivetrain, Peice[] peices) {
 
         this.fishingRod = fishingRod;
         this.drivetrain = drivetrain;
+        this.elevator = elevator;
+        this.wrist = wrist;
         this.peices = peices;
-
-        elevator = fishingRod.getElevator();
-        wrist = fishingRod.getWrist();
   }
 
-    public SimGamePeices(FishingRod fishingRod, Swerve drivetrain) {
+    public SimGamePeices(Elevator elevator, Wrist wrist, FishingRod fishingRod, Swerve drivetrain) {
 
         this.fishingRod = fishingRod;
         this.drivetrain = drivetrain;

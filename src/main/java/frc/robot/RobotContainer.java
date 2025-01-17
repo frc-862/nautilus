@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,6 +47,8 @@ public class RobotContainer extends LightningContainer {
     private Wrist wrist;
     private FishingRod rod;
 
+    private SimGamePeices simGamePeices;
+
     private XboxController driver;
     private XboxController copilot;
 
@@ -65,8 +68,7 @@ public class RobotContainer extends LightningContainer {
         }
 
         leds = RobotBase.isReal() ? new LEDs() : null;
-        fishingRod = new FishingRod();
-        simGamePeices = RobotBase.isReal() ? new SimGamePeices(fishingRod, drivetrain) : null;
+        simGamePeices = RobotBase.isReal() ? new SimGamePeices(elevator, wrist, rod, drivetrain) : null;
     }
 
     @Override

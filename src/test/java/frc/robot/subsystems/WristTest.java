@@ -26,8 +26,7 @@ public class WristTest implements AutoCloseable {
     Wrist wrist;
     @BeforeEach
     void constructMotors() {
-        assert HAL.initialize(500, 0); 
-
+        assert HAL.initialize(500, 0);
 
         wristMotor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME, WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
         simWristMotor = wristMotor.getSimState();
@@ -61,5 +60,15 @@ public class WristTest implements AutoCloseable {
         dutyCycle.waitForUpdate(0.1);
 
         assertEquals(0, dutyCycle.getValue());
+    }
+
+    @Test
+    public void testSetPostion() {
+        System.out.println(wrist.getPosition());
+        wrist.setPosition(0.5d);
+        Timer.delay(0.10);
+        wrist.simulationPeriodic();
+        System.out.println(wrist.getPosition());
+        assertEquals(0.5d, wrist.getPosition(), 0.1d);
     }
 }

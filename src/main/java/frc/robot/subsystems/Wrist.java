@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -72,7 +73,7 @@ public class Wrist extends SubsystemBase {
         motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         motorConfig.Feedback.SensorToMechanismRatio = WristConstants.ENCODER_TO_MECHANISM_RATIO;
         motorConfig.Feedback.RotorToSensorRatio = WristConstants.ROTOR_TO_ENCODER_RATIO;
-
+        this.motor.applyConfig(motorConfig);
 
         if(Robot.isSimulation()) {
             /* TODO:(for simulation)
@@ -119,13 +120,13 @@ public class Wrist extends SubsystemBase {
         wristSim.setState(Units.degreesToRadians(getAngle()), motor.getVelocity().getValue().in(RadiansPerSecond));
     }
 
-    public void setPosition(double position) {
-        motor.setPosition(position);
-        targetPosition = position;
+    public void setPosition(double target) {
+        motor.setControl(positionPID.withPosition(target));
+        targetPosition = target;
     }
 
     public double getAngle() {
-        return motor.getPosition().getValueAsDouble();
+        return Units.rotationsToDegrees(motor.getPosition().getValueAsDouble());
     }
     
     public boolean isOnTarget() {

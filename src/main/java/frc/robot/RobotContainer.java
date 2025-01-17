@@ -86,9 +86,6 @@ public class RobotContainer extends LightningContainer {
 
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
-
-        new Trigger(driver::getYButton).whileTrue(new TestAutoAlign(vision, drivetrain));
-
                 
         // // TODO: Remove Standin Command
         // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))

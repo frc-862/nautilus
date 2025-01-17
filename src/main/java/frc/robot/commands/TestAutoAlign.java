@@ -14,6 +14,8 @@ public class TestAutoAlign extends Command {
     PhotonVision vision;
     Swerve drivetrain;
 
+    // get PID values from constants
+
     Transform3d diffFromTag;
     PIDController controllerRot = new PIDController(AutoAlignConstants.RotAutoAlignKp, 
         AutoAlignConstants.RotAutoAlignKi, AutoAlignConstants.RotAutoAlignKd);
@@ -26,6 +28,11 @@ public class TestAutoAlign extends Command {
     double dx_dt;
     double dy_dt;
 
+    /**
+     * Used to align to Tag
+     * @param vision
+     * @param drivetrain
+     */
     public TestAutoAlign(PhotonVision vision, Swerve drivetrain) {
         this.vision = vision;
         this.drivetrain = drivetrain;
@@ -35,6 +42,8 @@ public class TestAutoAlign extends Command {
 
     @Override
     public void initialize() {
+        // zero velocity values
+
         dr_dt = 0;
         dx_dt = 0;
         dy_dt = 0;
@@ -48,6 +57,7 @@ public class TestAutoAlign extends Command {
         controllerY.setSetpoint(0);
         controllerY.setTolerance(AutoAlignConstants.AutoAlignTolerance);
 
+        // try to get the transform from the tag, if it fails, stop
         try{
             diffFromTag = vision.getTransformBestTarget();
         } catch (Exception e){
@@ -59,6 +69,8 @@ public class TestAutoAlign extends Command {
 
     @Override
     public void execute() {
+
+        // zero velocity values
         dr_dt = 0;
         dx_dt = 0;
         dy_dt = 0;
@@ -69,6 +81,8 @@ public class TestAutoAlign extends Command {
             System.out.println("Error in getting transform from tag");
             return;
         } 
+
+        // if the difference is greater than the tolerance, calculate the new velocity values
 
         if (Math.abs(diffFromTag.getRotation().getZ()) > AutoAlignConstants.AutoAlignTolerance || 
             Math.abs(diffFromTag.getTranslation().getX()) > AutoAlignConstants.AutoAlignTolerance 
@@ -92,6 +106,7 @@ public class TestAutoAlign extends Command {
             LightningShuffleboard.setDouble("TestAutoAlign", "yaw speed", dr_dt);
         }
 
+        // give the new velocity values to the drivetrain
         drivetrain.setControl(DriveRequests.getRobotCentric(dx_dt, dy_dt, dr_dt));
     }
 

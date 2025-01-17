@@ -182,7 +182,5 @@ public class PhotonVision extends SubsystemBase {
     @Override
     public void simulationPeriodic(){
         LightningShuffleboard.set("Vision", "Field_SIM", visionSim.getDebugField());
-
-        LightningShuffleboard.setBool("TestAutoAlign", "HasTarget", this.hasTarget());
     }
 }

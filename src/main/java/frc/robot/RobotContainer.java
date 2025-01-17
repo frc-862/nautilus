@@ -24,7 +24,6 @@ import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.StandinCommands;
-import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;

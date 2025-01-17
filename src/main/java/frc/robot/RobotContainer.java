@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -89,8 +88,6 @@ public class RobotContainer extends LightningContainer {
         // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
         //         .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
 
-
-
         //sim stuff
         if(Robot.isSimulation()) {
             new Trigger(copilot::getLeftBumperButtonPressed).whileTrue(new InstantCommand((() -> wrist.setPower(-0.75)))).onFalse(new InstantCommand(wrist::stop));
@@ -104,15 +101,13 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void initializeNamedCommands() {
         NamedCommands.registerCommand("AlgaeCollect",
-                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALEGE_COLLECT)));
+                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALGAE_COLLECT)));
         NamedCommands.registerCommand("IntakeCoral",
                 StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
         NamedCommands.registerCommand("ScoreCoral", 
                 StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
         NamedCommands.registerCommand("MoveWrist",
                 StandinCommands.moveWrist(1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        NamedCommands.registerCommand("RainbowLEDs", 
-                new WaitCommand(1).deadlineFor(leds.enableState(LED_STATES.RAINBOW)));
         if (Robot.isReal()){
                 NamedCommands.registerCommand("ElevatorHome",
                         StandinCommands.elevatorStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
@@ -124,6 +119,8 @@ public class RobotContainer extends LightningContainer {
                         StandinCommands.elevatorL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("ElevatorL4",
                         StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("ElevatorSource",
+                        StandinCommands.elevatorSource().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
         } else if(Robot.isSimulation()){
                 NamedCommands.registerCommand("ElevatorHome", new SetRodState(rod, states.STOW));
                 NamedCommands.registerCommand("ElevatorL1", new SetRodState(rod, states.L1));

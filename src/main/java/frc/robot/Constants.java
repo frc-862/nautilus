@@ -299,7 +299,7 @@ public class Constants {
                                                                                  // X (left)
             }
 
-            public static SwerveRequest getRobotCentricRequest(double x, double y, double rot){
+            public static SwerveRequest getRobotCentric(double x, double y, double rot){
                 return ROBO_CENTRIC
                         .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
                         .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
@@ -623,16 +623,21 @@ public class Constants {
             CORAL_SCORE(),
             OFF();
         }
+    }
 
-        public class AutoAlignConstants {
-            public static final double AutoAlignTolerance = 0.2d;
-            public static final double XYAutoAlignKp = 0.4d;
-            public static final double XYAutoAlignKi = 0d;
-            public static final double XYAutoAlignKd = 0d;
-            public static final double RotAutoAlignKp = 0.2d;
-            public static final double RotAutoAlignKi = 0d;
-            public static final double RotAutoAlignKd = 0;
-        }
+    public class AutoAlignConstants {
+        public static final double AutoAlignTolerance = 0.2d;
 
+        public static final double XAutoAlignKp = 0.4d;
+        public static final double XAutoAlignKi = 0d;
+        public static final double XAutoAlignKd = 0.2d;
+
+        public static final double YAutoAlignKp = 0.4d;
+        public static final double YAutoAlignKi = 0d;
+        public static final double YAutoAlignKd = 0.2d;
+
+        public static final double RotAutoAlignKp = 0.2d;
+        public static final double RotAutoAlignKi = 0d;
+        public static final double RotAutoAlignKd = 0d;
     }
 }

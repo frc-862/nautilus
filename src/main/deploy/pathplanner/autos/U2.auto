@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "S1-R5"
+                  "pathName": "S1-R6"
                 }
               },
               {
@@ -36,13 +36,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "R5-Src1"
+                  "pathName": "R6-Src1"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevatorHome"
+                  "name": "ElevatorSource"
                 }
               }
             ]
@@ -67,7 +67,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevatorL3"
+                  "name": "ElevatorL4"
                 }
               }
             ]

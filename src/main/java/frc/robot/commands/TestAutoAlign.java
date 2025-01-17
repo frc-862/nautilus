@@ -1,12 +1,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.LEDConstants.AutoAlignConstants;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
@@ -16,15 +15,13 @@ public class TestAutoAlign extends Command {
     Swerve drivetrain;
 
     Transform3d diffFromTag;
-    PIDController controllerRot = new PIDController(0.d, 0, 0);
-    PIDController controllerX = new PIDController(0.2d, 0, 0.2);
-    PIDController controllerY = new PIDController(0.2d, 0, 0.2);
+    PIDController controllerRot = new PIDController(0.2, 0, 0);
+    PIDController controllerX = new PIDController(0.4d, 0, 0.2);
+    PIDController controllerY = new PIDController(0.4d, 0, 0.2);
 
     double dr_dt;
     double dx_dt;
     double dy_dt;
-
-    boolean isFinished = false;
 
     public TestAutoAlign(PhotonVision vision, Swerve drivetrain) {
         this.vision = vision;
@@ -40,7 +37,7 @@ public class TestAutoAlign extends Command {
         dy_dt = 0;
 
         controllerRot.setSetpoint(0);
-        controllerRot.setTolerance(0.2d);
+        controllerRot.setTolerance(0.2);
 
         controllerX.setSetpoint(0);
         controllerX.setTolerance(0.2d);
@@ -53,7 +50,6 @@ public class TestAutoAlign extends Command {
         } catch (Exception e){
             System.out.println("Error in getting transform from tag");
             diffFromTag = new Transform3d();
-            isFinished = true;
             return;
         }
     }
@@ -68,17 +64,15 @@ public class TestAutoAlign extends Command {
             diffFromTag = vision.getTransformBestTarget();
         } catch (Exception e){
             System.out.println("Error in getting transform from tag");
-            isFinished = true;
             return;
         } 
-              
 
         if (Math.abs(diffFromTag.getRotation().getZ()) > 0.2d || 
             Math.abs(diffFromTag.getTranslation().getX()) > 0.2d 
             || Math.abs(diffFromTag.getTranslation().getY()) > 0.2d) {
 
                 dy_dt = -controllerX.calculate(diffFromTag.getTranslation().getX());
-                dx_dt = controllerY.calculate(diffFromTag.getTranslation().getY());
+                dx_dt = -controllerY.calculate(diffFromTag.getTranslation().getY()); // X and Y are intentionally flipped here
                 dr_dt = controllerRot.calculate(diffFromTag.getRotation().getZ());
         }
 
@@ -102,6 +96,7 @@ public class TestAutoAlign extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        drivetrain.setControl(DriveRequests.getRobotCentricRequest(0, 0, 0));
     }
 
     @Override

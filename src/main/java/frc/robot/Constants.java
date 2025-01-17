@@ -352,7 +352,6 @@ public class Constants {
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
         public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, 0);
         public static final Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
-
     }
 
     public static class PoseConstants {
@@ -623,6 +622,16 @@ public class Constants {
             CORAL_COLLECT(),
             CORAL_SCORE(),
             OFF();
+        }
+
+        public class AutoAlignConstants {
+            public static final double AutoAlignTolerance = 0.2d;
+            public static final double XYAutoAlignKp = 0.4d;
+            public static final double XYAutoAlignKi = 0d;
+            public static final double XYAutoAlignKd = 0d;
+            public static final double RotAutoAlignKp = 0.2d;
+            public static final double RotAutoAlignKi = 0d;
+            public static final double RotAutoAlignKd = 0;
         }
 
     }

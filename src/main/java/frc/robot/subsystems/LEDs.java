@@ -40,8 +40,6 @@ public class LEDs extends SubsystemBase {
 	public void updateLEDs() {
 		state = ledStates.peek();
 
-		System.out.println("LED State: " + state);
-
 		switch (state) {
 			case OFF -> swirl(LEDConstants.SWRIL_SEGMENT_SIZE);
 
@@ -57,6 +55,8 @@ public class LEDs extends SubsystemBase {
 
 			case CORAL_COLLECT -> blink(LEDConstants.PURPLE_HUE);
 
+			case CORAL_SCORE -> blink(LEDConstants.ORANGE_HUE);
+
 			case MIXER -> {
 			}
 		}
@@ -68,9 +68,9 @@ public class LEDs extends SubsystemBase {
 		return new StartEndCommand(() -> {
 			ledStates.add(state);
 		},
-				() -> {
-					ledStates.remove(state);
-				}, null, null).ignoringDisable(true);
+		() -> {
+			ledStates.remove(state);
+		}).ignoringDisable(true);
 	}
 
 	public void rainbow() {

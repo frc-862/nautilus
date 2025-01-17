@@ -8,17 +8,11 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
-import com.ctre.phoenix6.configs.CANrangeConfigurator;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -53,14 +47,6 @@ public class Elevator extends SubsystemBase {
     private TalonFXSimState leftSim;
     private TalonFXSimState rightSim;
     private CANrangeSimState rangeSensorSim;
-
-    private Mechanism2d mech2d;
-    private MechanismRoot2d root;
-    private MechanismLigament2d stage0;
-    private MechanismLigament2d stage1;
-    private MechanismLigament2d stage2;
-    private MechanismLigament2d stage3;
-    private MechanismLigament2d carriage;
 
     public Elevator() {
         leftMotor = new ThunderBird(RobotMap.L_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
@@ -108,17 +94,6 @@ public class Elevator extends SubsystemBase {
             // TalonFX sim states do not retain inverts. 
             leftSim.Orientation = ElevatorConstants.L_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
             rightSim.Orientation = ElevatorConstants.R_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
-            
-            stage0 = new MechanismLigament2d("STAGE 0", ElevatorConstants.MIN_EXTENSION.magnitude() + ElevatorConstants.CUSHION, 90, 27, new Color8Bit(Color.kWhite));
-            stage1 = new MechanismLigament2d("STAGE 1", ElevatorConstants.CUSHION, 90, 25, new Color8Bit(Color.kChocolate));
-            stage2 = new MechanismLigament2d("STAGE 2", ElevatorConstants.CUSHION, 0, 22, new Color8Bit(Color.kDarkRed));
-            stage3 = new MechanismLigament2d("STAGE 3", ElevatorConstants.CUSHION, 0, 20, new Color8Bit(Color.kDarkBlue));
-
-            mech2d = new Mechanism2d(27, 90);
-            root = mech2d.getRoot("ele root", 10/2, 0);
-
-            root.append(stage0);
-            root.append(stage1).append(stage2).append(stage3);
         }
     }    
 
@@ -134,7 +109,7 @@ public class Elevator extends SubsystemBase {
         rightSim.setSupplyVoltage(batteryVoltage);
         rangeSensorSim.setSupplyVoltage(batteryVoltage);
 
-        //TODO: I'm unclear if rightsim is necessary, or if this is correct. The WPILib example code only implements one motor, even though it's attached to a 4-motor gearbox
+        //TODO: I'm unclear if rightsim is necessary, or if this is correct. The WPILib example code only implements one motor, even though it's attached to a 2-motor gearbox
         elevatorSim.setInputVoltage(leftSim.getMotorVoltage()); 
         elevatorSim.update(RobotMap.UPDATE_FREQ);
 
@@ -143,16 +118,7 @@ public class Elevator extends SubsystemBase {
 
         LightningShuffleboard.setDouble("elevator", "getPose", getPosition());
         LightningShuffleboard.setDouble("elevator", "getRawPose", Units.metersToInches(elevatorSim.getPositionMeters()));
-        setPower(LightningShuffleboard.getDouble("elevator", "setPower", 1));
-
-        double stageLen = getPosition() / 3;
-
-        stage1.setLength(stageLen);
-        stage2.setLength(stageLen);
-        stage3.setLength(stageLen);
-
-
-        LightningShuffleboard.set("elevator", "Mech2d", mech2d);
+        // setPower(LightningShuffleboard.getDouble("elevator", "setPower", 0));
     }
 
     /**

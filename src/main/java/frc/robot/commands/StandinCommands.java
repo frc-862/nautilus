@@ -37,21 +37,28 @@ public class StandinCommands {
         return new WaitCommand(0.5);
     }
 
-    public static Command stow(){
+    public static Command scoreCoral() {
+        return new WaitCommand(0.5);
+    }
+
+    public static Command elevatorStow(){
         return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.STOW)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.STOW)));
     }
 
-    public static Command l1(){
+    public static Command elevatorL1(){
         return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L1)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L1)));
     }
     
-    public static Command l2(){
+    public static Command elevatorL2(){
         return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L2)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L2)));
     }
 
-    public static Command l3(){
+    public static Command elevatorL3(){
         return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L3)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L3)));
     }
 
+    public static Command elevatorL4(){
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L4)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L3)));
+    }
 
 }

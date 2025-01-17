@@ -27,6 +27,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -39,16 +40,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.FeetPerSecond;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -115,6 +106,21 @@ public class Constants {
 
         // 20ms default loop time
         public static final double UPDATE_FREQ = 0.020;
+
+        public static class ButtonBox {
+            public static final int GRAY_TOPLEFT = 5;
+            public static final int PINK = 3;
+            public static final int GREEN = 4;
+            public static final int GRAY_TOPRIGHT = 6;
+            public static final int GRAY_BOTTOMLEFT = 2; // AXIS
+            public static final int PURPLE = 1;
+            public static final int RED = 2;
+            public static final int GRAY_BOTTOMRIGHT = 3; // AXIS
+            public static final int SHARE = 7;
+            public static final int OPTIONS = 8;
+            public static final int L3_SL = 9;
+            public static final int R3_SL = 10;
+        }
     }
 
     public static class ElevatorConstants {
@@ -143,14 +149,15 @@ public class Constants {
 
         public static final double TOLERANCE = 0.1; // temp
 
-        public static final Distance MIN_EXTENSION = Inches.of(33);
+        public static final Distance MIN_EXTENSION = Inches.of(0);
         public static final Distance MAX_EXTENSION = Inches.of(82);
 
         // SIM
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
         public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no
                                                                     // clue
-        public static final double CUSHION = 2.25; // stages don't line up perfectly
+        public static final double CUSHION_METERS = 0.05; // stages don't line up perfectly
+        public static final double STAGE_LEN_METERS = MAX_EXTENSION.in(Meters) / 3; 
     }
 
     public static class FishingRodConstants {
@@ -198,6 +205,14 @@ public class Constants {
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
         public static final double MOTORS_KG = 0; // temp
+
+        public static final Angle MIN_ANGLE = Degrees.of(-85);
+        public static final Angle MAX_ANGLE = Degrees.of(85);
+
+        //sim stuff
+        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.003841); // 5lb, 2.5in rad, 9in height
+        public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
+
     }
 
     public static class ControllerConstants {
@@ -334,6 +349,32 @@ public class Constants {
         public static final Pose2d REEFSCORE5_2 = new Pose2d(3.101, 4.175, new Rotation2d(0));
         public static final Pose2d REEFSCORE6_1 = new Pose2d(3.656, 5.122, new Rotation2d(300));
         public static final Pose2d REEFSCORE6_2 = new Pose2d(3.949, 5.282, new Rotation2d(300));
+
+        public enum ScoringPoses {
+            REEFSCORE1_1, REEFSCORE1_2, REEFSCORE2_1, REEFSCORE2_2, REEFSCORE3_1, REEFSCORE3_2, 
+            REEFSCORE4_1, REEFSCORE4_2, REEFSCORE5_1, REEFSCORE5_2, REEFSCORE6_1, REEFSCORE6_2
+        }
+
+        public static HashMap<ScoringPoses, Pose2d> poseHashMap = new HashMap<ScoringPoses, Pose2d>(){
+            {
+                put(ScoringPoses.REEFSCORE1_1, REEFSCORE1_1);
+                put(ScoringPoses.REEFSCORE1_2, REEFSCORE1_2);
+                put(ScoringPoses.REEFSCORE2_1, REEFSCORE2_1);
+                put(ScoringPoses.REEFSCORE2_2, REEFSCORE2_2);
+                put(ScoringPoses.REEFSCORE3_1, REEFSCORE3_1);
+                put(ScoringPoses.REEFSCORE3_2, REEFSCORE3_2);
+                put(ScoringPoses.REEFSCORE4_1, REEFSCORE4_1);
+                put(ScoringPoses.REEFSCORE4_2, REEFSCORE4_2);
+                put(ScoringPoses.REEFSCORE5_1, REEFSCORE5_1);
+                put(ScoringPoses.REEFSCORE5_2, REEFSCORE5_2);
+                put(ScoringPoses.REEFSCORE6_1, REEFSCORE6_1);
+                put(ScoringPoses.REEFSCORE6_2, REEFSCORE6_2);
+
+            }
+        };
+
+        public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);
+
     }
 
     public class TunerConstants {
@@ -355,8 +396,8 @@ public class Constants {
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                    .withKP(0.1).withKI(0).withKD(0)
-                    .withKS(0).withKV(0.124);
+                    .withKP(0.34807).withKI(0).withKD(0)
+                    .withKS(0.18408).withKV(0.11928).withKA(0.0022307);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
@@ -455,7 +496,7 @@ public class Constants {
             private static final int kFrontLeftDriveMotorId = RobotMap.FL_DRIVE;
             private static final int kFrontLeftSteerMotorId = RobotMap.FL_TURN;
             private static final int kFrontLeftEncoderId = RobotMap.FL_ENCODER;
-            private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.2353515625);
+            private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.0073);
             private static final boolean kFrontLeftSteerMotorInverted = true;
             private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -466,7 +507,7 @@ public class Constants {
             private static final int kFrontRightDriveMotorId = RobotMap.FR_DRIVE;
             private static final int kFrontRightSteerMotorId = RobotMap.FR_TURN;
             private static final int kFrontRightEncoderId = RobotMap.FR_ENCODER;
-            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.391357421875);
+            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.0222);
             private static final boolean kFrontRightSteerMotorInverted = true;
             private static final boolean kFrontRightEncoderInverted = false;
 
@@ -477,7 +518,7 @@ public class Constants {
             private static final int kBackLeftDriveMotorId = RobotMap.BL_DRIVE;
             private static final int kBackLeftSteerMotorId = RobotMap.BL_TURN;
             private static final int kBackLeftEncoderId = RobotMap.BL_ENCODER;
-            private static final Angle kBackLeftEncoderOffset = Rotations.of(0.14404296875);
+            private static final Angle kBackLeftEncoderOffset = Rotations.of(0.1350);
             private static final boolean kBackLeftSteerMotorInverted = true;
             private static final boolean kBackLeftEncoderInverted = false;
 
@@ -488,7 +529,7 @@ public class Constants {
             private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
             private static final int kBackRightSteerMotorId = RobotMap.BR_TURN;
             private static final int kBackRightEncoderId = RobotMap.BR_ENCODER;
-            private static final Angle kBackRightEncoderOffset = Rotations.of(0.0126953125);
+            private static final Angle kBackRightEncoderOffset = Rotations.of(0.1448);
             private static final boolean kBackRightSteerMotorInverted = true;
             private static final boolean kBackRightEncoderInverted = false;
 
@@ -558,6 +599,7 @@ public class Constants {
             ROD_MOVING(),
             ALEGE_COLLECT(),
             CORAL_COLLECT(),
+            CORAL_SCORE(),
             OFF();
         }
 

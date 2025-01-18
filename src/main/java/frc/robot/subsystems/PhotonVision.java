@@ -19,6 +19,8 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -95,37 +97,24 @@ public class PhotonVision extends SubsystemBase {
         return result.hasTargets();
     }
 
-    /**
-     * @return yaw rotation to best target
-     */
+    @Logged(importance = Importance.DEBUG)
     public double getXBestTarget() {
         return result.getBestTarget().getYaw();
     }
 
-    /**
-     * @return pitch rotation to best target
-     */
+    @Logged(importance = Importance.DEBUG)
     public double getYBestTarget() {
         return result.getBestTarget().getPitch();
     }
 
-    /**
-     * @return The skew of the target in degrees
-     */
+    @Logged(importance = Importance.DEBUG)
     public double getSkewBestTarget() {
         return result.getBestTarget().getSkew();
     }
 
-    /**
-     * @return The camera to target transform
-     */
+    @Logged(importance = Importance.DEBUG)
     public Transform3d getTransformBestTarget() {
         return result.getBestTarget().getBestCameraToTarget();
-    }
-
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        poseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return poseEstimator.update(result);
     }
 
     public void setEstimatedPose(EstimatedRobotPose pose) {
@@ -162,9 +151,7 @@ public class PhotonVision extends SubsystemBase {
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
         LightningShuffleboard.set("Vision", "timestamp", result.getTimestampSeconds());
 
-        if (result.hasTargets()) {
-            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse((m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose), () -> DataLogManager.log("[VISION] Pose Estimator Failed to update"));
-        
+        if (result.hasTargets()) {        
             lastEstimatedRobotPose = estimatedRobotPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
 

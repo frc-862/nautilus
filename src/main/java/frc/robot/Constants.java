@@ -47,13 +47,12 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants.FishingRodConstants.states;
 import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.nio.file.Paths;
 import java.io.IOException;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import java.util.HashMap;
 
@@ -66,6 +65,7 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
+import frc.thunder.hardware.ThunderBird;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -99,6 +99,10 @@ public class Constants {
 
         public static final int WRIST = 11; // temp
         public static final int WRIST_ENCODER = 35; // temp
+
+        public static final int COLLECTOR = 12; // temp
+        public static final int COLLECTOR_ENCODER = 36; // temp
+
 
         public static final int PIGEON = 23;
 
@@ -188,7 +192,44 @@ public class Constants {
         };
     }
 
+    public static class RobotMotors {
+        public static final ThunderBird wristMotor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME,
+            WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
+        public static final ThunderBird leftElevatorMotor = new ThunderBird(RobotMap.L_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
+                    ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
+        public static final ThunderBird rightElevatorMotor = new ThunderBird(RobotMap.R_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
+            ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
+
+    }   
+
     public static class WristConstants {
+        public static final boolean BRAKE_MODE = true;
+        public static final double STATOR_CURRENT_LIMIT = 100d; // temp
+        public static final boolean INVERTED = false; // temp
+
+        public static final double ROTOR_TO_ENCODER_RATIO = 10d; // temp
+        public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
+
+        public static final double MOTORS_KP = 3; // temp
+        public static final double MOTORS_KI = 0; // temp
+        public static final double MOTORS_KD = 0; // temp
+        public static final double MOTORS_KF = 0; // temp
+        public static final double MOTORS_KS = 0; // temp
+        public static final double MOTORS_KV = 0; // temp
+        public static final double MOTORS_KA = 0; // temp
+        public static final double MOTORS_KG = 1.523; // temp
+
+        public static final Angle MIN_ANGLE = Degrees.of(-85);
+        public static final Angle MAX_ANGLE = Degrees.of(85);
+
+        public static final double TOLERANCE = 3d;
+
+        //sim stuff
+        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.1096); // 5lb, 2.5in rad, 9in height
+        public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
+
+    }
+    public static class CollectorConstants{
         public static final boolean BRAKE_MODE = true;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final boolean INVERTED = false; // temp
@@ -196,22 +237,6 @@ public class Constants {
         public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
-
-        public static final double MOTORS_KP = 0; // temp
-        public static final double MOTORS_KI = 0; // temp
-        public static final double MOTORS_KD = 0; // temp
-        public static final double MOTORS_KF = 0; // temp
-        public static final double MOTORS_KS = 0; // temp
-        public static final double MOTORS_KV = 0; // temp
-        public static final double MOTORS_KA = 0; // temp
-        public static final double MOTORS_KG = 0; // temp
-
-        public static final Angle MIN_ANGLE = Degrees.of(-85);
-        public static final Angle MAX_ANGLE = Degrees.of(85);
-
-        //sim stuff
-        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.003841); // 5lb, 2.5in rad, 9in height
-        public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
 
     }
 
@@ -528,7 +553,7 @@ public class Constants {
             private static final int kFrontRightDriveMotorId = RobotMap.FR_DRIVE;
             private static final int kFrontRightSteerMotorId = RobotMap.FR_TURN;
             private static final int kFrontRightEncoderId = RobotMap.FR_ENCODER;
-            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.0222);
+            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.033447);
             private static final boolean kFrontRightSteerMotorInverted = true;
             private static final boolean kFrontRightEncoderInverted = false;
 
@@ -550,7 +575,7 @@ public class Constants {
             private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
             private static final int kBackRightSteerMotorId = RobotMap.BR_TURN;
             private static final int kBackRightEncoderId = RobotMap.BR_ENCODER;
-            private static final Angle kBackRightEncoderOffset = Rotations.of(0.1448);
+            private static final Angle kBackRightEncoderOffset = Rotations.of(0.129395);
             private static final boolean kBackRightSteerMotorInverted = true;
             private static final boolean kBackRightEncoderInverted = false;
 
@@ -597,7 +622,7 @@ public class Constants {
         }
     }
 
-    public class LEDConstants {
+    public static class LEDConstants {
         public static final int LED_PWM_PORT = 0;
         public static final int LED_LENGTH = 13;
         public static final int LED_BUFFER_TIME = 60;

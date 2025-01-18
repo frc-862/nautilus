@@ -4,24 +4,18 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Inches;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.hal.HAL;
-import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
+import frc.robot.Constants.RobotMotors;
 import frc.thunder.hardware.ThunderBird;
-import frc.robot.RobotMotors;
-import frc.robot.Constants.RobotMap;
-import frc.robot.Constants.ElevatorConstants;
 /** Add your docs here. */
 public class ElevatorTest implements AutoCloseable {
 
@@ -37,10 +31,10 @@ public class ElevatorTest implements AutoCloseable {
         assert HAL.initialize(500, 0); 
 
 
-        leftMotor = RobotMotors.elevatorLeftMotor;
+        leftMotor = RobotMotors.leftElevatorMotor;
         simLeftMotor = leftMotor.getSimState();
 
-        rightMotor = RobotMotors.elevatorRightMotor;
+        rightMotor = RobotMotors.rightElevatorMotor;
         simRightMotor = rightMotor.getSimState();
 
         elevator = new Elevator(leftMotor, rightMotor);

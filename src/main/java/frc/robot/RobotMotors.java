@@ -4,9 +4,11 @@
 
 package frc.robot;
 
-import frc.thunder.hardware.ThunderBird;
-import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.*;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.RobotMap;
+import frc.robot.Constants.WristConstants;
+import frc.thunder.hardware.ThunderBird;
 
 /** Add your docs here. */
 public class RobotMotors {

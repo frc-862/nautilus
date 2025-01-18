@@ -190,26 +190,28 @@ public class Constants {
 
     public static class WristConstants {
         public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
+        public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean INVERTED = false; // temp
 
         public static final double ROTOR_TO_ENCODER_RATIO = 10d; // temp
-        public static final double ENCODER_TO_MECHANISM_RATIO = 360d;
+        public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double MOTORS_KP = 0; // temp
+        public static final double MOTORS_KP = 3; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
         public static final double MOTORS_KS = 0; // temp
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
-        public static final double MOTORS_KG = 0; // temp
+        public static final double MOTORS_KG = 1.523; // temp
 
         public static final Angle MIN_ANGLE = Degrees.of(-85);
         public static final Angle MAX_ANGLE = Degrees.of(85);
 
+        public static final double TOLERANCE = 3d;
+
         //sim stuff
-        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.3096); // 5lb, 2.5in rad, 9in height
+        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.1096); // 5lb, 2.5in rad, 9in height
         public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
 
     }

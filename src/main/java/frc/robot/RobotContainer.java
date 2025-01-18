@@ -74,14 +74,14 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void configureButtonBindings() {
-        // new Trigger(driver::getAButton).whileTrue(drivetrain.applyRequest(
-        //         DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
-        // new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests
-        //         .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
-        // new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
+        new Trigger(driver::getAButton).whileTrue(drivetrain.applyRequest(
+                DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+        new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests
+                .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+        new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
-        // new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
-        //         new InstantCommand(() -> drivetrain.seedFieldCentric()));
+        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
+                new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
                 
         // // TODO: Remove Standin Command
@@ -90,9 +90,8 @@ public class RobotContainer extends LightningContainer {
 
         //sim stuff
         if(Robot.isSimulation()) {
-            new Trigger(driver::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(-1)))).onFalse(new InstantCommand(wrist::stop));
-            new Trigger(driver::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(1)))).onFalse(new InstantCommand(wrist::stop));
-
+        //     new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(-1)))).onFalse(new InstantCommand(wrist::stop));
+        //     new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(1)))).onFalse(new InstantCommand(wrist::stop));
 
         //     new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
         //     new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));

@@ -7,13 +7,12 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -42,7 +41,7 @@ public class Wrist extends SubsystemBase {
     private double targetPosition = 0;
     private double currentPosition = 0;
 
-    // public final PositionVoltage positionPID = new PositionVoltage(0);
+    public final PositionVoltage positionPID = new PositionVoltage(0);
 
     //Sim stuff
     private DCMotor gearbox;
@@ -53,7 +52,6 @@ public class Wrist extends SubsystemBase {
 
     public Wrist(ThunderBird motor) {
         this.motor = motor;
-        //new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME, WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
         
         TalonFXConfiguration motorConfig = motor.getConfig();
         CANcoderConfiguration angleConfig = new CANcoderConfiguration();
@@ -63,7 +61,7 @@ public class Wrist extends SubsystemBase {
         encoder.getConfigurator().apply(angleConfig);
 
 
-        motorConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+        motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         motorConfig.Slot0.kP = WristConstants.MOTORS_KP;
         motorConfig.Slot0.kI = WristConstants.MOTORS_KI;
         motorConfig.Slot0.kD = WristConstants.MOTORS_KD;
@@ -87,8 +85,8 @@ public class Wrist extends SubsystemBase {
             motorSim = new TalonFXSimState(motor);
             encoderSim = new CANcoderSimState(encoder);
 
-            encoderSim.setRawPosition(-85 / WristConstants.ENCODER_TO_MECHANISM_RATIO);
-            motorSim.setRawRotorPosition(-85 / WristConstants.ROTOR_TO_ENCODER_RATIO);
+            encoderSim.setRawPosition(WristConstants.MIN_ANGLE.in(Rotations));
+            motorSim.setRawRotorPosition(WristConstants.MIN_ANGLE.in(Rotations));
         }
     }
 
@@ -104,34 +102,34 @@ public class Wrist extends SubsystemBase {
         encoderSim.setSupplyVoltage(batteryVoltage);
 
 
-        double simAngle = Units.radiansToDegrees(wristSim.getAngleRads());
-        double simVeloc = Units.radiansToDegrees(wristSim.getVelocityRadPerSec());
-        motorSim.setRawRotorPosition(simAngle / WristConstants.ROTOR_TO_ENCODER_RATIO);
-        motorSim.setRotorVelocity(simVeloc / WristConstants.ROTOR_TO_ENCODER_RATIO);
-        encoderSim.setRawPosition(simAngle / WristConstants.ENCODER_TO_MECHANISM_RATIO);
-        encoderSim.setVelocity(simVeloc / WristConstants.ENCODER_TO_MECHANISM_RATIO);
+        double simAngle = Units.radiansToRotations(wristSim.getAngleRads());
+        double simVeloc = Units.radiansToRotations(wristSim.getVelocityRadPerSec());
+        motorSim.setRawRotorPosition(simAngle);
+        motorSim.setRotorVelocity(simVeloc);
+        encoderSim.setRawPosition(simAngle);
+        encoderSim.setVelocity(simVeloc);
 
         LightningShuffleboard.setDouble("wrist", "CANCoder angle", encoder.getAbsolutePosition().getValue().in(Degrees));
         LightningShuffleboard.setDouble("wrist", "getPose", getAngle());
-        LightningShuffleboard.setDouble("wrist", "getRawPose", simAngle);
+        LightningShuffleboard.setDouble("wrist", "getTarget", motor.getClosedLoopError().getValueAsDouble());
         // setPower(LightningShuffleboard.getDouble("wrist", "setPower", 0));
+        // setPosition(LightningShuffleboard.getDouble("wrist", "setPosition", 0));
 
         wristSim.setInputVoltage(motorSim.getMotorVoltage()); 
         wristSim.update(RobotMap.UPDATE_FREQ);
 
-        // wristSim.setState(Units.degreesToRadians(encoder.getAbsolutePosition().getValueAsDouble()), Units.degreesToRadians(motor.getVelocity().getValueAsDouble()));
 
-        // TalonFXConfiguration motorConfig = motor.getConfig();
+        TalonFXConfiguration motorConfig = motor.getConfig();
 
-        // motorConfig.Slot0.kP = LightningShuffleboard.getDouble("wrist", "kP", 0);
-        // motorConfig.Slot0.kI = LightningShuffleboard.getDouble("wrist", "kI", 0);
-        // motorConfig.Slot0.kD = LightningShuffleboard.getDouble("wrist", "kD", 0);
-        // motorConfig.Slot0.kS = LightningShuffleboard.getDouble("wrist", "kF", 0);
-        // motorConfig.Slot0.kV = LightningShuffleboard.getDouble("wrist", "kV", 0);
-        // motorConfig.Slot0.kA = LightningShuffleboard.getDouble("wrist", "kA", 0);
-        // motorConfig.Slot0.kG = LightningShuffleboard.getDouble("wrist", "kG", 0);
+        motorConfig.Slot0.kP = LightningShuffleboard.getDouble("wrist", "kP", 0);
+        motorConfig.Slot0.kI = LightningShuffleboard.getDouble("wrist", "kI", 0);
+        motorConfig.Slot0.kD = LightningShuffleboard.getDouble("wrist", "kD", 0);
+        motorConfig.Slot0.kS = LightningShuffleboard.getDouble("wrist", "kF", 0);
+        motorConfig.Slot0.kV = LightningShuffleboard.getDouble("wrist", "kV", 0);
+        motorConfig.Slot0.kA = LightningShuffleboard.getDouble("wrist", "kA", 0);
+        motorConfig.Slot0.kG = LightningShuffleboard.getDouble("wrist", "kG", 0);
         
-        // motor.applyConfig(motorConfig);
+        motor.applyConfig(motorConfig);
 
 
         LightningShuffleboard.setDouble("wrist", "current angle", getAngle());
@@ -140,13 +138,13 @@ public class Wrist extends SubsystemBase {
     }
 
     public void setPosition(double position) {
-        // motor.setControl(positionPID.withPosition(position));
+        motor.setControl(positionPID.withPosition(Units.degreesToRotations(position)));
         targetPosition = position;
     }
 
     @Logged(importance = Importance.DEBUG)
     public double getAngle() {
-        return motor.getPosition().getValueAsDouble();
+        return motor.getRotorPosition().getValue().in(Degrees);
     }
 
     public double getTargetAngle() {
@@ -154,7 +152,7 @@ public class Wrist extends SubsystemBase {
     }
     
     public boolean isOnTarget() {
-        return Math.abs(targetPosition - currentPosition) < ElevatorConstants.TOLERANCE;
+        return Math.abs(targetPosition - currentPosition) < WristConstants.TOLERANCE;
     }
    
     /**
@@ -163,7 +161,6 @@ public class Wrist extends SubsystemBase {
      */
     public void setPower(double power) {
         motor.setControl(new DutyCycleOut(power));
-        LightningShuffleboard.setDouble("wrist", "pow", power);
 
     }
    

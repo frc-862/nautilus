@@ -100,6 +100,10 @@ public class Constants {
         public static final int WRIST = 11; // temp
         public static final int WRIST_ENCODER = 35; // temp
 
+        public static final int COLLECTOR = 12; // temp
+        public static final int COLLECTOR_ENCODER = 36; // temp
+
+
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
@@ -212,6 +216,16 @@ public class Constants {
         //sim stuff
         public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.003841); // 5lb, 2.5in rad, 9in height
         public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
+
+    }
+    public static class CollectorConstants{
+        public static final boolean BRAKE_MODE = true;
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
+        public static final boolean INVERTED = false; // temp
+
+        public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
+        public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
+        public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
     }
 

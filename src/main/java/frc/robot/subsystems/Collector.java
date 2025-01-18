@@ -31,7 +31,9 @@ public class Collector extends SubsystemBase {
 
     public final PositionVoltage positionPID = new PositionVoltage(0);
 
-  /** Creates a new Collector. */
+  /** Creates a new Collector.
+   * @param motor
+   */
   public Collector(ThunderBird motor) {
     this.motor = motor;
 

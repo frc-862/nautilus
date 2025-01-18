@@ -52,9 +52,7 @@ import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.nio.file.Paths;
 import java.io.IOException;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import java.util.HashMap;
 
@@ -198,7 +196,7 @@ public class Constants {
         public static final ThunderBird rightElevatorMotor = new ThunderBird(RobotMap.R_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
             ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
 
-    }
+    }   
 
     public static class WristConstants {
         public static final boolean BRAKE_MODE = true;

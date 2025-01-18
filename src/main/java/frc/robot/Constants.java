@@ -47,13 +47,12 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants.FishingRodConstants.states;
 import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.nio.file.Paths;
 import java.io.IOException;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import java.util.HashMap;
 
@@ -66,6 +65,7 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
+import frc.thunder.hardware.ThunderBird;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -191,6 +191,16 @@ public class Constants {
             }
         };
     }
+
+    public static class RobotMotors {
+        public static final ThunderBird wristMotor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME,
+            WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
+        public static final ThunderBird leftElevatorMotor = new ThunderBird(RobotMap.L_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
+                    ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
+        public static final ThunderBird rightElevatorMotor = new ThunderBird(RobotMap.R_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
+            ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
+
+    }   
 
     public static class WristConstants {
         public static final boolean BRAKE_MODE = true;
@@ -590,7 +600,7 @@ public class Constants {
         }
     }
 
-    public class LEDConstants {
+    public static class LEDConstants {
         public static final int LED_PWM_PORT = 0;
         public static final int LED_LENGTH = 13;
         public static final int LED_BUFFER_TIME = 60;

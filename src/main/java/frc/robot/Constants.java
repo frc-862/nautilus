@@ -193,9 +193,8 @@ public class Constants {
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final boolean INVERTED = false; // temp
 
-        public static final double GEAR_RATIO = 10d; // output shaft gear reduction / Motor gear reduction
-        public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
-        public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
+        public static final double ROTOR_TO_ENCODER_RATIO = 10d; // temp
+        public static final double ENCODER_TO_MECHANISM_RATIO = 360d;
 
         public static final double MOTORS_KP = 0; // temp
         public static final double MOTORS_KI = 0; // temp
@@ -210,7 +209,7 @@ public class Constants {
         public static final Angle MAX_ANGLE = Degrees.of(85);
 
         //sim stuff
-        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.003096); // 5lb, 2.5in rad, 9in height
+        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.3096); // 5lb, 2.5in rad, 9in height
         public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
 
     }

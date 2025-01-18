@@ -11,7 +11,9 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -40,7 +42,7 @@ public class Wrist extends SubsystemBase {
     private double targetPosition = 0;
     private double currentPosition = 0;
 
-    public final PositionVoltage positionPID = new PositionVoltage(0);
+    // public final PositionVoltage positionPID = new PositionVoltage(0);
 
     //Sim stuff
     private DCMotor gearbox;
@@ -56,8 +58,8 @@ public class Wrist extends SubsystemBase {
         TalonFXConfiguration motorConfig = motor.getConfig();
         CANcoderConfiguration angleConfig = new CANcoderConfiguration();
 
-        angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         encoder = new CANcoder(RobotMap.WRIST_ENCODER, RobotMap.CANIVORE_CAN_NAME);
+        angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         encoder.getConfigurator().apply(angleConfig);
 
 
@@ -80,13 +82,13 @@ public class Wrist extends SubsystemBase {
 
         if(Robot.isSimulation()) {
             gearbox = DCMotor.getKrakenX60(1);
-            wristSim = new SingleJointedArmSim(gearbox, WristConstants.GEAR_RATIO, WristConstants.MOI.magnitude(), WristConstants.LENGTH.in(Meters), WristConstants.MIN_ANGLE.in(Radians), WristConstants.MAX_ANGLE.in(Radians), true, WristConstants.MIN_ANGLE.in(Radians), 0d, 1d); 
+            wristSim = new SingleJointedArmSim(gearbox, WristConstants.ROTOR_TO_ENCODER_RATIO, WristConstants.MOI.magnitude(), WristConstants.LENGTH.in(Meters), WristConstants.MIN_ANGLE.in(Radians), WristConstants.MAX_ANGLE.in(Radians), true, WristConstants.MIN_ANGLE.in(Radians), 0d, 1d); 
 
             motorSim = new TalonFXSimState(motor);
             encoderSim = new CANcoderSimState(encoder);
 
-            encoderSim.setRawPosition(-85);
-            motorSim.setRawRotorPosition(-85);
+            encoderSim.setRawPosition(-85 / WristConstants.ENCODER_TO_MECHANISM_RATIO);
+            motorSim.setRawRotorPosition(-85 / WristConstants.ROTOR_TO_ENCODER_RATIO);
         }
     }
 
@@ -101,22 +103,23 @@ public class Wrist extends SubsystemBase {
         motorSim.setSupplyVoltage(batteryVoltage);
         encoderSim.setSupplyVoltage(batteryVoltage);
 
-        wristSim.setInputVoltage(motorSim.getMotorVoltage()); 
-        wristSim.update(RobotMap.UPDATE_FREQ);
 
-        double simAngle = Units.radiansToRotations(wristSim.getAngleRads());
-        double simVeloc = Units.radiansToRotations(wristSim.getVelocityRadPerSec());
-        motorSim.setRawRotorPosition(simAngle);
-        motorSim.setRotorVelocity(simVeloc);
-        encoderSim.setRawPosition(simAngle);
-        encoderSim.setVelocity(simVeloc);
+        double simAngle = Units.radiansToDegrees(wristSim.getAngleRads());
+        double simVeloc = Units.radiansToDegrees(wristSim.getVelocityRadPerSec());
+        motorSim.setRawRotorPosition(simAngle / WristConstants.ROTOR_TO_ENCODER_RATIO);
+        motorSim.setRotorVelocity(simVeloc / WristConstants.ROTOR_TO_ENCODER_RATIO);
+        encoderSim.setRawPosition(simAngle / WristConstants.ENCODER_TO_MECHANISM_RATIO);
+        encoderSim.setVelocity(simVeloc / WristConstants.ENCODER_TO_MECHANISM_RATIO);
 
         LightningShuffleboard.setDouble("wrist", "CANCoder angle", encoder.getAbsolutePosition().getValue().in(Degrees));
         LightningShuffleboard.setDouble("wrist", "getPose", getAngle());
-        LightningShuffleboard.setDouble("wrist", "getRawPose", simAngle * 360);
+        LightningShuffleboard.setDouble("wrist", "getRawPose", simAngle);
         // setPower(LightningShuffleboard.getDouble("wrist", "setPower", 0));
 
-        wristSim.setState(Units.degreesToRadians(encoder.getAbsolutePosition().getValueAsDouble()), motor.getVelocity().getValue().in(RadiansPerSecond));
+        wristSim.setInputVoltage(motorSim.getMotorVoltage()); 
+        wristSim.update(RobotMap.UPDATE_FREQ);
+
+        // wristSim.setState(Units.degreesToRadians(encoder.getAbsolutePosition().getValueAsDouble()), Units.degreesToRadians(motor.getVelocity().getValueAsDouble()));
 
         // TalonFXConfiguration motorConfig = motor.getConfig();
 
@@ -159,7 +162,9 @@ public class Wrist extends SubsystemBase {
      * @param power Wrist motor power
      */
     public void setPower(double power) {
-        motor.set(power);
+        motor.setControl(new DutyCycleOut(power));
+        LightningShuffleboard.setDouble("wrist", "pow", power);
+
     }
    
     /**

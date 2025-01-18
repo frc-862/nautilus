@@ -580,6 +580,16 @@ public class Constants {
                             kBackRightEncoderOffset,
                             kBackRightXPos, kBackRightYPos, kInvertRightSide, kBackRightSteerMotorInverted,
                             kBackRightEncoderInverted);
+
+            /**
+             * Creates a CommandSwerveDrivetrain instance.
+             * This should only be called once in your robot program,.
+             * 
+             * @return Swerve
+             */
+            public static Swerve createDrivetrain() {
+                return new Swerve(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+            }
         }
 
         public class TritonTunerConstants {
@@ -771,7 +781,7 @@ public class Constants {
         }
 
         public static Swerve createDrivetrain() {
-            return IS_TRITON || Robot.isSimulation() ? TritonTunerConstants.createDrivetrain() : null;
+            return IS_TRITON ? TritonTunerConstants.createDrivetrain() : NautliusTunerConstants.createDrivetrain();
         }
     }
 

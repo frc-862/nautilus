@@ -602,7 +602,7 @@ public class Constants {
         public static final int PURPLE_HUE = 315;
         public static final int PINK_HUE = 355;
 
-        public static enum LED_STATES {
+        public enum LED_STATES {
             DISABLED(),
             MIXER(),
             RAINBOW(),

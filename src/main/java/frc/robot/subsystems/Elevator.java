@@ -51,6 +51,9 @@ public class Elevator extends SubsystemBase {
     private CANrangeSimState rangeSensorSim;
 
     public Elevator(ThunderBird leftMotor, ThunderBird rightMotor) {
+        this.leftMotor = leftMotor;
+        this.rightMotor = rightMotor;
+  
     //     leftMotor = new ThunderBird(RobotMap.L_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
     //         ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
     //     rightMotor = new ThunderBird(RobotMap.R_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,

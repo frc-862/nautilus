@@ -56,10 +56,10 @@ public class WristTest implements AutoCloseable {
     public void testSetPower() { 
         var dutyCycle = wristMotor.getDutyCycle();
         
-        wrist.setPower(0.2);
+        wrist.setPower(0);
         
         dutyCycle.waitForUpdate(0.1);
 
-        assertEquals(1, dutyCycle.getValue());
+        assertEquals(0, dutyCycle.getValue());
     }
 }

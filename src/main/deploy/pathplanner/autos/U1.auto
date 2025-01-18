@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "S1-R6"
+                  "pathName": "S2-R6"
                 }
               },
               {
@@ -27,31 +27,6 @@
           "type": "named",
           "data": {
             "name": "ScoreCoral"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "R6-P1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ElevatorHome"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
           }
         }
       ]

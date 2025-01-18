@@ -21,6 +21,7 @@ import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
@@ -79,6 +80,8 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests
                 .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
+
+        new Trigger(driver::getYButton).whileTrue(new TestAutoAlign(vision, drivetrain));
 
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));

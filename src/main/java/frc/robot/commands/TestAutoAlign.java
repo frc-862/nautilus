@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -17,12 +18,17 @@ public class TestAutoAlign extends Command {
     // get PID values from constants
 
     Transform3d diffFromTag;
-    PIDController controllerRot = new PIDController(AutoAlignConstants.RotAutoAlignKp, 
-        AutoAlignConstants.RotAutoAlignKi, AutoAlignConstants.RotAutoAlignKd);
-    PIDController controllerX = new PIDController(AutoAlignConstants.XAutoAlignKp, 
-        AutoAlignConstants.XAutoAlignKi, AutoAlignConstants.XAutoAlignKd);
-    PIDController controllerY = new PIDController(AutoAlignConstants.YAutoAlignKp, 
-        AutoAlignConstants.YAutoAlignKi, AutoAlignConstants.YAutoAlignKd);
+    PIDController controllerRot = RobotBase.isReal() ? new PIDController(AutoAlignConstants.RotAutoAlignKp, 
+        AutoAlignConstants.RotAutoAlignKi, AutoAlignConstants.RotAutoAlignKd) : new PIDController(AutoAlignConstants.SimRotAutoAlignKp, 
+        AutoAlignConstants.SimRotAutoAlignKi, AutoAlignConstants.SimRotAutoAlignKd);
+
+    PIDController controllerX = RobotBase.isReal() ? new PIDController(AutoAlignConstants.XAutoAlignKp, AutoAlignConstants.XAutoAlignKi, 
+        AutoAlignConstants.XAutoAlignKd) : new PIDController(AutoAlignConstants.SimXAutoAlignKp, AutoAlignConstants.SimXAutoAlignKi,
+        AutoAlignConstants.SimXAutoAlignKd);
+
+    PIDController controllerY = RobotBase.isReal() ? new PIDController(AutoAlignConstants.YAutoAlignKp, 
+        AutoAlignConstants.YAutoAlignKi, AutoAlignConstants.YAutoAlignKd) : new PIDController(AutoAlignConstants.SimYAutoAlignKp,
+        AutoAlignConstants.SimYAutoAlignKi, AutoAlignConstants.SimYAutoAlignKd);
 
     double dr_dt;
     double dx_dt;

@@ -629,17 +629,35 @@ public class Constants {
 
     public class AutoAlignConstants {
         public static final double AutoAlignTolerance = 0.2d;
-
-        public static final double XAutoAlignKp = 0.4d;
+        
+        // Rotation PID
+        public static final double XAutoAlignKp = 0.2d;
         public static final double XAutoAlignKi = 0d;
         public static final double XAutoAlignKd = 0.2d;
 
-        public static final double YAutoAlignKp = 0.4d;
+        // TranslationX PID
+        public static final double YAutoAlignKp = 0.2d;
         public static final double YAutoAlignKi = 0d;
         public static final double YAutoAlignKd = 0.2d;
 
-        public static final double RotAutoAlignKp = 0.2d;
+        // TranslationY PID
+        public static final double RotAutoAlignKp = 0.1d;
         public static final double RotAutoAlignKi = 0d;
         public static final double RotAutoAlignKd = 0d;
+
+        // Sim Rot PID
+        public static final double SimXAutoAlignKp = 0.4d;
+        public static final double SimXAutoAlignKi = 0d;
+        public static final double SimXAutoAlignKd = 0.2d;
+
+        // Sim TranslationX PID
+        public static final double SimYAutoAlignKp = 0.4d;
+        public static final double SimYAutoAlignKi = 0d;
+        public static final double SimYAutoAlignKd = 0.2d;
+
+        // Sim TranslationY PID
+        public static final double SimRotAutoAlignKp = 0.2d;
+        public static final double SimRotAutoAlignKi = 0d;
+        public static final double SimRotAutoAlignKd = 0d;
     }
 }

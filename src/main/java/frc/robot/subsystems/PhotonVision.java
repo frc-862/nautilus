@@ -177,6 +177,8 @@ public class PhotonVision extends SubsystemBase {
             }
         }
 
+        LightningShuffleboard.setBool("Vision", "hasTarget", hasTarget());
+
     }
 
     @Override

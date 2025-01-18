@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -29,6 +31,7 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotMap;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+
 
 public class Elevator extends SubsystemBase {
 
@@ -98,6 +101,7 @@ public class Elevator extends SubsystemBase {
     }    
 
     @Override
+
     public void periodic() {
         currentPosition = getPosition();
     }
@@ -149,6 +153,7 @@ public class Elevator extends SubsystemBase {
      * checks if the elevator is on target
      * @return true if the elevator is within the tolerance of the target position
      */
+    @Logged(importance = Importance.DEBUG)
     public boolean isOnTarget() {
         return Math.abs(targetPosition - currentPosition) <= ElevatorConstants.TOLERANCE;
     }
@@ -157,6 +162,7 @@ public class Elevator extends SubsystemBase {
      * gets the position of the elevator motors
      * @return left motor position (which the right is synced to)
      */
+    @Logged(importance = Importance.DEBUG)
     public double getPosition() {
         return leftMotor.getPosition().getValueAsDouble();
     }
@@ -165,8 +171,15 @@ public class Elevator extends SubsystemBase {
      * gets the basic percentage power of the elevator motors
      * @return left motor power (which the right is synced to)
      */
+
+    @Logged(importance = Importance.DEBUG)
     public double getCurrentPower() {
         return leftMotor.get();
+    }
+
+    @Logged(importance = Importance.DEBUG)
+    public double getTargetPosition(){
+        return targetPosition;
     }
 }
 

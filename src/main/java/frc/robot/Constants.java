@@ -507,7 +507,7 @@ public class Constants {
             private static final int kFrontRightDriveMotorId = RobotMap.FR_DRIVE;
             private static final int kFrontRightSteerMotorId = RobotMap.FR_TURN;
             private static final int kFrontRightEncoderId = RobotMap.FR_ENCODER;
-            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.0222);
+            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.033447);
             private static final boolean kFrontRightSteerMotorInverted = true;
             private static final boolean kFrontRightEncoderInverted = false;
 
@@ -529,7 +529,7 @@ public class Constants {
             private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
             private static final int kBackRightSteerMotorId = RobotMap.BR_TURN;
             private static final int kBackRightEncoderId = RobotMap.BR_ENCODER;
-            private static final Angle kBackRightEncoderOffset = Rotations.of(0.1448);
+            private static final Angle kBackRightEncoderOffset = Rotations.of(0.129395);
             private static final boolean kBackRightSteerMotorInverted = true;
             private static final boolean kBackRightEncoderInverted = false;
 
@@ -587,6 +587,7 @@ public class Constants {
         public static final int ORANGE_HUE = 5;
         public static final int YELLOW_HUE = 15;
         public static final int GREEN_HUE = 240;
+        public static final int LIGHT_BLUE_HUE = 195;
         public static final int BLUE_HUE = 120;
         public static final int PURPLE_HUE = 315;
         public static final int PINK_HUE = 355;
@@ -597,7 +598,8 @@ public class Constants {
             RAINBOW(),
             ROD_ON_TARGET(),
             ROD_MOVING(),
-            ALEGE_COLLECT(),
+            ALGAE_COLLECT(),
+            ALGAE_SCORE(),
             CORAL_COLLECT(),
             CORAL_SCORE(),
             OFF();

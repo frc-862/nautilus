@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -65,6 +67,7 @@ public class FishingRod extends SubsystemBase {
             currState = state;
         }
 
+
         switch(currState) {
             case STOW:
                 wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
@@ -99,6 +102,8 @@ public class FishingRod extends SubsystemBase {
      * Gets the state of the fishing rod
      * @return the current state of the fishing rod
      */
+
+    @Logged(importance = Importance.CRITICAL)
     public states getState() {
         return currState;
     }
@@ -107,6 +112,7 @@ public class FishingRod extends SubsystemBase {
      * Checks if the whole fishing rod system is on target
      * @return true if the wrist and elevator are on target false otherwise
      */
+    @Logged(importance = Importance.DEBUG)
     public boolean onTarget() {
         return wrist.isOnTarget() && elevator.isOnTarget();
     }
@@ -130,4 +136,5 @@ public class FishingRod extends SubsystemBase {
 
         LightningShuffleboard.set("fishing rod", "Mech2d", mech2d);
     }
+
 }

@@ -18,6 +18,8 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -139,13 +141,7 @@ public class Wrist extends SubsystemBase {
         targetPosition = position;
     }
 
-    public void setRawAngle(double angle) {
-        encoderSim.setRawPosition(85);
-        motorSim.setRawRotorPosition(85);
-        targetPosition = angle;
-        
-    }
-
+    @Logged(importance = Importance.DEBUG)
     public double getAngle() {
         return motor.getPosition().getValueAsDouble();
     }

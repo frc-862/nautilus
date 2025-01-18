@@ -12,28 +12,34 @@ import frc.thunder.hardware.ThunderBird;
 
 
 public class Collector extends SubsystemBase {
-    private ThunderBird motor;
 
+    private ThunderBird motor;
     public double power = 0;
 
-    public final PositionVoltage positionPID = new PositionVoltage(0);
+    /** Creates a new Collector.
+     * @param motor
+     */
+    public Collector(ThunderBird motor) {
+        this.motor = motor;
+    }
 
-  /** Creates a new Collector.
-   * @param motor
-   */
-  public Collector(ThunderBird motor) {
-    this.motor = motor;
-  }
+    @Override
+    public void periodic() {
+        setPower(power);
+    }
 
-  @Override
-  public void periodic() {
-    setPower(power);
-  }
+    /**
+     * Set the power of the motor using a duty cycle
+     * @param power
+     */
+    public void setPower(double power){
+        motor.setControl(new DutyCycleOut(power));
+    }
 
-  public void setPower(double power){
-    motor.setControl(new DutyCycleOut(power));
-  }
-  public void stop(){
-    motor.stopMotor();
-  }
+    /**
+     * stops the motor
+     */
+    public void stop(){
+        motor.stopMotor();
+    }
 }

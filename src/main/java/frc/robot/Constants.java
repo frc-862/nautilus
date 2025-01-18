@@ -226,9 +226,6 @@ public class Constants {
         public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
-        
-        public static final Angle MIN_ANGLE = Degrees.of(-85);
-        public static final Angle MAX_ANGLE = Degrees.of(85);
 
     }
 

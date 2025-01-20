@@ -18,6 +18,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.states;
 import frc.robot.Constants.LEDConstants.LED_STATES;
+import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
@@ -55,7 +56,7 @@ public class RobotContainer extends LightningContainer {
 
         //this is temporary
         if(Robot.isSimulation()) {
-            elevator = new Elevator();
+            elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
         }

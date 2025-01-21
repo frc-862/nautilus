@@ -11,10 +11,12 @@ import com.pathplanner.lib.auto.NamedCommands;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -100,13 +102,21 @@ public class RobotContainer extends LightningContainer {
         //     new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(-1)))).onFalse(new InstantCommand(wrist::stop));
         //     new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(1)))).onFalse(new InstantCommand(wrist::stop));
 
-            new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
-            new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
+            // new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.2)))).onFalse(new InstantCommand(elevator::stop));
+            // new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.2)))).onFalse(new InstantCommand(elevator::stop));
+
+            new Trigger(() -> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPosition(0.5))));
+
+            new Trigger(driver::getYButton).onTrue(new InstantCommand(() -> simGamePeices.dropOrCollect()));
         }
     }
 
     @Override
     protected void initializeNamedCommands() {
+
+        if (RobotBase.isSimulation()) {
+            return;
+        }
 
         NamedCommands.registerCommand("ElevatorHome",
                 StandinCommands.elevatorStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
@@ -119,7 +129,7 @@ public class RobotContainer extends LightningContainer {
         NamedCommands.registerCommand("ElevatorL4",
                 StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
         NamedCommands.registerCommand("AlgaeCollect",
-                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALEGE_COLLECT)));
+                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALGAE_COLLECT)));
         NamedCommands.registerCommand("IntakeCoral",
                 StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
         NamedCommands.registerCommand("ScoreCoral", 

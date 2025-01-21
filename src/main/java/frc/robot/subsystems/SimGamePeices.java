@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.security.PermissionCollection;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -27,12 +28,18 @@ public class SimGamePeices extends SubsystemBase {
     public Coral[] corals = new Coral[] {};
     public Algae[] algaes = new Algae[] {};
     public boolean hasPeice = false;
-    public Peice heldPeice;
-
+    public Peice lastHeldPeice;
     public class Peice{
-        protected Pose3d pose;
-        protected boolean inRobot;
-        public double peiceNumber;
+        public Pose3d pose;
+        public boolean inRobot;
+        public int peiceNumber;
+        public StructPublisher<Pose3d> publisher;
+
+        public Peice(int peiceNumber){
+            publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("SimGamePeices")
+                .getStructTopic("Peice# " + peiceNumber, Pose3d.struct).publish();
+        }
+
 
         public Pose3d getPose(){
             return pose;
@@ -50,34 +57,37 @@ public class SimGamePeices extends SubsystemBase {
             this.inRobot = inRobot;
         }
 
-        public void publish(){
-            LightningShuffleboard.setDoubleArray(this instanceof Coral ? "Corals" : "Algae", 
-                "Peice# " + (peiceNumber), 
-                () -> new double[] {pose.getX(), pose.getY(), pose.getZ(),
-                Units.radiansToDegrees(pose.getRotation().getX()), 
-                Units.radiansToDegrees(pose.getRotation().getY()),
-                Units.radiansToDegrees(pose.getRotation().getZ())});
-
+        public int getNumber(){
+            return peiceNumber;
         }
+
+        public void publish(){
+            publisher.set(pose);
+        }
+
     }
 
     public class Coral extends Peice {
 
         public Coral(Pose3d pose){
-            setPose(pose);;
+            super(peices.length);
+            setPose(pose);
         }
 
         public Coral(){
+            super(peices.length);
             setPose(SimGamePeiceConstants.DefaultPose);
         }
     }
 
     public class Algae extends Peice {
         public Algae(Pose3d pose){
+            super(peices.length);
             setPose(pose);
         }
 
         public Algae(){
+            super(peices.length);
             setPose(SimGamePeiceConstants.DefaultPose);
         }
     }
@@ -108,6 +118,9 @@ public class SimGamePeices extends SubsystemBase {
         addPeice(new Coral());
         corals[0].setInRobot(true);
 
+        hasPeice = true;
+        lastHeldPeice = corals[0];
+
         System.out.println("Peices added to SimGamePeices");
   }
 
@@ -115,6 +128,13 @@ public class SimGamePeices extends SubsystemBase {
     public void periodic() {
         // collect();
         // drop();
+        for (Peice peice : peices){
+            peice.publish();
+        }
+
+        if(hasPeice){
+            updateHeldPeicePose();
+        }
     }
 
     public void addPeice(Peice peice){
@@ -126,8 +146,6 @@ public class SimGamePeices extends SubsystemBase {
         newPeices[peices.length] = peice;
         peice.peiceNumber = peices.length;
         peices = newPeices;
-
-        peice.publish();
 
         if (peice instanceof Coral){
 
@@ -166,24 +184,23 @@ public class SimGamePeices extends SubsystemBase {
                 && Math.abs(elevator.getPosition() - peice.pose.getTranslation().getZ()) < 0.5){
                     peice.inRobot = true;
                     hasPeice = true;
-                    heldPeice = peice;
+                    lastHeldPeice = peice;
             }
         }
     }
 
     public void drop(){
-        if(hasPeice = true && fishingRod.getState() != states.STOW){
-            heldPeice.inRobot = false;
-            heldPeice = null;
+        if(hasPeice && fishingRod.getState() != states.STOW){
+            lastHeldPeice.inRobot = false;
+            lastHeldPeice = null;
             hasPeice = false;
         }
     }
 
     public void forceDrop(){
 
-        if(hasPeice = true){
-            heldPeice.inRobot = false;
-            heldPeice = null;
+        if(hasPeice){
+            lastHeldPeice.inRobot = false;
             hasPeice = false;
         }
     }
@@ -193,25 +210,37 @@ public class SimGamePeices extends SubsystemBase {
         double minDist = 10000;
         Peice closestPeice = null;
 
-        for(Peice peice : peices){
-            double dist = new Translation2d(peice.pose.getX(), peice.pose.getY())
-                .getDistance(drivetrain.getPose().getTranslation());
+        if (!hasPeice){
 
-            if(dist < minDist){
-                closestPeice = peice;
-                minDist = dist;
+            for(Peice peice : peices){
+                double dist = new Translation2d(peice.pose.getX(), peice.pose.getY())
+                    .getDistance(drivetrain.getPose().getTranslation());
+
+                if(dist < minDist){
+                    closestPeice = peice;
+                    minDist = dist;
+                }
             }
-       }
-        closestPeice.inRobot = true;  
-        hasPeice = true;
-        heldPeice = closestPeice;
+            closestPeice.inRobot = true;  
+            hasPeice = true;
+            lastHeldPeice = closestPeice;
+        }
     }
 
     public void dropOrCollect(){
-        if (hasPeice = true){
+        if (hasPeice){
             forceDrop();
+
+            System.out.println("Peice Dropped");
         } else {
+            System.out.println("Peice Collected");
             forceCollect();
+            
         }
+    }
+
+    public void updateHeldPeicePose(){
+        lastHeldPeice.pose = new Pose3d(drivetrain.getPose().getX(), drivetrain.getPose().getY(), elevator.getPosition(), 
+            new Rotation3d(wrist.getAngle(), 0, drivetrain.getPose().getRotation().getDegrees()));
     }
 }

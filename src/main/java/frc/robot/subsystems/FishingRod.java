@@ -24,7 +24,7 @@ public class FishingRod extends SubsystemBase {
 
     private Wrist wrist;
     private Elevator elevator;
-    private states currState;
+    private states currState = states.STOW;
 
     //simulation stuff
     private Mechanism2d mech2d;
@@ -45,7 +45,7 @@ public class FishingRod extends SubsystemBase {
             stage2 = new MechanismLigament2d("STAGE 2", ElevatorConstants.CUSHION_METERS, 0, 15, new Color8Bit(Color.kDarkRed));
             stage3 = new MechanismLigament2d("STAGE 3", ElevatorConstants.CUSHION_METERS, 0, 10, new Color8Bit(Color.kDarkBlue));
 
-            wristSim = new MechanismLigament2d("WRIST SIM", WristConstants.LENGTH.magnitude(), -90d, 5d, new Color8Bit(Color.kWhite));
+            wristSim = new MechanismLigament2d("WRIST SIM", WristConstants.LENGTH.magnitude(), 90d, 5d, new Color8Bit(Color.kWhite));
          
             mech2d = new Mechanism2d(0.69, 2.29);
             root = mech2d.getRoot("rod root", 0.35, 0);

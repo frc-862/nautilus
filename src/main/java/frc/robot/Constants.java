@@ -129,37 +129,36 @@ public class Constants {
 
     public static class ElevatorConstants {
         public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
+        public static final double STATOR_CURRENT_LIMIT = 150d; // temp
         public static final boolean L_INVERTED = false; // temp
         public static final boolean R_INVERTED = true; // temp
+        
 
-        public static final double GEAR_RATIO = 1 / 4d; // temp
+        public static final double GEAR_RATIO = 4d; 
+        public static final Distance DRUM_RADIUS = Millimeter.of(15);
+        public static final double DRUM_CIRCUMFERENCE = Math.PI * 2 * DRUM_RADIUS.in(Inches);
         public static final double ROTOR_TO_SENSOR_RATIO = 1; // temp
-        public static final double ENCODER_TO_MECHANISM_RATIO = GEAR_RATIO * Math.PI * 2 * (7 / 11); // TODO: i dont
-                                                                                                     // know why the
-                                                                                                     // 7/11 made it
-                                                                                                     // work, but it
-                                                                                                     // did. this is
-                                                                                                     // temporary.
+        public static final double ENCODER_TO_MECHANISM_RATIO = DRUM_CIRCUMFERENCE / GEAR_RATIO;
 
-        public static final double MOTORS_KP = 0; // temp
+        public static final double MOTORS_KP = 3; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
         public static final double MOTORS_KS = 0; // temp
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
-        public static final double MOTORS_KG = 0; // temp
+        public static final double MOTORS_KG = 0.43; // temp
 
         public static final double TOLERANCE = 0.1; // temp
 
         public static final Distance MIN_EXTENSION = Inches.of(0);
         public static final Distance MAX_EXTENSION = Inches.of(82);
 
+
+
+
         // SIM
-        public static final Mass CARRIAGE_WEIGHT = Pounds.of(7); // temp
-        public static final Distance DRUM_RADIUS = Inches.of(0.94); // TODO: ask mr hurley abt this because i have no
-                                                                    // clue
+        public static final Mass CARRIAGE_WEIGHT = Pounds.of(30); // temp
         public static final double CUSHION_METERS = 0.05; // stages don't line up perfectly
         public static final double STAGE_LEN_METERS = MAX_EXTENSION.in(Meters) / 3; 
     }

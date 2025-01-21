@@ -16,10 +16,12 @@ public class TestAutoAlign extends Command {
     double tx = 0;
     PIDController controller = new PIDController(0.05d, 0, 0);
     double calculatedSpeed;
+    double offset = 0;
 
-    public TestAutoAlign(PhotonVision vision, Swerve drivetrain) {
+    public TestAutoAlign(PhotonVision vision, Swerve drivetrain, double offset) {
         this.vision = vision;
         this.drivetrain = drivetrain;
+        this.offset = offset;
 
         addRequirements(drivetrain);
     }
@@ -56,6 +58,6 @@ public class TestAutoAlign extends Command {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(tx) > 0.2d;
+        return Math.abs(tx) - offset > 0.2d;
     }
 }

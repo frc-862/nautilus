@@ -73,10 +73,13 @@ public class Collector extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
 
+        // set supply voltage to battery voltage (12 v)
         motorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
+        // set motorspeed using collector physics simulation
         motorSim.setRotorVelocity(collectorSim.getOutput(0));
 
+        // update collector physics simulation
         collectorSim.setInput(motorSim.getMotorVoltage());
         collectorSim.update(RobotMap.UPDATE_FREQ);
 

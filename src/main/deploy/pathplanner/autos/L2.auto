@@ -17,10 +17,16 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevatorL4"
+                  "name": "RodL4"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ReefAlignLeft"
           }
         },
         {
@@ -42,10 +48,16 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevatorSource"
+                  "name": "RodSource"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SourceAlignLeft"
           }
         },
         {
@@ -67,10 +79,16 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevatorL4"
+                  "name": "RodL4"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ReefAlignRight"
           }
         },
         {

@@ -12,7 +12,6 @@ import edu.wpi.first.hal.SimBoolean;
 import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -31,6 +30,7 @@ public class Collector extends SubsystemBase {
     public SimDevice beamBreakSim;
     public DigitalInput beamBreak;
     public SimBoolean simBoolean;
+    @SuppressWarnings("rawtypes")
     public LinearSystemSim collectorSim;
 
     public double currentPower;
@@ -41,6 +41,7 @@ public class Collector extends SubsystemBase {
     /** Creates a new Collector.
      * @param motor
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Collector(ThunderBird motor) {
         this.motor = motor;
 

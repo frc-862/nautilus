@@ -47,29 +47,13 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Constants.FishingRodConstants.states;
 import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.io.IOException;
-import java.util.function.Supplier;
 import java.util.HashMap;
 
-import org.photonvision.estimation.TargetModel;
-import org.photonvision.simulation.SimCameraProperties;
-import org.photonvision.simulation.VisionTargetSim;
-
-import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.configs.*;
-import com.ctre.phoenix6.signals.*;
-import com.ctre.phoenix6.swerve.*;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 import frc.thunder.hardware.ThunderBird;
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 public class Constants {
 
@@ -579,6 +563,8 @@ public class Constants {
             /**
              * Creates a CommandSwerveDrivetrain instance.
              * This should only be called once in your robot program,.
+             * 
+             * @return Swerve
              */
             public static Swerve createDrivetrain() {
                 return new Swerve(

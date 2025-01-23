@@ -1,0 +1,16 @@
+name: Simulate Code
+
+on:
+    pull_request:
+    
+jobs:
+    simulate:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Set Execution Permissions
+              run: chmod +x ./gradlew
+            - name: Simulate Code
+              run: ./gradlew simulate
+

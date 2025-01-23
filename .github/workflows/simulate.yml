@@ -1,9 +1,7 @@
 name: Simulate Code
 
 on:
-    push:
-        branches:
-            - 93-github-actions-robot-simulate
+    pull_request:
     
 jobs:
     simulate:

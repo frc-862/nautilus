@@ -234,15 +234,15 @@ public class Constants {
     }
     public static class CollectorConstants{
         public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
+        public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean INVERTED = false; // temp
 
         public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double COLLECTOR_KV = 0.004; // temp
-        public static final double COLLECTOR_KA = 0.001; // temp
+        public static final double COLLECTOR_KV = 0.24; // temp
+        public static final double COLLECTOR_KA = 0.12; // temp
 
     }
 

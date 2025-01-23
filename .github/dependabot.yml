@@ -8,5 +8,4 @@ updates:
       interval: "daily"
     commit-message:
       prefix: "[#1] "
-    labels:
 

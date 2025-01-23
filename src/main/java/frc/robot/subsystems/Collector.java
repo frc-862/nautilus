@@ -26,17 +26,14 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 public class Collector extends SubsystemBase {
 
     private ThunderBird motor;
-    public TalonFXSimState motorSim;
-    public SimDevice beamBreakSim;
-    public DigitalInput beamBreak;
-    public SimBoolean simBoolean;
+    private TalonFXSimState motorSim;
+
+    private DigitalInput beamBreak;
+    private SimDevice beamBreakSim;
+    private SimBoolean simBoolean;
+
     @SuppressWarnings("rawtypes")
-    public LinearSystemSim collectorSim;
-
-    public double currentPower;
-
-    public final VelocityVoltage velocityPID = new VelocityVoltage(0);
-
+    private LinearSystemSim collectorSim;
 
     /** Creates a new Collector.
      * @param motor
@@ -46,7 +43,7 @@ public class Collector extends SubsystemBase {
         this.motor = motor;
 
         // Instantiate Beam Break Sensor
-        beamBreak = new DigitalInput(RobotMap.COLLECTOR_BEAM_BREAK_PORT);
+        beamBreak = new DigitalInput(RobotMap.COLLECTOR_BEAM_BREAK_DIO);
 
         if (RobotBase.isSimulation()){
 
@@ -55,7 +52,7 @@ public class Collector extends SubsystemBase {
 
             // simulate beam break sensor
 
-            beamBreakSim = new SimDevice(RobotMap.COLLECTOR_BEAM_BREAK_PORT);
+            beamBreakSim = SimDevice.create("BeamBreak");
             simBoolean = beamBreakSim.createBoolean("BeamBreak", Direction.kBidir, false);   
 
             beamBreak.setSimDevice(beamBreakSim);
@@ -69,6 +66,8 @@ public class Collector extends SubsystemBase {
 
     @Override
     public void periodic() {
+        LightningShuffleboard.setBool("Collector", "BeamBreak", getBeamBreakOutput());
+        LightningShuffleboard.setDouble("Collector", "Velocity", getVelocity());
     }
 
     @Override
@@ -83,10 +82,6 @@ public class Collector extends SubsystemBase {
         // update collector physics simulation
         collectorSim.setInput(motorSim.getMotorVoltage());
         collectorSim.update(RobotMap.UPDATE_FREQ);
-
-
-        LightningShuffleboard.setBool("Collector", "BeamBreak", getBeamBreakOutput());
-        LightningShuffleboard.setDouble("Collector", "Velocity", getVelocity());
     }
 
     /**
@@ -94,7 +89,6 @@ public class Collector extends SubsystemBase {
      * @param power
      */
     public void setPower(double power){
-        currentPower = power;
         motor.setControl(new DutyCycleOut(power));
     }
 
@@ -106,7 +100,7 @@ public class Collector extends SubsystemBase {
     }
 
     /**
-     * @return current velocity of collector rps
+     * @return current velocity of collector rot/sec
      */
     public double getVelocity(){
         return motor.getRotorVelocity().getValueAsDouble();

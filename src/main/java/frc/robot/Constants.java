@@ -102,7 +102,7 @@ public class Constants {
 
         public static final int COLLECTOR = 12; // temp
         public static final int COLLECTOR_ENCODER = 36; // temp
-        public static final int COLLECTOR_BEAM_BREAK_PORT = 1; // temp
+        public static final int COLLECTOR_BEAM_BREAK_DIO = 0; // temp
 
 
         public static final int PIGEON = 23;
@@ -199,8 +199,7 @@ public class Constants {
                     ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
         public static final ThunderBird rightElevatorMotor = new ThunderBird(RobotMap.R_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
             ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
-
-        public static final ThunderBird COLLECTOR_MOTOR = new ThunderBird(RobotMap.COLLECTOR, RobotMap.CANIVORE_CAN_NAME, CollectorConstants.INVERTED,
+        public static final ThunderBird collectorMotor = new ThunderBird(RobotMap.COLLECTOR, RobotMap.CANIVORE_CAN_NAME, CollectorConstants.INVERTED,
             CollectorConstants.STATOR_CURRENT_LIMIT, CollectorConstants.BRAKE_MODE);
 
     }   

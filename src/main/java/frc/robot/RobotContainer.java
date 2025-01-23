@@ -64,7 +64,7 @@ public class RobotContainer extends LightningContainer {
             elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
-            collector = new Collector(RobotMotors.COLLECTOR_MOTOR);
+            collector = new Collector(RobotMotors.collectorMotor);
         }
 
         leds = new LEDs();

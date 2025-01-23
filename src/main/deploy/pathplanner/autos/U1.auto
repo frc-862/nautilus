@@ -17,10 +17,16 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevatorL4"
+                  "name": "RodL4"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ReefAlignLeft"
           }
         },
         {

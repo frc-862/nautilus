@@ -1,4 +1,4 @@
-name: Simulate Code
+name:   Code
 
 on:
     pull_request:
@@ -12,5 +12,5 @@ jobs:
             - name: Set Execution Permissions
               run: chmod +x ./gradlew
             - name: Simulate Code
-              run: ./gradlew simulate
+              run: ./gradlew simulateJava
 

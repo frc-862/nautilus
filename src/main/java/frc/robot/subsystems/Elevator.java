@@ -103,9 +103,10 @@ public class Elevator extends SubsystemBase {
     }    
 
     @Override
-
     public void periodic() {
         currentPosition = getPosition();
+
+        LightningShuffleboard.setDouble("Elevator", "CANRange Value", currentPosition);
     }
 
     @Override

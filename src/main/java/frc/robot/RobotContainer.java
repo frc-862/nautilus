@@ -57,6 +57,7 @@ public class RobotContainer extends LightningContainer {
     protected void initializeSubsystems() {
         drivetrain = TunerConstants.createDrivetrain();
         vision = new PhotonVision();
+        leds = new LEDs();
         logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
@@ -68,8 +69,7 @@ public class RobotContainer extends LightningContainer {
             rod = new FishingRod(wrist, elevator);
         }
 
-        leds = RobotBase.isReal() ? new LEDs() : null;
-        simGamePeices = RobotBase.isSimulation() ? new SimGamePeices(elevator, wrist, rod, drivetrain) : null;
+        simGamePeices = RobotBase.isSimulation() ? new SimGamePeices(elevator, wrist, rod, drivetrain, collector) : null;
     }
 
     @Override
@@ -104,10 +104,6 @@ public class RobotContainer extends LightningContainer {
 
             // new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.2)))).onFalse(new InstantCommand(elevator::stop));
             // new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.2)))).onFalse(new InstantCommand(elevator::stop));
-
-            new Trigger(() -> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPosition(0.5))));
-
-            new Trigger(driver::getYButton).onTrue(new InstantCommand(() -> simGamePeices.dropOrCollect()));
         }
     }
 

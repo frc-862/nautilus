@@ -632,7 +632,7 @@ public class Constants {
 
     }
 
-    public class SimGamePeiceConstants {
+    public class SimGamePeicesConstants {
         public static final Pose3d A1B = new Pose3d(1.216, 5.850, 0.5, new Rotation3d(0, 0, 0));
         public static final Pose3d A2B = new Pose3d(1.216, 4.020, 0.5, new Rotation3d(0, 0, 0));
         public static final Pose3d A3B = new Pose3d(1.216, 2.190, 0.5, new Rotation3d(0, 0, 0));
@@ -640,6 +640,10 @@ public class Constants {
         public static final Pose3d A2R = new Pose3d(16.330, 4.020, 0.5, new Rotation3d(0, 0, 0));
         public static final Pose3d A3R = new Pose3d(16.330, 5.850, 0.5, new Rotation3d(0, 0, 0));
 
-        public static final Pose3d DefaultPose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+        public static final Pose3d DEFAULT_POSE = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+
+        public static final double ELEATOR_ROOT_HEIGHT = 0.1;
+        public static final double COLLECTION_TOLERANCE = 0.1;
+        public static final double COLECTOR_SPEED_THRESHHOLD = 5;
     }
 }

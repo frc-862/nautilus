@@ -14,7 +14,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
-import frc.robot.Constants.SimGamePeiceConstants;
+import frc.robot.Constants.SimGamePeicesConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Constants.FishingRodConstants.states;
 
@@ -24,6 +24,7 @@ public class SimGamePeices extends SubsystemBase {
     public Swerve drivetrain;
     public Elevator elevator;
     public Wrist wrist;
+    public Collector collector;
     public Peice[] peices = new Peice[] {};
     public Coral[] corals = new Coral[] {};
     public Algae[] algaes = new Algae[] {};
@@ -36,6 +37,7 @@ public class SimGamePeices extends SubsystemBase {
         public StructPublisher<Pose3d> publisher;
 
         public Peice(int peiceNumber){
+            // init pose publisher to publish to advantageScope
             publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("SimGamePeices")
                 .getStructTopic("Peice# " + peiceNumber, Pose3d.struct).publish();
         }
@@ -49,18 +51,30 @@ public class SimGamePeices extends SubsystemBase {
             this.pose = pose;
         }
 
+        /**
+         * @return whether the peice is in the robot
+         */
         public boolean inRobot(){
             return inRobot;
         }
 
+        /**
+         * @param inRobot whether the peice is in the robot
+         */
         public void setInRobot(boolean inRobot){
             this.inRobot = inRobot;
         }
 
+        /**
+         * @return the number of the peice (should be the index in peices[])
+         */
         public int getNumber(){
             return peiceNumber;
         }
 
+        /**
+         * publish the pose3d of the peice to advantageScope
+         */
         public void publish(){
             publisher.set(pose);
         }
@@ -76,7 +90,7 @@ public class SimGamePeices extends SubsystemBase {
 
         public Coral(){
             super(peices.length);
-            setPose(SimGamePeiceConstants.DefaultPose);
+            setPose(SimGamePeicesConstants.DEFAULT_POSE);
         }
     }
 
@@ -88,33 +102,24 @@ public class SimGamePeices extends SubsystemBase {
 
         public Algae(){
             super(peices.length);
-            setPose(SimGamePeiceConstants.DefaultPose);
+            setPose(SimGamePeicesConstants.DEFAULT_POSE);
         }
     }
 
-  /** Creates a new SimGamePeices. */
-    public SimGamePeices(Elevator elevator, Wrist wrist, FishingRod fishingRod, Swerve drivetrain, Peice[] peices) {
+    public SimGamePeices(Elevator elevator, Wrist wrist, FishingRod fishingRod, Swerve drivetrain, Collector collector) {
 
         this.fishingRod = fishingRod;
         this.drivetrain = drivetrain;
         this.elevator = elevator;
         this.wrist = wrist;
-        this.peices = peices;
-  }
-
-    public SimGamePeices(Elevator elevator, Wrist wrist, FishingRod fishingRod, Swerve drivetrain) {
-
-        this.fishingRod = fishingRod;
-        this.drivetrain = drivetrain;
-        this.elevator = elevator;
-        this.wrist = wrist;
+        this.collector = collector;
         
-        addPeice(new Algae(SimGamePeiceConstants.A1B));
-        addPeice(new Algae(SimGamePeiceConstants.A2B));
-        addPeice(new Algae(SimGamePeiceConstants.A3B));
-        addPeice(new Algae(SimGamePeiceConstants.A1R));
-        addPeice(new Algae(SimGamePeiceConstants.A2R));
-        addPeice(new Algae(SimGamePeiceConstants.A3R));
+        addPeice(new Algae(SimGamePeicesConstants.A1B));
+        addPeice(new Algae(SimGamePeicesConstants.A2B));
+        addPeice(new Algae(SimGamePeicesConstants.A3B));
+        addPeice(new Algae(SimGamePeicesConstants.A1R));
+        addPeice(new Algae(SimGamePeicesConstants.A2R));
+        addPeice(new Algae(SimGamePeicesConstants.A3R));
         addPeice(new Coral());
         corals[0].setInRobot(true);
 
@@ -137,6 +142,9 @@ public class SimGamePeices extends SubsystemBase {
         }
     }
 
+    /**
+     * @param peice add peice to arrays of peices, corals, and algaes
+     */
     public void addPeice(Peice peice){
 
         Peice[] newPeices = new Peice[peices.length + 1];
@@ -170,18 +178,16 @@ public class SimGamePeices extends SubsystemBase {
 
     }
 
-    public void removePeice(Peice peice){
-        peice.pose = null;
-        peice.inRobot = false;
-    }
-
     // TODO: Add correct conditions for collecting & dropping
     public void collect(){
 
         for(Peice peice : peices){
             if(new Translation2d(peice.pose.getX(), peice.pose.getY())
-                .getDistance(drivetrain.getPose().getTranslation()) < 0.5
-                && Math.abs(elevator.getPosition() - peice.pose.getTranslation().getZ()) < 0.5){
+                .getDistance(drivetrain.getPose().getTranslation()) < SimGamePeicesConstants.COLLECTION_TOLERANCE
+                && Math.abs(elevator.getPosition() + SimGamePeicesConstants.ELEATOR_ROOT_HEIGHT 
+                - peice.pose.getTranslation().getZ()) < SimGamePeicesConstants.COLLECTION_TOLERANCE
+                && collector.getVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
+
                     peice.inRobot = true;
                     hasPeice = true;
                     lastHeldPeice = peice;
@@ -190,7 +196,7 @@ public class SimGamePeices extends SubsystemBase {
     }
 
     public void drop(){
-        if(hasPeice && fishingRod.getState() != states.STOW){
+        if(hasPeice && fishingRod.getState() != states.STOW && wrist.isOnTarget() && elevator.isOnTarget()){
             lastHeldPeice.inRobot = false;
             lastHeldPeice = null;
             hasPeice = false;
@@ -227,20 +233,24 @@ public class SimGamePeices extends SubsystemBase {
         }
     }
 
-    public void dropOrCollect(){
+    public void forceDropOrCollect(){
         if (hasPeice){
             forceDrop();
 
-            System.out.println("Peice Dropped");
         } else {
-            System.out.println("Peice Collected");
             forceCollect();
             
         }
     }
 
+    /**
+     * set the pose of the held peice to the current pose of the robot
+     */
     public void updateHeldPeicePose(){
-        lastHeldPeice.pose = new Pose3d(drivetrain.getPose().getX(), drivetrain.getPose().getY(), elevator.getPosition(), 
-            new Rotation3d(wrist.getAngle(), 0, drivetrain.getPose().getRotation().getDegrees()));
+        lastHeldPeice.pose = new Pose3d(drivetrain.getPose().getX(), drivetrain.getPose().getY(), 
+            elevator.getPosition() + SimGamePeicesConstants.ELEATOR_ROOT_HEIGHT, 
+            new Rotation3d(0, wrist.getAngle(), drivetrain.getPose().getRotation().getDegrees()));
     }
+    
+
 }

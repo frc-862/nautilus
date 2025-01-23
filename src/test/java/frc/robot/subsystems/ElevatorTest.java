@@ -67,12 +67,18 @@ public class ElevatorTest implements AutoCloseable {
     public void testSetPower() {
         var dutyCycle = leftMotor.getDutyCycle();
 
-        elevator.setPower(1d);
+        elevator.setPower(0.2d);
 
         elevator.simulationPeriodic();
-
         dutyCycle.waitForUpdate(0.1);
-        assertEquals(0.1, dutyCycle.getValue(), 0.05);
+        elevator.simulationPeriodic();
+        dutyCycle.waitForUpdate(0.1);
+        elevator.simulationPeriodic();
+        dutyCycle.waitForUpdate(0.1);
+        elevator.simulationPeriodic();
+        dutyCycle.waitForUpdate(0.1);
+
+        assertEquals(0.2, dutyCycle.getValue(), 0.05);
     }
 
     // TODO: Make a test for set position

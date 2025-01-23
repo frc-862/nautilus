@@ -17,5 +17,5 @@ jobs:
             java-version: '17'
         - name: Set Execution Permissions
           run: chmod +x ./gradlew
-        - name: Gradle build Rhapsody
+        - name: Gradle build Robot
           run: ./gradlew build

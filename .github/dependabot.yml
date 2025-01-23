@@ -9,5 +9,4 @@ updates:
     commit-message:
       prefix: "[#1] "
     labels:
-      - "thunder"
 

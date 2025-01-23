@@ -4,7 +4,7 @@ on:
     pull_request:
     
 jobs:
-    simulate:
+    simulatejava:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout

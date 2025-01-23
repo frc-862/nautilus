@@ -627,12 +627,13 @@ public class Constants {
             DISABLED(),
             MIXER(),
             RAINBOW(),
-            ROD_ON_TARGET(),
-            ROD_MOVING(),
+            ALIGNING(),
             ALGAE_COLLECT(),
             ALGAE_SCORE(),
             CORAL_COLLECT(),
             CORAL_SCORE(),
+            ROD_MOVING(),
+            ROD_ON_TARGET(),
             OFF();
         }
 

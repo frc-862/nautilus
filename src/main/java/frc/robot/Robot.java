@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.thunder.LightningRobot;
 
 public class Robot extends LightningRobot {
@@ -27,4 +28,12 @@ public class Robot extends LightningRobot {
         super.simulationPeriodic();
     }
 
+    @Override
+    public void disabledPeriodic() {
+        super.disabledPeriodic();
+
+        RobotContainer container = (RobotContainer) getContainer();
+
+        container.drivetrain.applyRequest(DriveRequests.getBrake());
+    }
 }

@@ -22,6 +22,7 @@ import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
@@ -86,8 +87,7 @@ public class RobotContainer extends LightningContainer {
 
                 
         // // TODO: Remove Standin Command
-        // new Trigger(() -> (elevator.isOnTarget() && wrist.isOnTarget()))
-        //         .whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+        // new Trigger(() -> rod.onTarget()).whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
 
         //sim stuff
         if(Robot.isSimulation()) {
@@ -101,34 +101,45 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeNamedCommands() {
-        NamedCommands.registerCommand("AlgaeCollect",
-                StandinCommands.moveAlgaeCollector().deadlineFor(leds.enableState(LED_STATES.ALGAE_COLLECT)));
         NamedCommands.registerCommand("IntakeCoral",
                 StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
         NamedCommands.registerCommand("ScoreCoral", 
                 StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
-        NamedCommands.registerCommand("MoveWrist",
-                StandinCommands.moveWrist(1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        // TODO: Get actual offsets
+        NamedCommands.registerCommand("ReefAlignLeft", 
+                new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+        NamedCommands.registerCommand("ReefAlignRight", 
+                new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+        NamedCommands.registerCommand("SourceAlignLeft", 
+                new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+        NamedCommands.registerCommand("SourceAlignRight", 
+                new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
         if (Robot.isReal()){
-                NamedCommands.registerCommand("ElevatorHome",
-                        StandinCommands.elevatorStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("ElevatorL1",
-                        StandinCommands.elevatorL1().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("ElevatorL2",
-                        StandinCommands.elevatorL2().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("ElevatorL3",
-                        StandinCommands.elevatorL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("ElevatorL4",
-                        StandinCommands.elevatorL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("ElevatorSource",
-                        StandinCommands.elevatorSource().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodHome",
+                        StandinCommands.rodStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL1",
+                        StandinCommands.rodL1().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL2",
+                        StandinCommands.rodL2().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL3",
+                        StandinCommands.rodL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL4",
+                        StandinCommands.rodL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodSource",
+                        StandinCommands.rodSource().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
         } else if(Robot.isSimulation()){
-                NamedCommands.registerCommand("ElevatorHome", new SetRodState(rod, states.STOW));
-                NamedCommands.registerCommand("ElevatorL1", new SetRodState(rod, states.L1));
-                NamedCommands.registerCommand("ElevatorL2", new SetRodState(rod, states.L2));
-                NamedCommands.registerCommand("ElevatorL3", new SetRodState(rod, states.L3));
-                NamedCommands.registerCommand("ElevatorL4", new SetRodState(rod, states.L4));
-                NamedCommands.registerCommand("ElevatorSource", new SetRodState(rod, states.SOURCE));
+                NamedCommands.registerCommand("RodHome", 
+                        new SetRodState(rod, states.STOW).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL1", 
+                        new SetRodState(rod, states.L1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL2", 
+                        new SetRodState(rod, states.L2).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL3", 
+                        new SetRodState(rod, states.L3).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL4", 
+                        new SetRodState(rod, states.L4).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodSource", 
+                        new SetRodState(rod, states.SOURCE).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
         }
 
         autoChooser = AutoBuilder.buildAutoChooser();

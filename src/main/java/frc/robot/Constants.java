@@ -102,6 +102,7 @@ public class Constants {
 
         public static final int COLLECTOR = 12; // temp
         public static final int COLLECTOR_ENCODER = 36; // temp
+        public static final int COLLECTOR_BEAM_BREAK_PORT = 1; // temp
 
 
         public static final int PIGEON = 23;
@@ -199,6 +200,9 @@ public class Constants {
         public static final ThunderBird rightElevatorMotor = new ThunderBird(RobotMap.R_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
             ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
 
+        public static final ThunderBird COLLECTOR_MOTOR = new ThunderBird(RobotMap.COLLECTOR, RobotMap.CANIVORE_CAN_NAME, CollectorConstants.INVERTED,
+            CollectorConstants.STATOR_CURRENT_LIMIT, CollectorConstants.BRAKE_MODE);
+
     }   
 
     public static class WristConstants {
@@ -236,6 +240,9 @@ public class Constants {
         public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
+
+        public static final double COLLECTOR_KV = 0.004; // temp
+        public static final double COLLECTOR_KA = 0.001; // temp
 
     }
 

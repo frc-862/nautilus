@@ -9,6 +9,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,6 +24,7 @@ import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
@@ -29,6 +32,7 @@ import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
+import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class RobotContainer extends LightningContainer {
@@ -42,6 +46,7 @@ public class RobotContainer extends LightningContainer {
     private Elevator elevator;
     private Wrist wrist;
     private FishingRod rod;
+    private Collector collector;
 
     private XboxController driver;
     private XboxController copilot;
@@ -59,6 +64,7 @@ public class RobotContainer extends LightningContainer {
             elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
+            collector = new Collector(RobotMotors.COLLECTOR_MOTOR);
         }
 
         leds = new LEDs();
@@ -96,6 +102,9 @@ public class RobotContainer extends LightningContainer {
 
         //     new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
         //     new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
+
+            new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> collector.setPower(0.75)))).onFalse(new InstantCommand(collector::stop));
+            new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> collector.setPower(-0.75)))).onFalse(new InstantCommand(collector::stop));
         }
     }
 

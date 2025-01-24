@@ -51,7 +51,7 @@ public class RobotContainer extends LightningContainer {
     protected void initializeSubsystems() {
         drivetrain = TunerConstants.createDrivetrain();
         vision = new PhotonVision();
-        logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
+        logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
 

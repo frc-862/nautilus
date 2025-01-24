@@ -233,7 +233,7 @@ public class Constants {
     }
 
     public class DrivetrainConstants {
-        public static final double MAX_SPEED = TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
+        public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
                                                                                                                         // desired
                                                                                                                         // top
                                                                                                                         // speed
@@ -316,8 +316,8 @@ public class Constants {
                                                                                              // should be calculated w/
                                                                                              // SYSID or CAD
         private static final ModuleConfig MODULE_CONFIG = new ModuleConfig(
-                TunerConstants.TritonTunerConstants.kWheelRadius, TunerConstants.TritonTunerConstants.kSpeedAt12Volts,
-                1.916, DCMotor.getKrakenX60Foc(1).withReduction(TunerConstants.TritonTunerConstants.kDriveGearRatio),
+                TunerConstants.kWheelRadius, TunerConstants.kSpeedAt12Volts,
+                1.916, DCMotor.getKrakenX60Foc(1).withReduction(TunerConstants.kDriveGearRatio),
                 Amps.of(120), 1);
 
         public static final RobotConfig CONFIG = new RobotConfig(ROBOT_MASS, ROBOT_MOI, MODULE_CONFIG,

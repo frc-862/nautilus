@@ -49,7 +49,7 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeSubsystems() {
-        // drivetrain = TunerConstants.createDrivetrain();
+        drivetrain = TunerConstants.createDrivetrain();
         vision = new PhotonVision();
         logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);

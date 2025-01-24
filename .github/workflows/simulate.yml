@@ -1,10 +1,10 @@
-name:  Simulate Code
+name: Simulate Robot
 
 on:
     pull_request:
     
 jobs:
-    simulateJava:
+    Simulate:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout and Initialize Thunder
@@ -18,12 +18,5 @@ jobs:
                 java-version: '17'
             - name: Set Execution Permissions
               run: chmod +x ./gradlew && chmod +x .github/sim_timeout.sh
-            - name: Simulate Code
+            - name: Simulate Robot
               run: .github/sim_timeout.sh
-            # - name: Kill Java Processes
-            #   run: pkill -f 'java'
-            # - name: Archive Simulation Results
-            #   uses: actions/upload-artifact@v3
-            #   with:
-            #     name: simulation-results
-            #     path: build/reports/**

@@ -770,37 +770,8 @@ public class Constants {
 
         // Combined Nautilus and Triton Tuner Constants
 
-        public static final Slot0Configs steerGains = IS_TRITON ? TritonTunerConstants.steerGains : NautliusTunerConstants.steerGains;
-        public static final Slot0Configs driveGains = IS_TRITON ? TritonTunerConstants.driveGains : NautliusTunerConstants.driveGains;
-
-        public static final ClosedLoopOutputType kSteerClosedLoopOutput = IS_TRITON
-                ? TritonTunerConstants.kSteerClosedLoopOutput : NautliusTunerConstants.kSteerClosedLoopOutput;
-        public static final ClosedLoopOutputType kDriveClosedLoopOutput = IS_TRITON
-                ? TritonTunerConstants.kDriveClosedLoopOutput : NautliusTunerConstants.kDriveClosedLoopOutput;
-
-        public static final DriveMotorArrangement kDriveMotorType = IS_TRITON 
-                ? TritonTunerConstants.kDriveMotorType : NautliusTunerConstants.kDriveMotorType;
-        public static final SteerMotorArrangement kSteerMotorType = IS_TRITON
-                ? TritonTunerConstants.kSteerMotorType : NautliusTunerConstants.kSteerMotorType;
-
-        public static final SteerFeedbackType kSteerFeedbackType = IS_TRITON
-                ? TritonTunerConstants.kSteerFeedbackType : NautliusTunerConstants.kSteerFeedbackType;
-
         public static final Current kSlipCurrent = IS_TRITON
                 ? TritonTunerConstants.kSlipCurrent : NautliusTunerConstants.kSlipCurrent;
-        
-        public static final TalonFXConfiguration driveInitialConfigs = IS_TRITON
-                ? TritonTunerConstants.driveInitialConfigs : NautliusTunerConstants.driveInitialConfigs;
-        public static final TalonFXConfiguration steerInitialConfigs = IS_TRITON
-                ? TritonTunerConstants.steerInitialConfigs : NautliusTunerConstants.steerInitialConfigs;
-
-        public static final CANcoderConfiguration encoderInitialConfigs = IS_TRITON
-                ? TritonTunerConstants.encoderInitialConfigs : NautliusTunerConstants.encoderInitialConfigs;
-
-        public static final Pigeon2Configuration pigeonConfigs = IS_TRITON
-                ? TritonTunerConstants.pigeonConfigs : NautliusTunerConstants.pigeonConfigs;
-
-        public static final CANBus kCANBus = IS_TRITON ? TritonTunerConstants.kCANBus : NautliusTunerConstants.kCANBus;
 
         public static final LinearVelocity kSpeedAt12Volts = IS_TRITON
                 ? TritonTunerConstants.kSpeedAt12Volts : NautliusTunerConstants.kSpeedAt12Volts;
@@ -821,130 +792,9 @@ public class Constants {
         public static final boolean kInvertRightSide = IS_TRITON
                 ? TritonTunerConstants.kInvertRightSide : NautliusTunerConstants.kInvertRightSide;
 
-        public static final int kPigeonId = IS_TRITON
-                ? TritonTunerConstants.kPigeonId : NautliusTunerConstants.kPigeonId;
-
-        public static final MomentOfInertia kSteerInertia = IS_TRITON
-                ? TritonTunerConstants.kSteerInertia : NautliusTunerConstants.kSteerInertia;
-        public static final MomentOfInertia kDriveInertia = IS_TRITON
-                ? TritonTunerConstants.kDriveInertia : NautliusTunerConstants.kDriveInertia;
-
-        public static final Voltage kSteerFrictionVoltage = IS_TRITON
-                ? TritonTunerConstants.kSteerFrictionVoltage : NautliusTunerConstants.kSteerFrictionVoltage;
-        public static final Voltage kDriveFrictionVoltage = IS_TRITON
-                ? TritonTunerConstants.kDriveFrictionVoltage : NautliusTunerConstants.kDriveFrictionVoltage;
-
-        public static final SwerveDrivetrainConstants DrivetrainConstants = IS_TRITON
-                ? TritonTunerConstants.DrivetrainConstants : NautliusTunerConstants.DrivetrainConstants;
-        public static final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreator = IS_TRITON
-                ? TritonTunerConstants.ConstantCreator : NautliusTunerConstants.ConstantCreator;
-
-        // Front Left
-        private static final int kFrontLeftDriveMotorId = IS_TRITON 
-                ? TritonTunerConstants.kFrontLeftDriveMotorId : NautliusTunerConstants.kFrontLeftDriveMotorId;
-        private static final int kFrontLeftSteerMotorId = IS_TRITON
-                ? TritonTunerConstants.kFrontLeftSteerMotorId : NautliusTunerConstants.kFrontLeftSteerMotorId;
-        private static final int kFrontLeftEncoderId = IS_TRITON
-                ? TritonTunerConstants.kFrontLeftEncoderId : NautliusTunerConstants.kFrontLeftEncoderId;
-        private static final Angle kFrontLeftEncoderOffset = IS_TRITON
-                ? TritonTunerConstants.kFrontLeftEncoderOffset : NautliusTunerConstants.kFrontLeftEncoderOffset;
-        private static final boolean kFrontLeftSteerMotorInverted = IS_TRITON
-                ? TritonTunerConstants.kFrontLeftSteerMotorInverted : NautliusTunerConstants.kFrontLeftSteerMotorInverted;
-        private static final boolean kFrontLeftEncoderInverted = IS_TRITON
-                ? TritonTunerConstants.kFrontLeftEncoderInverted : NautliusTunerConstants.kFrontLeftEncoderInverted;
-
-        private static final Distance kFrontLeftXPos = IS_TRITON
-                ? TritonTunerConstants.kFrontLeftXPos : NautliusTunerConstants.kFrontLeftXPos;
-        private static final Distance kFrontLeftYPos = IS_TRITON
-                ? TritonTunerConstants.kFrontLeftYPos : NautliusTunerConstants.kFrontLeftYPos;
-
-        // Front Right
-        private static final int kFrontRightDriveMotorId = IS_TRITON
-                ? TritonTunerConstants.kFrontRightDriveMotorId : NautliusTunerConstants.kFrontRightDriveMotorId;
-        private static final int kFrontRightSteerMotorId = IS_TRITON
-                ? TritonTunerConstants.kFrontRightSteerMotorId : NautliusTunerConstants.kFrontRightSteerMotorId;
-        private static final int kFrontRightEncoderId = IS_TRITON
-                ? TritonTunerConstants.kFrontRightEncoderId : NautliusTunerConstants.kFrontRightEncoderId;
-        private static final Angle kFrontRightEncoderOffset = IS_TRITON
-                ? TritonTunerConstants.kFrontRightEncoderOffset : NautliusTunerConstants.kFrontRightEncoderOffset;
-        private static final boolean kFrontRightSteerMotorInverted = IS_TRITON
-                ? TritonTunerConstants.kFrontRightSteerMotorInverted : NautliusTunerConstants.kFrontRightSteerMotorInverted;
-        private static final boolean kFrontRightEncoderInverted = IS_TRITON
-                ? TritonTunerConstants.kFrontRightEncoderInverted : NautliusTunerConstants.kFrontRightEncoderInverted;
-        
-        private static final Distance kFrontRightXPos = IS_TRITON
-                ? TritonTunerConstants.kFrontRightXPos : NautliusTunerConstants.kFrontRightXPos;
-        private static final Distance kFrontRightYPos = IS_TRITON
-                ? TritonTunerConstants.kFrontRightYPos : NautliusTunerConstants.kFrontRightYPos;
-
-        // Back Left
-        private static final int kBackLeftDriveMotorId = IS_TRITON
-                ? TritonTunerConstants.kBackLeftDriveMotorId : NautliusTunerConstants.kBackLeftDriveMotorId;
-        private static final int kBackLeftSteerMotorId = IS_TRITON
-                ? TritonTunerConstants.kBackLeftSteerMotorId : NautliusTunerConstants.kBackLeftSteerMotorId;
-        private static final int kBackLeftEncoderId = IS_TRITON
-                ? TritonTunerConstants.kBackLeftEncoderId : NautliusTunerConstants.kBackLeftEncoderId;
-        private static final Angle kBackLeftEncoderOffset = IS_TRITON
-                ? TritonTunerConstants.kBackLeftEncoderOffset : NautliusTunerConstants.kBackLeftEncoderOffset;
-        private static final boolean kBackLeftSteerMotorInverted = IS_TRITON
-                ? TritonTunerConstants.kBackLeftSteerMotorInverted : NautliusTunerConstants.kBackLeftSteerMotorInverted;
-        private static final boolean kBackLeftEncoderInverted = IS_TRITON
-                ? TritonTunerConstants.kBackLeftEncoderInverted : NautliusTunerConstants.kBackLeftEncoderInverted;
-        
-        private static final Distance kBackLeftXPos = IS_TRITON
-                ? TritonTunerConstants.kBackLeftXPos : NautliusTunerConstants.kBackLeftXPos;
-        private static final Distance kBackLeftYPos = IS_TRITON
-                ? TritonTunerConstants.kBackLeftYPos : NautliusTunerConstants.kBackLeftYPos;
-        
-        // Back Right
-        private static final int kBackRightDriveMotorId = IS_TRITON
-                ? TritonTunerConstants.kBackRightDriveMotorId : NautliusTunerConstants.kBackRightDriveMotorId;
-        private static final int kBackRightSteerMotorId = IS_TRITON
-                ? TritonTunerConstants.kBackRightSteerMotorId : NautliusTunerConstants.kBackRightSteerMotorId;
-        private static final int kBackRightEncoderId = IS_TRITON
-                ? TritonTunerConstants.kBackRightEncoderId : NautliusTunerConstants.kBackRightEncoderId;
-        private static final Angle kBackRightEncoderOffset = IS_TRITON
-                ? TritonTunerConstants.kBackRightEncoderOffset : NautliusTunerConstants.kBackRightEncoderOffset;
-        private static final boolean kBackRightSteerMotorInverted = IS_TRITON
-                ? TritonTunerConstants.kBackRightSteerMotorInverted : NautliusTunerConstants.kBackRightSteerMotorInverted;
-        private static final boolean kBackRightEncoderInverted = IS_TRITON
-                ? TritonTunerConstants.kBackRightEncoderInverted : NautliusTunerConstants.kBackRightEncoderInverted;
-
-        private static final Distance kBackRightXPos = IS_TRITON
-                ? TritonTunerConstants.kBackRightXPos : NautliusTunerConstants.kBackRightXPos;
-        private static final Distance kBackRightYPos = IS_TRITON
-                ? TritonTunerConstants.kBackRightYPos : NautliusTunerConstants.kBackRightYPos;
-
-        public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft = ConstantCreator
-                .createModuleConstants(
-                        kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId,
-                        kFrontLeftEncoderOffset,
-                        kFrontLeftXPos, kFrontLeftYPos, kInvertLeftSide, kFrontLeftSteerMotorInverted,
-                        kFrontLeftEncoderInverted);
-        
-        public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontRight = ConstantCreator
-                .createModuleConstants(
-                        kFrontRightSteerMotorId, kFrontRightDriveMotorId, kFrontRightEncoderId,
-                        kFrontRightEncoderOffset,
-                        kFrontRightXPos, kFrontRightYPos, kInvertRightSide, kFrontRightSteerMotorInverted,
-                        kFrontRightEncoderInverted);
-        
-        public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackLeft = ConstantCreator
-                .createModuleConstants(
-                        kBackLeftSteerMotorId, kBackLeftDriveMotorId, kBackLeftEncoderId,
-                        kBackLeftEncoderOffset,
-                        kBackLeftXPos, kBackLeftYPos, kInvertLeftSide, kBackLeftSteerMotorInverted,
-                        kBackLeftEncoderInverted);
-        
-        public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackRight = ConstantCreator
-                .createModuleConstants(
-                        kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId,
-                        kBackRightEncoderOffset,
-                        kBackRightXPos, kBackRightYPos, kInvertRightSide, kBackRightSteerMotorInverted,
-                        kBackRightEncoderInverted);
 
         public static Swerve createDrivetrain() {
-            return new Swerve(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+            return IS_TRITON ? TritonTunerConstants.createDrivetrain() : NautliusTunerConstants.createDrivetrain();
         }
     }
 

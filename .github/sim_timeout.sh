@@ -1,10 +1,12 @@
 #!/bin/bash
 
 # Timeout duration (in seconds)
-TIMEOUT=30
+TIMEOUT=45
 
 # Log file to capture simulator output
 LOG_FILE="simulate.log"
+
+echo -q "\033[0;33mStarted Gradle & Simulation...\033[0m"
 
 # Run the simulator with timeout and capture output
 timeout $TIMEOUT ./gradlew simulateJava > $LOG_FILE 2>&1

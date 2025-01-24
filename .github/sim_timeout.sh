@@ -1,27 +1,35 @@
 #!/bin/bash
 
 # Timeout duration (in seconds)
-TIMEOUT=30
+TIMEOUT=10
 
 # Log file to capture simulator output
 LOG_FILE="simulate.log"
 
 # Run the simulator with timeout and capture output
-timeout $TIMEOUT ../gradlew simulateJava > $LOG_FILE 2>&1
+timeout $TIMEOUT ./gradlew simulateJava > $LOG_FILE 2>&1
+# timeout $TIMEOUT ./gradlew simulateJava   -Dorg.gradle.java.home="C:\Users\Public\wpilib\2025\jdk" > $LOG_FILE 2>&1
 EXIT_CODE=$?
 
 # Check the exit code of the timeout command
 if [ $EXIT_CODE -eq 124 ]; then
-    echo "Simulation timed out after ${TIMEOUT} seconds."
-    exit 1
+    if grep -q "********** Robot program starting **********" "$LOG_FILE"; then
+        echo -e "\033[0;32mSimulation ran for \033[0;34m${TIMEOUT}\033[0;32m seconds.\n\033[0;36mLog dump:\033[0m"
+        cat $LOG_FILE
+        exit 0
+    fi
+    echo -e "\033[1;31mSimulation did not start successfully. (Is the timeout too short?) \n\033[0;36mLog dump:\033[0m"
+    cat $LOG_FILE
+    exit 0
 fi
 
 # Check the log file for runtime errors
-if grep -q "Exception" "$LOG_FILE"; then
-    echo "Runtime error detected in the simulation:"
-    cat $LOG_FILE # Display relevant error lines
+if grep -q "Error" "$LOG_FILE"; then
+    echo -e "\033[1;31mRuntime error detected in the simulation:\033[0m"
+    cat $LOG_FILE
     exit 2
 fi
 
-echo "Simulation completed without runtime errors."
-exit 0
+echo "\033[1;33mSimulation exited immediately.\033[0m"
+cat $LOG_FILE
+exit 1

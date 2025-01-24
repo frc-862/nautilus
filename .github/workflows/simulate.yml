@@ -19,11 +19,11 @@ jobs:
             - name: Set Execution Permissions
               run: chmod +x ./gradlew
             - name: Simulate Code
-              run: ./gradlew simulateJava
-            - name: Kill Java Processes
-              run: pkill -f 'java'
-            - name: Archive Simulation Results
-              uses: actions/upload-artifact@v3
-              with:
-                name: simulation-results
-                path: build/reports/**
+              run: .github/sim_timeout.sh
+            # - name: Kill Java Processes
+            #   run: pkill -f 'java'
+            # - name: Archive Simulation Results
+            #   uses: actions/upload-artifact@v3
+            #   with:
+            #     name: simulation-results
+            #     path: build/reports/**

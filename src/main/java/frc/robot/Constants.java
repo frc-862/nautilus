@@ -239,7 +239,7 @@ public class Constants {
     }
 
     public class DrivetrainConstants {
-        public static final double MAX_SPEED = TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
+        public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
                                                                                                                         // desired
                                                                                                                         // top
                                                                                                                         // speed
@@ -322,8 +322,8 @@ public class Constants {
                                                                                              // should be calculated w/
                                                                                              // SYSID or CAD
         private static final ModuleConfig MODULE_CONFIG = new ModuleConfig(
-                TunerConstants.TritonTunerConstants.kWheelRadius, TunerConstants.TritonTunerConstants.kSpeedAt12Volts,
-                1.916, DCMotor.getKrakenX60Foc(1).withReduction(TunerConstants.TritonTunerConstants.kDriveGearRatio),
+                TunerConstants.kWheelRadius, TunerConstants.kSpeedAt12Volts,
+                1.916, DCMotor.getKrakenX60Foc(1).withReduction(TunerConstants.kDriveGearRatio),
                 Amps.of(120), 1);
 
         public static final RobotConfig CONFIG = new RobotConfig(ROBOT_MASS, ROBOT_MOI, MODULE_CONFIG,
@@ -766,6 +766,32 @@ public class Constants {
                 return new Swerve(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
             }
         }
+        
+
+        // Combined Nautilus and Triton Tuner Constants
+
+        public static final Current kSlipCurrent = IS_TRITON
+                ? TritonTunerConstants.kSlipCurrent : NautliusTunerConstants.kSlipCurrent;
+
+        public static final LinearVelocity kSpeedAt12Volts = IS_TRITON
+                ? TritonTunerConstants.kSpeedAt12Volts : NautliusTunerConstants.kSpeedAt12Volts;
+
+        public static final double kCoupleRatio = IS_TRITON
+                ? TritonTunerConstants.kCoupleRatio : NautliusTunerConstants.kCoupleRatio;
+
+        public static final double kDriveGearRatio = IS_TRITON
+                ? TritonTunerConstants.kDriveGearRatio : NautliusTunerConstants.kDriveGearRatio;
+        public static final double kSteerGearRatio = IS_TRITON
+                ? TritonTunerConstants.kSteerGearRatio : NautliusTunerConstants.kSteerGearRatio;
+
+        public static final Distance kWheelRadius = IS_TRITON
+                ? TritonTunerConstants.kWheelRadius : NautliusTunerConstants.kWheelRadius;
+
+        public static final boolean kInvertLeftSide = IS_TRITON
+                ? TritonTunerConstants.kInvertLeftSide : NautliusTunerConstants.kInvertLeftSide;
+        public static final boolean kInvertRightSide = IS_TRITON
+                ? TritonTunerConstants.kInvertRightSide : NautliusTunerConstants.kInvertRightSide;
+
 
         public static Swerve createDrivetrain() {
             return IS_TRITON ? TritonTunerConstants.createDrivetrain() : NautliusTunerConstants.createDrivetrain();

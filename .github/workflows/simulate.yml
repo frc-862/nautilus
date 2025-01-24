@@ -1,4 +1,4 @@
-name: Simulate Robot
+name: Gradle Simulate
 
 on:
     pull_request:
@@ -17,6 +17,6 @@ jobs:
                 distribution: 'zulu'
                 java-version: '17'
             - name: Set Execution Permissions
-              run: chmod +x ./gradlew && chmod +x .github/sim_timeout.sh
+              run: chmod +x ./gradlew && chmod +x .github/run_sim_timeout.sh
             - name: Simulate Robot
-              run: .github/sim_timeout.sh
+              run: .github/run_sim_timeout.sh

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Timeout duration (in seconds)
-TIMEOUT=10
+TIMEOUT=30
 
 # Log file to capture simulator output
 LOG_FILE="simulate.log"
@@ -14,11 +14,11 @@ EXIT_CODE=$?
 # Check the exit code of the timeout command
 if [ $EXIT_CODE -eq 124 ]; then
     if grep -q "********** Robot program starting **********" "$LOG_FILE"; then
-        echo -e "\033[0;32mSimulation ran for \033[0;34m${TIMEOUT}\033[0;32m seconds.\n\033[0;36mLog dump:\033[0m"
+        echo -e "\033[0;32mSimulation ran for \033[0;34m${TIMEOUT}\033[0;32m seconds!\n\033[0;37mLog dump:\033[0m"
         cat $LOG_FILE
         exit 0
     fi
-    echo -e "\033[1;31mSimulation did not start successfully. (Is the timeout too short?) \n\033[0;36mLog dump:\033[0m"
+    echo -e "\033[1;31mSimulation did not start successfully. (Is the timeout too short?) \n\033[0;37mLog dump:\033[0m"
     cat $LOG_FILE
     exit 0
 fi
@@ -30,6 +30,6 @@ if grep -q "Error" "$LOG_FILE"; then
     exit 2
 fi
 
-echo "\033[1;33mSimulation exited immediately.\033[0m"
+echo -e "\033[1;33mSimulation exited immediately. (Is gradlew working?)\033[0m"
 cat $LOG_FILE
 exit 1

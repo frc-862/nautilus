@@ -47,6 +47,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+    private double[] CANcoderOffsets = {0d, 0d, 0d, 0d};
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -140,6 +141,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
 
         configurePathPlanner();
+
+        LightningShuffleboard.setDoubleArray("Swerve", "Swerve CANCoder Offsets", () -> CANcoderOffsets);
     }
 
     private void configurePathPlanner() {        
@@ -178,13 +181,18 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     @Override
     public void periodic() {
-        LightningShuffleboard.getDouble("Swerve", "Swerve CANCoder Offsets", getCANcoderOffsets());
+        getCANcoderOffsets();
+    }
 
+    public ChassisSpeeds getCurrentRobotChassisSpeeds() {
+        return getState().Speeds;
     }
 
     private void getCANcoderOffsets(){
+        int i = 0;
         for(SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : getModules()){
-            swerveModule.getEncoder().getAbsolutePosition();
+            CANcoderOffsets[i] = swerveModule.getEncoder().getAbsolutePosition().getValueAsDouble();
+            i++;
         }
     }
 

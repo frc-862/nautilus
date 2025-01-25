@@ -60,6 +60,20 @@ public class Constants {
     public static final String TRITON_IDENTIFIER = "/home/lvuser/triton"; // Differentiate between Triton and Nautlius
     public static final boolean IS_TRITON = Paths.get(TRITON_IDENTIFIER).toFile().exists();
 
+    public static class EncoderConstants {
+        // Nautilus values
+        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.25732421875);
+        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(0.412353515625);
+        private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(0.0693359375);
+        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.30517578125);
+
+        // Triton values
+        private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);
+        private static final Angle tritonKFrontRightEncoderOffset = Rotations.of(0.033447);
+        private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(0.1350);
+        private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
+    }
+    
     public static class RobotMap {
         public static final int FL_DRIVE = 1;
         public static final int FL_TURN = 2;
@@ -532,7 +546,7 @@ public class Constants {
             private static final int kFrontLeftDriveMotorId = 1;
             private static final int kFrontLeftSteerMotorId = 2;
             private static final int kFrontLeftEncoderId = 31;
-            private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.25732421875);
+            private static final Angle kFrontLeftEncoderOffset = EncoderConstants.nautilusKFrontLeftEncoderOffset;
             private static final boolean kFrontLeftSteerMotorInverted = true;
             private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -543,7 +557,7 @@ public class Constants {
             private static final int kFrontRightDriveMotorId = 3;
             private static final int kFrontRightSteerMotorId = 4;
             private static final int kFrontRightEncoderId = 32;
-            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.412353515625);
+            private static final Angle kFrontRightEncoderOffset = EncoderConstants.nautilusKFrontRightEncoderOffset;
             private static final boolean kFrontRightSteerMotorInverted = true;
             private static final boolean kFrontRightEncoderInverted = false;
 
@@ -554,7 +568,7 @@ public class Constants {
             private static final int kBackLeftDriveMotorId = 5;
             private static final int kBackLeftSteerMotorId = 6;
             private static final int kBackLeftEncoderId = 33;
-            private static final Angle kBackLeftEncoderOffset = Rotations.of(0.0693359375);
+            private static final Angle kBackLeftEncoderOffset = EncoderConstants.nautilusKBackLeftEncoderOffset;
             private static final boolean kBackLeftSteerMotorInverted = true;
             private static final boolean kBackLeftEncoderInverted = false;
 
@@ -565,7 +579,7 @@ public class Constants {
             private static final int kBackRightDriveMotorId = 7;
             private static final int kBackRightSteerMotorId = 8;
             private static final int kBackRightEncoderId = 34;
-            private static final Angle kBackRightEncoderOffset = Rotations.of(-0.30517578125);
+            private static final Angle kBackRightEncoderOffset = EncoderConstants.nautilusKBackRightEncoderOffset;
             private static final boolean kBackRightSteerMotorInverted = true;
             private static final boolean kBackRightEncoderInverted = false;
 
@@ -720,7 +734,7 @@ public class Constants {
             private static final int kFrontLeftDriveMotorId = RobotMap.FL_DRIVE;
             private static final int kFrontLeftSteerMotorId = RobotMap.FL_TURN;
             private static final int kFrontLeftEncoderId = RobotMap.FL_ENCODER;
-            private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.0073);
+            private static final Angle kFrontLeftEncoderOffset = EncoderConstants.tritonKFrontLeftEncoderOffset;
             private static final boolean kFrontLeftSteerMotorInverted = true;
             private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -731,7 +745,7 @@ public class Constants {
             private static final int kFrontRightDriveMotorId = RobotMap.FR_DRIVE;
             private static final int kFrontRightSteerMotorId = RobotMap.FR_TURN;
             private static final int kFrontRightEncoderId = RobotMap.FR_ENCODER;
-            private static final Angle kFrontRightEncoderOffset = Rotations.of(0.033447);
+            private static final Angle kFrontRightEncoderOffset = EncoderConstants.tritonKFrontRightEncoderOffset;
             private static final boolean kFrontRightSteerMotorInverted = true;
             private static final boolean kFrontRightEncoderInverted = false;
 
@@ -742,7 +756,7 @@ public class Constants {
             private static final int kBackLeftDriveMotorId = RobotMap.BL_DRIVE;
             private static final int kBackLeftSteerMotorId = RobotMap.BL_TURN;
             private static final int kBackLeftEncoderId = RobotMap.BL_ENCODER;
-            private static final Angle kBackLeftEncoderOffset = Rotations.of(0.1350);
+            private static final Angle kBackLeftEncoderOffset = EncoderConstants.tritonKBackLeftEncoderOffset;
             private static final boolean kBackLeftSteerMotorInverted = true;
             private static final boolean kBackLeftEncoderInverted = false;
 
@@ -753,7 +767,7 @@ public class Constants {
             private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
             private static final int kBackRightSteerMotorId = RobotMap.BR_TURN;
             private static final int kBackRightEncoderId = RobotMap.BR_ENCODER;
-            private static final Angle kBackRightEncoderOffset = Rotations.of(0.129395);
+            private static final Angle kBackRightEncoderOffset = EncoderConstants.tritonKBackRightEncoderOffset;
             private static final boolean kBackRightSteerMotorInverted = true;
             private static final boolean kBackRightEncoderInverted = false;
 

@@ -77,8 +77,8 @@ public class Constants {
         public static final int BR_TURN = 8;
         public static final int BR_ENCODER = 34;
 
-        public static final int L_ELEVATOR = 9; // temp
-        public static final int R_ELEVATOR = 10; // temp
+        public static final int L_ELEVATOR = 10; // temp
+        public static final int R_ELEVATOR = 9; // temp
         public static final int ELEVATOR_CANRANGE = 41; // temp
 
         public static final int WRIST = 11; // temp
@@ -114,10 +114,11 @@ public class Constants {
 
     public static class ElevatorConstants {
         public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 150d; // temp
-        public static final boolean L_INVERTED = false; // temp
-        public static final boolean R_INVERTED = true; // temp
-        
+        public static final double STATOR_CURRENT_LIMIT = 120d; // temp
+
+        //both motors are - to go up
+        public static final boolean L_INVERTED = false;
+        public static final boolean R_INVERTED = true;
 
         public static final double GEAR_RATIO = 4d; 
         public static final Distance DRUM_RADIUS = Millimeter.of(15);
@@ -129,15 +130,21 @@ public class Constants {
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
-        public static final double MOTORS_KS = 0; // temp
-        public static final double MOTORS_KV = 0; // temp
-        public static final double MOTORS_KA = 0; // temp
-        public static final double MOTORS_KG = 0.43; // temp
+        public static final double MOTORS_KS = 0.32; // temp
+        public static final double MOTORS_KV = 0.15; // temp
+        public static final double MOTORS_KA = 0.01; // temp
+        public static final double MOTORS_KG = 0d; // temp
+
+        public static final double VELOC = 80d; // temp
+        public static final double ACCEL = 200d; // temp
+        public static final double JERK = 1600d; // temp
+
 
         public static final double TOLERANCE = 0.1; // temp
 
+        //kind of guessing the numbers here (didn't do a proper test)
         public static final Distance MIN_EXTENSION = Inches.of(0);
-        public static final Distance MAX_EXTENSION = Inches.of(82);
+        public static final Distance MAX_EXTENSION = Inches.of(60);
 
 
 

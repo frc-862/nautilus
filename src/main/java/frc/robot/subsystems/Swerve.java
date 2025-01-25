@@ -170,18 +170,13 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
-     public void addVisionMeasurement(EstimatedRobotPose pose) {
-        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
-    }
-
-    @Override
-    public void periodic() {
-    }
-
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return getState().Speeds;
     }
 
+    public void addVisionMeasurement(EstimatedRobotPose pose) {
+        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+    }
 
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
@@ -204,11 +199,11 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         // updateSimState(0.020, RobotController.getBatteryVoltage());
     }
 
+    @Override
+    public void periodic() {
+    }
 
-
-    //SYSID
-
-
+    // SYSID
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();

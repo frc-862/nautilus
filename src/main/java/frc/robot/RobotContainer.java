@@ -9,6 +9,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,6 +24,7 @@ import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.subsystems.Collector;
 import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
@@ -43,6 +46,7 @@ public class RobotContainer extends LightningContainer {
     private Elevator elevator;
     private Wrist wrist;
     private FishingRod rod;
+    private Collector collector;
 
     private XboxController driver;
     private XboxController copilot;
@@ -51,7 +55,7 @@ public class RobotContainer extends LightningContainer {
     protected void initializeSubsystems() {
         drivetrain = TunerConstants.createDrivetrain();
         vision = new PhotonVision();
-        logger = new Telemetry(TunerConstants.TritonTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
+        logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
 
@@ -60,6 +64,7 @@ public class RobotContainer extends LightningContainer {
             elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
+            collector = new Collector(RobotMotors.collectorMotor);
         }
 
         leds = new LEDs();
@@ -76,9 +81,9 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void configureButtonBindings() {
-        new Trigger(driver::getAButton).whileTrue(drivetrain.applyRequest(
+        new Trigger(() -> driver.getRightTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(
                 DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
-        new Trigger(driver::getBButton).whileTrue(drivetrain.applyRequest(DriveRequests
+        new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
                 .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
@@ -91,11 +96,14 @@ public class RobotContainer extends LightningContainer {
 
         //sim stuff
         if(Robot.isSimulation()) {
-        //     new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(-1)))).onFalse(new InstantCommand(wrist::stop));
-        //     new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(1)))).onFalse(new InstantCommand(wrist::stop));
+            // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(-1)))).onFalse(new InstantCommand(wrist::stop));
+            // new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(1)))).onFalse(new InstantCommand(wrist::stop));
 
         //     new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
         //     new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
+
+            // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> collector.setPower(0.75)))).onFalse(new InstantCommand(collector::stop));
+            // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> collector.setPower(-0.5)))).onFalse(new InstantCommand(collector::stop));
         }
     }
 

@@ -1,7 +1,8 @@
 name: Gradle Build
 
-on: [push, pull_request]
-
+on: 
+    push:
+      
 jobs:
     Build:
         runs-on: ubuntu-latest

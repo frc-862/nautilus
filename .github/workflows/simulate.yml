@@ -1,7 +1,7 @@
 name: Gradle Simulate
 
 on:
-    pull_request:
+    push:
     
 jobs:
     Simulate:

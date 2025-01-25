@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
 
+import org.photonvision.EstimatedRobotPose;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -18,6 +20,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
@@ -30,7 +33,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
-import frc.thunder.util.Pose4d;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
@@ -168,18 +170,13 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
-     public void addVisionMeasurement(Pose4d pose) {
-        addVisionMeasurement(pose.toPose2d(), pose.getFPGATimestamp(), pose.getStdDevs());
-    }
-
-    @Override
-    public void periodic() {
-    }
-
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return getState().Speeds;
     }
 
+    public void addVisionMeasurement(EstimatedRobotPose pose) {
+        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+    }
 
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
@@ -202,11 +199,11 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         // updateSimState(0.020, RobotController.getBatteryVoltage());
     }
 
+    @Override
+    public void periodic() {
+    }
 
-
-    //SYSID
-
-
+    // SYSID
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();

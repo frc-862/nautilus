@@ -119,17 +119,17 @@ public class Wrist extends SubsystemBase {
         wristSim.update(RobotMap.UPDATE_FREQ);
 
 
-        TalonFXConfiguration motorConfig = motor.getConfig();
+        // TalonFXConfiguration motorConfig = motor.getConfig();
 
-        motorConfig.Slot0.kP = LightningShuffleboard.getDouble("wrist", "kP", 0);
-        motorConfig.Slot0.kI = LightningShuffleboard.getDouble("wrist", "kI", 0);
-        motorConfig.Slot0.kD = LightningShuffleboard.getDouble("wrist", "kD", 0);
-        motorConfig.Slot0.kS = LightningShuffleboard.getDouble("wrist", "kF", 0);
-        motorConfig.Slot0.kV = LightningShuffleboard.getDouble("wrist", "kV", 0);
-        motorConfig.Slot0.kA = LightningShuffleboard.getDouble("wrist", "kA", 0);
-        motorConfig.Slot0.kG = LightningShuffleboard.getDouble("wrist", "kG", 0);
+        // motorConfig.Slot0.kP = LightningShuffleboard.getDouble("wrist", "kP", 0);
+        // motorConfig.Slot0.kI = LightningShuffleboard.getDouble("wrist", "kI", 0);
+        // motorConfig.Slot0.kD = LightningShuffleboard.getDouble("wrist", "kD", 0);
+        // motorConfig.Slot0.kS = LightningShuffleboard.getDouble("wrist", "kF", 0);
+        // motorConfig.Slot0.kV = LightningShuffleboard.getDouble("wrist", "kV", 0);
+        // motorConfig.Slot0.kA = LightningShuffleboard.getDouble("wrist", "kA", 0);
+        // motorConfig.Slot0.kG = LightningShuffleboard.getDouble("wrist", "kG", 0);
         
-        motor.applyConfig(motorConfig);
+        // motor.applyConfig(motorConfig);
 
 
         LightningShuffleboard.setDouble("wrist", "current angle", getAngle());

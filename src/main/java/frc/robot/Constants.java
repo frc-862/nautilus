@@ -858,7 +858,7 @@ public class Constants {
     }
 
     public class AutoAlignConstants {
-        public static final double AutoAlignTolerance = 0.2d;
+        public static final double AutoAlignTolerance = 0.02d;
         
         // Rotation PID
         public static final double XAutoAlignKp = 0.2d;

@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoAlignConstants;
@@ -10,34 +10,47 @@ import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
-public class TestAutoAlign extends Command {
-    PhotonVision vision;
-    Swerve drivetrain;
-
-    Transform3d diffFromTag;
+public class TagAutoAlign extends Command {
+    private PhotonVision vision;
+    private Swerve drivetrain;
   
-    PIDController controllerX = new PIDController(AutoAlignConstants.XAutoAlignKp, AutoAlignConstants.XAutoAlignKi, 
-        AutoAlignConstants.XAutoAlignKd);
+    private PIDController controllerX = new PIDController(AutoAlignConstants.X_Kp, AutoAlignConstants.X_Ki, 
+        AutoAlignConstants.X_Kd);
 
-    PIDController controllerY = new PIDController(AutoAlignConstants.YAutoAlignKp, AutoAlignConstants.YAutoAlignKi, 
-        AutoAlignConstants.YAutoAlignKd);
+    private PIDController controllerY = new PIDController(AutoAlignConstants.Y_Kp, AutoAlignConstants.Y_Ki, 
+        AutoAlignConstants.Y_Kd);
 
-    double dx_dt;
-    double dy_dt;
+    private double dx_dt;
+    private double dy_dt;
 
-    double pitch;
-    double yaw;
+    private double pitch;
+    private double yaw;
+
+    private XboxController driver;
 
     /**
      * Used to align to Tag
+     * will always use PID Controllers
      * @param vision
      * @param drivetrain
      */
-    public TestAutoAlign(PhotonVision vision, Swerve drivetrain) {
+    public TagAutoAlign(PhotonVision vision, Swerve drivetrain) {
         this.vision = vision;
         this.drivetrain = drivetrain;
 
         addRequirements(drivetrain);
+    }
+
+    /**
+     * used to align to tag
+     * will use driver input for robot centric foreward movement in teleop
+     * @param vision
+     * @param drivetrain
+     * @param driver
+     */
+    public TagAutoAlign (PhotonVision vision, Swerve drivetrain, XboxController driver){
+        this(vision, drivetrain);
+        this.driver = driver;
     }
 
     @Override
@@ -65,11 +78,6 @@ public class TestAutoAlign extends Command {
     @Override
     public void execute() {
 
-        // update pitch and yaw values
-
-        pitch = vision.getPitch();
-        yaw = vision.getYaw();
-
         if(!vision.hasTarget()){
 
             System.out.println("Error: Cannot See April Tag");
@@ -78,15 +86,21 @@ public class TestAutoAlign extends Command {
             return;
         }
 
+        // update pitch and yaw values
+
+        pitch = vision.getPitch2d();
+        yaw = vision.getYaw2d();
+
         // use pitch and yaw to calculate velocity values
 
         dx_dt = controllerX.calculate(yaw);
-        dy_dt = -controllerY.calculate(pitch);
+        dy_dt = !DriverStation.isTeleop() ? -controllerY.calculate(pitch) : // if in teleop use driver input for foreward movement unless driver is null
+            (driver == null ? -controllerY.calculate(pitch) : -driver.getLeftY());
         
 
         if (!DriverStation.isFMSAttached()){
-            LightningShuffleboard.setDouble("TestAutoAlign", "X diffrence", yaw);
-            LightningShuffleboard.setDouble("TestAutoAlign", "Y diffrence", pitch);
+            LightningShuffleboard.setDouble("TestAutoAlign", "X diffrence (yaw)", yaw);
+            LightningShuffleboard.setDouble("TestAutoAlign", "Y diffrence (pitch)", pitch);
 
             LightningShuffleboard.setDouble("TestAutoAlign", "X speed", dx_dt);
             LightningShuffleboard.setDouble("TestAutoAlign", "Y speed", dy_dt);
@@ -105,7 +119,7 @@ public class TestAutoAlign extends Command {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(vision.getPitch()) < AutoAlignConstants.AutoAlignTolerance && 
-            Math.abs(vision.getYaw()) < AutoAlignConstants.AutoAlignTolerance;
+        return Math.abs(pitch) < AutoAlignConstants.AutoAlignTolerance && 
+            Math.abs(yaw) < AutoAlignConstants.AutoAlignTolerance;
     }
 }

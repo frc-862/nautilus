@@ -10,7 +10,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,7 +24,7 @@ import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
 import frc.robot.subsystems.Collector;
-import frc.robot.commands.TestAutoAlign;
+import frc.robot.commands.TagAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
@@ -90,7 +89,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
         
-        new Trigger(driver::getYButton).whileTrue(new TestAutoAlign(vision, drivetrain));
+        new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
 
                 
         // // TODO: Remove Standin Command
@@ -117,13 +116,13 @@ public class RobotContainer extends LightningContainer {
                 StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
         // TODO: Get actual offsets
         NamedCommands.registerCommand("ReefAlignLeft", 
-                new TestAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
         NamedCommands.registerCommand("ReefAlignRight", 
-                new TestAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignLeft", 
-                new TestAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignRight", 
-                new TestAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
         if (Robot.isReal()){
                 NamedCommands.registerCommand("RodHome",
                         StandinCommands.rodStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));

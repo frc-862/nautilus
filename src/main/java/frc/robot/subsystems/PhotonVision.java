@@ -119,12 +119,12 @@ public class PhotonVision extends SubsystemBase {
     public Command updateOdometry(Swerve swerve) {
         if (Robot.isReal()) {
             return run(() -> {
-                swerve.addVisionMeasurement(estimatedRobotPose);
+                swerve.addVisionMeasurement(lastEstimatedRobotPose, 0d);
             }).ignoringDisable(true);
         } else {
             return run(() -> {
                 visionSim.update(swerve.getPose());
-                swerve.addVisionMeasurement(estimatedRobotPose);
+                swerve.addVisionMeasurement(lastEstimatedRobotPose, 0d);
             }).ignoringDisable(true);
         }
     }

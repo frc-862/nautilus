@@ -50,6 +50,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+
     private double[] CANcoderOffsets = {0d, 0d, 0d, 0d};
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
@@ -145,7 +146,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
         configurePathPlanner();
 
-        LightningShuffleboard.setDoubleArray("Swerve", "Swerve CANCoder Offsets", () -> CANcoderOffsets);
+        LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", () -> CANcoderOffsets);
     }
 
     private void configurePathPlanner() {        
@@ -182,13 +183,13 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return getState().Speeds;
     }
 
-    private void getCANcoderOffsets(){
-        int i = 0;
-        for(SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : getModules()){
-            CANcoderOffsets[i] = swerveModule.getEncoder().getAbsolutePosition().getValueAsDouble();
-            i++;
-        }
-    }
+    // private void getCANcoderOffsets(){
+    //     int i = 0;
+    //     for(SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : getModules()){
+    //         CANcoderOffsets[i] = swerveModule.getEncoder().getAbsolutePosition().getValueAsDouble();
+    //         i++;
+    //     }
+    // }
 
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();

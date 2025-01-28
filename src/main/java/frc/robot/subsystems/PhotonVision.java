@@ -141,7 +141,7 @@ public class PhotonVision extends SubsystemBase {
 
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
         LightningShuffleboard.set("Vision", "timestamp", result.getTimestampSeconds());
-        LightningShuffleboard.set("Vision", "Status Codes", lastEstimatedRobotPose);
+        LightningShuffleboard.set("Vision", "Status Codes", getEstimatedGlobalPose(lastEstimatedRobotPose));
 
         if (result.hasTargets()) {
             getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse(

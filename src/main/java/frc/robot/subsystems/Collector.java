@@ -68,7 +68,7 @@ public class Collector extends SubsystemBase {
     public void periodic() {
         LightningShuffleboard.setBool("Collector", "BeamBreak", getBeamBreakOutput());
         LightningShuffleboard.setDouble("Collector", "Velocity", getVelocity());
-        LightningShuffleboard.setBool("Collector", "Raw BeamBreak", beamBreak.get());
+        LightningShuffleboard.setBool("Diagnostic", "Raw BeamBreak", beamBreak.get());
     }
 
     @Override

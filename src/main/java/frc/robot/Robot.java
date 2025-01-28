@@ -34,6 +34,6 @@ public class Robot extends LightningRobot {
 
         RobotContainer container = (RobotContainer) getContainer();
 
-        container.drivetrain.applyRequest(DriveRequests.getBrake());
+        container.drivetrain.setControl(DriveRequests.getBrake().get());
     }
 }

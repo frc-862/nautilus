@@ -305,10 +305,4 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
-
-
-    public void addVisionMeasurement(EstimatedRobotPose estimatedRobotPose) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addVisionMeasurement'");
-    }
 }

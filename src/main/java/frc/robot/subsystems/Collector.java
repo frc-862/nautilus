@@ -122,4 +122,5 @@ public class Collector extends SubsystemBase {
     public void setSimBeamBreak(boolean value){
         simBoolean.set(value);
     }
+    
 }

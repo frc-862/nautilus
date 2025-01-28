@@ -68,7 +68,7 @@ public class CollectorTest implements AutoCloseable {
 
         dutyCycle.waitForUpdate(0.1);
         collector.simulationPeriodic();
-        assertEquals(0.2, dutyCycle.getValue(), 0.1);
+        assertEquals(0.2, dutyCycle.getValue(), 0.05);
 
         // Checking power goes up
         collector.setPower(0);

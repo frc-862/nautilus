@@ -108,8 +108,6 @@ public class RobotContainer extends LightningContainer {
 
             // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> collector.setPower(0.75)))).onFalse(new InstantCommand(collector::stop));
             // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> collector.setPower(-0.5)))).onFalse(new InstantCommand(collector::stop));
-
-            new Trigger(()-> DriverStation.isEnabled()).whileTrue(new InstantCommand(() -> climber.setTargetPosition(-0.5d)));
         }
     }
 

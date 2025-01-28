@@ -11,6 +11,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -119,7 +120,10 @@ public class PhotonVision extends SubsystemBase {
     public Command updateOdometry(Swerve swerve) {
         if (Robot.isReal()) {
             return run(() -> {
-                swerve.addVisionMeasurement(estimatedRobotPose);
+                // Assumed measure is in inches please test when have time
+                if (getTransformBestTarget().getX() < 72){
+                    swerve.addVisionMeasurement(estimatedRobotPose);
+                }
             }).ignoringDisable(true);
         } else {
             return run(() -> {
@@ -136,6 +140,7 @@ public class PhotonVision extends SubsystemBase {
             List<PhotonPipelineResult> results = camera.getAllUnreadResults();
             result = results.get(results.size() - 1);
         } catch (Exception e) {
+            // make this a boolean, HAS VISION, and throw it on lightning shuffleboard
             DataLogManager.log("[VISION] Pose Estimator Failed to update: " + e.getLocalizedMessage());
         }
 
@@ -149,6 +154,8 @@ public class PhotonVision extends SubsystemBase {
 
             lastEstimatedRobotPose = estimatedRobotPose.estimatedPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
+
+
 
             LightningShuffleboard.set("Vision", "Field", field);
         } else {

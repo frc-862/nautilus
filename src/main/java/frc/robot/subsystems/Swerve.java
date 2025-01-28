@@ -183,13 +183,13 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return getState().Speeds;
     }
 
-    // private void getCANcoderOffsets(){
-    //     int i = 0;
-    //     for(SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : getModules()){
-    //         CANcoderOffsets[i] = swerveModule.getEncoder().getAbsolutePosition().getValueAsDouble();
-    //         i++;
-    //     }
-    // }
+    private void updateCANcoderOffsets(){
+        int i = 0;
+        for(SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : getModules()){
+            CANcoderOffsets[i] = swerveModule.getEncoder().getAbsolutePosition().getValueAsDouble();
+            i++;
+        }
+    }
 
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
@@ -214,6 +214,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     @Override
     public void periodic() {
+        updateCANcoderOffsets();
     }
 
     // SYSID
@@ -301,6 +302,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
      */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutineToApply.dynamic(direction);
+    }
+
+    public void addVisionMeasurement(EstimatedRobotPose pose) {
+        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
     }
 
     /* The SysId routine to test */

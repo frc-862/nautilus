@@ -47,7 +47,6 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;

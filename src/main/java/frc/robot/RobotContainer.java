@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -24,6 +25,7 @@ import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Collector;
 import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
@@ -47,6 +49,7 @@ public class RobotContainer extends LightningContainer {
     private Wrist wrist;
     private FishingRod rod;
     private Collector collector;
+    private AlgaeCollector algaeCollector;
 
     private XboxController driver;
     private XboxController copilot;
@@ -65,6 +68,7 @@ public class RobotContainer extends LightningContainer {
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
             collector = new Collector(RobotMotors.collectorMotor);
+            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor, RobotMotors.algaeCollectorPivotMotor);
         }
 
         leds = new LEDs();
@@ -104,6 +108,10 @@ public class RobotContainer extends LightningContainer {
 
             // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> collector.setPower(0.75)))).onFalse(new InstantCommand(collector::stop));
             // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> collector.setPower(-0.5)))).onFalse(new InstantCommand(collector::stop));
+
+        //     new Trigger(() -> DriverStation.isEnabled()).whileTrue(new InstantCommand(() -> algaeCollector.setPivotTargetAngle(60)));
+            new Trigger(() -> DriverStation.isEnabled()).whileTrue(new InstantCommand(() -> algaeCollector.setPivotPower(1)));
+            new Trigger(() -> DriverStation.isEnabled()).whileTrue(new InstantCommand(() -> algaeCollector.setRollerPower(1)));
         }
     }
 

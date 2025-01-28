@@ -47,6 +47,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
@@ -101,6 +102,11 @@ public class Constants {
         public static final int COLLECTOR = 12; // temp
         public static final int COLLECTOR_ENCODER = 36; // temp
         public static final int COLLECTOR_BEAM_BREAK_DIO = 0; // temp
+
+        public static final int ALGAE_COLLECTOR_ROLLER = 13; // temp
+        public static final int ALGAE_COLLECTOR_PIVOT = 14; // temp
+        
+
 
 
         public static final int PIGEON = 23;
@@ -206,7 +212,10 @@ public class Constants {
             ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
         public static final ThunderBird collectorMotor = new ThunderBird(RobotMap.COLLECTOR, RobotMap.CANIVORE_CAN_NAME, CollectorConstants.INVERTED,
             CollectorConstants.STATOR_CURRENT_LIMIT, CollectorConstants.BRAKE_MODE);
-
+        public static final ThunderBird algaeCollectorPivotMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_PIVOT, RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.PIVOT_INVERTED,
+            AlgaeCollectorConstants.PIVOT_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.PIVOT_BRAKE_MODE);
+        public static final ThunderBird algaeCollectorRollerMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_ROLLER, RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.ROLLER_INVERTED,
+            AlgaeCollectorConstants.ROLLER_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.ROLLER_BRAKE_MODE);
     }   
 
     public static class WristConstants {
@@ -849,5 +858,31 @@ public class Constants {
             OFF();
         }
 
+    }
+
+    public class AlgaeCollectorConstants {
+        public static final double PIVOT_TOLERANCE = 5; // temp
+        public static final double PIVOT_GEAR_RATIO = 1; // temp
+        public static final double PIVOT_MOI = 0.01096; // temp
+        public static final double PIVOT_MIN_ANGLE = 0; // temp
+        public static final double PIVOT_MAX_ANGLE = 90; // temp
+        public static final double PIVOT_LENGTH = 0.5; // temp
+        public static final double PIVOT_START_ANGLE = 0; // temp
+
+        public static final double ROLLER_KV = 0.24; // temp
+        public static final double ROLLER_KA = 0.12; // temp
+
+        public static final boolean PIVOT_INVERTED = false; // temp
+        public static final double PIVOT_STATOR_CURRENT_LIMIT = 100d; // temp
+        public static final boolean PIVOT_BRAKE_MODE = false; // temp
+        
+
+        public static final boolean ROLLER_INVERTED = false; // temp
+        public static final double ROLLER_STATOR_CURRENT_LIMIT = 100d; // temp
+        public static final boolean ROLLER_BRAKE_MODE = false; // temp
+
+        public static final double PIVOT_KP = 3; // temp
+        public static final double PIVOT_KI = 0; // temp
+        public static final double PIVOT_KD = 0; // temp
     }
 }

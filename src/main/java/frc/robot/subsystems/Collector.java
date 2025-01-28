@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.hal.SimBoolean;
@@ -122,5 +121,4 @@ public class Collector extends SubsystemBase {
     public void setSimBeamBreak(boolean value){
         simBoolean.set(value);
     }
-
 }

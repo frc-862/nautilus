@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
+import java.util.jar.Attributes.Name;
 
+import org.ejml.simple.SimpleMatrix;
 import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -19,6 +21,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -175,7 +178,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     }
 
     public void addVisionMeasurement(EstimatedRobotPose pose) {
-        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds, new Matrix<N3, N1>(new SimpleMatrix(new double[] {0,0,0})));
     }
 
     private void startSimThread() {

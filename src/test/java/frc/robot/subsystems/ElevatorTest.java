@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.Constants.RobotMotors;
 import frc.thunder.hardware.ThunderBird;
-/** Add your docs here. */
+
 public class ElevatorTest implements AutoCloseable {
 
     ThunderBird rightMotor;
@@ -26,10 +26,10 @@ public class ElevatorTest implements AutoCloseable {
     TalonFXSimState simLeftMotor;
 
     Elevator elevator;
+
     @BeforeEach
     void constructMotors() {
         assert HAL.initialize(500, 0); 
-
 
         leftMotor = RobotMotors.leftElevatorMotor;
         simLeftMotor = leftMotor.getSimState();
@@ -37,7 +37,9 @@ public class ElevatorTest implements AutoCloseable {
         rightMotor = RobotMotors.rightElevatorMotor;
         simRightMotor = rightMotor.getSimState();
 
-        elevator = new Elevator(leftMotor, rightMotor);
+        if(elevator == null) {
+            elevator = new Elevator(leftMotor, rightMotor);
+        }
 
         HAL.simPeriodicBefore();
         DriverStationSim.setEnabled(true);

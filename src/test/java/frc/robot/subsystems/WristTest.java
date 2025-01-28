@@ -17,22 +17,26 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.thunder.hardware.ThunderBird;
 import frc.robot.Constants.RobotMap;
+import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.WristConstants;
-/** Add your docs here. */
+
 public class WristTest implements AutoCloseable {
 
-    ThunderBird wristMotor;
-    TalonFXSimState simWristMotor;
+    ThunderBird motor;
+    TalonFXSimState simMotor;
+
     Wrist wrist;
+
     @BeforeEach
     void constructMotors() {
         assert HAL.initialize(500, 0); 
 
+        motor = RobotMotors.wristMotor;
+        simMotor = motor.getSimState();
 
-        wristMotor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME, WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
-        simWristMotor = wristMotor.getSimState();
-
-        wrist = new Wrist(wristMotor);
+        if(wrist == null) {
+            wrist = new Wrist(motor);
+        }
 
         HAL.simPeriodicBefore();
         DriverStationSim.setEnabled(true);
@@ -49,12 +53,12 @@ public class WristTest implements AutoCloseable {
 
     @Override
     public void close() {
-        wristMotor.close();
+        motor.close();
     }
 
     @Test
     public void testSetPower() { 
-        var dutyCycle = wristMotor.getDutyCycle();
+        var dutyCycle = motor.getDutyCycle();
         
         wrist.setPower(0);
         

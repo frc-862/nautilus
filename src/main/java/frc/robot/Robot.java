@@ -38,11 +38,11 @@ public class Robot extends LightningRobot {
     }
 
     @Override
-    public void disabledPeriodic() {
-        super.disabledPeriodic();
+    public void disabledInit() {
+        super.disabledInit();
 
         RobotContainer container = (RobotContainer) getContainer();
 
-        container.drivetrain.applyRequest(DriveRequests.getBrake());
+        container.drivetrain.setControl(DriveRequests.getBrake().get());
     }
 }

@@ -37,6 +37,8 @@ public class PhotonVision extends SubsystemBase {
     private PhotonPoseEstimator poseEstimator;
     private VisionSystemSim visionSim;
 
+    private int currentPipeline = 0;
+
     private PhotonCameraSim cameraSim;
     private SimCameraProperties cameraProp;
     private VisionTargetSim visionTarget;
@@ -51,6 +53,7 @@ public class PhotonVision extends SubsystemBase {
 
     public PhotonVision() {
         camera = new PhotonCamera(VisionConstants.camera1Name);
+        camera.setPipelineIndex(currentPipeline);
 
         poseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
@@ -115,6 +118,13 @@ public class PhotonVision extends SubsystemBase {
 
         lastPoseTime = pose.timestampSeconds;
     }
+
+    public void switchPipelines(int pipeline){
+        currentPipeline = pipeline;
+        camera.setPipelineIndex(pipeline);
+    }
+
+
 
     public Command updateOdometry(Swerve swerve) {
         if (Robot.isReal()) {

@@ -158,6 +158,7 @@ public class PhotonVision extends SubsystemBase {
 
 
             LightningShuffleboard.set("Vision", "Field", field);
+            LightningShuffleboard.set("Vision", "AprilTagDistance", getTransformBestTarget().getX());
         } else {
             if (!DriverStation.isFMSAttached()) {
                 DataLogManager.log("[VISION] Pose Estimator Failed to update");

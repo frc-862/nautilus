@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotMap;
+import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
@@ -37,12 +37,15 @@ public class Climber extends SubsystemBase {
 
         this.motor = motor;
 
-        motorSim = new TalonFXSimState(motor);
+        if(Robot.isSimulation()){
 
-        gearbox = DCMotor.getFalcon500(1);
+            motorSim = new TalonFXSimState(motor);
 
-        climbSim = new ElevatorSim(gearbox, ClimberConstants.GEAR_RATIO, ClimberConstants.CARRIAGE_MASS, ClimberConstants.DRUM_RADIUS, 
-            ClimberConstants.MIN_EXTENSION, ClimberConstants.MAX_EXTENSION, false, 0, 0, 1);
+            gearbox = DCMotor.getFalcon500(1);
+
+            climbSim = new ElevatorSim(gearbox, ClimberConstants.GEAR_RATIO, ClimberConstants.CARRIAGE_MASS, ClimberConstants.DRUM_RADIUS, 
+                ClimberConstants.MIN_EXTENSION, ClimberConstants.MAX_EXTENSION, false, 0, 0, 1);
+        }
 
         config.Slot0.kP = ClimberConstants.KP;
         config.Slot0.kI = ClimberConstants.KI;

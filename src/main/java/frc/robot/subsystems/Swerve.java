@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
+import java.util.jar.Attributes.Name;
 
+import org.ejml.simple.SimpleMatrix;
 import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -21,6 +23,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -183,12 +186,16 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return getState().Speeds;
     }
 
-    private void updateCANcoderOffsets(){
+    private void updateCANcoderOffsets() {
         int i = 0;
-        for(SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : getModules()){
+        for (SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : getModules()) {
             CANcoderOffsets[i] = swerveModule.getEncoder().getAbsolutePosition().getValueAsDouble();
             i++;
         }
+    }
+    
+    public void addVisionMeasurement(EstimatedRobotPose pose) {
+        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds, new Matrix<N3, N1>(new SimpleMatrix(new double[] {0,0,0})));
     }
 
     private void startSimThread() {
@@ -302,10 +309,6 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
      */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutineToApply.dynamic(direction);
-    }
-
-    public void addVisionMeasurement(EstimatedRobotPose pose) {
-        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
     }
 
     /* The SysId routine to test */

@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.Constants.RobotMotors;
 import frc.thunder.hardware.ThunderBird;
 
-/** Add your docs here. */
 public class CollectorTest implements AutoCloseable {
 
     ThunderBird motor;
@@ -31,7 +30,7 @@ public class CollectorTest implements AutoCloseable {
 
     @BeforeEach
     void constructMotors() {
-        HAL.initialize(500, 0);
+        assert HAL.initialize(500, 0);
 
         motor = RobotMotors.collectorMotor;
         simMotor = motor.getSimState();

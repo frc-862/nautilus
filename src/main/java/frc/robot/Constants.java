@@ -140,17 +140,17 @@ public class Constants {
         public static final double ROTOR_TO_SENSOR_RATIO = 1; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = DRUM_CIRCUMFERENCE / GEAR_RATIO;
 
-        public static final double MOTORS_KP = 3; // temp
+        public static final double MOTORS_KP = 6.5; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
-        public static final double MOTORS_KS = 0.32; // temp
-        public static final double MOTORS_KV = 0.15; // temp
+        public static final double MOTORS_KS = 1; // temp
+        public static final double MOTORS_KV = 0.18;// temp
         public static final double MOTORS_KA = 0.01; // temp
         public static final double MOTORS_KG = 0d; // temp
 
         public static final double VELOC = 80d; // temp
-        public static final double ACCEL = 200d; // temp
+        public static final double ACCEL = 400d; // temp
         public static final double JERK = 1600d; // temp
 
 

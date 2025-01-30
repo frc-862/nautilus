@@ -60,7 +60,7 @@ public class RobotContainer extends LightningContainer {
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
 
         //this is temporary
-        if(Robot.isSimulation()) {
+        if (Robot.isSimulation()) {
             elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
@@ -90,7 +90,8 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
-                
+        
+
         // // TODO: Remove Standin Command
         // new Trigger(() -> rod.onTarget()).whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
 

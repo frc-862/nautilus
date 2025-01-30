@@ -60,6 +60,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     //other swerve requests are in Constants.java/DrivetrainConstants/DriveRequests
     private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
+
+    boolean[] reef1Status = {false, false, false, false, false, false, false, false, false, false, false, false};
+    boolean[] reef2Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
+    boolean[] reef3Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
     
 
     /**
@@ -205,12 +209,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     @Override
     public void periodic() {
-        boolean[] m_reefL1Status = {true, true, false, false, true, true, false, false, true, true, false, false};
-        SmartDashboard.putBooleanArray("Reef Level One", m_reefL1Status);
-        boolean[] m_reefL2Status = {true, false, true, false, true, false, true, false, true, false, true, false};
-        SmartDashboard.putBooleanArray("Reef Level Two", m_reefL2Status);
-        boolean[] m_reefL3Status = {false, false, false, true, true, true, false, false, false, true, true, true};
-        SmartDashboard.putBooleanArray("Reef Level Three", m_reefL3Status);
+        // update reef status booleans in the future
+        SmartDashboard.putBooleanArray("Reef Level One", reef1Status);
+        SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);
+        SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
     }
 
     // SYSID

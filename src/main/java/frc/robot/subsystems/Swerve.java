@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -204,6 +205,12 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     @Override
     public void periodic() {
+        boolean[] m_reefL1Status = {true, true, false, false, true, true, false, false, true, true, false, false};
+        SmartDashboard.putBooleanArray("Reef Level One", m_reefL1Status);
+        boolean[] m_reefL2Status = {true, false, true, false, true, false, true, false, true, false, true, false};
+        SmartDashboard.putBooleanArray("Reef Level Two", m_reefL2Status);
+        boolean[] m_reefL3Status = {false, false, false, true, true, true, false, false, false, true, true, true};
+        SmartDashboard.putBooleanArray("Reef Level Three", m_reefL3Status);
     }
 
     // SYSID

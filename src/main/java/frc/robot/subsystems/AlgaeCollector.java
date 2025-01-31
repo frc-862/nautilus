@@ -109,7 +109,7 @@ public class AlgaeCollector extends SubsystemBase {
 
     /**
      * Set the power of the roller motor
-     * @param speed
+     * @param power
      */
     public void setRollerPower(double power) {
         rollerMotor.setControl(new DutyCycleOut(power));

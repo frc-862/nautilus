@@ -98,9 +98,9 @@ public class Constants {
         public static final int WRIST = 11; // temp
         public static final int WRIST_ENCODER = 35; // temp
 
-        public static final int COLLECTOR = 12; // temp
-        public static final int COLLECTOR_ENCODER = 36; // temp
-        public static final int COLLECTOR_BEAM_BREAK_DIO = 0; // temp
+        public static final int CORAL_COLLECTOR = 12; // temp
+        public static final int CORAL_COLLECTOR_ENCODER = 36; // temp
+        public static final int CORAL_COLLECTOR_BEAM_BREAK_DIO = 0; // temp
 
         public static final int ALGAE_COLLECTOR_ROLLER = 13; // temp
         public static final int ALGAE_COLLECTOR_PIVOT = 14; // temp
@@ -208,8 +208,8 @@ public class Constants {
                     ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
         public static final ThunderBird rightElevatorMotor = new ThunderBird(RobotMap.R_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
             ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
-        public static final ThunderBird collectorMotor = new ThunderBird(RobotMap.COLLECTOR, RobotMap.CANIVORE_CAN_NAME, CollectorConstants.INVERTED,
-            CollectorConstants.STATOR_CURRENT_LIMIT, CollectorConstants.BRAKE_MODE);
+        public static final ThunderBird coralCollectorMotor = new ThunderBird(RobotMap.CORAL_COLLECTOR, RobotMap.CANIVORE_CAN_NAME, CoralCollectorConstants.INVERTED,
+            CoralCollectorConstants.STATOR_CURRENT_LIMIT, CoralCollectorConstants.BRAKE_MODE);
         public static final ThunderBird algaeCollectorPivotMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_PIVOT, RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.PIVOT_INVERTED,
             AlgaeCollectorConstants.PIVOT_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.PIVOT_BRAKE_MODE);
         public static final ThunderBird algaeCollectorRollerMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_ROLLER, RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.ROLLER_INVERTED,
@@ -246,7 +246,7 @@ public class Constants {
         public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
 
     }
-    public static class CollectorConstants{
+    public static class CoralCollectorConstants{
         public static final boolean BRAKE_MODE = true;
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean INVERTED = false; // temp
@@ -255,8 +255,8 @@ public class Constants {
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double COLLECTOR_KV = 0.24; // temp
-        public static final double COLLECTOR_KA = 0.4; // temp
+        public static final double KV = 0.24; // temp
+        public static final double KA = 0.8; // temp
 
     }
 
@@ -871,7 +871,7 @@ public class Constants {
         public static final double PIVOT_START_ANGLE = 0; // temp
 
         public static final double ROLLER_KV = 0.24; // temp
-        public static final double ROLLER_KA = 0.4; // temp
+        public static final double ROLLER_KA = 0.8; // temp
 
         public static final boolean PIVOT_INVERTED = false; // temp
         public static final double PIVOT_STATOR_CURRENT_LIMIT = 100d; // temp

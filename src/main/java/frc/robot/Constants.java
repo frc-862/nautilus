@@ -105,13 +105,12 @@ public class Constants {
         public static final int ALGAE_COLLECTOR_ROLLER = 13; // temp
         public static final int ALGAE_COLLECTOR_PIVOT = 14; // temp
         
-
+        public static final int CLIMBER = 15; // temp
 
 
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
-
         // 20ms default loop time
         public static final double UPDATE_FREQ = 0.020;
 
@@ -215,6 +214,9 @@ public class Constants {
             AlgaeCollectorConstants.PIVOT_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.PIVOT_BRAKE_MODE);
         public static final ThunderBird algaeCollectorRollerMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_ROLLER, RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.ROLLER_INVERTED,
             AlgaeCollectorConstants.ROLLER_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.ROLLER_BRAKE_MODE);
+        public static final ThunderBird climberMotor = new ThunderBird(RobotMap.CLIMBER, RobotMap.CANIVORE_CAN_NAME, ClimberConstants.INVERTED,
+            ClimberConstants.STATOR_CURRENT_LIMIT, ClimberConstants.BREAK_MODE);
+
     }   
 
     public static class WristConstants {
@@ -883,5 +885,22 @@ public class Constants {
         public static final double PIVOT_KP = 3; // temp
         public static final double PIVOT_KI = 0; // temp
         public static final double PIVOT_KD = 0; // temp
+    public class ClimberConstants{
+        public static final double GEAR_RATIO = 1.0; // temp
+        public static final double DRUM_RADIUS = 0.015; // temp
+        public static final double CARRIAGE_MASS = 18.75; // temp
+        public static final double MIN_EXTENSION = -0.5; // temp
+        public static final double MAX_EXTENSION = 0; // temp
+        public static final double TOLERANCE = 1; // temp
+        public static final double ROTOR_TO_MECHANISM_RATIO = 1d;
+
+        public static final double KP = 0.05d; // temp
+        public static final double KI = 0.0; // temp
+        public static final double KD = 0; // temp
+
+        public static final boolean INVERTED = false; // temp
+        public static final double STATOR_CURRENT_LIMIT = 100d; // temp
+        public static final boolean BREAK_MODE = true;
+        
     }
 }

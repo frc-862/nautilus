@@ -14,8 +14,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -26,6 +28,7 @@ import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
 import frc.robot.subsystems.AlgaeCollector;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Collector;
 import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
@@ -50,6 +53,7 @@ public class RobotContainer extends LightningContainer {
     private FishingRod rod;
     private Collector collector;
     private AlgaeCollector algaeCollector;
+    private Climber climber;
 
     private XboxController driver;
     private XboxController copilot;
@@ -69,6 +73,7 @@ public class RobotContainer extends LightningContainer {
             rod = new FishingRod(wrist, elevator);
             collector = new Collector(RobotMotors.collectorMotor);
             algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor, RobotMotors.algaeCollectorPivotMotor);
+            climber = new Climber(RobotMotors.climberMotor);
         }
 
         leds = new LEDs();
@@ -81,6 +86,11 @@ public class RobotContainer extends LightningContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         vision.setDefaultCommand(vision.updateOdometry(drivetrain));
+
+        // more sim stuff
+        if (Robot.isSimulation()){
+                // climber.setDefaultCommand(new RunCommand(() -> climber.setPower(copilot.getLeftY())));
+        }
     }
 
     @Override
@@ -161,4 +171,6 @@ public class RobotContainer extends LightningContainer {
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
         }
+
+
 }

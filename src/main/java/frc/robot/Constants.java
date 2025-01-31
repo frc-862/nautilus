@@ -102,6 +102,8 @@ public class Constants {
         public static final int COLLECTOR_ENCODER = 36; // temp
         public static final int COLLECTOR_BEAM_BREAK_DIO = 0; // temp
 
+        public static final int CLIMBER = 13; // temp
+
 
         public static final int PIGEON = 23;
 
@@ -206,6 +208,8 @@ public class Constants {
             ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
         public static final ThunderBird collectorMotor = new ThunderBird(RobotMap.COLLECTOR, RobotMap.CANIVORE_CAN_NAME, CollectorConstants.INVERTED,
             CollectorConstants.STATOR_CURRENT_LIMIT, CollectorConstants.BRAKE_MODE);
+        public static final ThunderBird climberMotor = new ThunderBird(RobotMap.CLIMBER, RobotMap.CANIVORE_CAN_NAME, ClimberConstants.INVERTED,
+            ClimberConstants.STATOR_CURRENT_LIMIT, ClimberConstants.BREAK_MODE);
 
     }   
 
@@ -849,5 +853,24 @@ public class Constants {
             OFF();
         }
 
+    }
+
+    public class ClimberConstants{
+        public static final double GEAR_RATIO = 1.0; // temp
+        public static final double DRUM_RADIUS = 0.015; // temp
+        public static final double CARRIAGE_MASS = 18.75; // temp
+        public static final double MIN_EXTENSION = -0.5; // temp
+        public static final double MAX_EXTENSION = 0; // temp
+        public static final double TOLERANCE = 1; // temp
+        public static final double ROTOR_TO_MECHANISM_RATIO = 1d;
+
+        public static final double KP = 0.05d; // temp
+        public static final double KI = 0.0; // temp
+        public static final double KD = 0; // temp
+
+        public static final boolean INVERTED = false; // temp
+        public static final double STATOR_CURRENT_LIMIT = 100d; // temp
+        public static final boolean BREAK_MODE = true;
+        
     }
 }

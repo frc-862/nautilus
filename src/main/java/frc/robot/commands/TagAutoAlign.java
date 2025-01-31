@@ -26,6 +26,9 @@ public class TagAutoAlign extends Command {
     private double pitch;
     private double yaw;
 
+    private int numTimesWithSameData = 0;
+    private double[] lastData = new double[] {0, 0};
+
     private XboxController driver;
 
     /**
@@ -81,15 +84,26 @@ public class TagAutoAlign extends Command {
         if(!vision.hasTarget()){
 
             System.out.println("Error: Cannot See April Tag");
-
-            drivetrain.setControl(DriveRequests.getRobotCentric(0, 0, 0));
-            return;
+            cancel();
         }
 
         // update pitch and yaw values
 
-        pitch = vision.getPitch2d();
-        yaw = vision.getYaw2d();
+        pitch = vision.getPitch();
+        yaw = vision.getYaw();
+
+        if(lastData[0] == pitch && lastData[1] == yaw){
+            numTimesWithSameData++;
+
+            if (numTimesWithSameData > 5){
+                System.out.println("Error: Photon Vision is not updating");
+                cancel();
+            }
+            
+        } else {
+            numTimesWithSameData = 0;
+            lastData = new Double[] {pitch, yaw};
+        }
 
         // use pitch and yaw to calculate velocity values
 
@@ -119,7 +133,8 @@ public class TagAutoAlign extends Command {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(pitch) < AutoAlignConstants.AutoAlignTolerance && 
-            Math.abs(yaw) < AutoAlignConstants.AutoAlignTolerance;
+        // return Math.abs(pitch) < AutoAlignConstants.AutoAlignTolerance && 
+        //     Math.abs(yaw) < AutoAlignConstants.AutoAlignTolerance;
+        return false;
     }
 }

@@ -50,7 +50,7 @@ public class PhotonVision extends SubsystemBase {
     private Field2d field = new Field2d();
 
     public PhotonVision() {
-        camera = new PhotonCamera(VisionConstants.camera1Name);
+        camera = new PhotonCamera("Arducam_OV2311_USB_Camera (1)");
 
         poseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
@@ -150,7 +150,6 @@ public class PhotonVision extends SubsystemBase {
             DataLogManager.log("[VISION] Pose Estimator Failed to update: " + e.getLocalizedMessage());
         }
 
-        LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
         LightningShuffleboard.set("Vision", "Timestamp", result.getTimestampSeconds());
 
         if (result.hasTargets()) {

@@ -254,7 +254,7 @@ public class Constants {
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
         public static final double COLLECTOR_KV = 0.24; // temp
-        public static final double COLLECTOR_KA = 0.12; // temp
+        public static final double COLLECTOR_KA = 0.4; // temp
 
     }
 
@@ -869,7 +869,7 @@ public class Constants {
         public static final double PIVOT_START_ANGLE = 0; // temp
 
         public static final double ROLLER_KV = 0.24; // temp
-        public static final double ROLLER_KA = 0.12; // temp
+        public static final double ROLLER_KA = 0.4; // temp
 
         public static final boolean PIVOT_INVERTED = false; // temp
         public static final double PIVOT_STATOR_CURRENT_LIMIT = 100d; // temp

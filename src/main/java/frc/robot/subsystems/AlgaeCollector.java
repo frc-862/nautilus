@@ -12,7 +12,6 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -37,6 +36,8 @@ public class AlgaeCollector extends SubsystemBase {
     private SingleJointedArmSim pivotSim;
     @SuppressWarnings("rawtypes")
     private LinearSystemSim rollerSim;
+
+    private double rollerPower = 0;
 
     private DCMotor pivotGearbox;
 
@@ -72,20 +73,21 @@ public class AlgaeCollector extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (!DriverStation.isFMSAttached()){
-            LightningShuffleboard.setDouble("Algae Collector", "Pivot Angle", getPivotAngle());
-            LightningShuffleboard.setDouble("Algae Collector", "Roller Velocity", getRollerVelocity());
-            LightningShuffleboard.setDouble("Algae Collector", "Pivot Target", getTargetAngle());
-            LightningShuffleboard.setDouble("Algae Collector", "Pivot Motor current", pivotMotorSim.getMotorVoltage());
-            LightningShuffleboard.setDouble("Algae Collector", "Pivot raw roter pos0ition", pivotSim.getAngleRads());
-        }
+        LightningShuffleboard.setDouble("Algae Collector", "Pivot Angle", getPivotAngle());
+        LightningShuffleboard.setDouble("Algae Collector", "Roller Velocity", getRollerVelocity());
+        LightningShuffleboard.setDouble("Algae Collector", "Pivot Target", getTargetAngle());
+        LightningShuffleboard.setDouble("Algae Collector", "Pivot Motor current", pivotMotorSim.getMotorVoltage());
+        LightningShuffleboard.setDouble("Algae Collector", "Pivot raw roter pos0ition", pivotSim.getAngleRads());
+        
     }
 
     @Override
     public void simulationPeriodic() {
+        final double batteryVoltage = RobotController.getBatteryVoltage();
+
         // set supply voltages to motors
-        rollerMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-        pivotMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+        rollerMotorSim.setSupplyVoltage(batteryVoltage);
+        pivotMotorSim.setSupplyVoltage(batteryVoltage);
 
         double pivotAngle = Units.radiansToRotations(pivotSim.getAngleRads());
         double pivotVelocity = Units.radiansToRotations(pivotSim.getVelocityRadPerSec());
@@ -100,7 +102,7 @@ public class AlgaeCollector extends SubsystemBase {
 
         // use motor voltages to set input voltages for physics simulations
         pivotSim.setInputVoltage(pivotMotorSim.getMotorVoltage());
-        rollerSim.setInput(rollerMotorSim.getMotorVoltage());
+        rollerSim.setInput(batteryVoltage * rollerPower);
         
         // update physics simulations
         pivotSim.update(RobotMap.UPDATE_FREQ);
@@ -111,8 +113,9 @@ public class AlgaeCollector extends SubsystemBase {
      * Set the power of the roller motor
      * @param speed
      */
-    public void setRollerPower(double speed) {
-        rollerMotor.setControl(new DutyCycleOut(speed));
+    public void setRollerPower(double power) {
+        rollerPower = power;
+        rollerMotor.setControl(new DutyCycleOut(power));
     }
 
     /**

@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.hal.SimBoolean;
@@ -31,6 +30,8 @@ public class Collector extends SubsystemBase {
     private DigitalInput beamBreak;
     private SimDevice beamBreakSim;
     private SimBoolean simBoolean;
+
+    private double power = 0;
 
     @SuppressWarnings("rawtypes")
     private LinearSystemSim collectorSim;
@@ -73,14 +74,16 @@ public class Collector extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
 
+        final double batteryVoltage = RobotController.getBatteryVoltage();
+
         // set supply voltage to battery voltage (12 v)
-        motorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+        motorSim.setSupplyVoltage(batteryVoltage);
 
         // set motorspeed using collector physics simulation
         motorSim.setRotorVelocity(collectorSim.getOutput(0));
 
         // update collector physics simulation
-        collectorSim.setInput(motorSim.getMotorVoltage());
+        collectorSim.setInput(batteryVoltage * power);
         collectorSim.update(RobotMap.UPDATE_FREQ);
     }
 
@@ -89,6 +92,7 @@ public class Collector extends SubsystemBase {
      * @param power
      */
     public void setPower(double power){
+        this.power = power;
         motor.setControl(new DutyCycleOut(power));
     }
 

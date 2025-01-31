@@ -37,8 +37,6 @@ public class AlgaeCollector extends SubsystemBase {
     @SuppressWarnings("rawtypes")
     private LinearSystemSim rollerSim;
 
-    private double rollerPower = 0;
-
     private DCMotor pivotGearbox;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -102,7 +100,7 @@ public class AlgaeCollector extends SubsystemBase {
 
         // use motor voltages to set input voltages for physics simulations
         pivotSim.setInputVoltage(pivotMotorSim.getMotorVoltage());
-        rollerSim.setInput(batteryVoltage * rollerPower);
+        rollerSim.setInput(rollerMotorSim.getMotorVoltage());
         
         // update physics simulations
         pivotSim.update(RobotMap.UPDATE_FREQ);
@@ -114,7 +112,6 @@ public class AlgaeCollector extends SubsystemBase {
      * @param speed
      */
     public void setRollerPower(double power) {
-        rollerPower = power;
         rollerMotor.setControl(new DutyCycleOut(power));
     }
 

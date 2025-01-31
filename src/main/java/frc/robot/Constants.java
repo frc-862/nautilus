@@ -885,7 +885,10 @@ public class Constants {
         public static final double PIVOT_KP = 3; // temp
         public static final double PIVOT_KI = 0; // temp
         public static final double PIVOT_KD = 0; // temp
-    public class ClimberConstants{
+
+    }
+
+    public class ClimberConstants {
         public static final double GEAR_RATIO = 1.0; // temp
         public static final double DRUM_RADIUS = 0.015; // temp
         public static final double CARRIAGE_MASS = 18.75; // temp

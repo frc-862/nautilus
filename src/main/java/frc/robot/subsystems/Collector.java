@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CollectorConstants;
 import frc.robot.Constants.RobotMap;
@@ -31,8 +30,6 @@ public class Collector extends SubsystemBase {
     private DigitalInput beamBreak;
     private SimDevice beamBreakSim;
     private SimBoolean simBoolean;
-
-    private double power = 0;
 
     @SuppressWarnings("rawtypes")
     private LinearSystemSim collectorSim;
@@ -84,7 +81,7 @@ public class Collector extends SubsystemBase {
         motorSim.setRotorVelocity(collectorSim.getOutput(0));
 
         // update collector physics simulation
-        collectorSim.setInput(batteryVoltage * power);
+        collectorSim.setInput(motorSim.getMotorVoltage());
         collectorSim.update(RobotMap.UPDATE_FREQ);
     }
 
@@ -93,7 +90,6 @@ public class Collector extends SubsystemBase {
      * @param power
      */
     public void setPower(double power){
-        this.power = power;
         motor.setControl(new DutyCycleOut(power));
     }
 

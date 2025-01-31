@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,11 +21,15 @@ public class TagAutoAlign extends Command {
     private PIDController controllerY = new PIDController(AutoAlignConstants.Y_Kp, AutoAlignConstants.Y_Ki, 
         AutoAlignConstants.Y_Kd);
 
+    private PIDController controllerR;
+
     private double dx_dt;
     private double dy_dt;
+    private double dr_dt;
 
     private double pitch;
     private double yaw;
+    private double rot;
 
     private int numTimesWithSameData = 0;
     private double[] lastData = new double[] {0, 0};
@@ -70,11 +75,21 @@ public class TagAutoAlign extends Command {
             LightningShuffleboard.getDouble("TestAutoAlign", "Y Ki", 0), 
             LightningShuffleboard.getDouble("TestAutoAlign", "Y Kd", 0));
 
+        controllerR = new PIDController(
+            LightningShuffleboard.getDouble("TestAutoAlign", "R Kp", 0), 
+            LightningShuffleboard.getDouble("TestAutoAlign", "R Ki", 0), 
+            LightningShuffleboard.getDouble("TestAutoAlign", "R Kd", 0));
+
+        
+
         controllerX.setSetpoint(0);
         controllerX.setTolerance(AutoAlignConstants.AutoAlignTolerance);
 
         controllerY.setSetpoint(0);
         controllerY.setTolerance(AutoAlignConstants.AutoAlignTolerance);
+
+        controllerR.setSetpoint(0);
+        controllerR.enableContinuousInput(0, 360);
 
     }
 
@@ -91,6 +106,8 @@ public class TagAutoAlign extends Command {
 
         pitch = vision.getPitch();
         yaw = vision.getYaw();
+        rot = MathUtil.inputModulus(drivetrain.getPigeon2().getYaw().getValueAsDouble(), 0, 360);
+
 
         if(lastData[0] == pitch && lastData[1] == yaw){
             numTimesWithSameData++;
@@ -102,7 +119,7 @@ public class TagAutoAlign extends Command {
             
         } else {
             numTimesWithSameData = 0;
-            lastData = new Double[] {pitch, yaw};
+            lastData = new double[] {pitch, yaw};
         }
 
         // use pitch and yaw to calculate velocity values
@@ -110,18 +127,23 @@ public class TagAutoAlign extends Command {
         dx_dt = controllerX.calculate(yaw);
         dy_dt = !DriverStation.isTeleop() ? -controllerY.calculate(pitch) : // if in teleop use driver input for foreward movement unless driver is null
             (driver == null ? -controllerY.calculate(pitch) : -driver.getLeftY());
+
+        // dr_dt = -Math.floorMod((int) controllerR.calculate(rot), 360);
+        dr_dt = controllerR.calculate(rot);
         
 
         if (!DriverStation.isFMSAttached()){
             LightningShuffleboard.setDouble("TestAutoAlign", "X diffrence (yaw)", yaw);
             LightningShuffleboard.setDouble("TestAutoAlign", "Y diffrence (pitch)", pitch);
+            LightningShuffleboard.setDouble("TestAutoAlign", "R diffrence (rot)", rot);
 
             LightningShuffleboard.setDouble("TestAutoAlign", "X speed", dx_dt);
             LightningShuffleboard.setDouble("TestAutoAlign", "Y speed", dy_dt);
+            LightningShuffleboard.setDouble("TestAutoAlign", "R speed", dr_dt);
         }
 
         // give the new velocity values to the drivetrain
-        drivetrain.setControl(DriveRequests.getRobotCentric(dx_dt, dy_dt, 0));
+        drivetrain.setControl(DriveRequests.getRobotCentric(dx_dt, dy_dt, dr_dt));
     }
 
 

@@ -37,7 +37,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
-
+import frc.robot.Constants.DrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 /**
@@ -64,6 +64,12 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     boolean[] reef1Status = {false, false, false, false, false, false, false, false, false, false, false, false};
     boolean[] reef2Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
     boolean[] reef3Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
+
+    private boolean robotCentric = false;
+    private boolean slowMode = false;
+
+    private double speedMult = 1d;
+    private double turnMult = 1d;
     
 
     /**
@@ -180,6 +186,63 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return getState().Speeds;
+    }
+
+    /**
+     * gets slow mode true/false
+     * @return slow mode true/false
+     */
+    public boolean inSlowMode() {
+        return slowMode;
+    }
+
+    /**
+     * gets the speed multiplier
+     * @return speed multiplier (1.0 for normal, 0.4 for slow mode)
+     */
+    public double getSpeedMult() {
+        return speedMult;
+    }
+
+    /**
+     * gets the turn multiplier
+     * @return turn multiplier (1.0 for normal, 0.7 for slow mode)
+     */
+    public double getTurnMult() {
+        return turnMult;
+    }
+
+    /**
+     * gets robot centric true/false
+     * @return robot centric true/false
+     */
+    public boolean inRobotCentric() {
+        return robotCentric;
+    }
+
+    /**
+     * sets slow mode true/false
+     * speedMult and turnMult are set to the appropriate values
+     * @param slowMode
+     */
+    public void setSlowMode(boolean slowMode) {
+        this.slowMode = slowMode;
+
+        if (slowMode == true) {
+            speedMult = DrivetrainConstants.SLOW_SPEED_MULT;
+            turnMult = DrivetrainConstants.SLOW_TURN_MULT;
+        } else {
+            speedMult = 1d;
+            turnMult = 1d;
+        }
+    }
+
+    /**
+     * sets robot centric true/false (for dashboard values)
+     * @param robotCentric
+     */
+    public void setRobotCentric(boolean robotCentric) {
+        this.robotCentric = robotCentric;
     }
 
     public void addVisionMeasurement(EstimatedRobotPose pose) {

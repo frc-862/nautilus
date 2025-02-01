@@ -33,11 +33,9 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class PhotonVision extends SubsystemBase {
 
-    private PhotonCamera camera;
+    private PhotonCamera camera1;
     private PhotonPoseEstimator poseEstimator;
     private VisionSystemSim visionSim;
-
-    private int currentPipeline = 0;
 
     private PhotonCameraSim cameraSim;
     private SimCameraProperties cameraProp;
@@ -52,8 +50,8 @@ public class PhotonVision extends SubsystemBase {
     private Field2d field = new Field2d();
 
     public PhotonVision() {
-        camera = new PhotonCamera(VisionConstants.camera1Name);
-        camera.setPipelineIndex(currentPipeline);
+        camera1 = new PhotonCamera(VisionConstants.camera1Name);
+        camera1.setPipelineIndex(0);
 
         poseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
@@ -75,7 +73,7 @@ public class PhotonVision extends SubsystemBase {
             // cameraProp.setAvgLatencyMs(35);
             // cameraProp.setLatencyStdDevMs(5);
 
-            cameraSim = new PhotonCameraSim(camera, cameraProp);
+            cameraSim = new PhotonCameraSim(camera1, cameraProp);
             visionSim.addCamera(cameraSim, VisionConstants.robotToCamera);
 
             // Enable the raw and processed streams. These are enabled by default.
@@ -119,8 +117,7 @@ public class PhotonVision extends SubsystemBase {
         lastPoseTime = pose.timestampSeconds;
     }
 
-    public void switchPipelines(int pipeline){
-        currentPipeline = pipeline;
+    public void switchPipelines(int pipeline, PhotonCamera camera){
         camera.setPipelineIndex(pipeline);
     }
 
@@ -143,7 +140,7 @@ public class PhotonVision extends SubsystemBase {
     public void periodic() {
         try {
             // get the latest result
-            List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+            List<PhotonPipelineResult> results = camera1.getAllUnreadResults();
             result = results.get(results.size() - 1);
         } catch (Exception e) {
             DataLogManager.log("[VISION] Pose Estimator Failed to update: " + e.getLocalizedMessage());
@@ -151,7 +148,7 @@ public class PhotonVision extends SubsystemBase {
 
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
         LightningShuffleboard.set("Vision", "Timestamp", result.getTimestampSeconds());
-        LightningShuffleboard.setDouble("Vision", "Pipeline", currentPipeline);
+        LightningShuffleboard.setDouble("Vision", "Pipeline", camera1.getPipelineIndex());
 
         if (result.hasTargets()) {
             getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse(

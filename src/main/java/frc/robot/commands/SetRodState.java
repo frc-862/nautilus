@@ -4,20 +4,21 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.FishingRodConstants.states;
+import frc.robot.Constants.FishingRodConstants.ROD_STATES;
 import frc.robot.subsystems.FishingRod;
 
 public class SetRodState extends Command {
     private FishingRod rod;
-    private states state;
+    private ROD_STATES state;
 
     
     /** Creates a new SetRodState. 
      * @param rod rod subsystem
      * @param state state to set
     */
-    public SetRodState(FishingRod rod, states state) {
+    public SetRodState(FishingRod rod, ROD_STATES state) {
         this.rod = rod;
         this.state = state;
 
@@ -31,6 +32,10 @@ public class SetRodState extends Command {
 
     @Override
     public boolean isFinished() {
-        return rod.onTarget();
+        if(DriverStation.isAutonomous()) {
+            return rod.onTarget();
+        } else {
+            return false;
+        }
     }
 }

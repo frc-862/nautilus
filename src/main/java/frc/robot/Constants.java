@@ -180,29 +180,29 @@ public class Constants {
     }
 
     public static class FishingRodConstants {
-        public enum states {
+        public enum ROD_STATES {
             STOW, L1, L2, L3, L4, SOURCE
         }
 
-        public static final HashMap<states, Double> WRIST_MAP = new HashMap<states, Double>() {
+        public static final HashMap<ROD_STATES, Double> WRIST_MAP = new HashMap<ROD_STATES, Double>() {
             {
-                put(states.STOW, 0d);
-                put(states.L1, 0d);
-                put(states.L2, -20d);
-                put(states.L3, -20d);
-                put(states.L4, -80d);
-                put(states.SOURCE, 0d);
+                put(ROD_STATES.STOW, 0d);
+                put(ROD_STATES.L1, 0d);
+                put(ROD_STATES.L2, -20d);
+                put(ROD_STATES.L3, -20d);
+                put(ROD_STATES.L4, -80d);
+                put(ROD_STATES.SOURCE, 0d);
             }
         };
 
-        public static final HashMap<states, Double> ELEVATOR_MAP = new HashMap<states, Double>() {
+        public static final HashMap<ROD_STATES, Double> ELEVATOR_MAP = new HashMap<ROD_STATES, Double>() {
             {
-                put(states.STOW, 1d);
-                put(states.L1, 17.88d);
-                put(states.L2, 31.72d);
-                put(states.L3, 47.59d);
-                put(states.L4, 71.87d);
-                put(states.SOURCE, 36.5d);
+                put(ROD_STATES.STOW, 1d);
+                put(ROD_STATES.L1, 17.88d);
+                put(ROD_STATES.L2, 31.72d);
+                put(ROD_STATES.L3, 47.59d);
+                put(ROD_STATES.L4, 71.87d);
+                put(ROD_STATES.SOURCE, 36.5d);
             }
         };
     }
@@ -875,6 +875,7 @@ public class Constants {
         public static final double PIVOT_MAX_ANGLE = 90; // temp
         public static final double PIVOT_LENGTH = 0.5; // temp
         public static final double PIVOT_START_ANGLE = 0; // temp
+        public static final double PIVOT_TRIGGER_SPEED = 1;
 
         public static final double ROLLER_KV = 0.24; // temp
         public static final double ROLLER_KA = 0.8; // temp
@@ -891,6 +892,13 @@ public class Constants {
         public static final double PIVOT_KP = 3; // temp
         public static final double PIVOT_KI = 0; // temp
         public static final double PIVOT_KD = 0; // temp
+
+        public static final double DEPLOY_ANGLE = 90;
+        public static final double STOW_ANGLE = 0;
+
+        public static enum PIVOT_STATES {
+            DEPLOYED, STOWED
+        }
 
     }
 

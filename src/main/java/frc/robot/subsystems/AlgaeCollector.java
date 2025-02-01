@@ -21,6 +21,7 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Robot;
 import frc.robot.Constants.AlgaeCollectorConstants;
 import frc.robot.Constants.RobotMap;
+import frc.robot.Constants.AlgaeCollectorConstants.PIVOT_STATES;
 
 public class AlgaeCollector extends SubsystemBase {
 
@@ -127,7 +128,8 @@ public class AlgaeCollector extends SubsystemBase {
      * set target angle for pivot in degrees
      * @param angle
      */
-    public void setPivotTargetAngle(double angle) {
+    public void setPivotState(PIVOT_STATES state) {
+        double angle = (state == PIVOT_STATES.DEPLOYED) ? AlgaeCollectorConstants.DEPLOY_ANGLE : AlgaeCollectorConstants.STOW_ANGLE;
         pivotMotor.setControl(pivotPID.withPosition(Units.degreesToRotations(angle)));
         targetAngle = angle;
     }

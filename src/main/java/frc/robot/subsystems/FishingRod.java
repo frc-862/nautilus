@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FishingRodConstants;
-import frc.robot.Constants.FishingRodConstants.states;
+import frc.robot.Constants.FishingRodConstants.ROD_STATES;
 import frc.robot.Constants.WristConstants;
 import frc.robot.Robot;
 
@@ -24,7 +24,7 @@ public class FishingRod extends SubsystemBase {
 
     private Wrist wrist;
     private Elevator elevator;
-    private states currState = states.STOW;
+    private ROD_STATES currState = ROD_STATES.STOW;
 
     //simulation stuff
     private Mechanism2d mech2d;
@@ -62,7 +62,7 @@ public class FishingRod extends SubsystemBase {
      * Sets the state of the fishing rod
      * @param state
      */
-    public void setState(states state) {
+    public void setState(ROD_STATES state) {
         if(onTarget()) {
             currState = state;
         }
@@ -104,7 +104,7 @@ public class FishingRod extends SubsystemBase {
      */
 
     @Logged(importance = Importance.CRITICAL)
-    public states getState() {
+    public ROD_STATES getState() {
         return currState;
     }
 

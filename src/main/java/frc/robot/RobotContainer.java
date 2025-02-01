@@ -17,10 +17,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
-import frc.robot.Constants.FishingRodConstants.states;
+import frc.robot.Constants.FishingRodConstants.ROD_STATES;
 import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
+import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
 import frc.robot.subsystems.AlgaeCollector;
@@ -113,6 +114,8 @@ public class RobotContainer extends LightningContainer {
             break;
             default:
                 // put your commands here, see SetRodState()
+                (new Trigger(driver::getRightBumperButtonPressed)).whileTrue(new SetRodState(rod, ROD_STATES.SOURCE));
+                ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(new CollectAlgae(algaeCollector, driver::getRightTriggerAxis));
             break;
         }
     }
@@ -149,17 +152,17 @@ public class RobotContainer extends LightningContainer {
             break;
             default:
                 NamedCommands.registerCommand("RodHome", 
-                        new SetRodState(rod, states.STOW).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.STOW).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL1", 
-                        new SetRodState(rod, states.L1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.L1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL2", 
-                        new SetRodState(rod, states.L2).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.L2).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL3", 
-                        new SetRodState(rod, states.L3).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.L3).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL4", 
-                        new SetRodState(rod, states.L4).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.L4).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodSource", 
-                        new SetRodState(rod, states.SOURCE).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.SOURCE).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
             break;
         }
 

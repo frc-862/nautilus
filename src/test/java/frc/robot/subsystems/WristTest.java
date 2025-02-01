@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.derive;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.thunder.hardware.ThunderBird;
@@ -69,11 +72,42 @@ public class WristTest implements AutoCloseable {
 
     @Test
     public void testSetPostion() {
-        System.out.println(wrist.getPosition());
-        wrist.setPosition(0.5d);
-        Timer.delay(0.10);
+        // Create a duty cycle and target position
+        var dutyCycle = motor.getDutyCycle();
+        var targetPos = -20;
+
+        // Create variables for the timer
+        var timer = new Timer();
+        var timeOut = 1;
+
+        // Set the inital position
+        wrist.setPosition(targetPos);
+        Timer.delay(0.1d);
+
+        // Initally update the robot motors and simulation
         wrist.simulationPeriodic();
-        System.out.println(wrist.getPosition());
-        assertEquals(0.5d, wrist.getPosition(), 0.1d);
+        dutyCycle.waitForUpdate(0.1);
+        System.out.println(wrist.getAngle());
+
+        // Create timer and start it
+        timer.restart();
+        timer.start();
+        
+        /*
+         * Create a loop that will continue to update the simulation as long as the the position hasen't
+         * reached the target position and the time hasen't run out
+         */
+        while (!(Math.abs(targetPos - wrist.getAngle()) <= WristConstants.TOLERANCE) && !timer.hasElapsed(timeOut)) {
+            wrist.simulationPeriodic();
+            dutyCycle.waitForUpdate(0.1);
+
+            if (Math.round(wrist.getAngle()) % 10 == 0) {
+                System.out.println(wrist.getAngle());
+            }
+        }
+        
+        // Print the final position and check the wrist position is equal to the target position
+        System.out.println(wrist.getAngle() + "\n");
+        assertEquals(targetPos, wrist.getAngle(), WristConstants.TOLERANCE);
     }
 }

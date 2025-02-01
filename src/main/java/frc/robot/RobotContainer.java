@@ -10,14 +10,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -63,17 +59,20 @@ public class RobotContainer extends LightningContainer {
         logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
-
-        //this is temporary
-        if(Robot.isSimulation()) {
-            elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
-            wrist = new Wrist(RobotMotors.wristMotor);
-            rod = new FishingRod(wrist, elevator);
-            collector = new Collector(RobotMotors.collectorMotor);
-            climber = new Climber(RobotMotors.climberMotor);
-        }
-
         leds = new LEDs();
+
+        switch (Constants.ROBOT_MODE){
+            case NAUTILUS:
+                //nothing
+            break;
+            default: // (sim or triton)
+                elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
+                wrist = new Wrist(RobotMotors.wristMotor);
+                rod = new FishingRod(wrist, elevator);
+                collector = new Collector(RobotMotors.collectorMotor);
+                climber = new Climber(RobotMotors.climberMotor);
+            break;
+        }
     }
 
     @Override
@@ -84,9 +83,13 @@ public class RobotContainer extends LightningContainer {
 
         vision.setDefaultCommand(vision.updateOdometry(drivetrain));
 
-        // more sim stuff
-        if (Robot.isSimulation()){
-                // climber.setDefaultCommand(new RunCommand(() -> climber.setPower(copilot.getLeftY())));
+        switch (Constants.ROBOT_MODE){
+            case NAUTILUS:
+                //nothing
+            break;
+            default:
+                //stow
+            break;
         }
     }
 
@@ -102,19 +105,13 @@ public class RobotContainer extends LightningContainer {
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
                 
-        // // TODO: Remove Standin Command
-        // new Trigger(() -> rod.onTarget()).whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
-
-        //sim stuff
-        if(Robot.isSimulation()) {
-            // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(-1)))).onFalse(new InstantCommand(wrist::stop));
-            // new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(1)))).onFalse(new InstantCommand(wrist::stop));
-
-        //     new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
-        //     new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
-
-            // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> collector.setPower(0.75)))).onFalse(new InstantCommand(collector::stop));
-            // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> collector.setPower(-0.5)))).onFalse(new InstantCommand(collector::stop));
+        switch (Constants.ROBOT_MODE){
+            case NAUTILUS:
+                //nothing
+            break;
+            default:
+                // put your commands here, see SetRodState()
+            break;
         }
     }
 
@@ -133,7 +130,8 @@ public class RobotContainer extends LightningContainer {
                 new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignRight", 
                 new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
-        if (Robot.isReal()){
+        switch (Constants.ROBOT_MODE) {
+            case NAUTILUS:
                 NamedCommands.registerCommand("RodHome",
                         StandinCommands.rodStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL1",
@@ -146,7 +144,8 @@ public class RobotContainer extends LightningContainer {
                         StandinCommands.rodL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodSource",
                         StandinCommands.rodSource().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        } else if(Robot.isSimulation()){
+            break;
+            default:
                 NamedCommands.registerCommand("RodHome", 
                         new SetRodState(rod, states.STOW).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL1", 
@@ -159,6 +158,7 @@ public class RobotContainer extends LightningContainer {
                         new SetRodState(rod, states.L4).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodSource", 
                         new SetRodState(rod, states.SOURCE).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+            break;
         }
 
         autoChooser = AutoBuilder.buildAutoChooser();

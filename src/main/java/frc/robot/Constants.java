@@ -60,6 +60,12 @@ public class Constants {
     public static final String TRITON_IDENTIFIER = "/home/lvuser/triton"; // Differentiate between Triton and Nautlius
     public static final boolean IS_TRITON = Paths.get(TRITON_IDENTIFIER).toFile().exists();
 
+    public static enum ROBOT_MODES {NAUTILUS, TRITON, SIM};
+
+    // yeah its a double inline ternary operator fight me
+    // if(isTriton); else if(isSim); else, its nautilus
+    public static final ROBOT_MODES ROBOT_MODE = Paths.get(TRITON_IDENTIFIER).toFile().exists() ? ROBOT_MODES.TRITON : Robot.isSimulation() ? ROBOT_MODES.SIM : ROBOT_MODES.NAUTILUS;
+
     public static class EncoderConstants {
         // Nautilus values
         private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.25732421875);

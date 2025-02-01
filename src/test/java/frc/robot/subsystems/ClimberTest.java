@@ -17,29 +17,21 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.Constants.RobotMotors;
 import frc.thunder.hardware.ThunderBird;
 
-public class ElevatorTest implements AutoCloseable {
+public class ClimberTest implements AutoCloseable {
 
-    ThunderBird rightMotor;
-    TalonFXSimState simRightMotor;
+    ThunderBird motor;
+    TalonFXSimState simMotor;
 
-    ThunderBird leftMotor;
-    TalonFXSimState simLeftMotor;
-
-    Elevator elevator;
+    Climber climber;
 
     @BeforeEach
     void constructMotors() {
-        assert HAL.initialize(500, 0); 
+        assert HAL.initialize(500, 0);
 
-        leftMotor = RobotMotors.leftElevatorMotor;
-        simLeftMotor = leftMotor.getSimState();
+        motor = RobotMotors.climberMotor;
+        simMotor = motor.getSimState();
 
-        rightMotor = RobotMotors.rightElevatorMotor;
-        simRightMotor = rightMotor.getSimState();
-
-        if(elevator == null) {
-            elevator = new Elevator(leftMotor, rightMotor);
-        }
+        climber = new Climber(motor);
 
         HAL.simPeriodicBefore();
         DriverStationSim.setEnabled(true);
@@ -56,27 +48,24 @@ public class ElevatorTest implements AutoCloseable {
 
     @Override
     public void close() {
-        leftMotor.close();
-        rightMotor.close();
+        motor.close();
     }
 
     @Test
-    public void testInitialPosition() { 
-        assertEquals(0, elevator.getPosition(), 0.1);
+    public void testInitialPosition() {
+        assertEquals(0, climber.getPostion());
     }
 
     @Test
     public void testSetPower() {
-        var dutyCycle = leftMotor.getDutyCycle();
+        var dutyCycle = motor.getDutyCycle();
 
-        elevator.setPower(0d);
+        climber.setPower(0d);
 
-        elevator.simulationPeriodic();
+        climber.simulationPeriodic();
         dutyCycle.waitForUpdate(0.1);
 
         System.out.println(dutyCycle.getValue());
         assertEquals(0, dutyCycle.getValue(), 0);
     }
-
-    // TODO: Make a test for set position
 }

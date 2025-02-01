@@ -5,9 +5,11 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -18,6 +20,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Importance;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import static edu.wpi.first.units.Units.Kilograms;
@@ -41,7 +44,8 @@ public class Elevator extends SubsystemBase {
     private double targetPosition = 0;
     private double currentPosition = 0;
 
-    private final PositionVoltage elevatorPID = new PositionVoltage(0).withSlot(0);
+
+    private MotionMagicVoltage positionPID;
 
     //sim stuff
     private DCMotor gearbox;
@@ -53,11 +57,6 @@ public class Elevator extends SubsystemBase {
     public Elevator(ThunderBird leftMotor, ThunderBird rightMotor) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
-  
-    //     leftMotor = new ThunderBird(RobotMap.L_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
-    //         ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
-    //     rightMotor = new ThunderBird(RobotMap.R_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
-    //         ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
 
         TalonFXConfiguration config = leftMotor.getConfig();
         config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
@@ -68,6 +67,9 @@ public class Elevator extends SubsystemBase {
         config.Slot0.kV = ElevatorConstants.MOTORS_KV;
         config.Slot0.kA = ElevatorConstants.MOTORS_KA;
         config.Slot0.kG = ElevatorConstants.MOTORS_KG;
+        config.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.VELOC;
+        config.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCEL;
+        config.MotionMagic.MotionMagicJerk = ElevatorConstants.JERK;
 
         config.Feedback.RotorToSensorRatio = ElevatorConstants.ROTOR_TO_SENSOR_RATIO;
         config.Feedback.SensorToMechanismRatio = ElevatorConstants.ENCODER_TO_MECHANISM_RATIO;
@@ -82,15 +84,18 @@ public class Elevator extends SubsystemBase {
         leftMotor.applyConfig(config);
         rightMotor.setControl(new Follower(RobotMap.L_ELEVATOR, true));
 
-        if (Robot.isSimulation()) {
+        positionPID = new MotionMagicVoltage(ElevatorConstants.MIN_EXTENSION.magnitude()).withSlot(0);
+
+        leftMotor.setPosition(ElevatorConstants.MIN_EXTENSION.magnitude());
+
+        if(Robot.isSimulation()) {
             /* TODO:(for simulation)
-             * Determine what Drum Radius Means for our mechanism (Mr. Hurley question)
              * Determine what Standard Deviations are ideal for noise
-             * Make Starting Height = HOME position when implemented
+             * make the speed more realistic
              */
 
             gearbox = DCMotor.getKrakenX60(2);
-            elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.GEAR_RATIO, ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters), ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 33, 0d, 1d); 
+            elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.GEAR_RATIO, ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters), ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 0, 0d, 1d); 
 
             leftSim = new TalonFXSimState(leftMotor);
             rightSim = new TalonFXSimState(rightMotor);
@@ -103,9 +108,12 @@ public class Elevator extends SubsystemBase {
     }    
 
     @Override
-
     public void periodic() {
         currentPosition = getPosition();
+
+        LightningShuffleboard.setDouble("elevator", "getPose", getPosition());
+        // setPosition(LightningShuffleboard.getDouble("elevator", "setTarget", 0));
+
     }
 
     @Override
@@ -116,15 +124,30 @@ public class Elevator extends SubsystemBase {
         rangeSensorSim.setSupplyVoltage(batteryVoltage);
 
         //TODO: I'm unclear if rightsim is necessary, or if this is correct. The WPILib example code only implements one motor, even though it's attached to a 2-motor gearbox
-        elevatorSim.setInputVoltage(leftSim.getMotorVoltage()); 
+        elevatorSim.setInputVoltage(leftSim.getMotorVoltage() + rightSim.getMotorVoltage()); 
         elevatorSim.update(RobotMap.UPDATE_FREQ);
 
-        leftSim.setRawRotorPosition(Units.metersToInches(elevatorSim.getPositionMeters()));
+        leftSim.setRawRotorPosition(Units.metersToInches(elevatorSim.getPositionMeters()) * ElevatorConstants.ENCODER_TO_MECHANISM_RATIO);
         rangeSensorSim.setDistance(elevatorSim.getPositionMeters());
 
         LightningShuffleboard.setDouble("elevator", "getPose", getPosition());
         LightningShuffleboard.setDouble("elevator", "getRawPose", Units.metersToInches(elevatorSim.getPositionMeters()));
+        LightningShuffleboard.setDouble("elevator", "amps", leftMotor.getStatorCurrent().getValueAsDouble());
         // setPower(LightningShuffleboard.getDouble("elevator", "setPower", 0));
+        // setPosition(LightningShuffleboard.getDouble("elevator", "setTarget", 0));
+
+
+        // TalonFXConfiguration motorConfig = leftMotor.getConfig();
+
+        // motorConfig.Slot0.kP = LightningShuffleboard.getDouble("elevator", "kP", 0);
+        // motorConfig.Slot0.kI = LightningShuffleboard.getDouble("elevator", "kI", 0);
+        // motorConfig.Slot0.kD = LightningShuffleboard.getDouble("elevator", "kD", 0);
+        // motorConfig.Slot0.kS = LightningShuffleboard.getDouble("elevator", "kF", 0);
+        // motorConfig.Slot0.kV = LightningShuffleboard.getDouble("elevator", "kV", 0);
+        // motorConfig.Slot0.kA = LightningShuffleboard.getDouble("elevator", "kA", 0);
+        // motorConfig.Slot0.kG = LightningShuffleboard.getDouble("elevator", "kG", 0);
+        
+        // leftMotor.applyConfig(motorConfig);
     }
 
     /**
@@ -132,8 +155,9 @@ public class Elevator extends SubsystemBase {
      * @param target height value for the elevator
      */
     public void setPosition(double target) {
-        leftMotor.setControl(elevatorPID.withPosition(target));
-        targetPosition = target;
+        targetPosition = MathUtil.clamp(target, ElevatorConstants.MIN_EXTENSION.magnitude(), ElevatorConstants.MAX_EXTENSION.magnitude());
+
+        leftMotor.setControl(positionPID.withPosition(target));
     }
 
     /**

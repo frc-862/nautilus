@@ -19,68 +19,62 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Constants.VisionConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
-import frc.thunder.util.Pose4d;
 
 public class PhotonVision extends SubsystemBase {
-    
-    private PhotonCamera camera;
+
+    private PhotonCamera camera1;
     private PhotonPoseEstimator poseEstimator;
     private VisionSystemSim visionSim;
 
-    private VisionTargetSim visionTarget;
+    private PhotonCameraSim cameraSim;
     private SimCameraProperties cameraProp;
+    private VisionTargetSim visionTarget;
 
     private PhotonPipelineResult result = new PhotonPipelineResult();
 
     private Pose2d lastEstimatedRobotPose = new Pose2d();
-
-    private Pose4d estimatedRobotPose = new Pose4d();
-    private Field2d field = new Field2d();
-
+    private EstimatedRobotPose estimatedRobotPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
     private double lastPoseTime = 0;
 
-    private PhotonCameraSim cameraSim;
+    private boolean visionWorks;
+
+    private Field2d field = new Field2d();
 
     public PhotonVision() {
-        camera = new PhotonCamera(VisionConstants.camera1Name);
-        
-        AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+        camera1 = new PhotonCamera(VisionConstants.camera1Name);
+        camera1.setPipelineIndex(0);
 
-        poseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    new Transform3d());
+        poseEstimator = new PhotonPoseEstimator(
+                AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
+                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                new Transform3d());
 
-        if(!Robot.isReal()) {
+        if (!Robot.isReal()) {
             visionTarget = new VisionTargetSim(VisionConstants.targetPose, VisionConstants.targetModel);
             cameraProp = new SimCameraProperties();
             visionSim = new VisionSystemSim("test");
 
             visionSim.addVisionTargets(visionTarget);
             visionSim.addAprilTags(VisionConstants.tagLayout);
-            
-            //TODO: set camera properties
+
+            // TODO: set camera properties
             // cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
             // cameraProp.setCalibError(0.25, 0.08);
             // cameraProp.setFPS(20);
             // cameraProp.setAvgLatencyMs(35);
             // cameraProp.setLatencyStdDevMs(5);
 
-            cameraSim = new PhotonCameraSim(camera, cameraProp);
+            cameraSim = new PhotonCameraSim(camera1, cameraProp);
             visionSim.addCamera(cameraSim, VisionConstants.robotToCamera);
 
             // Enable the raw and processed streams. These are enabled by default.
@@ -97,35 +91,41 @@ public class PhotonVision extends SubsystemBase {
         return result.hasTargets();
     }
 
-    @Logged(importance = Importance.DEBUG)
     public double getXBestTarget() {
         return result.getBestTarget().getYaw();
     }
 
-    @Logged(importance = Importance.DEBUG)
     public double getYBestTarget() {
         return result.getBestTarget().getPitch();
     }
 
-    @Logged(importance = Importance.DEBUG)
     public double getSkewBestTarget() {
         return result.getBestTarget().getSkew();
     }
 
-    @Logged(importance = Importance.DEBUG)
     public Transform3d getTransformBestTarget() {
         return result.getBestTarget().getBestCameraToTarget();
     }
 
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        poseEstimator.setReferencePose(prevEstimatedRobotPose);
+        return poseEstimator.update(result);
+    }
+
     public void setEstimatedPose(EstimatedRobotPose pose) {
-        estimatedRobotPose = new Pose4d(pose.estimatedPose.getTranslation(), pose.estimatedPose.getRotation(),
-                pose.timestampSeconds - lastPoseTime);
+        estimatedRobotPose = pose;
 
         lastPoseTime = pose.timestampSeconds;
     }
 
+    public void switchPipelines(int pipeline, PhotonCamera camera){
+        camera.setPipelineIndex(pipeline);
+    }
+
+
+
     public Command updateOdometry(Swerve swerve) {
-        if(Robot.isReal()) {
+        if (Robot.isReal()) {
             return run(() -> {
                 swerve.addVisionMeasurement(estimatedRobotPose);
             }).ignoringDisable(true);
@@ -139,35 +139,38 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void periodic() {
+        visionWorks = true;
+
         try {
-            //get the latest result
-            List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+            // get the latest result
+            List<PhotonPipelineResult> results = camera1.getAllUnreadResults();
             result = results.get(results.size() - 1);
         } catch (Exception e) {
-            DataLogManager.log("[VISION] Pose Estimator Failed to update" + e.getLocalizedMessage());
+            visionWorks = false;
         }
+      
+        if (result.hasTargets()) {
+            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse(
+                    (m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose),
+                    () -> visionWorks = false);
 
-
-        LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
-        LightningShuffleboard.set("Vision", "timestamp", result.getTimestampSeconds());
-
-        if (result.hasTargets()) {        
-            lastEstimatedRobotPose = estimatedRobotPose.toPose2d();
+            lastEstimatedRobotPose = estimatedRobotPose.estimatedPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
 
             LightningShuffleboard.set("Vision", "Field", field);
-
-
         } else {
             if (!DriverStation.isFMSAttached()) {
-                DataLogManager.log("[VISION] Pose Estimator Failed to update");
+                visionWorks = false;
             }
         }
-
+        
+        LightningShuffleboard.setBool("Vision", "PoseEstimatorWorks", visionWorks);
+        LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
+        LightningShuffleboard.set("Vision", "Timestamp", result.getTimestampSeconds());
     }
 
     @Override
-    public void simulationPeriodic(){
+    public void simulationPeriodic() {
         LightningShuffleboard.set("Vision", "Field_SIM", visionSim.getDebugField());
     }
 }

@@ -21,23 +21,22 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.Constants.RobotMotors;
 import frc.thunder.hardware.ThunderBird;
 
-/** Add your docs here. */
-public class CollectorTest implements AutoCloseable {
+public class CoralCollectorTest implements AutoCloseable {
 
     ThunderBird motor;
     TalonFXSimState simMotor;
 
-    static Collector collector;
+    static CoralCollector coralCollector;
 
     @BeforeEach
     void constructMotors() {
-        HAL.initialize(500, 0);
+        assert HAL.initialize(500, 0);
 
-        motor = RobotMotors.collectorMotor;
+        motor = RobotMotors.coralCollectorMotor;
         simMotor = motor.getSimState();
 
-        if (collector == null) {
-            collector = new Collector(motor);
+        if (coralCollector == null) {
+            coralCollector = new CoralCollector(motor);
         }
 
         HAL.simPeriodicBefore();
@@ -63,28 +62,28 @@ public class CollectorTest implements AutoCloseable {
         var dutyCycle = motor.getDutyCycle();
 
         // Checking power goes up
-        collector.setPower(0.2);
+        coralCollector.setPower(0.2);
         Timer.delay(0.1);
 
         dutyCycle.waitForUpdate(0.1);
-        collector.simulationPeriodic();
+        coralCollector.simulationPeriodic();
         assertEquals(0.2, dutyCycle.getValue(), 0.05);
 
         // Checking power goes up
-        collector.setPower(0);
+        coralCollector.setPower(0);
         Timer.delay(0.1);
 
         dutyCycle.waitForUpdate(0.1);
-        collector.simulationPeriodic();
+        coralCollector.simulationPeriodic();
         assertEquals(0, dutyCycle.getValue(), 0.05);
     }   
     
     @Test
     public void testBeamBreak() {
-        collector.setSimBeamBreak(true);
-        assertTrue(collector.getBeamBreakOutput());
+        coralCollector.setSimBeamBreak(true);
+        assertTrue(coralCollector.getBeamBreakOutput());
 
-        collector.setSimBeamBreak(false);
-        assertFalse(collector.getBeamBreakOutput());
+        coralCollector.setSimBeamBreak(false);
+        assertFalse(coralCollector.getBeamBreakOutput());
     }
 }

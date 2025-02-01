@@ -10,11 +10,14 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -24,7 +27,9 @@ import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
-import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.AlgaeCollector;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.CoralCollector;
 import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
@@ -46,7 +51,9 @@ public class RobotContainer extends LightningContainer {
     private Elevator elevator;
     private Wrist wrist;
     private FishingRod rod;
-    private Collector collector;
+    private CoralCollector coralCollector;
+    private AlgaeCollector algaeCollector;
+    private Climber climber;
 
     private XboxController driver;
     private XboxController copilot;
@@ -64,7 +71,9 @@ public class RobotContainer extends LightningContainer {
             elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
-            collector = new Collector(RobotMotors.collectorMotor);
+            coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
+            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor, RobotMotors.algaeCollectorPivotMotor);
+            climber = new Climber(RobotMotors.climberMotor);
         }
 
         leds = new LEDs();
@@ -77,6 +86,11 @@ public class RobotContainer extends LightningContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         vision.setDefaultCommand(vision.updateOdometry(drivetrain));
+
+        // more sim stuff
+        if (Robot.isSimulation()){
+                // climber.setDefaultCommand(new RunCommand(() -> climber.setPower(copilot.getLeftY())));
+        }
     }
 
     @Override
@@ -90,6 +104,8 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
+        new Trigger(() -> DriverStation.isEnabled()).whileTrue(new InstantCommand(() -> coralCollector.setPower(1)));
+
                 
         // // TODO: Remove Standin Command
         // new Trigger(() -> rod.onTarget()).whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
@@ -102,8 +118,8 @@ public class RobotContainer extends LightningContainer {
         //     new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
         //     new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
 
-            // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> collector.setPower(0.75)))).onFalse(new InstantCommand(collector::stop));
-            // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> collector.setPower(-0.5)))).onFalse(new InstantCommand(collector::stop));
+            // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75)))).onFalse(new InstantCommand(coralCollector::stop));
+            // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5)))).onFalse(new InstantCommand(coralCollector::stop));
         }
     }
 
@@ -157,4 +173,6 @@ public class RobotContainer extends LightningContainer {
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
         }
+
+
 }

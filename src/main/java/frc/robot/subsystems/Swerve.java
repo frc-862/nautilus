@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -66,6 +67,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     //other swerve requests are in Constants.java/DrivetrainConstants/DriveRequests
     private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
+
+    boolean[] reef1Status = {false, false, false, false, false, false, false, false, false, false, false, false};
+    boolean[] reef2Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
+    boolean[] reef3Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
     
 
     /**
@@ -222,6 +227,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     @Override
     public void periodic() {
         updateCANcoderOffsets();
+        // update reef status booleans in the future
+        SmartDashboard.putBooleanArray("Reef Level One", reef1Status);
+        SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);
+        SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
     }
 
     // SYSID

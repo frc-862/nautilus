@@ -11,47 +11,28 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "S1-R6"
+                  "pathName": "S3-R2"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevatorL4"
+                  "name": "RodL4"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ReefAlignLeft"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "ScoreCoral"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "R6-P1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ElevatorHome"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
           }
         }
       ]

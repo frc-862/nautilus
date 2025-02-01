@@ -4,12 +4,22 @@
 
 package frc.robot;
 
+import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.Filesystem;
+import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.thunder.LightningRobot;
 
 public class Robot extends LightningRobot {
 
     public Robot() {
         super(new RobotContainer());
+    }
+
+    @Override
+    public void robotInit() {
+        super.robotInit();
+
+        WebServer.start(5800, Filesystem.getDeployDirectory().getPath() + "/elastic");
     }
 
     @Override
@@ -27,4 +37,12 @@ public class Robot extends LightningRobot {
         super.simulationPeriodic();
     }
 
+    @Override
+    public void disabledInit() {
+        super.disabledInit();
+
+        RobotContainer container = (RobotContainer) getContainer();
+
+        container.drivetrain.setControl(DriveRequests.getBrake().get());
+    }
 }

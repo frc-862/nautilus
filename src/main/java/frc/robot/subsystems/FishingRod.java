@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -22,7 +24,7 @@ public class FishingRod extends SubsystemBase {
 
     private Wrist wrist;
     private Elevator elevator;
-    private states currState;
+    private states currState = states.STOW;
 
     //simulation stuff
     private Mechanism2d mech2d;
@@ -43,7 +45,7 @@ public class FishingRod extends SubsystemBase {
             stage2 = new MechanismLigament2d("STAGE 2", ElevatorConstants.CUSHION_METERS, 0, 15, new Color8Bit(Color.kDarkRed));
             stage3 = new MechanismLigament2d("STAGE 3", ElevatorConstants.CUSHION_METERS, 0, 10, new Color8Bit(Color.kDarkBlue));
 
-            wristSim = new MechanismLigament2d("WRIST SIM", WristConstants.LENGTH.magnitude(), -90d, 5d, new Color8Bit(Color.kWhite));
+            wristSim = new MechanismLigament2d("WRIST SIM", WristConstants.LENGTH.magnitude(), 90d, 5d, new Color8Bit(Color.kWhite));
          
             mech2d = new Mechanism2d(0.69, 2.29);
             root = mech2d.getRoot("rod root", 0.35, 0);
@@ -64,6 +66,7 @@ public class FishingRod extends SubsystemBase {
         if(onTarget()) {
             currState = state;
         }
+
 
         switch(currState) {
             case STOW:
@@ -99,6 +102,8 @@ public class FishingRod extends SubsystemBase {
      * Gets the state of the fishing rod
      * @return the current state of the fishing rod
      */
+
+    @Logged(importance = Importance.CRITICAL)
     public states getState() {
         return currState;
     }
@@ -107,6 +112,7 @@ public class FishingRod extends SubsystemBase {
      * Checks if the whole fishing rod system is on target
      * @return true if the wrist and elevator are on target false otherwise
      */
+    @Logged(importance = Importance.DEBUG)
     public boolean onTarget() {
         return wrist.isOnTarget() && elevator.isOnTarget();
     }
@@ -130,4 +136,5 @@ public class FishingRod extends SubsystemBase {
 
         LightningShuffleboard.set("fishing rod", "Mech2d", mech2d);
     }
+
 }

@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
+import java.util.jar.Attributes.Name;
 
+import org.ejml.simple.SimpleMatrix;
 import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -19,6 +21,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,6 +32,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -56,6 +60,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     //other swerve requests are in Constants.java/DrivetrainConstants/DriveRequests
     private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
+
+    boolean[] reef1Status = {false, false, false, false, false, false, false, false, false, false, false, false};
+    boolean[] reef2Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
+    boolean[] reef3Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
     
 
     /**
@@ -175,7 +183,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     }
 
     public void addVisionMeasurement(EstimatedRobotPose pose) {
-        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds, new Matrix<N3, N1>(new SimpleMatrix(new double[] {0,0,0})));
     }
 
     private void startSimThread() {
@@ -201,6 +209,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     @Override
     public void periodic() {
+        // update reef status booleans in the future
+        SmartDashboard.putBooleanArray("Reef Level One", reef1Status);
+        SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);
+        SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
     }
 
     // SYSID

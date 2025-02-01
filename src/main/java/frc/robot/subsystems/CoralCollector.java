@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.hal.SimBoolean;
@@ -17,13 +16,13 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CollectorConstants;
+import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.Constants.RobotMap;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
 
-public class Collector extends SubsystemBase {
+public class CoralCollector extends SubsystemBase {
 
     private ThunderBird motor;
     private TalonFXSimState motorSim;
@@ -33,17 +32,17 @@ public class Collector extends SubsystemBase {
     private SimBoolean simBoolean;
 
     @SuppressWarnings("rawtypes")
-    private LinearSystemSim collectorSim;
+    private LinearSystemSim coralCollectorSim;
 
     /** Creates a new Collector.
      * @param motor
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Collector(ThunderBird motor) {
+    public CoralCollector(ThunderBird motor) {
         this.motor = motor;
 
         // Instantiate Beam Break Sensor
-        beamBreak = new DigitalInput(RobotMap.COLLECTOR_BEAM_BREAK_DIO);
+        beamBreak = new DigitalInput(RobotMap.CORAL_COLLECTOR_BEAM_BREAK_DIO);
 
         if (RobotBase.isSimulation()){
 
@@ -59,8 +58,8 @@ public class Collector extends SubsystemBase {
 
             // simulate collector
 
-            collectorSim = new LinearSystemSim(LinearSystemId.identifyVelocitySystem(CollectorConstants.COLLECTOR_KV, 
-                CollectorConstants.COLLECTOR_KA));
+            coralCollectorSim = new LinearSystemSim(LinearSystemId.identifyVelocitySystem(CoralCollectorConstants.KV, 
+                CoralCollectorConstants.KA));
         }
     }
 
@@ -73,15 +72,17 @@ public class Collector extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
 
+        final double batteryVoltage = RobotController.getBatteryVoltage();
+
         // set supply voltage to battery voltage (12 v)
-        motorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+        motorSim.setSupplyVoltage(batteryVoltage);
 
         // set motorspeed using collector physics simulation
-        motorSim.setRotorVelocity(collectorSim.getOutput(0));
+        motorSim.setRotorVelocity(coralCollectorSim.getOutput(0));
 
         // update collector physics simulation
-        collectorSim.setInput(motorSim.getMotorVoltage());
-        collectorSim.update(RobotMap.UPDATE_FREQ);
+        coralCollectorSim.setInput(motorSim.getMotorVoltage());
+        coralCollectorSim.update(RobotMap.UPDATE_FREQ);
     }
 
     /**

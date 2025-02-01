@@ -4,9 +4,8 @@
 
 package frc.robot.subsystems;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,28 +14,24 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
-import frc.thunder.hardware.ThunderBird;
-import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.RobotMotors;
-import frc.robot.Constants.WristConstants;
+import frc.thunder.hardware.ThunderBird;
 
-public class WristTest implements AutoCloseable {
+public class ClimberTest implements AutoCloseable {
 
     ThunderBird motor;
     TalonFXSimState simMotor;
 
-    Wrist wrist;
+    Climber climber;
 
     @BeforeEach
     void constructMotors() {
-        assert HAL.initialize(500, 0); 
+        assert HAL.initialize(500, 0);
 
-        motor = RobotMotors.wristMotor;
+        motor = RobotMotors.climberMotor;
         simMotor = motor.getSimState();
 
-        if(wrist == null) {
-            wrist = new Wrist(motor);
-        }
+        climber = new Climber(motor);
 
         HAL.simPeriodicBefore();
         DriverStationSim.setEnabled(true);
@@ -57,13 +52,20 @@ public class WristTest implements AutoCloseable {
     }
 
     @Test
-    public void testSetPower() { 
+    public void testInitialPosition() {
+        assertEquals(0, climber.getPostion());
+    }
+
+    @Test
+    public void testSetPower() {
         var dutyCycle = motor.getDutyCycle();
-        
-        wrist.setPower(0);
-        
+
+        climber.setPower(0d);
+
+        climber.simulationPeriodic();
         dutyCycle.waitForUpdate(0.1);
 
-        assertEquals(0, dutyCycle.getValue());
+        System.out.println(dutyCycle.getValue());
+        assertEquals(0, dutyCycle.getValue(), 0);
     }
 }

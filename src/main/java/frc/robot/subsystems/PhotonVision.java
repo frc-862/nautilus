@@ -47,6 +47,8 @@ public class PhotonVision extends SubsystemBase {
     private EstimatedRobotPose estimatedRobotPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
     private double lastPoseTime = 0;
 
+    private boolean visionWorks;
+
     private Field2d field = new Field2d();
 
     public PhotonVision() {
@@ -131,21 +133,20 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void periodic() {
+        visionWorks = true;
+
         try {
             // get the latest result
             List<PhotonPipelineResult> results = camera.getAllUnreadResults();
             result = results.get(results.size() - 1);
         } catch (Exception e) {
-            DataLogManager.log("[VISION] Pose Estimator Failed to update: " + e.getLocalizedMessage());
+            visionWorks = false;
         }
-
-        LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
-        LightningShuffleboard.set("Vision", "Timestamp", result.getTimestampSeconds());
 
         if (result.hasTargets()) {
             getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse(
                     (m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose),
-                    () -> DataLogManager.log("[VISION] Pose Estimator Failed to update"));
+                    () -> {visionWorks = false;});
 
             lastEstimatedRobotPose = estimatedRobotPose.estimatedPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
@@ -153,10 +154,13 @@ public class PhotonVision extends SubsystemBase {
             LightningShuffleboard.set("Vision", "Field", field);
         } else {
             if (!DriverStation.isFMSAttached()) {
-                DataLogManager.log("[VISION] Pose Estimator Failed to update");
+                visionWorks = false;
             }
         }
-
+        
+        LightningShuffleboard.setBool("Vision", "PoseEstimatorWorks", visionWorks);
+        LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
+        LightningShuffleboard.set("Vision", "Timestamp", result.getTimestampSeconds());
     }
 
     @Override

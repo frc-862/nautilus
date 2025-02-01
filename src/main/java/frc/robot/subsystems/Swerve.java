@@ -238,7 +238,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     public void setSlowMode(boolean slowMode) {
         this.slowMode = slowMode;
 
-        if (slowMode == true) {
+        if (slowMode) {
             speedMult = DrivetrainConstants.SLOW_SPEED_MULT;
             turnMult = DrivetrainConstants.SLOW_TURN_MULT;
         } else {

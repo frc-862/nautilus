@@ -14,7 +14,9 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotMotors;
+import frc.robot.Constants.WristConstants;
 import frc.thunder.hardware.ThunderBird;
 
 public class ElevatorTest implements AutoCloseable {
@@ -78,5 +80,45 @@ public class ElevatorTest implements AutoCloseable {
         assertEquals(0, dutyCycle.getValue(), 0);
     }
 
-    // TODO: Make a test for set position
+    @Test
+    public void testSetPostion() {
+        // Create a duty cycle and target position
+        var dutyCycle = leftMotor.getDutyCycle();
+        var targetPos = 30;
+        var tolerance = 0.5d;
+
+        // Create variables for the timer
+        var timer = new Timer();
+        var timeOut = 2;
+
+        // Set the inital position
+        elevator.setPosition(targetPos);
+        Timer.delay(0.1d);
+
+        // Initally update the elevator motors and simulation
+        elevator.simulationPeriodic();
+        dutyCycle.waitForUpdate(0.1);
+        System.out.println(elevator.getPosition());
+
+        // Create timer and start it
+        timer.restart();
+        timer.start();
+        
+        /*
+         * Create a loop that will continue to update the simulation as long as the the position hasen't
+         * reached the target position and the time hasen't run out
+         */
+        while (!(Math.abs(targetPos - elevator.getPosition()) <= tolerance) && !timer.hasElapsed(timeOut)) {
+            elevator.simulationPeriodic();
+            dutyCycle.waitForUpdate(0.1);
+
+            if (Math.round(elevator.getPosition()) % 10 == 0) {
+                System.out.println(elevator.getPosition());
+            }
+        }
+        
+        // Print the final position and check the elevator position is equal to the target position
+        System.out.println(elevator.getPosition() + "\n");
+        assertEquals(targetPos, elevator.getPosition(), tolerance);
+    }
 }

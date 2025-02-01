@@ -50,7 +50,7 @@ public class PhotonVision extends SubsystemBase {
     private Field2d field = new Field2d();
 
     public PhotonVision() {
-        camera = new PhotonCamera("Arducam_OV2311_USB_Camera (1)");
+        camera = new PhotonCamera(VisionConstants.camera1Name);
 
         poseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
@@ -105,12 +105,16 @@ public class PhotonVision extends SubsystemBase {
         return result.getBestTarget().getBestCameraToTarget();
     }
 
-    public double getPitch(){
-        return camera.getCameraTable().getEntry("targetPitch").getDouble(0);
+    public double getTY(){
+        return camera.getCameraTable().getEntry("targetPixelsY").getDouble(0);
     }
 
-    public double getYaw(){
-        return camera.getCameraTable().getEntry("targetYaw").getDouble(0);
+    public double getTX(){
+        return camera.getCameraTable().getEntry("targetPixelsX").getDouble(0);
+    }
+
+    public int getTagNum(){
+        return result.getBestTarget().getFiducialId();
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {

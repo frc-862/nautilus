@@ -181,7 +181,7 @@ public class Constants {
 
     public static class FishingRodConstants {
         public enum ROD_STATES {
-            STOW, L1, L2, L3, L4, SOURCE
+            STOW, L1, L2, L3, L4, SOURCE, LOW, HIGH, ALGAE_SCORE
         }
 
         public static final HashMap<ROD_STATES, Double> WRIST_MAP = new HashMap<ROD_STATES, Double>() {
@@ -192,6 +192,11 @@ public class Constants {
                 put(ROD_STATES.L3, -20d);
                 put(ROD_STATES.L4, -80d);
                 put(ROD_STATES.SOURCE, 0d);
+
+                //FIND VALUES
+                put(ROD_STATES.LOW, 0d);
+                put(ROD_STATES.HIGH, 10d);
+                put(ROD_STATES.ALGAE_SCORE, 80d);
             }
         };
 
@@ -203,6 +208,11 @@ public class Constants {
                 put(ROD_STATES.L3, 47.59d);
                 put(ROD_STATES.L4, 71.87d);
                 put(ROD_STATES.SOURCE, 36.5d);
+
+                //FIND VALUES
+                put(ROD_STATES.LOW, 35d);
+                put(ROD_STATES.HIGH, 50d);
+                put(ROD_STATES.ALGAE_SCORE, 70d);
             }
         };
     }

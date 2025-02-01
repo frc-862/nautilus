@@ -93,6 +93,18 @@ public class FishingRod extends SubsystemBase {
                 wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
                 elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
                 break;
+            case LOW:
+                wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
+                elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
+                break;
+            case HIGH:
+                wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
+                elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
+                break;
+            case ALGAE_SCORE:
+                wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
+                elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
+                break;
             default:
                 break;    
         }

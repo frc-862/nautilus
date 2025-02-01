@@ -116,6 +116,8 @@ public class RobotContainer extends LightningContainer {
                 // put your commands here, see SetRodState()
                 (new Trigger(driver::getRightBumperButtonPressed)).whileTrue(new SetRodState(rod, ROD_STATES.SOURCE));
                 ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(new CollectAlgae(algaeCollector, driver::getRightTriggerAxis));
+                (new Trigger(() -> (copilot.getStartButtonPressed() || driver.getPOV() == 180) && copilot.getBButtonPressed())).whileTrue(new SetRodState(rod, ROD_STATES.LOW));
+                (new Trigger(() -> (copilot.getStartButtonPressed() || driver.getPOV() == 180) && copilot.getXButtonPressed())).whileTrue(new SetRodState(rod, ROD_STATES.HIGH));
             break;
         }
     }

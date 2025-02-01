@@ -23,8 +23,9 @@ import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.CoralCollector;
 import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
@@ -46,7 +47,8 @@ public class RobotContainer extends LightningContainer {
     private Elevator elevator;
     private Wrist wrist;
     private FishingRod rod;
-    private Collector collector;
+    private CoralCollector coralCollector;
+    private AlgaeCollector algaeCollector;
     private Climber climber;
 
     private XboxController driver;
@@ -69,7 +71,7 @@ public class RobotContainer extends LightningContainer {
                 elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
                 wrist = new Wrist(RobotMotors.wristMotor);
                 rod = new FishingRod(wrist, elevator);
-                collector = new Collector(RobotMotors.collectorMotor);
+                coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
                 climber = new Climber(RobotMotors.climberMotor);
             break;
         }

@@ -873,6 +873,7 @@ public class Constants {
 
         public static final double ELEATOR_ROOT_HEIGHT = 0.1;
         public static final double COLLECTION_TOLERANCE = 0.1;
+        public static final double ALGAE_COLLECTOR_ROOT_HEIGHT = 0.5;
         public static final double COLECTOR_SPEED_THRESHHOLD = 5;
     }
     public class AlgaeCollectorConstants {

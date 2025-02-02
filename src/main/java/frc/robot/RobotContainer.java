@@ -58,6 +58,7 @@ public class RobotContainer extends LightningContainer {
     private AlgaeCollector algaeCollector;
     private Climber climber;
 
+    @SuppressWarnings("unused")
     private SimGamePeices simGamePeices;
 
     private XboxController driver;
@@ -82,7 +83,7 @@ public class RobotContainer extends LightningContainer {
             climber = new Climber(RobotMotors.climberMotor);
         }
 
-        simGamePeices = RobotBase.isSimulation() ? new SimGamePeices(elevator, wrist, rod, drivetrain, collector) : null;
+        simGamePeices = RobotBase.isSimulation() ? new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector) : null;
     }
 
     @Override
@@ -95,7 +96,11 @@ public class RobotContainer extends LightningContainer {
 
         // more sim stuff
         if (Robot.isSimulation()){
-                // climber.setDefaultCommand(new RunCommand(() -> climber.setPower(copilot.getLeftY())));
+                // climber.setDefaultCommand(new RunCommand(() -> climber.setPower(copilot.getLeftY()), climber));
+
+                coralCollector.setDefaultCommand(coralCollector.run(() -> coralCollector.setPower(copilot.getRightY())));
+
+                algaeCollector.setDefaultCommand(algaeCollector.run(() -> algaeCollector.setRollerPower(copilot.getRightX())));
         }
     }
 
@@ -126,6 +131,33 @@ public class RobotContainer extends LightningContainer {
 
             // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75)))).onFalse(new InstantCommand(coralCollector::stop));
             // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5)))).onFalse(new InstantCommand(coralCollector::stop));
+
+                new Trigger(() -> copilot.getYButton()).onTrue(new InstantCommand(() -> rod.setState(states.L1)));
+                new Trigger(() -> copilot.getBButton()).onTrue(new InstantCommand(() -> rod.setState(states.L2)));
+                new Trigger(() -> copilot.getAButton()).onTrue(new InstantCommand(() -> rod.setState(states.L3)));
+                new Trigger(() -> copilot.getXButton()).onTrue(new InstantCommand(() -> rod.setState(states.L4)));
+                new Trigger(() -> copilot.getBackButton()).onTrue(new InstantCommand(() -> rod.setState(states.STOW)));
+                new Trigger(() -> copilot.getStartButton()).onTrue(new InstantCommand(() -> rod.setState(states.SOURCE)));
+
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "L1", false)).onTrue(new InstantCommand(() -> rod.setState(states.L1)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "L2", false)).onTrue(new InstantCommand(() -> rod.setState(states.L2)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "L3", false)).onTrue(new InstantCommand(() -> rod.setState(states.L3)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "L4", false)).onTrue(new InstantCommand(() -> rod.setState(states.L4)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "Source", false)).onTrue(new InstantCommand(() -> rod.setState(states.SOURCE)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "Stow", false)).onTrue(new InstantCommand(() -> rod.setState(states.STOW)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "coralCollect", false)).onTrue(new InstantCommand(() -> coralCollector.setPower(1)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "coralEject", false)).onTrue(new InstantCommand(() -> coralCollector.setPower(-1)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "coralCollecterStop", false)).onTrue(new InstantCommand(() -> coralCollector.setPower(0)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "algaeCollect", false)).onTrue(new InstantCommand(() -> algaeCollector.setRollerPower(1)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "algaeEject", false)).onTrue(new InstantCommand(() -> algaeCollector.setRollerPower(-1)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "algaeCollecterStop", false)).onTrue(new InstantCommand(() -> algaeCollector.setRollerPower(0)));
+
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "x+", false)).whileTrue(drivetrain.applyRequest(DriveRequests.getDrive(() -> 0.1, () -> 0, () -> 0)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "x-", false)).whileTrue(drivetrain.applyRequest(DriveRequests.getDrive(() -> -0.1, () -> 0, () -> 0)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "y+", false)).whileTrue(drivetrain.applyRequest(DriveRequests.getDrive(() -> 0, () -> 0.1, () -> 0)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "y-", false)).whileTrue(drivetrain.applyRequest(DriveRequests.getDrive(() -> 0, () -> -0.1, () -> 0)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "z+", false)).whileTrue(drivetrain.applyRequest(DriveRequests.getDrive(() -> 0, () -> 0, () -> 0.1)));
+                new Trigger(() -> LightningShuffleboard.getBool("ControlBoard", "z-", false)).whileTrue(drivetrain.applyRequest(DriveRequests.getDrive(() -> 0, () -> 0, () -> -0.1)));
         }
     }
 

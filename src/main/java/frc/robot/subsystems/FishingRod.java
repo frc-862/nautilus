@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Constants.ElevatorConstants;
@@ -25,6 +26,10 @@ public class FishingRod extends SubsystemBase {
     private Wrist wrist;
     private Elevator elevator;
     private states currState = states.STOW;
+    private states targetState = states.STOW;
+
+    private double wristBias = 0;
+    private double elevatorBias = 0;
 
     //simulation stuff
     private Mechanism2d mech2d;
@@ -56,46 +61,70 @@ public class FishingRod extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+        if(onTarget()) {
+            currState = targetState;
+        }
+
+        // if(currState != targetState) {
+            switch(targetState) {
+                case STOW, L1, L2, L3, SOURCE:
+                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState) + wristBias);
+                    elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState) + elevatorBias);
+                    break;
+                // case L1:
+                //     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
+                //     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
+                //     break;
+                // case L2:
+                //     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
+                //     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
+                //     break;
+                // case L3:
+                //     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
+                //     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
+                //     break;
+                case L4:
+                    elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState) + elevatorBias);
+                    if(elevator.isOnTarget()) {
+                        wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState) + wristBias);
+                    }
+                    break;
+                // case SOURCE:
+                //     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
+                //     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
+                //     break;
+                default:
+                    break;    
+            }
+        // }
+    }
 
     /**
      * Sets the state of the fishing rod
      * @param state
      */
     public void setState(states state) {
-        if(onTarget()) {
-            currState = state;
-        }
+        targetState = state;
 
+        elevatorBias = 0;
+        wristBias = 0;
+    }
 
-        switch(currState) {
-            case STOW:
-                wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
-                elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            case L1:
-                wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
-                elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            case L2:
-                wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
-                elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            case L3:
-                wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
-                elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            case L4:
-                wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
-                elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            case SOURCE:
-                wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
-                elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            default:
-                break;    
-        }
+    public Command addWristBias(double bias) {
+        return runOnce(() -> wristBias += bias);
+    }
+
+    public Command addElevatorBias(double bias) {
+        return runOnce(() -> elevatorBias += bias);
+    }
+
+    public Command resetWristBias() {
+        return runOnce(() -> wristBias = 0);
+    }
+
+    public Command resetElevatorBias() {
+        return runOnce(() -> elevatorBias = 0);
     }
 
     /**
@@ -134,7 +163,7 @@ public class FishingRod extends SubsystemBase {
 
         wristSim.setAngle(wrist.getAngle()-90);
 
-        LightningShuffleboard.set("fishing rod", "Mech2d", mech2d);
+        LightningShuffleboard.send("fishing rod", "Mech2d", mech2d);
     }
 
 }

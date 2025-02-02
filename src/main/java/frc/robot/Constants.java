@@ -158,7 +158,7 @@ public class Constants {
 
         //kind of guessing the numbers here (didn't do a proper test)
         public static final Distance MIN_EXTENSION = Inches.of(0);
-        public static final Distance MAX_EXTENSION = Inches.of(60);
+        public static final Distance MAX_EXTENSION = Inches.of(47);
 
 
 
@@ -176,23 +176,39 @@ public class Constants {
 
         public static final HashMap<states, Double> WRIST_MAP = new HashMap<states, Double>() {
             {
-                put(states.STOW, 0d);
+                // put(states.STOW, 0d);
+                // put(states.L1, 0d);
+                // put(states.L2, -20d);
+                // put(states.L3, -20d);
+                // put(states.L4, -80d);
+                // put(states.SOURCE, 0d);
+
+
+                put(states.STOW, 85d);
                 put(states.L1, 0d);
-                put(states.L2, -20d);
-                put(states.L3, -20d);
-                put(states.L4, -80d);
-                put(states.SOURCE, 0d);
+                put(states.L2, -35d);
+                put(states.L3, -35d);
+                put(states.L4, -47d);
+                put(states.SOURCE, 65d);
             }
         };
 
         public static final HashMap<states, Double> ELEVATOR_MAP = new HashMap<states, Double>() {
             {
-                put(states.STOW, 1d);
-                put(states.L1, 17.88d);
-                put(states.L2, 31.72d);
-                put(states.L3, 47.59d);
-                put(states.L4, 71.87d);
-                put(states.SOURCE, 36.5d);
+                // put(states.STOW, 1d);
+                // put(states.L1, 17.88d);
+                // put(states.L2, 31.72d);
+                // put(states.L3, 47.59d);
+                // put(states.L4, 71.87d);
+                // put(states.SOURCE, 36.5d);
+
+
+                put(states.STOW, 5d);
+                put(states.L1, 10d);
+                put(states.L2, 13d);
+                put(states.L3, 26d);
+                put(states.L4, 46.5d);
+                put(states.SOURCE, 6d);
             }
         };
     }
@@ -214,22 +230,22 @@ public class Constants {
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean INVERTED = false; // temp
 
-        public static final double ROTOR_TO_ENCODER_RATIO = 10d; // temp
+        public static final double ROTOR_TO_ENCODER_RATIO = 36d; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double MOTORS_KP = 3; // temp
+        public static final double MOTORS_KP = 15; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
         public static final double MOTORS_KS = 0; // temp
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
-        public static final double MOTORS_KG = 1.523; // temp
+        public static final double MOTORS_KG = 0.3; // temp
 
         public static final Angle MIN_ANGLE = Degrees.of(-85);
         public static final Angle MAX_ANGLE = Degrees.of(85);
 
-        public static final double TOLERANCE = 3d;
+        public static final double TOLERANCE = 10d;
 
         //sim stuff
         public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.1096); // 5lb, 2.5in rad, 9in height
@@ -247,6 +263,8 @@ public class Constants {
 
         public static final double COLLECTOR_KV = 0.24; // temp
         public static final double COLLECTOR_KA = 0.12; // temp
+
+        public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
     }
 
@@ -312,9 +330,9 @@ public class Constants {
             public static Supplier<SwerveRequest> getRobotCentric(DoubleSupplier x, DoubleSupplier y,
                     DoubleSupplier rot) {
                 return () -> ROBO_CENTRIC
-                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y
+                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive forward with negative Y
                                                                                         // (forward)
-                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
+                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive left with negative X
                                                                                         // (left)
                         .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)

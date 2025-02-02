@@ -58,6 +58,7 @@ public class Wrist extends SubsystemBase {
 
         encoder = new CANcoder(RobotMap.WRIST_ENCODER, RobotMap.CANIVORE_CAN_NAME);
         angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
+        angleConfig.MagnetSensor.MagnetOffset = -0.246;
         encoder.getConfigurator().apply(angleConfig);
 
 
@@ -72,7 +73,7 @@ public class Wrist extends SubsystemBase {
 
         
         motorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
-        motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         motorConfig.Feedback.SensorToMechanismRatio = WristConstants.ENCODER_TO_MECHANISM_RATIO;
         motorConfig.Feedback.RotorToSensorRatio = WristConstants.ROTOR_TO_ENCODER_RATIO;
         
@@ -93,6 +94,7 @@ public class Wrist extends SubsystemBase {
     @Override
     public void periodic() {
         currentPosition = getAngle();
+        LightningShuffleboard.setDouble("Wrist", "current position", currentPosition);
     }
 
     @Override
@@ -144,7 +146,7 @@ public class Wrist extends SubsystemBase {
 
     @Logged(importance = Importance.DEBUG)
     public double getAngle() {
-        return motor.getRotorPosition().getValue().in(Degrees);
+        return encoder.getAbsolutePosition().getValue().in(Degrees);
     }
 
     public double getTargetAngle() {

@@ -10,19 +10,23 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.FishingRodConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.states;
 import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.SetRodState;
+import frc.robot.commands.SmartCoralCollect;
 import frc.robot.commands.StandinCommands;
 import frc.robot.subsystems.Collector;
 import frc.robot.commands.TestAutoAlign;
@@ -53,18 +57,18 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeSubsystems() {
+        copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
+        driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         drivetrain = TunerConstants.createDrivetrain();
         vision = new PhotonVision();
         logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
-        driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
-        copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
+        elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
+        collector = new Collector(RobotMotors.collectorMotor);
+        wrist = new Wrist(RobotMotors.wristMotor);
+        rod = new FishingRod(wrist, elevator);
 
         //this is temporary
         if (Robot.isSimulation()) {
-            elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
-            wrist = new Wrist(RobotMotors.wristMotor);
-            rod = new FishingRod(wrist, elevator);
-            collector = new Collector(RobotMotors.collectorMotor);
         }
 
         leds = new LEDs();
@@ -73,23 +77,56 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
-                DriveRequests.getDrive(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+                DriveRequests.getDrive(() -> MathUtil.applyDeadband(-driver.getLeftX(), ControllerConstants.JOYSTICK_DEADBAND), () -> MathUtil.applyDeadband(-driver.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND), () -> MathUtil.applyDeadband(-driver.getRightX(), ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
         vision.setDefaultCommand(vision.updateOdometry(drivetrain));
+
+        collector.setDefaultCommand(new SmartCoralCollect(collector, () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
+
+        // rod.setDefaultCommand(new InstantCommand(() -> rod.setState(states.STOW), rod));
     }
 
     @Override
     protected void configureButtonBindings() {
         new Trigger(() -> driver.getRightTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(
-                DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+                DriveRequests.getSlow(() -> MathUtil.applyDeadband(-driver.getLeftX(), ControllerConstants.JOYSTICK_DEADBAND), () -> MathUtil.applyDeadband(-driver.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND), () -> MathUtil.applyDeadband(-driver.getRightX(), ControllerConstants.JOYSTICK_DEADBAND))));
         new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
-                .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+                .getRobotCentric(() -> MathUtil.applyDeadband(-driver.getLeftX(), ControllerConstants.JOYSTICK_DEADBAND), () -> MathUtil.applyDeadband(-driver.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND), () -> MathUtil.applyDeadband(-driver.getRightX(), ControllerConstants.JOYSTICK_DEADBAND))));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
-        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
-                new InstantCommand(() -> drivetrain.seedFieldCentric()));
+        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
+        new Trigger(() -> copilot.getAButton()).whileTrue(new RunCommand(() -> rod.setState(states.L1), rod));
+        new Trigger(()-> copilot.getYButton()).whileTrue(new RunCommand(() -> rod.setState(states.L4), rod));
+
+        new Trigger(()-> copilot.getXButton()).whileTrue(new RunCommand(() -> rod.setState(states.L2), rod));
+        new Trigger(() -> copilot.getBButton()).whileTrue(new RunCommand(() -> rod.setState(states.L3), rod));
+
+        new Trigger(() -> copilot.getRightBumperButton()).whileTrue(new RunCommand((() -> rod.setState(states.SOURCE)), rod));
+        new Trigger(() -> copilot.getLeftBumperButton()).whileTrue(new RunCommand((() -> rod.setState(states.STOW)), rod));
+
+        
+        
+        // new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand(() -> elevator.setPosition(0)));
+        // new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand(() -> elevator.setPosition(13)));
+
+        // new Trigger(()-> copilot.getXButton()).whileTrue(new InstantCommand(() -> elevator.setPosition(26)));
+        // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand(() -> elevator.setPosition(43)));
+        
+        new Trigger(() -> copilot.getLeftY() > 0.2).onTrue(rod.addElevatorBias(5));
+        new Trigger(() -> copilot.getLeftY() < -0.2).onTrue(rod.addElevatorBias(-5));
+        
+        new Trigger(() -> copilot.getRightY() < -0.2).onTrue(rod.addWristBias(5));
+        new Trigger(() -> copilot.getRightY() > 0.2).onTrue(rod.addWristBias(-5));
+        
+        // new Trigger(() -> copilot.getRightBumperButton()).whileTrue(new InstantCommand((() -> wrist.setPosition(-20))));
+        // new Trigger(()-> copilot.getLeftBumperButton()).whileTrue(new InstantCommand((() -> wrist.setPosition(-80))));
+        // new Trigger(() -> copilot.getStartButton()).onTrue(new InstantCommand(() -> wrist.setPosition(-57)));
+
+
+        // new Trigger(()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> wrist.setPosition(0))));
+        // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> wrist.setPosition(40))));
         
 
         // // TODO: Remove Standin Command

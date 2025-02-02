@@ -3,12 +3,16 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
+import java.util.jar.Attributes.Name;
 
+import org.ejml.simple.SimpleMatrix;
 import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -19,20 +23,25 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
+import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.thunder.util.Pose4d;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
@@ -46,6 +55,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
+    private double[] CANcoderOffsets = {0d, 0d, 0d, 0d};
+
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -56,6 +67,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     //other swerve requests are in Constants.java/DrivetrainConstants/DriveRequests
     private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
+
+    boolean[] reef1Status = {false, false, false, false, false, false, false, false, false, false, false, false};
+    boolean[] reef2Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
+    boolean[] reef3Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
     
 
     /**
@@ -138,6 +153,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
 
         configurePathPlanner();
+
+        LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", () -> CANcoderOffsets);
     }
 
     private void configurePathPlanner() {        
@@ -174,8 +191,16 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return getState().Speeds;
     }
 
+    private void updateCANcoderOffsets() {
+        int i = 0;
+        for (SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : getModules()) {
+            CANcoderOffsets[i] = swerveModule.getEncoder().getAbsolutePosition().getValueAsDouble();
+            i++;
+        }
+    }
+    
     public void addVisionMeasurement(EstimatedRobotPose pose) {
-        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds, new Matrix<N3, N1>(new SimpleMatrix(new double[] {0,0,0})));
     }
 
     private void startSimThread() {
@@ -201,6 +226,11 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     @Override
     public void periodic() {
+        updateCANcoderOffsets();
+        // update reef status booleans in the future
+        SmartDashboard.putBooleanArray("Reef Level One", reef1Status);
+        SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);
+        SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
     }
 
     // SYSID

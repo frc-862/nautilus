@@ -22,7 +22,6 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,7 +32,7 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class PhotonVision extends SubsystemBase {
 
-    private PhotonCamera camera;
+    private PhotonCamera camera1;
     private PhotonPoseEstimator poseEstimator;
     private VisionSystemSim visionSim;
 
@@ -47,10 +46,13 @@ public class PhotonVision extends SubsystemBase {
     private EstimatedRobotPose estimatedRobotPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
     private double lastPoseTime = 0;
 
+    private boolean visionWorks;
+
     private Field2d field = new Field2d();
 
     public PhotonVision() {
-        camera = new PhotonCamera(VisionConstants.camera1Name);
+        camera1 = new PhotonCamera(VisionConstants.camera1Name);
+        camera1.setPipelineIndex(0);
 
         poseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
@@ -72,7 +74,7 @@ public class PhotonVision extends SubsystemBase {
             // cameraProp.setAvgLatencyMs(35);
             // cameraProp.setLatencyStdDevMs(5);
 
-            cameraSim = new PhotonCameraSim(camera, cameraProp);
+            cameraSim = new PhotonCameraSim(camera1, cameraProp);
             visionSim.addCamera(cameraSim, VisionConstants.robotToCamera);
 
             // Enable the raw and processed streams. These are enabled by default.
@@ -106,11 +108,11 @@ public class PhotonVision extends SubsystemBase {
     }
 
     public double getTY(){
-        return camera.getCameraTable().getEntry("targetPixelsY").getDouble(0);
+        return camera1.getCameraTable().getEntry("targetPixelsY").getDouble(0);
     }
 
     public double getTX(){
-        return camera.getCameraTable().getEntry("targetPixelsX").getDouble(0);
+        return camera1.getCameraTable().getEntry("targetPixelsX").getDouble(0);
     }
 
     public int getTagNum(){
@@ -127,6 +129,12 @@ public class PhotonVision extends SubsystemBase {
 
         lastPoseTime = pose.timestampSeconds;
     }
+
+    public void switchPipelines(int pipeline, PhotonCamera camera){
+        camera.setPipelineIndex(pipeline);
+    }
+
+
 
     public Command updateOdometry(Swerve swerve) {
         if (Robot.isReal()) {
@@ -145,21 +153,20 @@ public class PhotonVision extends SubsystemBase {
     public void periodic() {
 
         LightningShuffleboard.setBool("Vision", "HasTarget", result.hasTargets());
+        visionWorks = true;
 
         try {
             // get the latest result
-            List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+            List<PhotonPipelineResult> results = camera1.getAllUnreadResults();
             result = results.get(results.size() - 1);
         } catch (Exception e) {
-            DataLogManager.log("[VISION] Pose Estimator Failed to update: " + e.getLocalizedMessage());
+            visionWorks = false;
         }
-
-        LightningShuffleboard.set("Vision", "Timestamp", result.getTimestampSeconds());
-
+      
         if (result.hasTargets()) {
             getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse(
                     (m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose),
-                    () -> DataLogManager.log("[VISION] Pose Estimator Failed to update"));
+                    () -> visionWorks = false);
 
             lastEstimatedRobotPose = estimatedRobotPose.estimatedPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
@@ -167,10 +174,13 @@ public class PhotonVision extends SubsystemBase {
             LightningShuffleboard.set("Vision", "Field", field);
         } else {
             if (!DriverStation.isFMSAttached()) {
-                DataLogManager.log("[VISION] Pose Estimator Failed to update");
+                visionWorks = false;
             }
         }
-
+        
+        LightningShuffleboard.setBool("Vision", "PoseEstimatorWorks", visionWorks);
+        LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
+        LightningShuffleboard.set("Vision", "Timestamp", result.getTimestampSeconds());
     }
 
     @Override

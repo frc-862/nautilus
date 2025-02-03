@@ -60,6 +60,12 @@ public class Constants {
     public static final String TRITON_IDENTIFIER = "/home/lvuser/triton"; // Differentiate between Triton and Nautlius
     public static final boolean IS_TRITON = Paths.get(TRITON_IDENTIFIER).toFile().exists();
 
+    public static enum ROBOT_MODES {NAUTILUS, TRITON, SIM};
+
+    // yeah its a double inline ternary operator fight me
+    // if(isTriton); else if(isSim); else, its nautilus
+    public static final ROBOT_MODES ROBOT_MODE = Paths.get(TRITON_IDENTIFIER).toFile().exists() ? ROBOT_MODES.TRITON : Robot.isSimulation() ? ROBOT_MODES.SIM : ROBOT_MODES.NAUTILUS;
+
     public static class EncoderConstants {
         // Nautilus values
         private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.25732421875);
@@ -98,15 +104,19 @@ public class Constants {
         public static final int WRIST = 11; // temp
         public static final int WRIST_ENCODER = 35; // temp
 
-        public static final int COLLECTOR = 12; // temp
-        public static final int COLLECTOR_ENCODER = 36; // temp
-        public static final int COLLECTOR_BEAM_BREAK_DIO = 0; // temp
+        public static final int CORAL_COLLECTOR = 12; // temp
+        public static final int CORAL_COLLECTOR_ENCODER = 36; // temp
+        public static final int CORAL_COLLECTOR_BEAM_BREAK_DIO = 0; // temp
+
+        public static final int ALGAE_COLLECTOR_ROLLER = 13; // temp
+        public static final int ALGAE_COLLECTOR_PIVOT = 14; // temp
+        
+        public static final int CLIMBER = 15; // temp
 
 
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
-
         // 20ms default loop time
         public static final double UPDATE_FREQ = 0.020;
 
@@ -170,45 +180,45 @@ public class Constants {
     }
 
     public static class FishingRodConstants {
-        public enum states {
-            STOW, L1, L2, L3, L4, SOURCE
+        public enum ROD_STATES {
+            STOW, L1, L2, L3, L4, SOURCE, LOW, HIGH, ALGAE_SCORE
         }
 
-        public static final HashMap<states, Double> WRIST_MAP = new HashMap<states, Double>() {
+        public static final HashMap<ROD_STATES, Double> WRIST_MAP = new HashMap<ROD_STATES, Double>() {
             {
-                // put(states.STOW, 0d);
-                // put(states.L1, 0d);
-                // put(states.L2, -20d);
-                // put(states.L3, -20d);
-                // put(states.L4, -80d);
-                // put(states.SOURCE, 0d);
+                // put(ROD_STATES.STOW, 0d);
+                // put(ROD_STATES.L1, 0d);
+                // put(ROD_STATES.L2, -20d);
+                // put(ROD_STATES.L3, -20d);
+                // put(ROD_STATES.L4, -80d);
+                // put(ROD_STATES.SOURCE, 0d);
 
 
-                put(states.STOW, 85d);
-                put(states.L1, 0d);
-                put(states.L2, -35d);
-                put(states.L3, -35d);
-                put(states.L4, -47d);
-                put(states.SOURCE, 65d);
+                put(ROD_STATES.STOW, 85d);
+                put(ROD_STATES.L1, 0d);
+                put(ROD_STATES.L2, -35d);
+                put(ROD_STATES.L3, -35d);
+                put(ROD_STATES.L4, -47d);
+                put(ROD_STATES.SOURCE, 65d);
             }
         };
 
-        public static final HashMap<states, Double> ELEVATOR_MAP = new HashMap<states, Double>() {
+        public static final HashMap<ROD_STATES, Double> ELEVATOR_MAP = new HashMap<ROD_STATES, Double>() {
             {
-                // put(states.STOW, 1d);
-                // put(states.L1, 17.88d);
-                // put(states.L2, 31.72d);
-                // put(states.L3, 47.59d);
-                // put(states.L4, 71.87d);
-                // put(states.SOURCE, 36.5d);
+                // put(ROD_STATES.STOW, 1d);
+                // put(ROD_STATES.L1, 17.88d);
+                // put(ROD_STATES.L2, 31.72d);
+                // put(ROD_STATES.L3, 47.59d);
+                // put(ROD_STATES.L4, 71.87d);
+                // put(ROD_STATES.SOURCE, 36.5d);
 
 
-                put(states.STOW, 5d);
-                put(states.L1, 10d);
-                put(states.L2, 13d);
-                put(states.L3, 26d);
-                put(states.L4, 46.5d);
-                put(states.SOURCE, 6d);
+                put(ROD_STATES.STOW, 5d);
+                put(ROD_STATES.L1, 10d);
+                put(ROD_STATES.L2, 13d);
+                put(ROD_STATES.L3, 26d);
+                put(ROD_STATES.L4, 46.5d);
+                put(ROD_STATES.SOURCE, 6d);
             }
         };
     }
@@ -220,8 +230,14 @@ public class Constants {
                     ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
         public static final ThunderBird rightElevatorMotor = new ThunderBird(RobotMap.R_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
             ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
-        public static final ThunderBird collectorMotor = new ThunderBird(RobotMap.COLLECTOR, RobotMap.CANIVORE_CAN_NAME, CollectorConstants.INVERTED,
-            CollectorConstants.STATOR_CURRENT_LIMIT, CollectorConstants.BRAKE_MODE);
+        public static final ThunderBird coralCollectorMotor = new ThunderBird(RobotMap.CORAL_COLLECTOR, RobotMap.CANIVORE_CAN_NAME, CoralCollectorConstants.INVERTED,
+            CoralCollectorConstants.STATOR_CURRENT_LIMIT, CoralCollectorConstants.BRAKE_MODE);
+        public static final ThunderBird algaeCollectorPivotMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_PIVOT, RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.PIVOT_INVERTED,
+            AlgaeCollectorConstants.PIVOT_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.PIVOT_BRAKE_MODE);
+        public static final ThunderBird algaeCollectorRollerMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_ROLLER, RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.ROLLER_INVERTED,
+            AlgaeCollectorConstants.ROLLER_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.ROLLER_BRAKE_MODE);
+        public static final ThunderBird climberMotor = new ThunderBird(RobotMap.CLIMBER, RobotMap.CANIVORE_CAN_NAME, ClimberConstants.INVERTED,
+            ClimberConstants.STATOR_CURRENT_LIMIT, ClimberConstants.BREAK_MODE);
 
     }   
 
@@ -252,7 +268,7 @@ public class Constants {
         public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
 
     }
-    public static class CollectorConstants{
+    public static class CoralCollectorConstants{
         public static final boolean BRAKE_MODE = true;
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean INVERTED = false; // temp
@@ -261,8 +277,8 @@ public class Constants {
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double COLLECTOR_KV = 0.24; // temp
-        public static final double COLLECTOR_KA = 0.12; // temp
+        public static final double KV = 0.24; // temp
+        public static final double KA = 0.8; // temp
 
         public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
@@ -867,5 +883,59 @@ public class Constants {
             OFF();
         }
 
+    }
+
+    public class AlgaeCollectorConstants {
+        public static final double PIVOT_TOLERANCE = 5; // temp
+        public static final double PIVOT_GEAR_RATIO = 1; // temp
+        public static final double PIVOT_MOI = 0.01096; // temp
+        public static final double PIVOT_MIN_ANGLE = 0; // temp
+        public static final double PIVOT_MAX_ANGLE = 90; // temp
+        public static final double PIVOT_LENGTH = 0.5; // temp
+        public static final double PIVOT_START_ANGLE = 0; // temp
+        public static final double PIVOT_TRIGGER_SPEED = 1;
+
+        public static final double ROLLER_KV = 0.24; // temp
+        public static final double ROLLER_KA = 0.8; // temp
+
+        public static final boolean PIVOT_INVERTED = false; // temp
+        public static final double PIVOT_STATOR_CURRENT_LIMIT = 100d; // temp
+        public static final boolean PIVOT_BRAKE_MODE = false; // temp
+        
+
+        public static final boolean ROLLER_INVERTED = false; // temp
+        public static final double ROLLER_STATOR_CURRENT_LIMIT = 100d; // temp
+        public static final boolean ROLLER_BRAKE_MODE = false; // temp
+
+        public static final double PIVOT_KP = 3; // temp
+        public static final double PIVOT_KI = 0; // temp
+        public static final double PIVOT_KD = 0; // temp
+
+        public static final double DEPLOY_ANGLE = 90;
+        public static final double STOW_ANGLE = 0;
+
+        public static enum PIVOT_STATES {
+            DEPLOYED, STOWED
+        }
+
+    }
+
+    public class ClimberConstants {
+        public static final double GEAR_RATIO = 1.0; // temp
+        public static final double DRUM_RADIUS = 0.015; // temp
+        public static final double CARRIAGE_MASS = 18.75; // temp
+        public static final double MIN_EXTENSION = -0.5; // temp
+        public static final double MAX_EXTENSION = 0; // temp
+        public static final double TOLERANCE = 1; // temp
+        public static final double ROTOR_TO_MECHANISM_RATIO = 1d;
+
+        public static final double KP = 0.05d; // temp
+        public static final double KI = 0.0; // temp
+        public static final double KD = 0; // temp
+
+        public static final boolean INVERTED = false; // temp
+        public static final double STATOR_CURRENT_LIMIT = 100d; // temp
+        public static final boolean BREAK_MODE = true;
+        
     }
 }

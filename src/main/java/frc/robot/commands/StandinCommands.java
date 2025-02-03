@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.FishingRodConstants;
-import frc.robot.Constants.FishingRodConstants.states;
+import frc.robot.Constants.FishingRodConstants.ROD_STATES;
 
 public class StandinCommands {
     /*
@@ -42,27 +42,27 @@ public class StandinCommands {
     }
 
     public static Command rodStow(){
-        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.STOW)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.STOW)));
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(ROD_STATES.STOW)), moveWrist(FishingRodConstants.WRIST_MAP.get(ROD_STATES.STOW)));
     }
 
     public static Command rodSource() {
-        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.SOURCE)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.SOURCE)));
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(ROD_STATES.SOURCE)), moveWrist(FishingRodConstants.WRIST_MAP.get(ROD_STATES.SOURCE)));
     }
 
     public static Command rodL1(){
-        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L1)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L1)));
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(ROD_STATES.L1)), moveWrist(FishingRodConstants.WRIST_MAP.get(ROD_STATES.L1)));
     }
     
     public static Command rodL2(){
-        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L2)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L2)));
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(ROD_STATES.L2)), moveWrist(FishingRodConstants.WRIST_MAP.get(ROD_STATES.L2)));
     }
 
     public static Command rodL3(){
-        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L3)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L3)));
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(ROD_STATES.L3)), moveWrist(FishingRodConstants.WRIST_MAP.get(ROD_STATES.L3)));
     }
 
     public static Command rodL4(){
-        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(states.L4)), moveWrist(FishingRodConstants.WRIST_MAP.get(states.L3)));
+        return new ParallelCommandGroup(moveElevator(FishingRodConstants.ELEVATOR_MAP.get(ROD_STATES.L4)), moveWrist(FishingRodConstants.WRIST_MAP.get(ROD_STATES.L3)));
     }
 
 }

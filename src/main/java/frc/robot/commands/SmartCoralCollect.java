@@ -8,18 +8,18 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.CollectorConstants;
-import frc.robot.subsystems.Collector;
+import frc.robot.Constants.CoralCollectorConstants;
+import frc.robot.subsystems.CoralCollector;
 
 public class SmartCoralCollect extends Command {
 
-    private Collector collector;
+    private CoralCollector collector;
 
     private DoubleSupplier powerSupplier;
 
-    private Debouncer debouncer = new Debouncer(CollectorConstants.BEAMBREAK_DEBOUNCE);
+    private Debouncer debouncer = new Debouncer(CoralCollectorConstants.BEAMBREAK_DEBOUNCE);
 
-    public SmartCoralCollect(Collector collector, DoubleSupplier powerSupplier) {
+    public SmartCoralCollect(CoralCollector collector, DoubleSupplier powerSupplier) {
         this.collector = collector;
         this.powerSupplier = powerSupplier;
 

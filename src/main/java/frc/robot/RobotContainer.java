@@ -11,7 +11,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,14 +20,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FishingRodConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
-import frc.robot.Constants.FishingRodConstants.states;
+import frc.robot.Constants.FishingRodConstants.ROD_STATES;
 import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
+import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SmartCoralCollect;
 import frc.robot.commands.StandinCommands;
-import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.AlgaeCollector;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.CoralCollector;
 import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
@@ -50,7 +52,9 @@ public class RobotContainer extends LightningContainer {
     private Elevator elevator;
     private Wrist wrist;
     private FishingRod rod;
-    private Collector collector;
+    private CoralCollector coralCollector;
+    private AlgaeCollector algaeCollector;
+    private Climber climber;
 
     private XboxController driver;
     private XboxController copilot;
@@ -62,16 +66,23 @@ public class RobotContainer extends LightningContainer {
         drivetrain = TunerConstants.createDrivetrain();
         vision = new PhotonVision();
         logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
-        elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
-        collector = new Collector(RobotMotors.collectorMotor);
-        wrist = new Wrist(RobotMotors.wristMotor);
-        rod = new FishingRod(wrist, elevator);
 
-        //this is temporary
-        if (Robot.isSimulation()) {
-        }
-
+        driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
+        copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
         leds = new LEDs();
+
+        switch (Constants.ROBOT_MODE){
+            case NAUTILUS:
+                //nothing
+            break;
+            default: // (sim or triton)
+                elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
+                wrist = new Wrist(RobotMotors.wristMotor);
+                rod = new FishingRod(wrist, elevator);
+                coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
+                climber = new Climber(RobotMotors.climberMotor);
+            break;
+        }
     }
 
     @Override
@@ -82,9 +93,17 @@ public class RobotContainer extends LightningContainer {
 
         vision.setDefaultCommand(vision.updateOdometry(drivetrain));
 
-        collector.setDefaultCommand(new SmartCoralCollect(collector, () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
+        coralCollector.setDefaultCommand(new SmartCoralCollect(coralCollector, () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
 
-        // rod.setDefaultCommand(new InstantCommand(() -> rod.setState(states.STOW), rod));
+        switch (Constants.ROBOT_MODE){
+                case NAUTILUS:
+                //nothing
+                break;
+                default:
+                //stow
+                rod.setDefaultCommand(new InstantCommand(() -> rod.setState(ROD_STATES.STOW), rod));
+            break;
+        }
     }
 
     @Override
@@ -97,14 +116,14 @@ public class RobotContainer extends LightningContainer {
 
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
-        new Trigger(() -> copilot.getAButton()).whileTrue(new RunCommand(() -> rod.setState(states.L1), rod));
-        new Trigger(()-> copilot.getYButton()).whileTrue(new RunCommand(() -> rod.setState(states.L4), rod));
+        new Trigger(() -> copilot.getAButton()).whileTrue(new RunCommand(() -> rod.setState(ROD_STATES.L1), rod));
+        new Trigger(()-> copilot.getYButton()).whileTrue(new RunCommand(() -> rod.setState(ROD_STATES.L4), rod));
 
-        new Trigger(()-> copilot.getXButton()).whileTrue(new RunCommand(() -> rod.setState(states.L2), rod));
-        new Trigger(() -> copilot.getBButton()).whileTrue(new RunCommand(() -> rod.setState(states.L3), rod));
+        new Trigger(()-> copilot.getXButton()).whileTrue(new RunCommand(() -> rod.setState(ROD_STATES.L2), rod));
+        new Trigger(() -> copilot.getBButton()).whileTrue(new RunCommand(() -> rod.setState(ROD_STATES.L3), rod));
 
-        new Trigger(() -> copilot.getRightBumperButton()).whileTrue(new RunCommand((() -> rod.setState(states.SOURCE)), rod));
-        new Trigger(() -> copilot.getLeftBumperButton()).whileTrue(new RunCommand((() -> rod.setState(states.STOW)), rod));
+        new Trigger(() -> copilot.getRightBumperButton()).whileTrue(new RunCommand((() -> rod.setState(ROD_STATES.SOURCE)), rod));
+        new Trigger(() -> copilot.getLeftBumperButton()).whileTrue(new RunCommand((() -> rod.setState(ROD_STATES.STOW)), rod));
 
         
         
@@ -129,19 +148,18 @@ public class RobotContainer extends LightningContainer {
         // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> wrist.setPosition(40))));
         
 
-        // // TODO: Remove Standin Command
-        // new Trigger(() -> rod.onTarget()).whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
-
-        //sim stuff
-        if(Robot.isSimulation()) {
-            // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(-1)))).onFalse(new InstantCommand(wrist::stop));
-            // new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(1)))).onFalse(new InstantCommand(wrist::stop));
-
-        //     new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
-        //     new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
-
-            // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> collector.setPower(0.75)))).onFalse(new InstantCommand(collector::stop));
-            // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> collector.setPower(-0.5)))).onFalse(new InstantCommand(collector::stop));
+                
+        switch (Constants.ROBOT_MODE){
+            case NAUTILUS:
+                //nothing
+            break;
+            default:
+                // put your commands here, see SetRodState()
+                (new Trigger(driver::getRightBumperButtonPressed)).whileTrue(new SetRodState(rod, ROD_STATES.SOURCE));
+                ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(new CollectAlgae(algaeCollector, driver::getRightTriggerAxis));
+                (new Trigger(() -> (copilot.getStartButtonPressed() || driver.getPOV() == 180) && copilot.getBButtonPressed())).whileTrue(new SetRodState(rod, ROD_STATES.LOW));
+                (new Trigger(() -> (copilot.getStartButtonPressed() || driver.getPOV() == 180) && copilot.getXButtonPressed())).whileTrue(new SetRodState(rod, ROD_STATES.HIGH));
+            break;
         }
     }
 
@@ -160,7 +178,8 @@ public class RobotContainer extends LightningContainer {
                 new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignRight", 
                 new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
-        if (Robot.isReal()){
+        switch (Constants.ROBOT_MODE) {
+            case NAUTILUS:
                 NamedCommands.registerCommand("RodHome",
                         StandinCommands.rodStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL1",
@@ -173,19 +192,21 @@ public class RobotContainer extends LightningContainer {
                         StandinCommands.rodL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodSource",
                         StandinCommands.rodSource().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        } else if(Robot.isSimulation()){
+            break;
+            default:
                 NamedCommands.registerCommand("RodHome", 
-                        new SetRodState(rod, states.STOW).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.STOW).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL1", 
-                        new SetRodState(rod, states.L1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.L1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL2", 
-                        new SetRodState(rod, states.L2).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.L2).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL3", 
-                        new SetRodState(rod, states.L3).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.L3).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL4", 
-                        new SetRodState(rod, states.L4).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.L4).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodSource", 
-                        new SetRodState(rod, states.SOURCE).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        new SetRodState(rod, ROD_STATES.SOURCE).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+            break;
         }
 
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -195,4 +216,6 @@ public class RobotContainer extends LightningContainer {
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
         }
+
+
 }

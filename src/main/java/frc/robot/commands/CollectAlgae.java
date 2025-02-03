@@ -26,16 +26,17 @@ public class CollectAlgae extends Command {
 	@Override
 	public void initialize() {
 		collector.setPivotState(PIVOT_STATES.DEPLOYED);
-		collector.setRollerPower(triggerPower.getAsDouble() * AlgaeCollectorConstants.PIVOT_TRIGGER_SPEED);
 	}
 
 	@Override
-	public void execute() {}
+	public void execute() {
+		collector.setRollerPower(triggerPower.getAsDouble() * AlgaeCollectorConstants.ALGAE_ROLLER_SPEED);
+	}
 
 	@Override
 	public void end(boolean interrupted) {
 		collector.setPivotState(PIVOT_STATES.STOWED);
-		collector.setRollerPower(0);
+		collector.stop();
 	}
 
 	@Override

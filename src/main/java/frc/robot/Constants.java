@@ -272,6 +272,8 @@ public class Constants {
         public static final boolean BRAKE_MODE = true;
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean INVERTED = false; // temp
+        public static final double CORAL_ROLLER_SPEED = 1;
+        public static final double DEBOUNCE_TIME = 0.1;
 
         public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
@@ -893,7 +895,7 @@ public class Constants {
         public static final double PIVOT_MAX_ANGLE = 90; // temp
         public static final double PIVOT_LENGTH = 0.5; // temp
         public static final double PIVOT_START_ANGLE = 0; // temp
-        public static final double PIVOT_TRIGGER_SPEED = 1;
+        public static final double ALGAE_ROLLER_SPEED = 1;
 
         public static final double ROLLER_KV = 0.24; // temp
         public static final double ROLLER_KA = 0.8; // temp

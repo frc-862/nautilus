@@ -10,10 +10,13 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -22,6 +25,7 @@ import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.CollectAlgae;
+import frc.robot.commands.CollectCoral;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
 import frc.robot.subsystems.AlgaeCollector;
@@ -52,8 +56,10 @@ public class RobotContainer extends LightningContainer {
     private AlgaeCollector algaeCollector;
     private Climber climber;
 
-    private XboxController driver;
-    private XboxController copilot;
+    private Trigger algaeMode;
+
+    private static XboxController driver;
+    private static XboxController copilot;
 
     @Override
     protected void initializeSubsystems() {
@@ -63,6 +69,8 @@ public class RobotContainer extends LightningContainer {
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
         leds = new LEDs();
+
+        algaeMode = new Trigger(() -> driver.getPOV() == 180 || copilot.getStartButtonPressed());
 
         switch (Constants.ROBOT_MODE){
             case NAUTILUS:
@@ -81,10 +89,12 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
-                DriveRequests.getDrive(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+                DriveRequests.getDrive(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> -driver.getRightX())));
         drivetrain.registerTelemetry(logger::telemeterize);
 
         vision.setDefaultCommand(vision.updateOdometry(drivetrain));
+
+        coralCollector.setDefaultCommand(new CollectCoral(coralCollector, () -> copilot.getLeftTriggerAxis() - (copilot.getLeftBumperButton() ? 1 : 0)));
 
         switch (Constants.ROBOT_MODE){
             case NAUTILUS:
@@ -99,14 +109,13 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void configureButtonBindings() {
         new Trigger(() -> driver.getRightTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(
-                DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+                DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> -driver.getRightX())));
         new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
-                .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+                .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> -driver.getRightX())));
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
-
                 
         switch (Constants.ROBOT_MODE){
             case NAUTILUS:
@@ -116,8 +125,18 @@ public class RobotContainer extends LightningContainer {
                 // put your commands here, see SetRodState()
                 (new Trigger(driver::getRightBumperButtonPressed)).whileTrue(new SetRodState(rod, ROD_STATES.SOURCE));
                 ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(new CollectAlgae(algaeCollector, driver::getRightTriggerAxis));
-                (new Trigger(() -> (copilot.getStartButtonPressed() || driver.getPOV() == 180) && copilot.getBButtonPressed())).whileTrue(new SetRodState(rod, ROD_STATES.LOW));
-                (new Trigger(() -> (copilot.getStartButtonPressed() || driver.getPOV() == 180) && copilot.getXButtonPressed())).whileTrue(new SetRodState(rod, ROD_STATES.HIGH));
+
+                //algae mode
+                (new Trigger(copilot::getBButtonPressed).and(algaeMode)).whileTrue(new SetRodState(rod, ROD_STATES.LOW));
+                (new Trigger(copilot::getXButtonPressed).and(algaeMode)).whileTrue(new SetRodState(rod, ROD_STATES.HIGH));
+
+                //copilot stuff
+                (new Trigger(copilot::getAButtonPressed)).whileTrue(new SetRodState(rod, ROD_STATES.L1));
+                (new Trigger(copilot::getBButtonPressed)).whileTrue(new SetRodState(rod, ROD_STATES.L2));
+                (new Trigger(copilot::getXButtonPressed)).whileTrue(new SetRodState(rod, ROD_STATES.L3));
+                (new Trigger(copilot::getYButtonPressed)).whileTrue(new SetRodState(rod, ROD_STATES.L4));
+                (new Trigger(copilot::getRightBumperButtonPressed)).whileTrue(new InstantCommand(() -> algaeCollector.setRollerPower(-1), algaeCollector));
+
             break;
         }
     }
@@ -175,6 +194,37 @@ public class RobotContainer extends LightningContainer {
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
         }
+
+        
+	public static Command hapticDriverCommand() {
+		if (!DriverStation.isAutonomous()) {
+			return new StartEndCommand(() -> {
+				driver.setRumble(GenericHID.RumbleType.kRightRumble, 1d);
+				driver.setRumble(GenericHID.RumbleType.kLeftRumble, 1d);
+			}, () -> {
+				driver.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+				driver.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+			});
+		} else {
+			return new InstantCommand();
+		}
+	}
+
+	public static Command hapticCopilotCommand() {
+		if (!DriverStation.isAutonomous()) {
+			return new StartEndCommand(() -> {
+				copilot.setRumble(GenericHID.RumbleType.kRightRumble, 1d);
+				copilot.setRumble(GenericHID.RumbleType.kLeftRumble, 1d);
+			}, () -> {
+				copilot.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+				copilot.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+			});
+		} else {
+			return new InstantCommand();
+		}
+	}
+
+        
 
 
 }

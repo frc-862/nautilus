@@ -168,4 +168,8 @@ public class AlgaeCollector extends SubsystemBase {
     public double getRollerPower() {
         return rollerMotor.get();
     }
+
+    public void stop(){
+        this.setRollerPower(0);
+    }
 }

@@ -281,6 +281,9 @@ public class Constants {
                                                                                                         // velocity
         public static final double SLOW_MODE_MULT = 0.3; // 3/4 of a rotation per second max angular velocity
 
+        public static final double SLOW_SPEED_MULT = 0.4; // temp
+        public static final double SLOW_TURN_MULT = 0.7; // temp
+
         public class DriveRequests {
             private static final SwerveRequest.FieldCentric DRIVE = new SwerveRequest.FieldCentric();
             private static final SwerveRequest.FieldCentric SLOW = new SwerveRequest.FieldCentric();

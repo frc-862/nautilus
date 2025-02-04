@@ -70,10 +70,9 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
 
     boolean[] reef1Status = {false, false, false, false, false, false, false, false, false, false, false, false};
-    boolean[] reef2Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
-    boolean[] reef3Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
+    boolean[] reef2Status = {false, false, false, false, false, false, false, false, false, false, false, false};
+    boolean[] reef3Status = {false, false, false, false, false, false, false, false, false, false, false, false};
 
-    private boolean robotCentric = false;
     private boolean slowMode = false;
 
     private double speedMult = 1d;
@@ -223,14 +222,6 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     }
 
     /**
-     * gets robot centric true/false
-     * @return robot centric true/false
-     */
-    public boolean inRobotCentric() {
-        return robotCentric;
-    }
-
-    /**
      * sets slow mode true/false
      * speedMult and turnMult are set to the appropriate values
      * @param slowMode
@@ -245,14 +236,6 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             speedMult = 1d;
             turnMult = 1d;
         }
-    }
-
-    /**
-     * sets robot centric true/false (for dashboard values)
-     * @param robotCentric
-     */
-    public void setRobotCentric(boolean robotCentric) {
-        this.robotCentric = robotCentric;
     }
 
     private void updateCANcoderOffsets() {

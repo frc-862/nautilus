@@ -105,12 +105,10 @@ public class RobotContainer extends LightningContainer {
 
         // sets robot centric
         new Trigger(() -> driver.getLeftTriggerAxis() > 0.25)
-                .onTrue(new InstantCommand(() -> drivetrain.setRobotCentric(true)))
                 .whileTrue(drivetrain.applyRequest(
                         DriveRequests.getRobotCentric(() -> -(driver.getLeftX() * drivetrain.getSpeedMult()),
                         () -> -(driver.getLeftY() * drivetrain.getSpeedMult()),
-                        () -> (driver.getRightX() * drivetrain.getTurnMult()))))
-                .onFalse(new InstantCommand(() -> drivetrain.setRobotCentric(false)));
+                        () -> (driver.getRightX() * drivetrain.getTurnMult()))));
 
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 

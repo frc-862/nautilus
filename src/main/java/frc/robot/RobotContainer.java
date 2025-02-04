@@ -109,6 +109,8 @@ public class RobotContainer extends LightningContainer {
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
                 () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
 
+        climber.setDefaultCommand(new RunCommand(() -> climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)), climber));
+
         switch (Constants.ROBOT_MODE) {
             case NAUTILUS:
                 // nothing

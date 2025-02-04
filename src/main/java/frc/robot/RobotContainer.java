@@ -84,7 +84,7 @@ public class RobotContainer extends LightningContainer {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
                 DriveRequests.getDrive(() -> -(driver.getLeftX() * drivetrain.getSpeedMult()),
                 () -> -(driver.getLeftY() * drivetrain.getSpeedMult()),
-                () -> (driver.getRightX() * drivetrain.getTurnMult()))));
+                () -> -(driver.getRightX() * drivetrain.getTurnMult()))));
         
         drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -108,7 +108,7 @@ public class RobotContainer extends LightningContainer {
                 .whileTrue(drivetrain.applyRequest(
                         DriveRequests.getRobotCentric(() -> -(driver.getLeftX() * drivetrain.getSpeedMult()),
                         () -> -(driver.getLeftY() * drivetrain.getSpeedMult()),
-                        () -> (driver.getRightX() * drivetrain.getTurnMult()))));
+                        () -> -(driver.getRightX() * drivetrain.getTurnMult()))));
 
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 

@@ -163,10 +163,10 @@ public class RobotContainer extends LightningContainer {
 
                 // copilot
                 // algae mode
-                (new Trigger(copilot::getBButtonPressed).and(algaeMode))
-                        .whileTrue(new SetRodState(rod, ROD_STATES.LOW));
-                (new Trigger(copilot::getXButtonPressed).and(algaeMode))
-                        .whileTrue(new SetRodState(rod, ROD_STATES.HIGH));
+                // (new Trigger(copilot::getBButtonPressed).and(algaeMode))
+                //         .whileTrue(new SetRodState(rod, ROD_STATES.LOW));
+                // (new Trigger(copilot::getXButtonPressed).and(algaeMode))
+                //         .whileTrue(new SetRodState(rod, ROD_STATES.HIGH));
 
                 // default
                 (new Trigger(copilot::getAButtonPressed)).whileTrue(new SetRodState(rod, ROD_STATES.L1));

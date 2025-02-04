@@ -62,13 +62,13 @@ public class FishingRod extends SubsystemBase {
         // this is happening periodically
         if(targetState != currState) {
             switch(transitionState) {
-                case L4_X, TRITON: //wrist up, move ele, move wrist
+                case SCORE_X, TRITON: //wrist up, move ele, move wrist
                     wrist.setState(ROD_STATES.STOW);
                     if(wrist.isOnTarget()) {
                         transitionState = TRANSITION_STATES.DEFAULT; //finalize transition
                     }
                     break;
-                case X_L4: //wrist down, move ele
+                case X_SCORE: //wrist down, move ele
                     wrist.setState(targetState);
                     if(wrist.isOnTarget()) {
                         transitionState = TRANSITION_STATES.DEFAULT; //finalize transition
@@ -96,10 +96,10 @@ public class FishingRod extends SubsystemBase {
         targetState = state;
 
         //logic for transition states goes here
-        if(targetState == ROD_STATES.L4) {
-            transitionState = TRANSITION_STATES.X_L4;
-        } else if(currState == ROD_STATES.L4) {
-            transitionState = TRANSITION_STATES.L4_X;
+        if(currState == ROD_STATES.L4 || currState == ROD_STATES.L3 || currState == ROD_STATES.L2) {
+            transitionState = TRANSITION_STATES.SCORE_X;
+        } else if(targetState == ROD_STATES.L4 || targetState == ROD_STATES.L3 || targetState == ROD_STATES.L2) {
+            transitionState = TRANSITION_STATES.X_SCORE;
         } else {
             transitionState = Constants.IS_TRITON ? TRANSITION_STATES.TRITON : TRANSITION_STATES.DEFAULT;
         }

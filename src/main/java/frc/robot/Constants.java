@@ -159,8 +159,8 @@ public class Constants {
         public static final double MOTORS_KA = 0.01; // temp
         public static final double MOTORS_KG = 0d; // temp
 
-        public static final double VELOC = 80d; // temp
-        public static final double ACCEL = 400d; // temp
+        public static final double VELOC = 40d; // 80
+        public static final double ACCEL = 200d; // 200
         public static final double JERK = 1600d; // temp
 
 
@@ -186,8 +186,8 @@ public class Constants {
 
         public enum TRANSITION_STATES {
             DEFAULT, //default travel state
-            X_L4, //any state to L4
-            L4_X, //L4 to any state
+            X_SCORE, //any state to L4
+            SCORE_X, //L4 to any state
             TRITON //specific state to deal with triton's loose belt
         }
 

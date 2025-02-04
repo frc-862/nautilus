@@ -13,8 +13,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FishingRodConstants;
-import frc.robot.Constants.FishingRodConstants.ROD_STATES;
+import frc.robot.Constants.FishingRodConstants.*;
 import frc.robot.Constants.WristConstants;
+import frc.robot.Constants;
 import frc.robot.Robot;
 
 public class FishingRod extends SubsystemBase {
@@ -23,6 +24,7 @@ public class FishingRod extends SubsystemBase {
     private Elevator elevator;
     private ROD_STATES currState = ROD_STATES.STOW;
     private ROD_STATES targetState = ROD_STATES.STOW;
+    private TRANSITION_STATES transitionState = TRANSITION_STATES.DEFAULT;
 
     private double wristBias = 0;
     private double elevatorBias = 0;
@@ -34,7 +36,6 @@ public class FishingRod extends SubsystemBase {
     private MechanismLigament2d stage2;
     private MechanismLigament2d stage3;
     private MechanismLigament2d wristSim;
-    
 
     public FishingRod(Wrist wrist, Elevator elevator) {
         this.wrist = wrist;
@@ -58,42 +59,33 @@ public class FishingRod extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(onTarget()) {
-            currState = targetState;
-        }
-
-        // if(currState != targetState) {
-            switch(targetState) {
-                case STOW, L1, L2, L3, SOURCE:
-                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState) + wristBias);
-                    elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState) + elevatorBias);
-                    break;
-                // case L1:
-                //     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
-                //     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
-                //     break;
-                // case L2:
-                //     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
-                //     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
-                //     break;
-                // case L3:
-                //     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
-                //     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
-                //     break;
-                case L4:
-                    elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState) + elevatorBias);
-                    if(elevator.isOnTarget()) {
-                        wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState) + wristBias);
+        // this is happening periodically
+        if(targetState != currState) {
+            switch(transitionState) {
+                case L4_X, TRITON: //wrist up, move ele, move wrist
+                    wrist.setState(ROD_STATES.STOW);
+                    if(wrist.isOnTarget()) {
+                        transitionState = TRANSITION_STATES.DEFAULT; //finalize transition
                     }
                     break;
-                // case SOURCE:
-                //     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
-                //     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
-                //     break;
+                case X_L4: //wrist down, move ele
+                    wrist.setState(targetState);
+                    if(wrist.isOnTarget()) {
+                        transitionState = TRANSITION_STATES.DEFAULT; //finalize transition
+                    }
+                    break;
+                case DEFAULT: // all states should end here
+                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
+                    elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
+                    if(onTarget()) {
+                        currState = targetState;
+                    }
+                    break;
+
                 default:
-                    break;    
+                    throw new IllegalArgumentException("transition state not defined");
             }
-        // }
+        }
     }
 
     /**
@@ -103,24 +95,26 @@ public class FishingRod extends SubsystemBase {
     public void setState(ROD_STATES state) {
         targetState = state;
 
+        //logic for transition states goes here
+        if(targetState == ROD_STATES.L4) {
+            transitionState = TRANSITION_STATES.X_L4;
+        } else if(currState == ROD_STATES.L4) {
+            transitionState = TRANSITION_STATES.L4_X;
+        } else {
+            transitionState = Constants.IS_TRITON ? TRANSITION_STATES.TRITON : TRANSITION_STATES.DEFAULT;
+        }
+
+        //zero biases to ensure no silliness happens cross-state
         elevatorBias = 0;
         wristBias = 0;
     }
 
     public Command addWristBias(double bias) {
-        return runOnce(() -> wristBias += bias);
+        return runOnce(() -> {wristBias += bias; wrist.setPosition(wrist.getTargetAngle() + wristBias);});
     }
 
     public Command addElevatorBias(double bias) {
-        return runOnce(() -> elevatorBias += bias);
-    }
-
-    public Command resetWristBias() {
-        return runOnce(() -> wristBias = 0);
-    }
-
-    public Command resetElevatorBias() {
-        return runOnce(() -> elevatorBias = 0);
+        return runOnce(() -> {elevatorBias += bias; elevator.setPosition(elevator.getTargetPosition() + elevatorBias);});
     }
 
     /**

@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.FishingRodConstants;
+import frc.robot.Constants.FishingRodConstants.ROD_STATES;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
@@ -158,6 +160,10 @@ public class Elevator extends SubsystemBase {
         targetPosition = MathUtil.clamp(target, ElevatorConstants.MIN_EXTENSION.magnitude(), ElevatorConstants.MAX_EXTENSION.magnitude());
 
         leftMotor.setControl(positionPID.withPosition(target));
+    }
+
+    public void setState(ROD_STATES state) {
+        setPosition(FishingRodConstants.ELEVATOR_MAP.get(state));
     }
 
     /**

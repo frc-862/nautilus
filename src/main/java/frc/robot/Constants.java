@@ -184,6 +184,13 @@ public class Constants {
             STOW, L1, L2, L3, L4, SOURCE, LOW, HIGH, ALGAE_SCORE
         }
 
+        public enum TRANSITION_STATES {
+            DEFAULT, //default travel state
+            X_L4, //any state to L4
+            L4_X, //L4 to any state
+            TRITON //specific state to deal with triton's loose belt
+        }
+
         public static final HashMap<ROD_STATES, Double> WRIST_MAP = new HashMap<ROD_STATES, Double>() {
             {
                 // put(ROD_STATES.STOW, 0d);

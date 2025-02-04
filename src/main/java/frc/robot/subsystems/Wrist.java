@@ -27,8 +27,10 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.FishingRodConstants;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.WristConstants;
+import frc.robot.Constants.FishingRodConstants.ROD_STATES;
 import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
@@ -142,6 +144,10 @@ public class Wrist extends SubsystemBase {
     public void setPosition(double position) {
         motor.setControl(positionPID.withPosition(Units.degreesToRotations(position)));
         targetPosition = position;
+    }
+
+    public void setState(ROD_STATES state) {
+        setPosition(FishingRodConstants.WRIST_MAP.get(state));
     }
 
     @Logged(importance = Importance.DEBUG)

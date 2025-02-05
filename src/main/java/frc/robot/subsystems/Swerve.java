@@ -154,7 +154,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
         configurePathPlanner();
 
-        LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", () -> CANcoderOffsets);
+        // LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", () -> CANcoderOffsets);
     }
 
     private void configurePathPlanner() {        

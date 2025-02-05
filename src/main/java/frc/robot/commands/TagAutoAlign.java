@@ -112,7 +112,7 @@ public class TagAutoAlign extends Command {
 
         // update pitch and yaw values
 
-        TY = vision.getTX();
+        TY = vision.getTY();
         TX = vision.getTX();
 
         txError = TX - AutoAlignConstants.targetTX;

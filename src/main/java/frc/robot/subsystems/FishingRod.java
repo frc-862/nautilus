@@ -137,7 +137,7 @@ public class FishingRod extends SubsystemBase {
      */
     @Logged(importance = Importance.DEBUG)
     public boolean onTarget() {
-        return wrist.isOnTarget() && elevator.isOnTarget();
+        return currState == targetState;
     }
 
     @Override

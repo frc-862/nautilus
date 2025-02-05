@@ -118,7 +118,7 @@ public class RobotContainer extends LightningContainer {
                 break;
             default:
                 // stow
-                // rod.setDefaultCommand(new InstantCommand(() -> rod.setState(ROD_STATES.STOW), rod));
+                rod.setDefaultCommand(new SetRodState(rod, ROD_STATES.STOW));
                 break;
         }
     }
@@ -150,31 +150,16 @@ public class RobotContainer extends LightningContainer {
                 .whileTrue(new RunCommand((() -> rod.setState(ROD_STATES.STOW)), rod));
 
 
-        // switch (Constants.ROBOT_MODE) {
-        //     case NAUTILUS:
-        //         // nothing
-        //         break;
-        //     default:
-                // (new Trigger(driver::getRightBumperButtonPressed))
-                //         .whileTrue(new SetRodState(rod, ROD_STATES.SOURCE));
-                // ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(
-                //         new CollectAlgae(algaeCollector, driver::getRightTriggerAxis));
-
-                // copilot
-                // algae mode
-                // (new Trigger(copilot::getBButtonPressed).and(algaeMode))
-                //         .whileTrue(new SetRodState(rod, ROD_STATES.LOW));
-                // (new Trigger(copilot::getXButtonPressed).and(algaeMode))
-                //         .whileTrue(new SetRodState(rod, ROD_STATES.HIGH));
-
+        switch (Constants.ROBOT_MODE) {
+            case NAUTILUS:
+                // nothing
+                break;
+            default: //sim or triton
                 // default
-                (new Trigger(copilot::getAButtonPressed)).whileTrue(new RunCommand((() -> rod.setState(ROD_STATES.L1)), rod));
-                (new Trigger(copilot::getBButtonPressed)).whileTrue(new RunCommand((() -> rod.setState(ROD_STATES.L2)), rod));
-                (new Trigger(copilot::getXButtonPressed)).whileTrue(new RunCommand((() -> rod.setState(ROD_STATES.L3)), rod));
-                (new Trigger(copilot::getYButtonPressed)).whileTrue(new RunCommand((() -> rod.setState(ROD_STATES.L4)), rod));
-                // (new Trigger(copilot::getRightBumperButtonPressed))
-                //         .whileTrue(new InstantCommand(() -> algaeCollector.setRollerPower(-1), algaeCollector)
-                //                 .andThen(() -> algaeCollector.setRollerPower(0d)));
+                (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, ROD_STATES.L1));
+                (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(rod, ROD_STATES.L2));
+                (new Trigger(copilot::getXButton)).whileTrue(new SetRodState(rod, ROD_STATES.L3));
+                (new Trigger(copilot::getYButton)).whileTrue(new SetRodState(rod, ROD_STATES.L4));
 
                 // biases
                 new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(2));
@@ -183,8 +168,21 @@ public class RobotContainer extends LightningContainer {
                 new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-5));
                 new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(5));
 
-        //         break;
-        // }
+
+                //unused algae stuff
+                // (new Trigger(driver::getRightBumperButtonPressed))
+                //         .whileTrue(new SetRodState(rod, ROD_STATES.SOURCE));
+                // ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(
+                //         new CollectAlgae(algaeCollector, driver::getRightTriggerAxis));
+                // (new Trigger(copilot::getBButtonPressed).and(algaeMode))
+                //         .whileTrue(new SetRodState(rod, ROD_STATES.LOW));
+                // (new Trigger(copilot::getXButtonPressed).and(algaeMode))
+                //         .whileTrue(new SetRodState(rod, ROD_STATES.HIGH));
+                // (new Trigger(copilot::getRightBumperButtonPressed))
+                //         .whileTrue(new InstantCommand(() -> algaeCollector.setRollerPower(-1), algaeCollector)
+                //                 .andThen(() -> algaeCollector.setRollerPower(0d)));
+        break;
+        }
     }
 
     @Override

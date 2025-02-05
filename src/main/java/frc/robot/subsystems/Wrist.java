@@ -21,12 +21,14 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Importance;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.EncoderConstants;
 import frc.robot.Constants.FishingRodConstants;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.WristConstants;
@@ -60,7 +62,7 @@ public class Wrist extends SubsystemBase {
 
         encoder = new CANcoder(RobotMap.WRIST_ENCODER, RobotMap.CANIVORE_CAN_NAME);
         angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-        angleConfig.MagnetSensor.MagnetOffset = -0.246;
+        angleConfig.MagnetSensor.MagnetOffset = Robot.isReal() ? EncoderConstants.tritonWristOffset : 0;
         encoder.getConfigurator().apply(angleConfig);
 
 
@@ -114,11 +116,11 @@ public class Wrist extends SubsystemBase {
         encoderSim.setRawPosition(simAngle);
         encoderSim.setVelocity(simVeloc);
 
-        LightningShuffleboard.setDouble("wrist", "CANCoder angle", encoder.getAbsolutePosition().getValue().in(Degrees));
-        LightningShuffleboard.setDouble("wrist", "getPose", getAngle());
-        LightningShuffleboard.setDouble("wrist", "getTarget", motor.getClosedLoopError().getValueAsDouble());
-        // setPower(LightningShuffleboard.getDouble("wrist", "setPower", 0));
-        // setPosition(LightningShuffleboard.getDouble("wrist", "setPosition", 0));
+        LightningShuffleboard.setDouble("Wrist", "CANCoder angle", encoder.getAbsolutePosition().getValue().in(Degrees));
+        LightningShuffleboard.setDouble("Wrist", "sim angle", simAngle);
+        LightningShuffleboard.setDouble("Wrist", "getPose", getAngle());
+        // setPower(LightningShuffleboard.getDouble("Wrist", "setPower", 0));
+        // setPosition(LightningShuffleboard.getDouble("Wrist", "setPosition", 0));
 
         wristSim.setInputVoltage(motorSim.getMotorVoltage()); 
         wristSim.update(RobotMap.UPDATE_FREQ);
@@ -126,25 +128,26 @@ public class Wrist extends SubsystemBase {
 
         // TalonFXConfiguration motorConfig = motor.getConfig();
 
-        // motorConfig.Slot0.kP = LightningShuffleboard.getDouble("wrist", "kP", 0);
-        // motorConfig.Slot0.kI = LightningShuffleboard.getDouble("wrist", "kI", 0);
-        // motorConfig.Slot0.kD = LightningShuffleboard.getDouble("wrist", "kD", 0);
-        // motorConfig.Slot0.kS = LightningShuffleboard.getDouble("wrist", "kF", 0);
-        // motorConfig.Slot0.kV = LightningShuffleboard.getDouble("wrist", "kV", 0);
-        // motorConfig.Slot0.kA = LightningShuffleboard.getDouble("wrist", "kA", 0);
-        // motorConfig.Slot0.kG = LightningShuffleboard.getDouble("wrist", "kG", 0);
+        // motorConfig.Slot0.kP = LightningShuffleboard.getDouble("Wrist", "kP", 0);
+        // motorConfig.Slot0.kI = LightningShuffleboard.getDouble("Wrist", "kI", 0);
+        // motorConfig.Slot0.kD = LightningShuffleboard.getDouble("Wrist", "kD", 0);
+        // motorConfig.Slot0.kS = LightningShuffleboard.getDouble("Wrist", "kF", 0);
+        // motorConfig.Slot0.kV = LightningShuffleboard.getDouble("Wrist", "kV", 0);
+        // motorConfig.Slot0.kA = LightningShuffleboard.getDouble("Wrist", "kA", 0);
+        // motorConfig.Slot0.kG = LightningShuffleboard.getDouble("Wrist", "kG", 0);
         
         // motor.applyConfig(motorConfig);
 
 
-        LightningShuffleboard.setDouble("wrist", "current angle", getAngle());
-        LightningShuffleboard.setDouble("wrist", "target angle", getTargetAngle());
-        LightningShuffleboard.setBool("wrist", "on target", isOnTarget());
+        LightningShuffleboard.setDouble("Wrist", "current angle", getAngle());
+        LightningShuffleboard.setDouble("Wrist", "target angle", getTargetAngle());
+        LightningShuffleboard.setBool("Wrist", "on target", isOnTarget());
     }
 
     public void setPosition(double position) {
+
+        targetPosition = MathUtil.clamp(position, WristConstants.MIN_ANGLE.in(Degrees), WristConstants.MAX_ANGLE.in(Degrees));
         motor.setControl(positionPID.withPosition(Units.degreesToRotations(position)));
-        targetPosition = position;
     }
 
     public void setState(ROD_STATES state) {

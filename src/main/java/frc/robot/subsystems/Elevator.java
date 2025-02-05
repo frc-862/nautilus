@@ -114,6 +114,8 @@ public class Elevator extends SubsystemBase {
         currentPosition = getPosition();
 
         LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", currentPosition);
+        LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
+        LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
     }
 
     @Override
@@ -130,22 +132,22 @@ public class Elevator extends SubsystemBase {
         leftSim.setRawRotorPosition(Units.metersToInches(elevatorSim.getPositionMeters()) * ElevatorConstants.ENCODER_TO_MECHANISM_RATIO);
         rangeSensorSim.setDistance(elevatorSim.getPositionMeters());
 
-        LightningShuffleboard.setDouble("elevator", "getPose", getPosition());
-        LightningShuffleboard.setDouble("elevator", "getRawPose", Units.metersToInches(elevatorSim.getPositionMeters()));
-        LightningShuffleboard.setDouble("elevator", "amps", leftMotor.getStatorCurrent().getValueAsDouble());
-        // setPower(LightningShuffleboard.getDouble("elevator", "setPower", 0));
-        // setPosition(LightningShuffleboard.getDouble("elevator", "setTarget", 0));
+        LightningShuffleboard.setDouble("Elevator", "getPose", getPosition());
+        LightningShuffleboard.setDouble("Elevator", "getRawPose", Units.metersToInches(elevatorSim.getPositionMeters()));
+        LightningShuffleboard.setDouble("Elevator", "amps", leftMotor.getStatorCurrent().getValueAsDouble());
+        // setPower(LightningShuffleboard.getDouble("Elevator", "setPower", 0));
+        // setPosition(LightningShuffleboard.getDouble("Elevator", "setTarget", 0));
 
 
         // TalonFXConfiguration motorConfig = leftMotor.getConfig();
 
-        // motorConfig.Slot0.kP = LightningShuffleboard.getDouble("elevator", "kP", 0);
-        // motorConfig.Slot0.kI = LightningShuffleboard.getDouble("elevator", "kI", 0);
-        // motorConfig.Slot0.kD = LightningShuffleboard.getDouble("elevator", "kD", 0);
-        // motorConfig.Slot0.kS = LightningShuffleboard.getDouble("elevator", "kF", 0);
-        // motorConfig.Slot0.kV = LightningShuffleboard.getDouble("elevator", "kV", 0);
-        // motorConfig.Slot0.kA = LightningShuffleboard.getDouble("elevator", "kA", 0);
-        // motorConfig.Slot0.kG = LightningShuffleboard.getDouble("elevator", "kG", 0);
+        // motorConfig.Slot0.kP = LightningShuffleboard.getDouble("Elevator", "kP", 0);
+        // motorConfig.Slot0.kI = LightningShuffleboard.getDouble("Elevator", "kI", 0);
+        // motorConfig.Slot0.kD = LightningShuffleboard.getDouble("Elevator", "kD", 0);
+        // motorConfig.Slot0.kS = LightningShuffleboard.getDouble("Elevator", "kF", 0);
+        // motorConfig.Slot0.kV = LightningShuffleboard.getDouble("Elevator", "kV", 0);
+        // motorConfig.Slot0.kA = LightningShuffleboard.getDouble("Elevator", "kA", 0);
+        // motorConfig.Slot0.kG = LightningShuffleboard.getDouble("Elevator", "kG", 0);
         
         // leftMotor.applyConfig(motorConfig);
     }

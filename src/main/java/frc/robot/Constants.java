@@ -72,12 +72,13 @@ public class Constants {
         private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(0.412353515625);
         private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(0.0693359375);
         private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.30517578125);
-
+        
         // Triton values
         private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);
         private static final Angle tritonKFrontRightEncoderOffset = Rotations.of(0.033447);
         private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(0.1350);
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
+        public static final double tritonWristOffset = -0.246;
     }
     
     public static class RobotMap {
@@ -270,7 +271,7 @@ public class Constants {
         public static final double TOLERANCE = 10d;
 
         //sim stuff
-        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.1096); // 5lb, 2.5in rad, 9in height
+        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.086); // 5lb, 2.5in rad, 9in height
         public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
 
     }

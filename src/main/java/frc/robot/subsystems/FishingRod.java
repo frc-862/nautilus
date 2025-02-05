@@ -50,7 +50,7 @@ public class FishingRod extends SubsystemBase {
             wristSim = new MechanismLigament2d("WRIST SIM", WristConstants.LENGTH.magnitude(), 90d, 5d, new Color8Bit(Color.kWhite));
          
             mech2d = new Mechanism2d(0.69, 2.29);
-            root = mech2d.getRoot("rod root", 0.35, 0);
+            root = mech2d.getRoot("Rod root", 0.35, 0);
             
             root.append(stage1).append(stage2).append(stage3).append(wristSim);
 
@@ -60,7 +60,7 @@ public class FishingRod extends SubsystemBase {
     @Override
     public void periodic() {
         // this is happening periodically
-        // if(targetState != currState) {
+        if(!onTarget()) {
             switch(transitionState) {
                 case SCORE_X: //wrist up, move ele, move wrist
                     wrist.setState(ROD_STATES.STOW);
@@ -77,7 +77,7 @@ public class FishingRod extends SubsystemBase {
                 case DEFAULT, TRITON: // all states should end here
                     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
                     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
-                    if(onTarget()) {
+                    if(wrist.isOnTarget() && elevator.isOnTarget()) {
                         currState = targetState;
                     }
                 break;
@@ -85,11 +85,12 @@ public class FishingRod extends SubsystemBase {
                 default:
                     throw new IllegalArgumentException("transition state not defined");
             }
-        // }
+        }
 
-        LightningShuffleboard.setBool("rod", "onTarg", onTarget());
-        LightningShuffleboard.setString("rod", "currState", currState.toString());
-        LightningShuffleboard.setString("rod", "targState", targetState.toString());
+        LightningShuffleboard.setBool("Rod", "onTarg", onTarget());
+        LightningShuffleboard.setString("Rod", "currState", currState.toString());
+        LightningShuffleboard.setString("Rod", "targState", targetState.toString());
+        LightningShuffleboard.setString("Rod", "transitionState", transitionState.toString());
     }
 
     /**
@@ -157,7 +158,7 @@ public class FishingRod extends SubsystemBase {
 
         wristSim.setAngle(wrist.getAngle()-90);
 
-        LightningShuffleboard.send("fishing rod", "Mech2d", mech2d);
+        LightningShuffleboard.send("Rod", "Mech2d", mech2d);
     }
 
 }

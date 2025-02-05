@@ -60,6 +60,8 @@ public class FishingRod extends SubsystemBase {
     @Override
     public void periodic() {
         // this is happening periodically
+
+        // if the rod hasn't reached target state
         if(!onTarget()) {
             switch(transitionState) {
                 case SCORE_X: //wrist up, move ele, move wrist
@@ -114,6 +116,7 @@ public class FishingRod extends SubsystemBase {
         wristBias = 0;
     }
 
+    // biases will only work if no other position is actively being set.
     public Command addWristBias(double bias) {
         return runOnce(() -> {wristBias += bias; wrist.setPosition(wrist.getTargetAngle() + wristBias);});
     }

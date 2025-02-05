@@ -78,6 +78,12 @@ public class Constants {
         private static final Angle tritonKFrontRightEncoderOffset = Rotations.of(0.033447);
         private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(0.1350);
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
+
+        public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations) : nautilusKFrontLeftEncoderOffset.in(Rotations);
+        public static final double frontRightOffset = IS_TRITON ? tritonKFrontRightEncoderOffset.in(Rotations) : nautilusKFrontRightEncoderOffset.in(Rotations);
+        public static final double backLeftOffset = IS_TRITON ? tritonKBackLeftEncoderOffset.in(Rotations) : nautilusKBackLeftEncoderOffset.in(Rotations);
+        public static final double backRightOffset = IS_TRITON ? tritonKBackRightEncoderOffset.in(Rotations) : nautilusKBackRightEncoderOffset.in(Rotations);
+
         public static final double tritonWristOffset = -0.246;
     }
     

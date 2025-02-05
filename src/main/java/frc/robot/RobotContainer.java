@@ -118,10 +118,10 @@ public class RobotContainer extends LightningContainer {
         
         new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
 
-        new Trigger(() -> driver.getPOV() == 90).whileTrue(new InstantCommand(() -> drivetrain.setControl(DriveRequests.getRobotCentric(0.1,0,0))));
-        new Trigger(() -> driver.getPOV() == 270).whileTrue(new InstantCommand(() -> drivetrain.setControl(DriveRequests.getRobotCentric(-0.1,0,0))));
-        new Trigger(() -> driver.getPOV() == 180).whileTrue(new InstantCommand(() -> drivetrain.setControl(DriveRequests.getRobotCentric(0,-0.1,0))));
-        new Trigger(() -> driver.getPOV() == 0).whileTrue(new InstantCommand(() -> drivetrain.setControl(DriveRequests.getRobotCentric(0,0.1,0))));
+        // new Trigger(() -> driver.getPOV() == 90).whileTrue(new InstantCommand(() -> drivetrain.setControl(DriveRequests.getRobotCentric(0.1,0,0))));
+        // new Trigger(() -> driver.getPOV() == 270).whileTrue(new InstantCommand(() -> drivetrain.setControl(DriveRequests.getRobotCentric(-0.1,0,0))));
+        // new Trigger(() -> driver.getPOV() == 180).whileTrue(new InstantCommand(() -> drivetrain.setControl(DriveRequests.getRobotCentric(0,-0.1,0))));
+        // new Trigger(() -> driver.getPOV() == 0).whileTrue(new InstantCommand(() -> drivetrain.setControl(DriveRequests.getRobotCentric(0,0.1,0))));
 
         // new Trigger(() -> DriverStation.isEnabled()).whileTrue(new InstantCommand(() -> coralCollector.setPower(1)));
 

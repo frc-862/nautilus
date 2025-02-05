@@ -83,7 +83,10 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
-                DriveRequests.getDrive(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+                DriveRequests.getDrive(() -> -(driver.getLeftX() * drivetrain.getSpeedMult()),
+                () -> -(driver.getLeftY() * drivetrain.getSpeedMult()),
+                () -> -(driver.getRightX() * drivetrain.getTurnMult()))));
+        
         drivetrain.registerTelemetry(logger::telemeterize);
 
         vision.setDefaultCommand(vision.updateOdometry(drivetrain));
@@ -96,10 +99,18 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void configureButtonBindings() {
-        new Trigger(() -> driver.getRightTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(
-                DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
-        new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
-                .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+        // sets slow mode
+        new Trigger(() -> driver.getRightTriggerAxis() > 0.25)
+                .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
+                .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+
+        // sets robot centric
+        new Trigger(() -> driver.getLeftTriggerAxis() > 0.25)
+                .whileTrue(drivetrain.applyRequest(
+                        DriveRequests.getRobotCentric(() -> -(driver.getLeftX() * drivetrain.getSpeedMult()),
+                        () -> -(driver.getLeftY() * drivetrain.getSpeedMult()),
+                        () -> -(driver.getRightX() * drivetrain.getTurnMult()))));
+
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(

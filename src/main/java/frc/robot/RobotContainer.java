@@ -118,7 +118,7 @@ public class RobotContainer extends LightningContainer {
         
         new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
 
-        new Trigger(() -> DriverStation.isEnabled()).whileTrue(new InstantCommand(() -> coralCollector.setPower(1)));
+        // new Trigger(() -> DriverStation.isEnabled()).whileTrue(new InstantCommand(() -> coralCollector.setPower(1)));
 
                 
         // // TODO: Remove Standin Command

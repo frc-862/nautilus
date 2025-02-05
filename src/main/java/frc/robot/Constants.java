@@ -400,6 +400,10 @@ public class Constants {
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
         public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, 0);
         public static final Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
+
+        public static final double VISION_X_STDEV = 0;
+        public static final double VISION_Y_STDEV = 0;
+        public static final double VISION_THETA_STDEV = 0;
     }
 
     public static class PoseConstants {

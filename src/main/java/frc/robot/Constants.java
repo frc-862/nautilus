@@ -343,6 +343,17 @@ public class Constants {
 
             }
 
+            public static SwerveRequest getDrive(double x, double y, double rot) {
+                return DRIVE
+                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                        .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
+                        .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
+                        .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative X
+                                                                                 // (left)
+            }
+
             public static Supplier<SwerveRequest> getSlow(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
                 return () -> SLOW
                         .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive
@@ -373,6 +384,17 @@ public class Constants {
                         .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X (left)
+            }
+
+            public static SwerveRequest getRobotCentric(double x, double y, double rot){
+                return ROBO_CENTRIC
+                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                        .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
+                        .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
+                        .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative X
+                                                                                 // (left)
             }
 
             public static Supplier<SwerveRequest> getBrake() {
@@ -412,7 +434,7 @@ public class Constants {
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
         public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout
-                .loadField(AprilTagFields.k2024Crescendo);
+                .loadField(AprilTagFields.k2025Reefscape);
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
         public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, 0);
@@ -903,6 +925,29 @@ public class Constants {
             ROD_ON_TARGET(),
             OFF();
         }
+    }
+
+    public class AutoAlignConstants {
+        public static final double AutoAlignTolerance = 0.02d;
+        
+        // X PID
+        public static final double X_Kp = 0.035d;
+        public static final double X_Ki = 0d;
+        public static final double X_Kd = 0d;
+
+        // Y PID
+        public static final double Y_Kp = 0.1d;
+        public static final double Y_Ki = 0d;
+        public static final double Y_Kd = 0d;
+
+        public static final double targetTX = 720d;
+
+        public static final HashMap<Integer, Double> tagAngles = new HashMap<Integer, Double>(){
+            {
+                put(6, 0d);
+                put(9, 0d);
+            }
+        };
 
     }
 

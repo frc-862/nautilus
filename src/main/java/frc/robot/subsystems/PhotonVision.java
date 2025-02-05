@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Constants.VisionConstants;
+import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class PhotonVision extends SubsystemBase {
@@ -109,6 +110,18 @@ public class PhotonVision extends SubsystemBase {
         return result.getBestTarget().getBestCameraToTarget();
     }
 
+    public double getTY(){
+        return camera1.getCameraTable().getEntry("targetPixelsY").getDouble(0);
+    }
+
+    public double getTX(){
+        return camera1.getCameraTable().getEntry("targetPixelsX").getDouble(0);
+    }
+
+    public int getTagNum(){
+        return result.getBestTarget().getFiducialId();
+    }
+
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         poseEstimator.setReferencePose(prevEstimatedRobotPose);
         return poseEstimator.update(result);
@@ -141,6 +154,9 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        //LightningShuffleboard.set("Vision", "EstimatedRobotPose", estimatedRobotPose);
+        LightningShuffleboard.setBool("Vision", "HasTarget", result.hasTargets());
         visionWorks = true;
 
         try {

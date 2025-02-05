@@ -31,11 +31,12 @@ import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.commands.TagAutoAlign;
 import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CoralCollector;
-import frc.robot.commands.TestAutoAlign;
 import frc.robot.commands.auton.ScoreCoral;
+import frc.robot.commands.TagAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
@@ -149,6 +150,9 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> copilot.getLeftBumperButton())
                 .whileTrue(new RunCommand((() -> rod.setState(ROD_STATES.STOW)), rod));
 
+        new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
+
+
 
         switch (Constants.ROBOT_MODE) {
             case NAUTILUS:
@@ -192,59 +196,55 @@ public class RobotContainer extends LightningContainer {
         // NamedCommands.registerCommand("ScoreCoral",
         //         StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
         // TODO: Get actual offsets
-        NamedCommands.registerCommand("ReefAlignLeft",
-                new TestAutoAlign(vision, drivetrain, 0)
-                        .deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
-        NamedCommands.registerCommand("ReefAlignRight",
-                new TestAutoAlign(vision, drivetrain, 0)
-                        .deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
-        NamedCommands.registerCommand("SourceAlignLeft",
-                new TestAutoAlign(vision, drivetrain, 0)
-                        .deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
-        NamedCommands.registerCommand("SourceAlignRight",
-                new TestAutoAlign(vision, drivetrain, 0)
-                        .deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
-        switch (Constants.ROBOT_MODE) {
-            case NAUTILUS:
-                NamedCommands.registerCommand("RodHome",
-                        StandinCommands.rodStow()
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL1",
-                        StandinCommands.rodL1()
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL2",
-                        StandinCommands.rodL2()
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL3",
-                        StandinCommands.rodL3()
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL4",
-                        StandinCommands.rodL4()
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodSource",
-                        StandinCommands.rodSource()
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+        NamedCommands.registerCommand("ReefAlignLeft", 
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+        NamedCommands.registerCommand("ReefAlignRight", 
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+        NamedCommands.registerCommand("SourceAlignLeft", 
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+        NamedCommands.registerCommand("SourceAlignRight", 
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+        switch(Constants.ROBOT_MODE) {
+                case SIM:
+                        NamedCommands.registerCommand("RodHome",
+                                StandinCommands.rodStow()
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("RodL1",
+                                StandinCommands.rodL1()
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("RodL2",
+                                StandinCommands.rodL2()
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("RodL3",
+                                StandinCommands.rodL3()
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("RodL4",
+                                StandinCommands.rodL4()
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("RodSource",
+                                StandinCommands.rodSource()
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 break;
-            default:
-                NamedCommands.registerCommand("RodHome",
-                        new SetRodState(rod, ROD_STATES.STOW)
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL1",
-                        new SetRodState(rod, ROD_STATES.L1)
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL2",
-                        new SetRodState(rod, ROD_STATES.L2)
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL3",
-                        new SetRodState(rod, ROD_STATES.L3)
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL4",
-                        new SetRodState(rod, ROD_STATES.L4)
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodSource",
-                        new SetRodState(rod, ROD_STATES.SOURCE)
-                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("ScoreCoral", new ScoreCoral(coralCollector));
+                default:
+                        NamedCommands.registerCommand("RodHome",
+                                new SetRodState(rod, ROD_STATES.STOW)
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("RodL1",
+                                new SetRodState(rod, ROD_STATES.L1)
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("RodL2",
+                                new SetRodState(rod, ROD_STATES.L2)
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("RodL3",
+                                new SetRodState(rod, ROD_STATES.L3)
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("RodL4",
+                                new SetRodState(rod, ROD_STATES.L4)
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("RodSource",
+                                new SetRodState(rod, ROD_STATES.SOURCE)
+                                        .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        NamedCommands.registerCommand("ScoreCoral", new ScoreCoral(coralCollector));
                 break;
         }
 

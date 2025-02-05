@@ -40,6 +40,7 @@ public class CollectCoral extends Command {
 
     @Override
     public boolean isFinished() {
-        return debouncer.calculate(collector.getBeamBreakOutput()) && triggerPower.getAsDouble() > 0;
+        // return debouncer.calculate(collector.getBeamBreakOutput()) && triggerPower.getAsDouble() > 0;
+        return false;
     }
 }

@@ -97,6 +97,7 @@ public class Wrist extends SubsystemBase {
     public void periodic() {
         currentPosition = getAngle();
         LightningShuffleboard.setDouble("Wrist", "current position", currentPosition);
+        LightningShuffleboard.setBool("Wrist", "onTarg", isOnTarget());
     }
 
     @Override

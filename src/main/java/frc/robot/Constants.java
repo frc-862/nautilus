@@ -159,8 +159,8 @@ public class Constants {
         public static final double MOTORS_KA = 0.01; // temp
         public static final double MOTORS_KG = 0d; // temp
 
-        public static final double VELOC = 40d; // 80
-        public static final double ACCEL = 200d; // 200
+        public static final double VELOC = 80d; // 80
+        public static final double ACCEL = 400d; // 200
         public static final double JERK = 1600d; // temp
 
 
@@ -201,7 +201,7 @@ public class Constants {
                 // put(ROD_STATES.SOURCE, 0d);
 
 
-                put(ROD_STATES.STOW, 85d);
+                put(ROD_STATES.STOW, 81d);
                 put(ROD_STATES.L1, 0d);
                 put(ROD_STATES.L2, -35d);
                 put(ROD_STATES.L3, -35d);
@@ -245,7 +245,6 @@ public class Constants {
             AlgaeCollectorConstants.ROLLER_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.ROLLER_BRAKE_MODE);
         public static final ThunderBird climberMotor = new ThunderBird(RobotMap.CLIMBER, RobotMap.CANIVORE_CAN_NAME, ClimberConstants.INVERTED,
             ClimberConstants.STATOR_CURRENT_LIMIT, ClimberConstants.BREAK_MODE);
-
     }   
 
     public static class WristConstants {

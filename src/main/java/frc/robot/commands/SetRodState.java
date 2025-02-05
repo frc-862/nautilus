@@ -26,7 +26,7 @@ public class SetRodState extends Command {
     }
 
     @Override
-    public void initialize() {
+    public void execute() {
         rod.setState(state);
     }
 

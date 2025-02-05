@@ -60,32 +60,36 @@ public class FishingRod extends SubsystemBase {
     @Override
     public void periodic() {
         // this is happening periodically
-        if(targetState != currState) {
+        // if(targetState != currState) {
             switch(transitionState) {
-                case SCORE_X, TRITON: //wrist up, move ele, move wrist
+                case SCORE_X: //wrist up, move ele, move wrist
                     wrist.setState(ROD_STATES.STOW);
                     if(wrist.isOnTarget()) {
                         transitionState = TRANSITION_STATES.DEFAULT; //finalize transition
                     }
-                    break;
+                break;
                 case X_SCORE: //wrist down, move ele
                     wrist.setState(targetState);
                     if(wrist.isOnTarget()) {
                         transitionState = TRANSITION_STATES.DEFAULT; //finalize transition
                     }
-                    break;
-                case DEFAULT: // all states should end here
+                break;
+                case DEFAULT, TRITON: // all states should end here
                     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
                     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
                     if(onTarget()) {
                         currState = targetState;
                     }
-                    break;
+                break;
 
                 default:
                     throw new IllegalArgumentException("transition state not defined");
             }
-        }
+        // }
+
+        LightningShuffleboard.setBool("rod", "onTarg", onTarget());
+        LightningShuffleboard.setString("rod", "currState", currState.toString());
+        LightningShuffleboard.setString("rod", "targState", targetState.toString());
     }
 
     /**

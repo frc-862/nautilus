@@ -16,6 +16,7 @@ import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.simulation.VisionTargetSim;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -136,24 +137,23 @@ public class PhotonVision extends SubsystemBase {
             List<PhotonPipelineResult> results = camera.getAllUnreadResults();
             result = results.get(results.size() - 1);
         } catch (Exception e) {
-            DataLogManager.log("[VISION] Pose Estimator Failed to update: " + e.getLocalizedMessage());
+            // DataLogManager.log("[VISION] Pose Estimator Failed to update: " + e.getLocalizedMessage());
         }
 
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
         LightningShuffleboard.set("Vision", "Timestamp", result.getTimestampSeconds());
 
         if (result.hasTargets()) {
-            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse(
-                    (m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose),
-                    () -> DataLogManager.log("[VISION] Pose Estimator Failed to update"));
+            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresent(
+                    (m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose));
 
             lastEstimatedRobotPose = estimatedRobotPose.estimatedPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
 
-            LightningShuffleboard.set("Vision", "Field", field);
+            LightningShuffleboard.send("Vision", "Field", field);
         } else {
             if (!DriverStation.isFMSAttached()) {
-                DataLogManager.log("[VISION] Pose Estimator Failed to update");
+                // DataLogManager.log("[VISION] Pose Estimator Failed to update");
             }
         }
 
@@ -161,6 +161,6 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        LightningShuffleboard.set("Vision", "Field_SIM", visionSim.getDebugField());
+        LightningShuffleboard.send("Vision", "Field_SIM", visionSim.getDebugField());
     }
 }

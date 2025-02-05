@@ -220,7 +220,7 @@ public class Constants {
                 // put(ROD_STATES.SOURCE, 36.5d);
 
 
-                put(ROD_STATES.STOW, 5d);
+                put(ROD_STATES.STOW, 3d);
                 put(ROD_STATES.L1, 10d);
                 put(ROD_STATES.L2, 13d);
                 put(ROD_STATES.L3, 26d);

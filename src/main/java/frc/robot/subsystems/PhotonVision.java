@@ -137,7 +137,7 @@ public class PhotonVision extends SubsystemBase {
             List<PhotonPipelineResult> results = camera.getAllUnreadResults();
             result = results.get(results.size() - 1);
         } catch (Exception e) {
-            // DataLogManager.log("[VISION] Pose Estimator Failed to update: " + e.getLocalizedMessage());
+            DataLogManager.log("[VISION] Pose Estimator Failed to update: " + e.getLocalizedMessage());
         }
 
         LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
@@ -153,7 +153,7 @@ public class PhotonVision extends SubsystemBase {
             LightningShuffleboard.send("Vision", "Field", field);
         } else {
             if (!DriverStation.isFMSAttached()) {
-                // DataLogManager.log("[VISION] Pose Estimator Failed to update");
+                DataLogManager.log("[VISION] Pose Estimator Failed to update");
             }
         }
 

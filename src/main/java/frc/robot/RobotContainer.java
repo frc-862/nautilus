@@ -71,7 +71,7 @@ public class RobotContainer extends LightningContainer {
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         drivetrain = TunerConstants.createDrivetrain();
-        vision = new PhotonVision();
+        vision = new PhotonVision(drivetrain);
         logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
@@ -106,7 +106,6 @@ public class RobotContainer extends LightningContainer {
                                 ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        vision.setDefaultCommand(vision.updateOdometry(drivetrain));
 
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
                 () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));

@@ -104,7 +104,7 @@ public class TagAutoAlign extends Command {
 
         controllerX.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "x tolerance", 0));
 
-        if(!vision.hasTarget()){
+        if(!vision.leftHasTarget()){
 
             System.out.println("Error: Cannot See April Tag");
             cancel();
@@ -112,14 +112,14 @@ public class TagAutoAlign extends Command {
 
         // update pitch and yaw values
 
-        TY = vision.getTY();
-        TX = vision.getTX();
+        TY = vision.getLeftTY();
+        TX = vision.getLeftTX();
 
         txError = TX - AutoAlignConstants.targetTX;
 
         robotYaw = MathUtil.inputModulus(drivetrain.getPigeon2().getYaw().getValueAsDouble(), 0, 360);
         try {
-            yawDiff = Math.sin(AutoAlignConstants.tagAngles.get(vision.getTagNum()) - robotYaw);
+            yawDiff = Math.sin(AutoAlignConstants.tagAngles.get(vision.getLeftTagNum()) - robotYaw);
         } catch (Exception e) {
             System.out.println("Error: Cannot see April Tag");
             cancel();;
@@ -158,7 +158,7 @@ public class TagAutoAlign extends Command {
 
         if(!controllerR.atSetpoint()){
             if(Math.abs(dr_dt) < Ks){
-                dr_dt = Ks * ( (AutoAlignConstants.tagAngles.get(vision.getTagNum()) != 0) ? -Math.signum(txError) : 
+                dr_dt = Ks * ( (AutoAlignConstants.tagAngles.get(vision.getLeftTagNum()) != 0) ? -Math.signum(txError) : 
                    (robotYaw > 180 ? -1 : 1) );
             } else {
                 dr_dt = 0;

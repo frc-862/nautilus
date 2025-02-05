@@ -429,7 +429,8 @@ public class Constants {
     }
 
     public static class VisionConstants {
-        public static final String camera1Name = "cam1";
+        public static final String leftCamName = "cam1";
+        public static final String rightCamName = "cam2";
         public static final TargetModel targetModel = TargetModel.kAprilTag36h11;
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);

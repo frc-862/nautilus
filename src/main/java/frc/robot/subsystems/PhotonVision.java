@@ -34,7 +34,8 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class PhotonVision extends SubsystemBase {
 
-    private PhotonCamera camera1;
+    private PhotonCamera leftCam;
+    private PhotonCamera rightCam;
     private PhotonPoseEstimator poseEstimator;
     private VisionSystemSim visionSim;
 
@@ -42,27 +43,33 @@ public class PhotonVision extends SubsystemBase {
     private SimCameraProperties cameraProp;
     private VisionTargetSim visionTarget;
 
-    private PhotonPipelineResult result = new PhotonPipelineResult();
-
-    private Pose2d lastEstimatedRobotPose = new Pose2d();
-    private EstimatedRobotPose estimatedRobotPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
-    private double lastPoseTime = 0;
+    private PhotonPipelineResult leftResult = new PhotonPipelineResult();
+    private PhotonPipelineResult rightResult = new PhotonPipelineResult();
 
     private boolean visionWorks;
 
     private Field2d field = new Field2d();
 
-    public PhotonVision() {
-        camera1 = new PhotonCamera(VisionConstants.camera1Name);
-        camera1.setPipelineIndex(0);
+    private Swerve drivetrain;
+
+    public PhotonVision(Swerve drivetrain) {
+        leftCam = new PhotonCamera(VisionConstants.leftCamName);
+        rightCam = new PhotonCamera(VisionConstants.rightCamName);
+        
+        leftCam.setPipelineIndex(0);
 
         poseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
                 PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                 new Transform3d());
-        
+
+        poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+        this.drivetrain = drivetrain;
 
         if (!Robot.isReal()) {
+            //TODO: update this to have multiple cameras
+
             visionTarget = new VisionTargetSim(VisionConstants.targetPose, VisionConstants.targetModel);
             cameraProp = new SimCameraProperties();
             visionSim = new VisionSystemSim("test");
@@ -77,7 +84,7 @@ public class PhotonVision extends SubsystemBase {
             // cameraProp.setAvgLatencyMs(35);
             // cameraProp.setLatencyStdDevMs(5);
 
-            cameraSim = new PhotonCameraSim(camera1, cameraProp);
+            cameraSim = new PhotonCameraSim(leftCam, cameraProp);
             visionSim.addCamera(cameraSim, VisionConstants.robotToCamera);
 
             // Enable the raw and processed streams. These are enabled by default.
@@ -90,105 +97,100 @@ public class PhotonVision extends SubsystemBase {
         }
     }
 
-    public boolean hasTarget() {
-        return result.hasTargets();
-    }
-
-    public double getXBestTarget() {
-        return result.getBestTarget().getYaw();
-    }
-
-    public double getYBestTarget() {
-        return result.getBestTarget().getPitch();
-    }
-
-    public double getSkewBestTarget() {
-        return result.getBestTarget().getSkew();
-    }
-
-    public Transform3d getTransformBestTarget() {
-        return result.getBestTarget().getBestCameraToTarget();
-    }
-
-    public double getTY(){
-        return camera1.getCameraTable().getEntry("targetPixelsY").getDouble(0);
-    }
-
-    public double getTX(){
-        return camera1.getCameraTable().getEntry("targetPixelsX").getDouble(0);
-    }
-
-    public int getTagNum(){
-        return result.getBestTarget().getFiducialId();
-    }
-
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        poseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return poseEstimator.update(result);
-    }
-
     public void setEstimatedPose(EstimatedRobotPose pose) {
-        estimatedRobotPose = pose;
-
-        lastPoseTime = pose.timestampSeconds;
+        // could probably add an EnableVision flag here or something
+        drivetrain.addVisionMeasurement(pose);
     }
 
     public void switchPipelines(int pipeline, PhotonCamera camera){
         camera.setPipelineIndex(pipeline);
     }
 
-
-
-    public Command updateOdometry(Swerve swerve) {
-        if (Robot.isReal()) {
-            return run(() -> {
-                swerve.addVisionMeasurement(estimatedRobotPose);
-            }).ignoringDisable(true);
-        } else {
-            return run(() -> {
-                visionSim.update(swerve.getPose());
-                swerve.addVisionMeasurement(estimatedRobotPose);
-            }).ignoringDisable(true);
-        }
-    }
-
     @Override
     public void periodic() {
-
-        //LightningShuffleboard.set("Vision", "EstimatedRobotPose", estimatedRobotPose);
-        LightningShuffleboard.setBool("Vision", "HasTarget", result.hasTargets());
         visionWorks = true;
 
         try {
             // get the latest result
-            List<PhotonPipelineResult> results = camera1.getAllUnreadResults();
-            result = results.get(results.size() - 1);
+            List<PhotonPipelineResult> results = leftCam.getAllUnreadResults();
+            leftResult = results.get(results.size() - 1);
+
+            if (leftResult.hasTargets()) {
+                visionWorks = true;
+                poseEstimator.update(leftResult).ifPresentOrElse(
+                        (m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose),
+                        () -> visionWorks = false);
+            }
         } catch (Exception e) {
             visionWorks = false;
         }
-      
-        if (result.hasTargets()) {
-            getEstimatedGlobalPose(lastEstimatedRobotPose).ifPresentOrElse(
-                    (m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose),
-                    () -> visionWorks = false);
 
-            lastEstimatedRobotPose = estimatedRobotPose.estimatedPose.toPose2d();
-            field.setRobotPose(lastEstimatedRobotPose);
+        
+        try {
+            // get the latest result
+            List<PhotonPipelineResult> results = rightCam.getAllUnreadResults();
+            rightResult = results.get(results.size() - 1);
 
-            LightningShuffleboard.send("Vision", "Field", field);
-        } else {
-            if (!DriverStation.isFMSAttached()) {
-                visionWorks = false;
+            if (rightResult.hasTargets()) {
+                visionWorks = true;
+                poseEstimator.update(rightResult).ifPresentOrElse(
+                        (m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose),
+                        () -> visionWorks = false);
             }
+        } catch (Exception e) {
+            visionWorks = false;
         }
         
+      
+        
+        LightningShuffleboard.send("Vision", "Field", field);
         LightningShuffleboard.setBool("Vision", "PoseEstimatorWorks", visionWorks);
-        LightningShuffleboard.setBool("Vision", "HasResult", result.hasTargets());
-        LightningShuffleboard.set("Vision", "Timestamp", result.getTimestampSeconds());
+        LightningShuffleboard.setBool("Vision", "left hasTarget", leftResult.hasTargets());
+        LightningShuffleboard.setBool("Vision", "right hasTarget", rightResult.hasTargets());
+        LightningShuffleboard.setDouble("Vision", "left Timestamp", leftResult.getTimestampSeconds());
+        LightningShuffleboard.setDouble("Vision", "right Timestamp", rightResult.getTimestampSeconds());
     }
 
     @Override
     public void simulationPeriodic() {
+        visionSim.update(drivetrain.getPose());
         LightningShuffleboard.send("Vision", "Field_SIM", visionSim.getDebugField());
     }
+
+
+
+
+    public boolean leftHasTarget() {
+        return leftResult.hasTargets();
+    }
+
+    public double getLeftTY(){
+        return leftCam.getCameraTable().getEntry("targetPixelsY").getDouble(0);
+    }
+
+    public double getLeftTX(){
+        return leftCam.getCameraTable().getEntry("targetPixelsX").getDouble(0);
+    }
+
+    public int getLeftTagNum(){
+        return leftResult.getBestTarget().getFiducialId();
+    }
+
+
+    public boolean rightHasTarget() {
+        return rightResult.hasTargets();
+    }
+
+    public double getRightTY(){
+        return rightCam.getCameraTable().getEntry("targetPixelsY").getDouble(0);
+    }
+
+    public double getRightTX(){
+        return rightCam.getCameraTable().getEntry("targetPixelsX").getDouble(0);
+    }
+
+    public int getRightTagNum(){
+        return rightResult.getBestTarget().getFiducialId();
+    }
+
 }

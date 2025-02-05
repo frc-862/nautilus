@@ -313,6 +313,9 @@ public class Constants {
                                                                                                         // velocity
         public static final double SLOW_MODE_MULT = 0.3; // 3/4 of a rotation per second max angular velocity
 
+        public static final double SLOW_SPEED_MULT = 0.4; // temp
+        public static final double SLOW_TURN_MULT = 0.7; // temp
+
         public class DriveRequests {
             private static final SwerveRequest.FieldCentric DRIVE = new SwerveRequest.FieldCentric();
             private static final SwerveRequest.FieldCentric SLOW = new SwerveRequest.FieldCentric();
@@ -354,9 +357,9 @@ public class Constants {
             public static Supplier<SwerveRequest> getRobotCentric(DoubleSupplier x, DoubleSupplier y,
                     DoubleSupplier rot) {
                 return () -> ROBO_CENTRIC
-                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive forward with negative Y
+                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y
                                                                                         // (forward)
-                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive left with negative X
+                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
                                                                                         // (left)
                         .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)

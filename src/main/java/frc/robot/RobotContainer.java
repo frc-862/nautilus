@@ -125,14 +125,6 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void configureButtonBindings() {
-        new Trigger(() -> driver.getRightTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(
-                DriveRequests.getSlow(
-                        () -> MathUtil.applyDeadband(-driver.getLeftX(),
-                                ControllerConstants.JOYSTICK_DEADBAND),
-                        () -> MathUtil.applyDeadband(-driver.getLeftY(),
-                                ControllerConstants.JOYSTICK_DEADBAND),
-                        () -> MathUtil.applyDeadband(-driver.getRightX(),
-                                ControllerConstants.JOYSTICK_DEADBAND))));
         new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
                 .getRobotCentric(
                         () -> MathUtil.applyDeadband(-driver.getLeftX(),
@@ -141,6 +133,12 @@ public class RobotContainer extends LightningContainer {
                                 ControllerConstants.JOYSTICK_DEADBAND),
                         () -> MathUtil.applyDeadband(-driver.getRightX(),
                                 ControllerConstants.JOYSTICK_DEADBAND))));
+        // sets slow mode
+        new Trigger(() -> driver.getRightTriggerAxis() > 0.25)
+                .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
+                .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+
+
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
         new Trigger(() -> driver.getStartButton() && driver.getBackButton())

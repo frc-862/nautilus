@@ -9,8 +9,10 @@ import org.ejml.simple.SimpleMatrix;
 import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -28,6 +30,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -37,6 +40,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
+import frc.robot.Constants.DrivetrainConstants;
+import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.thunder.util.Pose4d;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
@@ -50,6 +56,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
+    private double[] CANcoderOffsets = {0d, 0d, 0d, 0d};
+
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -62,8 +70,13 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
 
     boolean[] reef1Status = {false, false, false, false, false, false, false, false, false, false, false, false};
-    boolean[] reef2Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
-    boolean[] reef3Status = {false, false, false, false, false, false, false, false, false, false, false, false};;
+    boolean[] reef2Status = {false, false, false, false, false, false, false, false, false, false, false, false};
+    boolean[] reef3Status = {false, false, false, false, false, false, false, false, false, false, false, false};
+
+    private boolean slowMode = false;
+
+    private double speedMult = 1d;
+    private double turnMult = 1d;
     
 
     /**
@@ -146,6 +159,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
 
         configurePathPlanner();
+
+        LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", CANcoderOffsets);
     }
 
     private void configurePathPlanner() {        
@@ -182,6 +197,55 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return getState().Speeds;
     }
 
+    /**
+     * gets slow mode true/false
+     * @return slow mode true/false
+     */
+    public boolean inSlowMode() {
+        return slowMode;
+    }
+
+    /**
+     * gets the speed multiplier
+     * @return speed multiplier (1.0 for normal, 0.4 for slow mode)
+     */
+    public double getSpeedMult() {
+        return speedMult;
+    }
+
+    /**
+     * gets the turn multiplier
+     * @return turn multiplier (1.0 for normal, 0.7 for slow mode)
+     */
+    public double getTurnMult() {
+        return turnMult;
+    }
+
+    /**
+     * sets slow mode true/false
+     * speedMult and turnMult are set to the appropriate values
+     * @param slowMode
+     */
+    public void setSlowMode(boolean slowMode) {
+        this.slowMode = slowMode;
+
+        if (slowMode) {
+            speedMult = DrivetrainConstants.SLOW_SPEED_MULT;
+            turnMult = DrivetrainConstants.SLOW_TURN_MULT;
+        } else {
+            speedMult = 1d;
+            turnMult = 1d;
+        }
+    }
+
+    private void updateCANcoderOffsets() {
+        int i = 0;
+        for (SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : getModules()) {
+            CANcoderOffsets[i] = swerveModule.getEncoder().getAbsolutePosition().getValueAsDouble();
+            i++;
+        }
+    }
+    
     public void addVisionMeasurement(EstimatedRobotPose pose) {
         addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds, new Matrix<N3, N1>(new SimpleMatrix(new double[] {0,0,0})));
     }
@@ -209,6 +273,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     @Override
     public void periodic() {
+        updateCANcoderOffsets();
         // update reef status booleans in the future
         SmartDashboard.putBooleanArray("Reef Level One", reef1Status);
         SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);

@@ -60,7 +60,7 @@ public class Constants {
     public static final String TRITON_IDENTIFIER = "/home/lvuser/triton"; // Differentiate between Triton and Nautlius
     public static final boolean IS_TRITON = Paths.get(TRITON_IDENTIFIER).toFile().exists();
 
-    public static enum RobotIdentifiers {
+    public enum RobotIdentifiers {
         NAUTILUS, TRITON, SIM
     };
 
@@ -162,11 +162,11 @@ public class Constants {
     }
 
     public static class FishingRodConstants {
-        public static enum RodStates {
+        public enum RodStates {
             STOW, L1, L2, L3, L4, SOURCE, LOW, HIGH, ALGAE_SCORE
         }
 
-        public static enum RodTransitionStates {
+        public enum RodTransitionStates {
             DEFAULT, // default travel state
             X_SCORE, // any state to L4
             SCORE_X, // L4 to any state
@@ -454,7 +454,7 @@ public class Constants {
         public static final Pose2d REEFSCORE6_1 = new Pose2d(3.656, 5.122, new Rotation2d(300));
         public static final Pose2d REEFSCORE6_2 = new Pose2d(3.949, 5.282, new Rotation2d(300));
 
-        public static enum ScoringPoses {
+        public enum ScoringPoses {
             REEFSCORE1_1, REEFSCORE1_2, REEFSCORE2_1, REEFSCORE2_2, REEFSCORE3_1, REEFSCORE3_2,
             REEFSCORE4_1, REEFSCORE4_2, REEFSCORE5_1, REEFSCORE5_2, REEFSCORE6_1, REEFSCORE6_2
         }
@@ -1006,7 +1006,7 @@ public class Constants {
 
         public static final double COLLECTED_CURRENT = 80d; // temp
 
-        public static enum AlgaePivotStates {
+        public enum AlgaePivotStates {
             DEPLOYED, STOWED
         }
 

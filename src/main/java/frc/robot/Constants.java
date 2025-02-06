@@ -60,7 +60,7 @@ public class Constants {
     public static final String TRITON_IDENTIFIER = "/home/lvuser/triton"; // Differentiate between Triton and Nautlius
     public static final boolean IS_TRITON = Paths.get(TRITON_IDENTIFIER).toFile().exists();
 
-    public static enum ROBOT_MODES {NAUTILUS, TRITON, SIM};
+    public enum ROBOT_MODES {NAUTILUS, TRITON, SIM};
 
     // yeah its a double inline ternary operator fight me
     // if(isTriton); else if(isSim); else, its nautilus
@@ -981,7 +981,7 @@ public class Constants {
         public static final double DEPLOY_ANGLE = 90;
         public static final double STOW_ANGLE = 0;
 
-        public static enum PIVOT_STATES {
+        public enum PIVOT_STATES {
             DEPLOYED, STOWED
         }
 

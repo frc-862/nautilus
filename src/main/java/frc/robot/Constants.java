@@ -901,7 +901,7 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double targetTX = 720d;
+        public static final double targetTX = 640d;
 
         public static final HashMap<Integer, Double> tagAngles = new HashMap<Integer, Double>(){
             {

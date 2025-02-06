@@ -60,7 +60,7 @@ public class TagAutoAlign extends Command {
      * @param drivetrain
      * @param driver
      */
-    public TagAutoAlign (PhotonVision vision, Swerve drivetrain, XboxController driver){
+    public TagAutoAlign(PhotonVision vision, Swerve drivetrain, XboxController driver){
         this(vision, drivetrain);
         this.driver = driver;
     }
@@ -122,7 +122,7 @@ public class TagAutoAlign extends Command {
             yawDiff = Math.sin(AutoAlignConstants.tagAngles.get(vision.getLeftTagNum()) - robotYaw);
         } catch (Exception e) {
             System.out.println("Error: Cannot see April Tag");
-            cancel();;
+            cancel();
         }
 
         if(lastData[0] == TY && lastData[1] == TX){
@@ -139,12 +139,12 @@ public class TagAutoAlign extends Command {
         }
 
         // use pitch and yaw to calculate velocity values
-        double Ks = LightningShuffleboard.getDouble("TestAutoAlign", "Ks", 0);
+        double kS = LightningShuffleboard.getDouble("TestAutoAlign", "Ks", 0);
 
         dx_dt = controllerX.calculate(TX);
         if (!controllerX.atSetpoint()){
-            if(Math.abs(dx_dt) < Ks){
-                dx_dt = Ks * -Math.signum(txError);
+            if(Math.abs(dx_dt) < kS){
+                dx_dt = kS * -Math.signum(txError);
             }
         } else{
             dx_dt = 0;
@@ -157,8 +157,8 @@ public class TagAutoAlign extends Command {
         dr_dt = controllerR.calculate(yawDiff);
 
         if(!controllerR.atSetpoint()){
-            if(Math.abs(dr_dt) < Ks){
-                dr_dt = Ks * ( (AutoAlignConstants.tagAngles.get(vision.getLeftTagNum()) != 0) ? -Math.signum(txError) : 
+            if(Math.abs(dr_dt) < kS){
+                dr_dt = kS * ( (AutoAlignConstants.tagAngles.get(vision.getLeftTagNum()) != 0) ? -Math.signum(txError) : 
                    (robotYaw > 180 ? -1 : 1) );
             } else {
                 dr_dt = 0;

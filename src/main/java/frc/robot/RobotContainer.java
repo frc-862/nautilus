@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
@@ -116,6 +117,9 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
         
+        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
+                new InstantCommand(() -> drivetrain.setOperatorPerspectiveForward(new Rotation2d(0))));
+                
         new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
 
         // new Trigger(() -> driver.getPOV() == 90).whileTrue(new InstantCommand(() -> drivetrain.setControl(DriveRequests.getRobotCentric(0.1,0,0))));

@@ -96,7 +96,7 @@ public class TagAutoAlign extends Command {
 
         controllerR.setSetpoint(0);
         controllerR.enableContinuousInput(0, 360);
-
+        controllerR.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "r tolerance", 0));
     }
 
     @Override
@@ -174,6 +174,8 @@ public class TagAutoAlign extends Command {
             LightningShuffleboard.setDouble("TestAutoAlign", "X error", txError);
             LightningShuffleboard.setDouble("TestAutoAlign", "Y error", tyError);
             LightningShuffleboard.setDouble("TestAutoAlign", "R error", yawDiff);
+
+            
         }
 
         // give the new velocity values to the drivetrain

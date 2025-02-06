@@ -86,8 +86,8 @@ public class TagAutoAlign extends Command {
 
         
 
-        controllerX.setSetpoint(720);
-        controllerX.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "x tolerance", 0));
+        controllerX.setSetpoint(640);
+        controllerX.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "x tolerance", 50));
         // controllerX.enableContinuousInput(0, 360);
 
         controllerY.setSetpoint(0);
@@ -96,13 +96,13 @@ public class TagAutoAlign extends Command {
 
         controllerR.setSetpoint(0);
         controllerR.enableContinuousInput(0, 360);
-        controllerR.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "r tolerance", 0));
+        controllerR.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "r tolerance", 1));
     }
 
     @Override
     public void execute() {
 
-        controllerX.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "x tolerance", 0));
+        controllerX.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "x tolerance", 50));
 
         if(!vision.hasTarget()){
 
@@ -117,9 +117,9 @@ public class TagAutoAlign extends Command {
 
         txError = TX - AutoAlignConstants.targetTX;
 
-        robotYaw = MathUtil.inputModulus(drivetrain.getPigeon2().getYaw().getValueAsDouble(), 0, 360);
+        robotYaw = drivetrain.getPigeon2().getYaw().getValueAsDouble();
         try {
-            yawDiff = Math.sin(AutoAlignConstants.tagAngles.get(vision.getTagNum()) - robotYaw);
+            yawDiff = MathUtil.inputModulus(robotYaw - AutoAlignConstants.tagAngles.get(vision.getTagNum()), -180, 180);
         } catch (Exception e) {
             System.out.println("Error: Cannot see April Tag");
             cancel();;
@@ -139,30 +139,28 @@ public class TagAutoAlign extends Command {
         }
 
         // use pitch and yaw to calculate velocity values
-        double Ks = LightningShuffleboard.getDouble("TestAutoAlign", "Ks", 0);
+        double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "x Ks", 0.1);
+        double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "r Ks", 0.05);
 
         dx_dt = controllerX.calculate(TX);
         if (!controllerX.atSetpoint()){
-            if(Math.abs(dx_dt) < Ks){
-                dx_dt = Ks * -Math.signum(txError);
+            if(Math.abs(dx_dt) < xKs){
+                dx_dt = xKs * -Math.signum(txError);
             }
         } else{
             dx_dt = 0;
         }
 
-        dy_dt = !DriverStation.isTeleop() ? -controllerY.calculate(TY) : // if in teleop use driver input for foreward movement unless driver is null
-            (driver == null ? -controllerY.calculate(TY) : -driver.getLeftY());
 
-        // dr_dt = -Math.floorMod((int) controllerR.calculate(rot), 360);
         dr_dt = controllerR.calculate(yawDiff);
 
-        if(!controllerR.atSetpoint()){
-            if(Math.abs(dr_dt) < Ks){
-                dr_dt = Ks * ( (AutoAlignConstants.tagAngles.get(vision.getTagNum()) != 0) ? -Math.signum(txError) : 
-                   (robotYaw > 180 ? -1 : 1) );
-            } else {
-                dr_dt = 0;
-            }
+        if(!controllerR.atSetpoint()) {
+            
+            if(Math.abs(dr_dt) < rKs){
+                dr_dt = rKs * -Math.signum(yawDiff);
+            } 
+        } else {
+            dr_dt = 0;
         }
         
 
@@ -175,7 +173,7 @@ public class TagAutoAlign extends Command {
             LightningShuffleboard.setDouble("TestAutoAlign", "Y error", tyError);
             LightningShuffleboard.setDouble("TestAutoAlign", "R error", yawDiff);
 
-            
+            LightningShuffleboard.setDouble("TestAutoAlign", "pigeon yaw", robotYaw);
         }
 
         // give the new velocity values to the drivetrain

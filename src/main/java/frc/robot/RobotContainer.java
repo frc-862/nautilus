@@ -141,50 +141,22 @@ public class RobotContainer extends LightningContainer {
 
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
-        new Trigger(() -> driver.getStartButton() && driver.getBackButton())
-                .onTrue(new InstantCommand(() -> drivetrain.seedFieldCentric()));
+        new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
+                new InstantCommand(() -> drivetrain.seedFieldCentric()));
+                
+        // // TODO: Remove Standin Command
+        // new Trigger(() -> rod.onTarget()).whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
 
-        new Trigger(() -> copilot.getRightBumperButton())
-                .whileTrue(new RunCommand((() -> rod.setState(ROD_STATES.SOURCE)), rod));
-        new Trigger(() -> copilot.getLeftBumperButton())
-                .whileTrue(new RunCommand((() -> rod.setState(ROD_STATES.STOW)), rod));
+        //sim stuff
+        if(Robot.isSimulation()) {
+            // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(-1)))).onFalse(new InstantCommand(wrist::stop));
+            // new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(1)))).onFalse(new InstantCommand(wrist::stop));
 
-        new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
+        //     new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
+        //     new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
 
-
-
-        switch (Constants.ROBOT_MODE) {
-            case NAUTILUS:
-                // nothing
-                break;
-            default: //sim or triton
-                // default
-                (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, ROD_STATES.L1));
-                (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(rod, ROD_STATES.L2));
-                (new Trigger(copilot::getXButton)).whileTrue(new SetRodState(rod, ROD_STATES.L3));
-                (new Trigger(copilot::getYButton)).whileTrue(new SetRodState(rod, ROD_STATES.L4));
-
-                // biases
-                new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(2));
-                new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-2));
-
-                new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-5));
-                new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(5));
-
-
-                //unused algae stuff
-                // (new Trigger(driver::getRightBumperButtonPressed))
-                //         .whileTrue(new SetRodState(rod, ROD_STATES.SOURCE));
-                // ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(
-                //         new CollectAlgae(algaeCollector, driver::getRightTriggerAxis));
-                // (new Trigger(copilot::getBButtonPressed).and(algaeMode))
-                //         .whileTrue(new SetRodState(rod, ROD_STATES.LOW));
-                // (new Trigger(copilot::getXButtonPressed).and(algaeMode))
-                //         .whileTrue(new SetRodState(rod, ROD_STATES.HIGH));
-                // (new Trigger(copilot::getRightBumperButtonPressed))
-                //         .whileTrue(new InstantCommand(() -> algaeCollector.setRollerPower(-1), algaeCollector)
-                //                 .andThen(() -> algaeCollector.setRollerPower(0d)));
-        break;
+            // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75)))).onFalse(new InstantCommand(coralCollector::stop));
+            // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5)))).onFalse(new InstantCommand(coralCollector::stop));
         }
     }
 

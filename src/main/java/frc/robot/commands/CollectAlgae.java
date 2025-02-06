@@ -11,9 +11,10 @@ import frc.robot.Constants.AlgaeCollectorConstants.PIVOT_STATES;
 import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.Constants.AlgaeCollectorConstants;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class CollectAlgae extends Command {
+
 	private AlgaeCollector collector;
+
 	private DoubleSupplier triggerPower;
 
 	public CollectAlgae(AlgaeCollector collector, DoubleSupplier triggerPower) {
@@ -41,6 +42,6 @@ public class CollectAlgae extends Command {
 
 	@Override
 	public boolean isFinished() {
-	return false;
+		return collector.getRollerHit() && triggerPower.getAsDouble() > 0;
 	}
 }

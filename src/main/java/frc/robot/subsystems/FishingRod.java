@@ -22,14 +22,15 @@ public class FishingRod extends SubsystemBase {
 
     private Wrist wrist;
     private Elevator elevator;
-    private ROD_STATES currState = ROD_STATES.STOW;
-    private ROD_STATES targetState = ROD_STATES.STOW;
-    private TRANSITION_STATES transitionState = TRANSITION_STATES.DEFAULT;
+
+    private RodStates currState = RodStates.STOW;
+    private RodStates targetState = RodStates.STOW;
+    private RodTransitionStates transitionState = RodTransitionStates.DEFAULT;
 
     private double wristBias = 0;
     private double elevatorBias = 0;
 
-    //simulation stuff
+    // simulation stuff
     private Mechanism2d mech2d;
     private MechanismRoot2d root;
     private MechanismLigament2d stage1;
@@ -41,102 +42,112 @@ public class FishingRod extends SubsystemBase {
         this.wrist = wrist;
         this.elevator = elevator;
 
-        //simulation stuff
+        // simulation stuff
         if (Robot.isSimulation()) {
-            stage1 = new MechanismLigament2d("STAGE 1", ElevatorConstants.CUSHION_METERS, 90, 20, new Color8Bit(Color.kSeaGreen));
-            stage2 = new MechanismLigament2d("STAGE 2", ElevatorConstants.CUSHION_METERS, 0, 15, new Color8Bit(Color.kDarkRed));
-            stage3 = new MechanismLigament2d("STAGE 3", ElevatorConstants.CUSHION_METERS, 0, 10, new Color8Bit(Color.kDarkBlue));
+            stage1 = new MechanismLigament2d("STAGE 1", ElevatorConstants.CUSHION_METERS, 90, 20,
+                    new Color8Bit(Color.kSeaGreen));
+            stage2 = new MechanismLigament2d("STAGE 2", ElevatorConstants.CUSHION_METERS, 0, 15,
+                    new Color8Bit(Color.kDarkRed));
+            stage3 = new MechanismLigament2d("STAGE 3", ElevatorConstants.CUSHION_METERS, 0, 10,
+                    new Color8Bit(Color.kDarkBlue));
 
-            wristSim = new MechanismLigament2d("WRIST SIM", WristConstants.LENGTH.magnitude(), 90d, 5d, new Color8Bit(Color.kWhite));
-         
+            wristSim = new MechanismLigament2d("WRIST SIM", WristConstants.LENGTH.magnitude(), 90d, 5d,
+                    new Color8Bit(Color.kWhite));
+
             mech2d = new Mechanism2d(0.69, 2.29);
             root = mech2d.getRoot("Rod root", 0.35, 0);
-            
-            root.append(stage1).append(stage2).append(stage3).append(wristSim);
 
+            root.append(stage1).append(stage2).append(stage3).append(wristSim);
         }
     }
 
     @Override
     public void periodic() {
-        // this is happening periodically
-
         // if the rod hasn't reached target state
-        if(!onTarget()) {
-            switch(transitionState) {
-                case SCORE_X: //wrist up, move ele, move wrist
-                    wrist.setState(ROD_STATES.STOW);
-                    if(wrist.isOnTarget()) {
-                        transitionState = TRANSITION_STATES.DEFAULT; //finalize transition
+        if (!onTarget()) {
+            switch (transitionState) {
+                case SCORE_X: // wrist up, move ele, move wrist
+                    wrist.setState(RodStates.STOW);
+                    if (wrist.isOnTarget()) {
+                        transitionState = RodTransitionStates.DEFAULT; // finalize transition
                     }
-                break;
-                case X_SCORE: //wrist down, move ele
+                    break;
+                case X_SCORE: // wrist down, move ele
                     wrist.setState(targetState);
-                    if(wrist.isOnTarget()) {
-                        transitionState = TRANSITION_STATES.DEFAULT; //finalize transition
+                    if (wrist.isOnTarget()) {
+                        transitionState = RodTransitionStates.DEFAULT; // finalize transition
                     }
-                break;
+                    break;
                 case DEFAULT, TRITON: // all states should end here
                     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
                     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
-                    if(wrist.isOnTarget() && elevator.isOnTarget()) {
+                    if (wrist.isOnTarget() && elevator.isOnTarget()) {
                         currState = targetState;
                     }
-                break;
+                    break;
 
                 default:
                     throw new IllegalArgumentException("transition state not defined");
             }
         }
 
-        LightningShuffleboard.setBool("Rod", "onTarg", onTarget());
-        LightningShuffleboard.setString("Rod", "currState", currState.toString());
-        LightningShuffleboard.setString("Rod", "targState", targetState.toString());
+        LightningShuffleboard.setBool("Rod", "onTarget", onTarget());
+        LightningShuffleboard.setString("Rod", "currentState", currState.toString());
+        LightningShuffleboard.setString("Rod", "targetState", targetState.toString());
         LightningShuffleboard.setString("Rod", "transitionState", transitionState.toString());
     }
 
     /**
      * Sets the state of the fishing rod
+     * 
      * @param state
      */
-    public void setState(ROD_STATES state) {
+    public void setState(RodStates state) {
         targetState = state;
 
-        //logic for transition states goes here
-        if(currState == ROD_STATES.L4 || currState == ROD_STATES.L3 || currState == ROD_STATES.L2) {
-            transitionState = TRANSITION_STATES.SCORE_X;
-        } else if(targetState == ROD_STATES.L4 || targetState == ROD_STATES.L3 || targetState == ROD_STATES.L2) {
-            transitionState = TRANSITION_STATES.X_SCORE;
+        // logic for transition states goes here
+        if (currState == RodStates.L4 || currState == RodStates.L3 || currState == RodStates.L2) {
+            transitionState = RodTransitionStates.SCORE_X;
+        } else if (targetState == RodStates.L4 || targetState == RodStates.L3 || targetState == RodStates.L2) {
+            transitionState = RodTransitionStates.X_SCORE;
         } else {
-            transitionState = Constants.IS_TRITON ? TRANSITION_STATES.TRITON : TRANSITION_STATES.DEFAULT;
+            transitionState = Constants.IS_TRITON ? RodTransitionStates.TRITON : RodTransitionStates.DEFAULT;
         }
 
-        //zero biases to ensure no silliness happens cross-state
+        // zero biases to ensure no silliness happens cross-state
         elevatorBias = 0;
         wristBias = 0;
     }
 
     // biases will only work if no other position is actively being set.
     public Command addWristBias(double bias) {
-        return runOnce(() -> {wristBias += bias; wrist.setPosition(wrist.getTargetAngle() + wristBias);});
+        return runOnce(() -> {
+            wristBias += bias;
+            wrist.setPosition(wrist.getTargetAngle() + wristBias);
+        });
     }
 
     public Command addElevatorBias(double bias) {
-        return runOnce(() -> {elevatorBias += bias; elevator.setPosition(elevator.getTargetPosition() + elevatorBias);});
+        return runOnce(() -> {
+            elevatorBias += bias;
+            elevator.setPosition(elevator.getTargetPosition() + elevatorBias);
+        });
     }
 
     /**
      * Gets the state of the fishing rod
+     * 
      * @return the current state of the fishing rod
      */
 
     @Logged(importance = Importance.CRITICAL)
-    public ROD_STATES getState() {
+    public RodStates getState() {
         return currState;
     }
 
     /**
      * Checks if the whole fishing rod system is on target
+     * 
      * @return true if the wrist and elevator are on target false otherwise
      */
     @Logged(importance = Importance.DEBUG)
@@ -148,18 +159,18 @@ public class FishingRod extends SubsystemBase {
     public void simulationPeriodic() {
         double stageLen = Units.inchesToMeters(elevator.getPosition());
 
-        if(stageLen < ElevatorConstants.STAGE_LEN_METERS) {
+        if (stageLen < ElevatorConstants.STAGE_LEN_METERS) {
             stage1.setLength(stageLen + ElevatorConstants.CUSHION_METERS);
             stage2.setLength(ElevatorConstants.CUSHION_METERS);
             stage3.setLength(ElevatorConstants.CUSHION_METERS);
-        } else if(stageLen < ElevatorConstants.STAGE_LEN_METERS * 2) {
-            stage2.setLength(stageLen  - ElevatorConstants.STAGE_LEN_METERS + ElevatorConstants.CUSHION_METERS);
+        } else if (stageLen < ElevatorConstants.STAGE_LEN_METERS * 2) {
+            stage2.setLength(stageLen - ElevatorConstants.STAGE_LEN_METERS + ElevatorConstants.CUSHION_METERS);
             stage3.setLength(ElevatorConstants.CUSHION_METERS);
         } else {
-            stage3.setLength(stageLen  - ElevatorConstants.STAGE_LEN_METERS * 2 + ElevatorConstants.CUSHION_METERS);
+            stage3.setLength(stageLen - ElevatorConstants.STAGE_LEN_METERS * 2 + ElevatorConstants.CUSHION_METERS);
         }
 
-        wristSim.setAngle(wrist.getAngle()-90);
+        wristSim.setAngle(wrist.getAngle() - 90);
 
         LightningShuffleboard.send("Rod", "Mech2d", mech2d);
     }

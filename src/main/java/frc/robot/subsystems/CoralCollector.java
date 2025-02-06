@@ -10,6 +10,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.hal.SimBoolean;
 import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.hal.SimDevice.Direction;
+import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -21,45 +22,37 @@ import frc.robot.Constants.RobotMap;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
-
 public class CoralCollector extends SubsystemBase {
 
     private ThunderBird motor;
-    private TalonFXSimState motorSim;
-
     private DigitalInput beamBreak;
+
+    // sim stuff
+    private TalonFXSimState motorSim;
     private SimDevice beamBreakSim;
     private SimBoolean simBoolean;
+    private LinearSystemSim<N1, N1, N1> coralCollectorSim;
 
-    @SuppressWarnings("rawtypes")
-    private LinearSystemSim coralCollectorSim;
-
-    /** Creates a new Collector.
-     * @param motor
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public CoralCollector(ThunderBird motor) {
         this.motor = motor;
 
-        // Instantiate Beam Break Sensor
         beamBreak = new DigitalInput(RobotMap.CORAL_COLLECTOR_BEAM_BREAK_DIO);
 
-        if (RobotBase.isSimulation()){
-
+        if (RobotBase.isSimulation()) {
             // simulate motor
             motorSim = new TalonFXSimState(motor);
 
             // simulate beam break sensor
 
             beamBreakSim = SimDevice.create("BeamBreak");
-            simBoolean = beamBreakSim.createBoolean("BeamBreak", Direction.kBidir, false);   
+            simBoolean = beamBreakSim.createBoolean("BeamBreak", Direction.kBidir, false);
 
             beamBreak.setSimDevice(beamBreakSim);
 
             // simulate collector
-
-            coralCollectorSim = new LinearSystemSim(LinearSystemId.identifyVelocitySystem(CoralCollectorConstants.KV, 
-                CoralCollectorConstants.KA));
+            coralCollectorSim = new LinearSystemSim<N1, N1, N1>(
+                    LinearSystemId.identifyVelocitySystem(CoralCollectorConstants.KV,
+                            CoralCollectorConstants.KA));
         }
     }
 
@@ -88,47 +81,47 @@ public class CoralCollector extends SubsystemBase {
 
     /**
      * Set the power of the motor using a duty cycle
+     * 
      * @param power
      */
-    public void setPower(double power){
+    public void setPower(double power) {
         motor.setControl(new DutyCycleOut(power));
     }
 
     /**
      * stops the motor
      */
-    public void stop(){
+    public void stop() {
         motor.stopMotor();
     }
 
     /**
      * @return current velocity of collector rot/sec
      */
-    public double getVelocity(){
+    public double getVelocity() {
         return motor.getRotorVelocity().getValueAsDouble();
     }
-
-
 
     /**
      * @return if bream break sensor is triggered
      */
-    public boolean getBeamBreakOutput(){
+    public boolean getBeamBreakOutput() {
         return RobotBase.isReal() ? beamBreak.get() : simBoolean.get();
     }
 
     /**
-     * @return if bream break sensor is triggered
+     * @return if we are stalling the motor
      */
-    public boolean getCollectCurrentHit(){
+    public boolean getCollectCurrentHit() {
         return motor.getStatorCurrent().getValueAsDouble() >= CoralCollectorConstants.COLLECTED_CURRENT;
     }
 
     /**
      * can be used to set beambreak value to simulate beambreak
+     * 
      * @param value
      */
-    public void setSimBeamBreak(boolean value){
+    public void setSimBeamBreak(boolean value) {
         simBoolean.set(value);
     }
 

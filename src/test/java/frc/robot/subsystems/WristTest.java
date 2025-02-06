@@ -32,12 +32,12 @@ public class WristTest implements AutoCloseable {
 
     @BeforeEach
     void constructMotors() {
-        assert HAL.initialize(500, 0); 
+        assert HAL.initialize(500, 0);
 
         motor = RobotMotors.wristMotor;
         simMotor = motor.getSimState();
 
-        if(wrist == null) {
+        if (wrist == null) {
             wrist = new Wrist(motor);
         }
 
@@ -60,11 +60,11 @@ public class WristTest implements AutoCloseable {
     }
 
     @Test
-    public void testSetPower() { 
+    public void testSetPower() {
         var dutyCycle = motor.getDutyCycle();
 
         // Checking power goes up
-        wrist.setPower(0.2);
+        wrist.setRawPower(0.2);
         Timer.delay(0.1);
 
         dutyCycle.waitForUpdate(0.1);
@@ -72,7 +72,7 @@ public class WristTest implements AutoCloseable {
         assertEquals(0.2, dutyCycle.getValue(), 0.05);
 
         // Checking power goes up
-        wrist.setPower(0);
+        wrist.setRawPower(0);
         Timer.delay(0.1);
 
         dutyCycle.waitForUpdate(0.1);
@@ -102,9 +102,10 @@ public class WristTest implements AutoCloseable {
         // Create timer and start it
         timer.restart();
         timer.start();
-        
+
         /*
-         * Create a loop that will continue to update the simulation as long as the the position hasen't
+         * Create a loop that will continue to update the simulation as long as the the
+         * position hasen't
          * reached the target position and the time hasen't run out
          */
         while (!(Math.abs(targetPos - wrist.getAngle()) <= WristConstants.TOLERANCE) && !timer.hasElapsed(timeOut)) {
@@ -115,8 +116,9 @@ public class WristTest implements AutoCloseable {
                 System.out.println(wrist.getAngle());
             }
         }
-        
-        // Print the final position and check the wrist position is equal to the target position
+
+        // Print the final position and check the wrist position is equal to the target
+        // position
         System.out.println(wrist.getAngle() + "\n");
         assertEquals(targetPos, wrist.getAngle(), WristConstants.TOLERANCE);
     }

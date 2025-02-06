@@ -297,6 +297,8 @@ public class Constants {
 
         public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
+        public static final double COLLECTED_CURRENT = 80d;
+
     }
 
     public static class ControllerConstants {

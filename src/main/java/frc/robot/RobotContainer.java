@@ -81,7 +81,7 @@ public class RobotContainer extends LightningContainer {
         wrist = new Wrist(RobotMotors.wristMotor);
         rod = new FishingRod(wrist, elevator);
         coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
-        climber = new Climber(RobotMotors.climberMotor);
+        // climber = new Climber(RobotMotors.climberMotor);
         // algaeMode = new Trigger(() -> driver.getPOV() == 180 || copilot.getStartButtonPressed());
 
         switch (Constants.ROBOT_MODE) {
@@ -152,8 +152,7 @@ public class RobotContainer extends LightningContainer {
             // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(-1)))).onFalse(new InstantCommand(wrist::stop));
             // new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(1)))).onFalse(new InstantCommand(wrist::stop));
 
-        //     new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
-        //     new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
+        // new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
 
             // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75)))).onFalse(new InstantCommand(coralCollector::stop));
             // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5)))).onFalse(new InstantCommand(coralCollector::stop));
@@ -162,8 +161,7 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeNamedCommands() {
-        NamedCommands.registerCommand("IntakeCoral",
-                StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
+        NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, () -> 1));
         // NamedCommands.registerCommand("ScoreCoral",
         //         StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
         // TODO: Get actual offsets

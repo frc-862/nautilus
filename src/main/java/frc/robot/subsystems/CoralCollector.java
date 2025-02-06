@@ -118,6 +118,13 @@ public class CoralCollector extends SubsystemBase {
     }
 
     /**
+     * @return if bream break sensor is triggered
+     */
+    public boolean getCollectCurrentHit(){
+        return motor.getStatorCurrent().getValueAsDouble() >= CoralCollectorConstants.COLLECTED_CURRENT;
+    }
+
+    /**
      * can be used to set beambreak value to simulate beambreak
      * @param value
      */

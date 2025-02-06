@@ -41,6 +41,7 @@ public class CollectCoral extends Command {
     @Override
     public boolean isFinished() {
         // return debouncer.calculate(collector.getBeamBreakOutput()) && triggerPower.getAsDouble() > 0;
-        return false;
+        // return false;
+        return collector.getCollectCurrentHit() && triggerPower.getAsDouble() > 0;
     }
 }

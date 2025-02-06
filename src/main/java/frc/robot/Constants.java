@@ -60,15 +60,15 @@ public class Constants {
     public static final String TRITON_IDENTIFIER = "/home/lvuser/triton"; // Differentiate between Triton and Nautlius
     public static final boolean IS_TRITON = Paths.get(TRITON_IDENTIFIER).toFile().exists();
 
-    public static enum ROBOT_MODES {
+    public static enum RobotIdentifiers {
         NAUTILUS, TRITON, SIM
     };
 
     // note from kyle: wtf is this?? :sob:
     // yeah its a double inline ternary operator fight me
     // if(isTriton); else if(isSim); else, its nautilus
-    public static final ROBOT_MODES ROBOT_MODE = Paths.get(TRITON_IDENTIFIER).toFile().exists() ? ROBOT_MODES.TRITON
-            : Robot.isSimulation() ? ROBOT_MODES.SIM : ROBOT_MODES.NAUTILUS;
+    public static final RobotIdentifiers ROBOT_IDENTIFIER = Paths.get(TRITON_IDENTIFIER).toFile().exists() ? RobotIdentifiers.TRITON
+            : Robot.isSimulation() ? RobotIdentifiers.SIM : RobotIdentifiers.NAUTILUS;
 
     public static class EncoderConstants {
         // Nautilus values
@@ -539,7 +539,7 @@ public class Constants {
 
             // CAN bus that the devices are located on;
             // All swerve devices must share the same CAN bus
-            public static final CANBus kCANBus = new CANBus("Canivore", "./logs/example.hoot");
+            public static final CANBus kCANBus = new CANBus(RobotMap.CANIVORE_CAN_NAME, "./logs/example.hoot");
 
             // Theoretical free speed (m/s) at 12 V applied output;
             // This needs to be tuned to your individual robot
@@ -556,7 +556,7 @@ public class Constants {
             private static final boolean kInvertLeftSide = false;
             private static final boolean kInvertRightSide = true;
 
-            private static final int kPigeonId = 23;
+            private static final int kPigeonId = RobotMap.PIGEON;
 
             // These are only used for simulation
             private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.01);
@@ -593,9 +593,9 @@ public class Constants {
                     .withDriveFrictionVoltage(kDriveFrictionVoltage);
 
             // Front Left
-            private static final int kFrontLeftDriveMotorId = 1;
-            private static final int kFrontLeftSteerMotorId = 2;
-            private static final int kFrontLeftEncoderId = 31;
+            private static final int kFrontLeftDriveMotorId = RobotMap.FL_DRIVE;
+            private static final int kFrontLeftSteerMotorId = RobotMap.FL_TURN;
+            private static final int kFrontLeftEncoderId = RobotMap.FL_ENCODER;
             private static final Angle kFrontLeftEncoderOffset = EncoderConstants.nautilusKFrontLeftEncoderOffset;
             private static final boolean kFrontLeftSteerMotorInverted = true;
             private static final boolean kFrontLeftEncoderInverted = false;
@@ -604,9 +604,9 @@ public class Constants {
             private static final Distance kFrontLeftYPos = Inches.of(11);
 
             // Front Right
-            private static final int kFrontRightDriveMotorId = 3;
-            private static final int kFrontRightSteerMotorId = 4;
-            private static final int kFrontRightEncoderId = 32;
+            private static final int kFrontRightDriveMotorId = RobotMap.FR_DRIVE;
+            private static final int kFrontRightSteerMotorId = RobotMap.FR_TURN;
+            private static final int kFrontRightEncoderId = RobotMap.FR_ENCODER;
             private static final Angle kFrontRightEncoderOffset = EncoderConstants.nautilusKFrontRightEncoderOffset;
             private static final boolean kFrontRightSteerMotorInverted = true;
             private static final boolean kFrontRightEncoderInverted = false;
@@ -615,9 +615,9 @@ public class Constants {
             private static final Distance kFrontRightYPos = Inches.of(-11);
 
             // Back Left
-            private static final int kBackLeftDriveMotorId = 5;
-            private static final int kBackLeftSteerMotorId = 6;
-            private static final int kBackLeftEncoderId = 33;
+            private static final int kBackLeftDriveMotorId = RobotMap.BL_DRIVE;
+            private static final int kBackLeftSteerMotorId = RobotMap.BL_TURN;
+            private static final int kBackLeftEncoderId = RobotMap.BL_ENCODER;
             private static final Angle kBackLeftEncoderOffset = EncoderConstants.nautilusKBackLeftEncoderOffset;
             private static final boolean kBackLeftSteerMotorInverted = true;
             private static final boolean kBackLeftEncoderInverted = false;
@@ -626,9 +626,9 @@ public class Constants {
             private static final Distance kBackLeftYPos = Inches.of(11);
 
             // Back Right
-            private static final int kBackRightDriveMotorId = 7;
-            private static final int kBackRightSteerMotorId = 8;
-            private static final int kBackRightEncoderId = 34;
+            private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
+            private static final int kBackRightSteerMotorId = RobotMap.BR_DRIVE;
+            private static final int kBackRightEncoderId = RobotMap.BR_ENCODER;
             private static final Angle kBackRightEncoderOffset = EncoderConstants.nautilusKBackRightEncoderOffset;
             private static final boolean kBackRightSteerMotorInverted = true;
             private static final boolean kBackRightEncoderInverted = false;

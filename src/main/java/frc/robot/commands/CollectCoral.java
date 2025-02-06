@@ -19,7 +19,6 @@ public class CollectCoral extends Command {
         this.triggerPower = triggerPower;
 
         addRequirements(collector);
-        
     }
 
     @Override

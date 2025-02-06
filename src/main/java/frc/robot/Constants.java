@@ -1006,7 +1006,7 @@ public class Constants {
 
         public static final double COLLECTED_CURRENT = 80d; // temp
 
-        public static enum PIVOT_STATES {
+        public static enum AlgaePivotStates {
             DEPLOYED, STOWED
         }
 

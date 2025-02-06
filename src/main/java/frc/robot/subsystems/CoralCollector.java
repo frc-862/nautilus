@@ -81,7 +81,7 @@ public class CoralCollector extends SubsystemBase {
 
     /**
      * Set the power of the motor using a duty cycle
-     * 
+     *
      * @param power
      */
     public void setPower(double power) {
@@ -118,7 +118,7 @@ public class CoralCollector extends SubsystemBase {
 
     /**
      * can be used to set beambreak value to simulate beambreak
-     * 
+     *
      * @param value
      */
     public void setSimBeamBreak(boolean value) {

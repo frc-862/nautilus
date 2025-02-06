@@ -11,7 +11,9 @@ import frc.robot.RobotContainer;
 public class CollectCoral extends Command {
 
     private CoralCollector collector;
+
     private DoubleSupplier triggerPower;
+
     private Debouncer debouncer = new Debouncer(CoralCollectorConstants.DEBOUNCE_TIME);
 
     public CollectCoral(CoralCollector collector, DoubleSupplier triggerPower) {

@@ -22,7 +22,7 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Robot;
 import frc.robot.Constants.AlgaeCollectorConstants;
 import frc.robot.Constants.RobotMap;
-import frc.robot.Constants.AlgaeCollectorConstants.PIVOT_STATES;
+import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
 import frc.robot.Constants.CoralCollectorConstants;
 
 public class AlgaeCollector extends SubsystemBase {
@@ -81,12 +81,11 @@ public class AlgaeCollector extends SubsystemBase {
         LightningShuffleboard.setDouble("Algae Collector", "Pivot Target", getTargetAngle());
         LightningShuffleboard.setDouble("Algae Collector", "Pivot Motor current", pivotMotorSim.getMotorVoltage());
         LightningShuffleboard.setDouble("Algae Collector", "Pivot raw rotor position", pivotSim.getAngleRads());
-
     }
 
     /**
      * Set the power of the roller motor
-     * 
+     *
      * @param power
      */
     public void setRollerPower(double power) {
@@ -95,7 +94,7 @@ public class AlgaeCollector extends SubsystemBase {
 
     /**
      * Set the power of the pivot motor
-     * 
+     *
      * @param speed
      */
     public void setPivotPower(double speed) {
@@ -103,12 +102,12 @@ public class AlgaeCollector extends SubsystemBase {
     }
 
     /**
-     * set target angle for pivot in degrees
-     * 
-     * @param angle
+     * set target state for pivot
+     *
+     * @param state to set
      */
-    public void setPivotState(PIVOT_STATES state) {
-        double angle = (state == PIVOT_STATES.DEPLOYED) ? AlgaeCollectorConstants.DEPLOY_ANGLE
+    public void setPivotState(AlgaePivotStates state) {
+        double angle = (state == AlgaePivotStates.DEPLOYED) ? AlgaeCollectorConstants.DEPLOY_ANGLE
                 : AlgaeCollectorConstants.STOW_ANGLE;
         pivotMotor.setControl(pivotPID.withPosition(Units.degreesToRotations(angle)));
         targetAngle = angle;

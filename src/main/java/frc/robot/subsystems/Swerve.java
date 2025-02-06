@@ -190,7 +190,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     /**
      * gets slow mode true/false
-     * 
+     *
      * @return slow mode true/false
      */
     public boolean inSlowMode() {
@@ -199,7 +199,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     /**
      * gets the speed multiplier
-     * 
+     *
      * @return speed multiplier (1.0 for normal, 0.4 for slow mode)
      */
     public double getSpeedMult() {
@@ -208,7 +208,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     /**
      * gets the turn multiplier
-     * 
+     *
      * @return turn multiplier (1.0 for normal, 0.7 for slow mode)
      */
     public double getTurnMult() {
@@ -218,7 +218,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     /**
      * sets slow mode true/false
      * speedMult and turnMult are set to the appropriate values
-     * 
+     *
      * @param slowMode
      */
     public void setSlowMode(boolean slowMode) {

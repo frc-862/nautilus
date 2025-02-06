@@ -99,7 +99,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * Sets the state of the fishing rod
-     * 
+     *
      * @param state
      */
     public void setState(RodStates state) {
@@ -136,7 +136,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * Gets the state of the fishing rod
-     * 
+     *
      * @return the current state of the fishing rod
      */
 
@@ -147,7 +147,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * Checks if the whole fishing rod system is on target
-     * 
+     *
      * @return true if the wrist and elevator are on target false otherwise
      */
     @Logged(importance = Importance.DEBUG)

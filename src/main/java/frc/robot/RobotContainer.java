@@ -36,7 +36,6 @@ import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CoralCollector;
 import frc.robot.commands.auton.ScoreCoral;
-import frc.robot.commands.TagAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
@@ -138,22 +137,18 @@ public class RobotContainer extends LightningContainer {
 
         // sim stuff
         // if (Robot.isSimulation()) {
-        // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() ->
-        // wrist.setPower(-1))))
-        // .onFalse(new InstantCommand(wrist::stop));
-        // new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((()
-        // -> wrist.setPower(1))))
-        // .onFalse(new InstantCommand(wrist::stop));
+        //     new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setRawPower(-1))))
+        //             .onFalse(new InstantCommand(wrist::stop));
+        //     new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setRawPower(1))))
+        //             .onFalse(new InstantCommand(wrist::stop));
 
-        // new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision,
-        // drivetrain));
+        //     new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision,
+        //             drivetrain));
 
-        // new Trigger(() -> copilot.getXButton()).whileTrue(new InstantCommand((() ->
-        // coralCollector.setPower(0.75))))
-        // .onFalse(new InstantCommand(coralCollector::stop));
-        // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() ->
-        // coralCollector.setPower(-0.5))))
-        // .onFalse(new InstantCommand(coralCollector::stop));
+        //     new Trigger(() -> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75))))
+        //             .onFalse(new InstantCommand(coralCollector::stop));
+        //     new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5))))
+        //             .onFalse(new InstantCommand(coralCollector::stop));
         // }
     }
 

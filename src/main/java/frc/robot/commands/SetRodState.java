@@ -16,7 +16,7 @@ public class SetRodState extends Command {
 
     /**
      * Creates a new SetRodState.
-     * 
+     *
      * @param rod   rod subsystem
      * @param state state to set
      */

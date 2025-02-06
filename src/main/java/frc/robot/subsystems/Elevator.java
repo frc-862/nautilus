@@ -125,7 +125,7 @@ public class Elevator extends SubsystemBase {
 
     /**
      * sets the target position for the elevator
-     * 
+     *
      * @param target height value for the elevator
      */
     public void setPosition(double target) {
@@ -137,7 +137,7 @@ public class Elevator extends SubsystemBase {
 
     /**
      * sets the elevator position according to the map
-     * 
+     *
      * @param state State of the rod
      */
     public void setState(RodStates state) {
@@ -146,7 +146,7 @@ public class Elevator extends SubsystemBase {
 
     /**
      * sets basic percentage power to the elevator motors
-     * 
+     *
      * @param power
      */
     public void setRawPower(double power) {
@@ -162,7 +162,7 @@ public class Elevator extends SubsystemBase {
 
     /**
      * checks if the elevator is on target
-     * 
+     *
      * @return true if the elevator is within the tolerance of the target position
      */
     @Logged(importance = Importance.DEBUG)
@@ -172,7 +172,7 @@ public class Elevator extends SubsystemBase {
 
     /**
      * gets the position of the elevator motors
-     * 
+     *
      * @return left motor position (which the right is synced to)
      */
     @Logged(importance = Importance.DEBUG)
@@ -182,7 +182,7 @@ public class Elevator extends SubsystemBase {
 
     /**
      * gets the basic percentage power of the elevator motors
-     * 
+     *
      * @return left motor power (which the right is synced to)
      */
     @Logged(importance = Importance.DEBUG)
@@ -192,7 +192,7 @@ public class Elevator extends SubsystemBase {
 
     /**
      * gets the target position of the elevator motors
-     * 
+     *
      * @return target position of the elevator motors
      */
     @Logged(importance = Importance.DEBUG)

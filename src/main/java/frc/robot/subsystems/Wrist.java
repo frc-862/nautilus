@@ -97,13 +97,14 @@ public class Wrist extends SubsystemBase {
     @Override
     public void periodic() {
         currentPosition = getAngle();
-    
+
         LightningShuffleboard.setDouble("Wrist", "Current Position", currentPosition);
         LightningShuffleboard.setBool("Wrist", "onTarget", isOnTarget());
     }
 
     /**
      * Set the wrist position in degrees
+     *
      * @param position in degrees
      */
     public void setPosition(double position) {
@@ -114,6 +115,7 @@ public class Wrist extends SubsystemBase {
 
     /**
      * Sets the wrist position according to the map
+     *
      * @param state State of the rod
      */
     public void setState(RodStates state) {
@@ -122,6 +124,7 @@ public class Wrist extends SubsystemBase {
 
     /**
      * Gets the current angle of the wrist
+     *
      * @return Current angle of the wrist
      */
     @Logged(importance = Importance.DEBUG)
@@ -131,6 +134,7 @@ public class Wrist extends SubsystemBase {
 
     /**
      * Gets the target angle of the wrist
+     *
      * @return Target angle of the wrist
      */
     public double getTargetAngle() {
@@ -139,6 +143,7 @@ public class Wrist extends SubsystemBase {
 
     /**
      * Checks if the wrist is on target
+     *
      * @return True if the wrist is on target
      */
     public boolean isOnTarget() {
@@ -147,7 +152,7 @@ public class Wrist extends SubsystemBase {
 
     /**
      * Sets the power to the Wrist motor
-     * 
+     *
      * @param power Wrist motor power
      */
     public void setRawPower(double power) {
@@ -160,7 +165,7 @@ public class Wrist extends SubsystemBase {
     public void stop() {
         setRawPower(0d);
     }
-    
+
     @Override
     public void simulationPeriodic() {
         double batteryVoltage = RobotController.getBatteryVoltage();

@@ -7,41 +7,41 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.AlgaeCollectorConstants.PIVOT_STATES;
+import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
 import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.Constants.AlgaeCollectorConstants;
 
 public class CollectAlgae extends Command {
 
-	private AlgaeCollector collector;
+    private AlgaeCollector collector;
 
-	private DoubleSupplier triggerPower;
+    private DoubleSupplier triggerPower;
 
-	public CollectAlgae(AlgaeCollector collector, DoubleSupplier triggerPower) {
-		this.collector = collector;
-		this.triggerPower = triggerPower;
+    public CollectAlgae(AlgaeCollector collector, DoubleSupplier triggerPower) {
+        this.collector = collector;
+        this.triggerPower = triggerPower;
 
-		addRequirements(collector);
-	}
+        addRequirements(collector);
+    }
 
-	@Override
-	public void initialize() {
-		collector.setPivotState(PIVOT_STATES.DEPLOYED);
-	}
+    @Override
+    public void initialize() {
+        collector.setPivotState(AlgaePivotStates.DEPLOYED);
+    }
 
-	@Override
-	public void execute() {
-		collector.setRollerPower(triggerPower.getAsDouble() * AlgaeCollectorConstants.ALGAE_ROLLER_SPEED);
-	}
+    @Override
+    public void execute() {
+        collector.setRollerPower(triggerPower.getAsDouble() * AlgaeCollectorConstants.ALGAE_ROLLER_SPEED);
+    }
 
-	@Override
-	public void end(boolean interrupted) {
-		collector.setPivotState(PIVOT_STATES.STOWED);
-		collector.stop();
-	}
+    @Override
+    public void end(boolean interrupted) {
+        collector.setPivotState(AlgaePivotStates.STOWED);
+        collector.stop();
+    }
 
-	@Override
-	public boolean isFinished() {
-		return collector.getRollerHit() && triggerPower.getAsDouble() > 0;
-	}
+    @Override
+    public boolean isFinished() {
+        return collector.getRollerHit() && triggerPower.getAsDouble() > 0;
+    }
 }

@@ -115,7 +115,7 @@ public class PhotonVision extends SubsystemBase {
                 leftResult = result;
                 if (leftResult.hasTargets()) {
                     poseEstimatorLeft.update(leftResult).ifPresentOrElse((pose) -> leftPose = pose,
-                            () -> DataLogManager.log("left pose update failed"));
+                            () -> DataLogManager.log("[VISION] Left pose update failed"));
                     setEstimatedPose(leftPose);
 
                     LightningShuffleboard.setBool("Vision", "LEFT targets found", !leftResult.targets.isEmpty());
@@ -138,7 +138,7 @@ public class PhotonVision extends SubsystemBase {
                 rightResult = result;
                 if (rightResult.hasTargets()) {
                     poseEstimatorRight.update(rightResult).ifPresentOrElse((pose) -> rightPose = pose,
-                            () -> DataLogManager.log("right pose update failed"));
+                            () -> DataLogManager.log("[VISION] Right pose update failed"));
                     setEstimatedPose(rightPose);
 
                     LightningShuffleboard.setBool("Vision", "RIGHT targets found", !rightResult.targets.isEmpty());
@@ -157,7 +157,6 @@ public class PhotonVision extends SubsystemBase {
             LightningShuffleboard.setBool("Vision", "RIGHT hasTarget", false);
 
         }
-
     }
 
     public boolean leftHasTarget() {

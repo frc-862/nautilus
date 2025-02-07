@@ -151,13 +151,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);
         SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
 
-        // LightningShuffleboard.send("Drivetrain", "pose ig", );
-
-        
-
         LightningShuffleboard.setPose2d("Drivetrain", "pose", getState().Pose);
-
-        
     }
 
     private void configurePathPlanner() {
@@ -255,12 +249,13 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     }
 
     public void addVisionMeasurement(EstimatedRobotPose pose) {
-        if(DriverStation.isDisabled()) {
+        if (DriverStation.isDisabled()) {
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
-                VecBuilder.fill(0.01, 0.01, 0.01));
+                    VecBuilder.fill(0.01, 0.01, 0.01));
         } else {
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
-            VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV ));
+                    VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV,
+                            VisionConstants.VISION_THETA_STDEV));
         }
     }
 

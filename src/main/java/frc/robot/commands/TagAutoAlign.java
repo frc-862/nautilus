@@ -1,12 +1,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
+
+import org.photonvision.PhotonCamera;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.LightningContainer;
@@ -15,11 +19,12 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 public class TagAutoAlign extends Command {
     private PhotonVision vision;
     private Swerve drivetrain;
-
-    private PIDController controllerX = new PIDController(AutoAlignConstants.X_Kp, AutoAlignConstants.X_Ki,
+    private VisionConstants.Camera camera;
+  
+    private PIDController controllerX = new PIDController(AutoAlignConstants.X_Kp, AutoAlignConstants.X_Ki, 
         AutoAlignConstants.X_Kd);
 
-    private PIDController controllerY = new PIDController(AutoAlignConstants.Y_Kp, AutoAlignConstants.Y_Ki,
+    private PIDController controllerY = new PIDController(AutoAlignConstants.Y_Kp, AutoAlignConstants.Y_Ki, 
         AutoAlignConstants.Y_Kd);
 
     private PIDController controllerR;
@@ -34,6 +39,7 @@ public class TagAutoAlign extends Command {
     private double tyError;
     private double robotYaw;
     private double yawDiff;
+    private double targetOffset;
 
     private int numTimesWithSameData = 0;
     private double[] lastData = new double[] {0, 0};
@@ -60,9 +66,14 @@ public class TagAutoAlign extends Command {
      * @param drivetrain
      * @param driver
      */
-    public TagAutoAlign(PhotonVision vision, Swerve drivetrain, XboxController driver){
+    public TagAutoAlign (PhotonVision vision, Swerve drivetrain, XboxController driver){
         this(vision, drivetrain);
         this.driver = driver;
+    }
+
+    public TagAutoAlign(PhotonVision vision, Swerve drivetrain, VisionConstants.Camera camera){
+        this(vision, drivetrain);
+        this.camera = camera;
     }
 
     @Override
@@ -70,33 +81,35 @@ public class TagAutoAlign extends Command {
         // zero velocity values
 
         controllerX = new PIDController(
-            LightningShuffleboard.getDouble("TestAutoAlign", "X Kp", 0),
-            LightningShuffleboard.getDouble("TestAutoAlign", "X Ki", 0),
+            LightningShuffleboard.getDouble("TestAutoAlign", "X Kp", 0), 
+            LightningShuffleboard.getDouble("TestAutoAlign", "X Ki", 0), 
             LightningShuffleboard.getDouble("TestAutoAlign", "X Kd", 0));
 
         controllerY = new PIDController(
-            LightningShuffleboard.getDouble("TestAutoAlign", "Y Kp", 0),
-            LightningShuffleboard.getDouble("TestAutoAlign", "Y Ki", 0),
+            LightningShuffleboard.getDouble("TestAutoAlign", "Y Kp", 0), 
+            LightningShuffleboard.getDouble("TestAutoAlign", "Y Ki", 0), 
             LightningShuffleboard.getDouble("TestAutoAlign", "Y Kd", 0));
 
         controllerR = new PIDController(
-            LightningShuffleboard.getDouble("TestAutoAlign", "R Kp", 0),
-            LightningShuffleboard.getDouble("TestAutoAlign", "R Ki", 0),
+            LightningShuffleboard.getDouble("TestAutoAlign", "R Kp", 0), 
+            LightningShuffleboard.getDouble("TestAutoAlign", "R Ki", 0), 
             LightningShuffleboard.getDouble("TestAutoAlign", "R Kd", 0));
 
+        
 
-
-        controllerX.setSetpoint(720);
-        controllerX.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "x tolerance", 0));
+        controllerX.setSetpoint(640);
+        controllerX.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "x tolerance", 50));
         // controllerX.enableContinuousInput(0, 360);
 
         controllerY.setSetpoint(0);
         controllerY.setTolerance(AutoAlignConstants.AutoAlignTolerance);
-
+        
 
         controllerR.setSetpoint(0);
         controllerR.enableContinuousInput(0, 360);
+        controllerR.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "r tolerance", 1));
 
+        targetOffset = 0;
     }
 
     @Override
@@ -112,17 +125,17 @@ public class TagAutoAlign extends Command {
 
         // update pitch and yaw values
 
-        TY = vision.getLeftTY();
-        TX = vision.getLeftTX();
+        TY = vision.getTY(camera, targetOffset);
+        TX = vision.getTX(camera, targetOffset);
 
         txError = TX - AutoAlignConstants.targetTX;
 
-        robotYaw = MathUtil.inputModulus(drivetrain.getPigeon2().getYaw().getValueAsDouble(), 0, 360);
+        robotYaw = drivetrain.getPigeon2().getYaw().getValueAsDouble();
         try {
-            yawDiff = Math.sin(AutoAlignConstants.tagAngles.get(vision.getLeftTagNum()) - robotYaw);
+            yawDiff = MathUtil.inputModulus(robotYaw - AutoAlignConstants.tagAngles.get(vision.getTagNum(camera)), -180, 180);
         } catch (Exception e) {
             System.out.println("Error: Cannot see April Tag");
-            cancel();
+            cancel();;
         }
 
         if(lastData[0] == TY && lastData[1] == TX){
@@ -132,39 +145,37 @@ public class TagAutoAlign extends Command {
                 System.out.println("Error: Photon Vision is not updating");
                 cancel();
             }
-
+            
         } else {
             numTimesWithSameData = 0;
             lastData = new double[] {TY, TX};
         }
 
         // use pitch and yaw to calculate velocity values
-        double kS = LightningShuffleboard.getDouble("TestAutoAlign", "Ks", 0);
+        double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "x Ks", 0.1);
+        double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "r Ks", 0.05);
 
         dx_dt = controllerX.calculate(TX);
         if (!controllerX.atSetpoint()){
-            if(Math.abs(dx_dt) < kS){
-                dx_dt = kS * -Math.signum(txError);
+            if(Math.abs(dx_dt) < xKs){
+                dx_dt = xKs * -Math.signum(txError);
             }
         } else{
             dx_dt = 0;
         }
 
-        dy_dt = !DriverStation.isTeleop() ? -controllerY.calculate(TY) : // if in teleop use driver input for foreward movement unless driver is null
-            (driver == null ? -controllerY.calculate(TY) : -driver.getLeftY());
 
-        // dr_dt = -Math.floorMod((int) controllerR.calculate(rot), 360);
         dr_dt = controllerR.calculate(yawDiff);
 
-        if(!controllerR.atSetpoint()){
-            if(Math.abs(dr_dt) < kS){
-                dr_dt = kS * ( (AutoAlignConstants.tagAngles.get(vision.getLeftTagNum()) != 0) ? -Math.signum(txError) :
-                   (robotYaw > 180 ? -1 : 1) );
-            } else {
-                dr_dt = 0;
-            }
+        if(!controllerR.atSetpoint()) {
+            
+            if(Math.abs(dr_dt) < rKs){
+                dr_dt = rKs * -Math.signum(yawDiff);
+            } 
+        } else {
+            dr_dt = 0;
         }
-
+        
 
         if (!DriverStation.isFMSAttached()){
             LightningShuffleboard.setDouble("TestAutoAlign", "X speed", dx_dt);
@@ -174,6 +185,8 @@ public class TagAutoAlign extends Command {
             LightningShuffleboard.setDouble("TestAutoAlign", "X error", txError);
             LightningShuffleboard.setDouble("TestAutoAlign", "Y error", tyError);
             LightningShuffleboard.setDouble("TestAutoAlign", "R error", yawDiff);
+
+            LightningShuffleboard.setDouble("TestAutoAlign", "pigeon yaw", robotYaw);
         }
 
         // give the new velocity values to the drivetrain
@@ -189,7 +202,7 @@ public class TagAutoAlign extends Command {
 
     @Override
     public boolean isFinished() {
-        // return Math.abs(pitch) < AutoAlignConstants.AutoAlignTolerance &&
+        // return Math.abs(pitch) < AutoAlignConstants.AutoAlignTolerance && 
         //     Math.abs(yaw) < AutoAlignConstants.AutoAlignTolerance;
         return false;
     }

@@ -438,6 +438,8 @@ public class Constants {
         public static final double VISION_X_STDEV = 1;
         public static final double VISION_Y_STDEV = 1;
         public static final double VISION_THETA_STDEV = 1;
+
+        public enum Camera {LEFT, RIGHT};
     }
 
     public static class PoseConstants {

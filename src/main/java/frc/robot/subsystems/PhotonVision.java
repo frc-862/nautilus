@@ -139,6 +139,7 @@ public class PhotonVision extends SubsystemBase {
                 if (rightResult.hasTargets()) {
                     poseEstimatorRight.update(rightResult).ifPresentOrElse((pose) -> rightPose = pose,
                             () -> DataLogManager.log("right pose update failed"));
+                    setEstimatedPose(rightPose);
 
                     LightningShuffleboard.setBool("Vision", "RIGHT targets found", !rightResult.targets.isEmpty());
                     field.setRobotPose(rightPose.estimatedPose.toPose2d());

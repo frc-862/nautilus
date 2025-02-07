@@ -24,10 +24,10 @@ import frc.robot.Constants.RobotMap;
 
 public class AlgaeCollector extends SubsystemBase {
 
-    private ThunderBird rollerMotor;
-    private ThunderBird pivotMotor;
+    private final ThunderBird rollerMotor;
+    private final ThunderBird pivotMotor;
 
-    private PositionVoltage pivotPID = new PositionVoltage(0);
+    private final PositionVoltage pivotPID = new PositionVoltage(0);
     private double targetAngle = 0;
 
     private TalonFXSimState rollerMotorSim;

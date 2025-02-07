@@ -5,12 +5,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.UpdateModeValue;
@@ -37,15 +35,15 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class Elevator extends SubsystemBase {
 
-    private ThunderBird leftMotor;
-    private ThunderBird rightMotor;
-    private CANrange rangeSensor;
+    private final ThunderBird leftMotor;
+    private final ThunderBird rightMotor;
+    private final CANrange rangeSensor;
 
     private double targetPosition = 0;
     private double currentPosition = 0;
 
 
-    private MotionMagicVoltage positionPID;
+    private final MotionMagicVoltage positionPID;
 
     //sim stuff
     private DCMotor gearbox;

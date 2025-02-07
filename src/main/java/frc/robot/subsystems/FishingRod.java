@@ -22,8 +22,8 @@ import frc.robot.Robot;
 
 public class FishingRod extends SubsystemBase {
 
-    private Wrist wrist;
-    private Elevator elevator;
+    private final Wrist wrist;
+    private final Elevator elevator;
     private states currState = states.STOW;
 
     //simulation stuff
@@ -69,32 +69,32 @@ public class FishingRod extends SubsystemBase {
 
 
         switch(currState) {
-            case STOW:
+            case STOW -> {
                 wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
                 elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            case L1:
+            }
+            case L1 -> {
                 wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
                 elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            case L2:
+            }
+            case L2 -> {
                 wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
                 elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            case L3:
+            }
+            case L3 -> {
                 wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
                 elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            case L4:
+            }
+            case L4 -> {
                 wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
                 elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            case SOURCE:
+            }
+            case SOURCE -> {
                 wrist.setPosition(FishingRodConstants.WRIST_MAP.get(currState));
                 elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(currState));
-                break;
-            default:
-                break;    
+            }
+            default -> {
+            }    
         }
     }
 
@@ -134,7 +134,7 @@ public class FishingRod extends SubsystemBase {
 
         wristSim.setAngle(wrist.getAngle()-90);
 
-        LightningShuffleboard.set("fishing rod", "Mech2d", mech2d);
+        LightningShuffleboard.send("fishing rod", "Mech2d", mech2d);
     }
 
 }

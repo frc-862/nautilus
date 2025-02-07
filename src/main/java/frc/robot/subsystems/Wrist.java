@@ -26,7 +26,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.WristConstants;
 import frc.robot.Robot;
@@ -35,8 +34,8 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class Wrist extends SubsystemBase {
   
-    private ThunderBird motor;
-    private CANcoder encoder;
+    private final ThunderBird motor;
+    private final CANcoder encoder;
 
     private double targetPosition = 0;
     private double currentPosition = 0;

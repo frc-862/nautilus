@@ -10,8 +10,8 @@ import frc.robot.subsystems.FishingRod;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SetRodState extends Command {
-  private FishingRod rod;
-  private states state;
+  private final FishingRod rod;
+  private final states state;
 
   
   /** Creates a new SetRodState. 

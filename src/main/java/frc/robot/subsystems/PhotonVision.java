@@ -32,8 +32,8 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class PhotonVision extends SubsystemBase {
 
-    private PhotonCamera camera1;
-    private PhotonPoseEstimator poseEstimator;
+    private final PhotonCamera camera1;
+    private final PhotonPoseEstimator poseEstimator;
     private VisionSystemSim visionSim;
 
     private PhotonCameraSim cameraSim;
@@ -48,7 +48,7 @@ public class PhotonVision extends SubsystemBase {
 
     private boolean visionWorks;
 
-    private Field2d field = new Field2d();
+    private final Field2d field = new Field2d();
 
     public PhotonVision() {
         camera1 = new PhotonCamera(VisionConstants.camera1Name);
@@ -158,7 +158,7 @@ public class PhotonVision extends SubsystemBase {
             lastEstimatedRobotPose = estimatedRobotPose.estimatedPose.toPose2d();
             field.setRobotPose(lastEstimatedRobotPose);
 
-            LightningShuffleboard.set("Vision", "Field", field);
+            LightningShuffleboard.send("Vision", "Field", field);
         } else {
             if (!DriverStation.isFMSAttached()) {
                 visionWorks = false;
@@ -172,6 +172,6 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        LightningShuffleboard.set("Vision", "Field_SIM", visionSim.getDebugField());
+        LightningShuffleboard.send("Vision", "Field_SIM", visionSim.getDebugField());
     }
 }

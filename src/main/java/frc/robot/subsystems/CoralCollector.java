@@ -24,10 +24,10 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class CoralCollector extends SubsystemBase {
 
-    private ThunderBird motor;
+    private final ThunderBird motor;
     private TalonFXSimState motorSim;
 
-    private DigitalInput beamBreak;
+    private final DigitalInput beamBreak;
     private SimDevice beamBreakSim;
     private SimBoolean simBoolean;
 

@@ -14,10 +14,10 @@ import frc.robot.Constants.PoseConstants.ScoringPoses;
 
 public class PoseBasedAutoAlign extends Command {
 
-    Command pathCommand;
-    Swerve drivetrain;
-    Pose2d pose;
-    ScoringPoses poseEnum; 
+    private Command pathCommand;
+    private final Swerve drivetrain;
+    private final Pose2d pose;
+    private ScoringPoses poseEnum; 
 
     /**
      * Move to pose using path

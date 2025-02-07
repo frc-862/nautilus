@@ -22,7 +22,7 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class Climber extends SubsystemBase {
 
-    private ThunderBird motor;
+    private final ThunderBird motor;
     private TalonFXSimState motorSim;
 
     private ElevatorSim climbSim;

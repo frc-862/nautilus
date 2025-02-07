@@ -116,6 +116,7 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         currentPosition = getPosition();
 
+        // creates canRange to get the distance and sets it to the distance variable
         final StatusSignal<Distance> canRange = rangeSensor.getDistance();
         var distance = canRange.refresh().getValue();
 

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -23,6 +25,9 @@ import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
+
+import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.wpilibj.RobotController;
@@ -98,7 +103,7 @@ public class Elevator extends SubsystemBase {
             elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.GEAR_RATIO, ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters), ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 0, 0d, 1d); 
 
             leftSim = new TalonFXSimState(leftMotor);
-            rightSim = new TalonFXSimState(rightMotor);
+            rightSim =new TalonFXSimState(rightMotor);
             rangeSensorSim = new CANrangeSimState(rangeSensor);
 
             // TalonFX sim states do not retain inverts. 
@@ -111,7 +116,11 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         currentPosition = getPosition();
 
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", currentPosition);
+        final StatusSignal<Distance> canRange = rangeSensor.getDistance();
+        var distance = canRange.refresh().getValue();
+
+        LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", distance.in(Centimeters));
+        LightningShuffleboard.setDouble("Diagnostic", "Elevator Encoder Value", currentPosition);
     }
 
     @Override

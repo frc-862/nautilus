@@ -66,7 +66,7 @@ public class TagAutoAlign extends Command {
      * @param drivetrain
      * @param driver
      */
-    public TagAutoAlign (PhotonVision vision, Swerve drivetrain, XboxController driver){
+    public TagAutoAlign(PhotonVision vision, Swerve drivetrain, XboxController driver){
         this(vision, drivetrain);
         this.driver = driver;
     }
@@ -135,7 +135,7 @@ public class TagAutoAlign extends Command {
             yawDiff = MathUtil.inputModulus(robotYaw - AutoAlignConstants.tagAngles.get(vision.getTagNum(camera)), -180, 180);
         } catch (Exception e) {
             System.out.println("Error: Cannot see April Tag");
-            cancel();;
+            cancel();
         }
 
         if(lastData[0] == TY && lastData[1] == TX){

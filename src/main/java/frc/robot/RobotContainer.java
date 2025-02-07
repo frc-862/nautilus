@@ -5,10 +5,10 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
-import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.FishingRodConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.LEDConstants.LED_STATES;
@@ -32,10 +31,10 @@ import frc.robot.commands.CollectCoral;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
 import frc.robot.commands.TagAutoAlign;
+import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CoralCollector;
-import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
@@ -88,52 +87,95 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
-                DriveRequests.getDrive(
-                        () -> MathUtil.applyDeadband(-driver.getLeftX(),
-                                ControllerConstants.JOYSTICK_DEADBAND),
-                        () -> MathUtil.applyDeadband(-driver.getLeftY(),
-                                ControllerConstants.JOYSTICK_DEADBAND),
-                        () -> MathUtil.applyDeadband(-driver.getRightX(),
-                                ControllerConstants.JOYSTICK_DEADBAND))));
+            DriveRequests.getDrive(
+                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                    ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
         if (Constants.ROBOT_IDENTIFIER != Constants.RobotIdentifiers.NAUTILUS) {
             coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
-                    () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
+                () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
 
+            new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.enableState(LED_STATES.CORAL_SCORE));
+            new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.enableState(LED_STATES.CORAL_COLLECT));
+        
             // climber.setDefaultCommand(new RunCommand(() ->
             // climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(),
             // ControllerConstants.JOYSTICK_DEADBAND)), climber));
 
             rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW));
+            
+            new Trigger(() -> rod.onTarget()).whileFalse(leds.enableState(LED_STATES.ROD_MOVING));
         }
+
     }
 
     @Override
     protected void configureButtonBindings() {
         // robot centric driving
         new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
-                .getRobotCentric(
-                        () -> MathUtil.applyDeadband(-driver.getLeftX(),
-                                ControllerConstants.JOYSTICK_DEADBAND),
-                        () -> MathUtil.applyDeadband(-driver.getLeftY(),
-                                ControllerConstants.JOYSTICK_DEADBAND),
-                        () -> MathUtil.applyDeadband(-driver.getRightX(),
-                                ControllerConstants.JOYSTICK_DEADBAND))));
+            .getRobotCentric(
+                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                    ControllerConstants.JOYSTICK_DEADBAND))));
         // sets slow mode
         new Trigger(() -> driver.getRightTriggerAxis() > 0.25)
-                .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
-                .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+            .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
+            .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
         // drivetrain brake
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
         // reset forward
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
-                new InstantCommand(() -> drivetrain.seedFieldCentric()));
+            new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
-        // new Trigger(() ->
-        // rod.onTarget()).whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+        new Trigger(() -> copilot.getRightBumperButton())
+            .whileTrue(new RunCommand((() -> rod.setState(RodStates.SOURCE)), rod));
+        new Trigger(() -> copilot.getLeftBumperButton())
+            .whileTrue(new RunCommand((() -> rod.setState(RodStates.STOW)), rod));
+
+        new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
+
+        switch (Constants.ROBOT_IDENTIFIER) {
+            case NAUTILUS -> {
+                // nothing
+            }
+            default -> { //sim or triton
+                // default
+                (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, RodStates.L1));
+                (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(rod, RodStates.L2));
+                (new Trigger(copilot::getXButton)).whileTrue(new SetRodState(rod, RodStates.L3));
+                (new Trigger(copilot::getYButton)).whileTrue(new SetRodState(rod, RodStates.L4));
+
+                // biases
+                new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(2));
+                new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-2));
+
+                new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-5));
+                new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(5));
+
+                //unused algae stuff
+                // (new Trigger(driver::getRightBumperButtonPressed))
+                //            .whileTrue(new SetRodState(rod, RodStates.SOURCE));
+                // ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(
+                //     new CollectAlgae(algaeCollector, driver::getRightTriggerAxis).deadlineFor(leds.enableState(LED_STATES.ALGAE_COLLECT)));
+                // (new Trigger(copilot::getBButtonPressed).and(algaeMode))
+                //     .whileTrue(new SetRodState(rod, RodStates.LOW));
+                // (new Trigger(copilot::getXButtonPressed).and(algaeMode))
+                //     .whileTrue(new SetRodState(rod, RodStates.HIGH));
+                // (new Trigger(copilot::getRightBumperButtonPressed))
+                //     .whileTrue((new InstantCommand(() -> algaeCollector.setRollerPower(-1), algaeCollector)
+                //         .andThen(() -> algaeCollector.setRollerPower(0d))).deadlineFor(leds.enableState(LED_STATES.ALGAE_SCORE)));
+            }
+
 
         // sim stuff
         // if (Robot.isSimulation()) {
@@ -150,6 +192,7 @@ public class RobotContainer extends LightningContainer {
         //     new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5))))
         //             .onFalse(new InstantCommand(coralCollector::stop));
         // }
+        }
     }
 
     @Override

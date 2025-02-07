@@ -176,32 +176,47 @@ public class PhotonVision extends SubsystemBase {
         return leftResult.hasTargets();
     }
 
-    public double getLeftTY() {
-        return leftCam.getCameraTable().getEntry("targetPixelsY").getDouble(0);
+    public double getTY(VisionConstants.Camera camera, double offset) {
+        switch(camera){
+            case LEFT:
+            return leftCam.getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
+            
+            case RIGHT:
+            return rightCam.getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
+
+            default:
+            return 0;
+        }
     }
 
-    public double getLeftTX() {
-        return leftCam.getCameraTable().getEntry("targetPixelsX").getDouble(0);
+    public double getTX(VisionConstants.Camera camera, double offset) {
+        switch(camera){
+            case LEFT:
+            return leftCam.getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
+            
+            case RIGHT:
+            return rightCam.getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
+
+            default:
+            return 0;
+        }
     }
 
-    public int getLeftTagNum() {
-        return leftResult.getBestTarget().getFiducialId();
+    public int getTagNum(VisionConstants.Camera camera) {
+        switch(camera){
+            case LEFT:
+            return leftResult.getBestTarget().getFiducialId();
+
+            case RIGHT:
+            return rightResult.getBestTarget().getFiducialId();
+
+            default:
+            return 0;
+        }
     }
 
     public boolean rightHasTarget() {
         return rightResult.hasTargets();
-    }
-
-    public double getRightTY() {
-        return rightCam.getCameraTable().getEntry("targetPixelsY").getDouble(0);
-    }
-
-    public double getRightTX() {
-        return rightCam.getCameraTable().getEntry("targetPixelsX").getDouble(0);
-    }
-
-    public int getRightTagNum() {
-        return rightResult.getBestTarget().getFiducialId();
     }
 
 }

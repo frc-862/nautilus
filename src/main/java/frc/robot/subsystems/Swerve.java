@@ -21,6 +21,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.PoseEstimator;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
@@ -29,6 +32,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -146,6 +150,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         SmartDashboard.putBooleanArray("Reef Level One", reef1Status);
         SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);
         SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
+
+        // LightningShuffleboard.send("Drivetrain", "pose ig", );
+
+        
     }
 
     private void configurePathPlanner() {
@@ -243,9 +251,13 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     }
 
     public void addVisionMeasurement(EstimatedRobotPose pose) {
-        addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds,
-                new Matrix<N3, N1>(new SimpleMatrix(new double[] { VisionConstants.VISION_X_STDEV,
-                        VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV })));
+        if(DriverStation.isDisabled()) {
+            addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds,
+                VecBuilder.fill(0.01, 0.01, 0.01));
+        } else {
+            addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds,
+            VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV ));
+        }
     }
 
     private void startSimThread() {

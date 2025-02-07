@@ -294,7 +294,6 @@ public class Constants {
         public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
         public static final double COLLECTED_CURRENT = 80d;
-
     }
 
     public class DrivetrainConstants {
@@ -429,12 +428,16 @@ public class Constants {
                 .loadField(AprilTagFields.k2025Reefscape);
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
-        public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, 0);
-        public static final Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
+        public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, Math.PI);
+        public static final Transform3d robotLeftToCamera = new Transform3d(new Translation3d(), /*new Translation3d(-5.772, 11.281, 12),*/ robotToCameraRot);
+        public static final Transform3d robotRightToCamera = new Transform3d(new Translation3d(-5.772, -11.281, 12), robotToCameraRot);
 
-        public static final double VISION_X_STDEV = 0;
-        public static final double VISION_Y_STDEV = 0;
-        public static final double VISION_THETA_STDEV = 0;
+        // 
+        //
+
+        public static final double VISION_X_STDEV = 1;
+        public static final double VISION_Y_STDEV = 1;
+        public static final double VISION_THETA_STDEV = 1;
     }
 
     public static class PoseConstants {

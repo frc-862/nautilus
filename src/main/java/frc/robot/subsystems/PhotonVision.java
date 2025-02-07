@@ -18,7 +18,11 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -29,7 +33,8 @@ public class PhotonVision extends SubsystemBase {
 
     private PhotonCamera leftCam;
     private PhotonCamera rightCam;
-    private PhotonPoseEstimator poseEstimator;
+    private PhotonPoseEstimator poseEstimatorLeft;
+    private PhotonPoseEstimator poseEstimatorRight;
     private VisionSystemSim visionSim;
 
     private PhotonCameraSim cameraSim;
@@ -38,6 +43,9 @@ public class PhotonVision extends SubsystemBase {
 
     private PhotonPipelineResult leftResult = new PhotonPipelineResult();
     private PhotonPipelineResult rightResult = new PhotonPipelineResult();
+
+    private EstimatedRobotPose leftPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
+    private EstimatedRobotPose rightPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
 
     private boolean visionWorks;
 
@@ -48,13 +56,20 @@ public class PhotonVision extends SubsystemBase {
     public PhotonVision(Swerve drivetrain) {
         leftCam = new PhotonCamera(VisionConstants.leftCamName);
         rightCam = new PhotonCamera(VisionConstants.rightCamName);
+        
+        // leftCam.setPipelineIndex(0);
 
-        poseEstimator = new PhotonPoseEstimator(
+        poseEstimatorLeft = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
                 PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                new Transform3d());
+                VisionConstants.robotLeftToCamera);
+        poseEstimatorRight = new PhotonPoseEstimator(
+                AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
+                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                VisionConstants.robotRightToCamera);
 
-        poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        poseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        poseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         this.drivetrain = drivetrain;
 
@@ -76,7 +91,7 @@ public class PhotonVision extends SubsystemBase {
             // cameraProp.setLatencyStdDevMs(5);
 
             cameraSim = new PhotonCameraSim(leftCam, cameraProp);
-            visionSim.addCamera(cameraSim, VisionConstants.robotToCamera);
+            visionSim.addCamera(cameraSim, VisionConstants.robotLeftToCamera);
 
             // Enable the raw and processed streams. These are enabled by default.
             cameraSim.enableRawStream(true);
@@ -99,44 +114,56 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        visionWorks = true;
-
         try {
-            // get the latest result
-            List<PhotonPipelineResult> results = leftCam.getAllUnreadResults();
-            leftResult = results.get(results.size() - 1);
+            for(PhotonPipelineResult result : leftCam.getAllUnreadResults()) {
+                leftResult = result;
+                if (leftResult.hasTargets()) {
+                    visionWorks = true;
+                    poseEstimatorLeft.update(leftResult).ifPresentOrElse((pose) -> leftPose = pose, () -> DataLogManager.log("left pose update failed"));
+                    setEstimatedPose(leftPose);
+                    
+                    LightningShuffleboard.setBool("Vision", "targets found", !leftResult.targets.isEmpty());
+                    field.setRobotPose(leftPose.estimatedPose.toPose2d()); 
+                    LightningShuffleboard.send("Vision", "left field", field); 
+                }
 
-            if (leftResult.hasTargets()) {
-                visionWorks = true;
-                poseEstimator.update(leftResult).ifPresentOrElse(
-                        (m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose),
-                        () -> visionWorks = false);
+                
+                LightningShuffleboard.setBool("Vision", "left functional", true);
+                LightningShuffleboard.setBool("Vision", "left hasTarget", leftResult.hasTargets());
+                LightningShuffleboard.setDouble("Vision", "left Timestamp", leftResult.getTimestampSeconds());
             }
-        } catch (Exception e) {
-            visionWorks = false;
+        } catch (IndexOutOfBoundsException e) {
+            LightningShuffleboard.setBool("Vision", "left functional", false);
+            LightningShuffleboard.setBool("Vision", "left hasTarget", false);
+
         }
 
         try {
-            // get the latest result
-            List<PhotonPipelineResult> results = rightCam.getAllUnreadResults();
-            rightResult = results.get(results.size() - 1);
+            for(PhotonPipelineResult result : rightCam.getAllUnreadResults()) {
+                rightResult = result;
+                if (rightResult.hasTargets()) {
+                    visionWorks = true;
+                    poseEstimatorRight.update(rightResult).ifPresentOrElse((pose) -> rightPose = pose, () -> DataLogManager.log("right pose update failed"));
+                    
+                    LightningShuffleboard.setBool("Vision", "targets found", !rightResult.targets.isEmpty());
+                    field.setRobotPose(rightPose.estimatedPose.toPose2d()); 
+                    LightningShuffleboard.send("Vision", "left field", field); 
+                }
+                
+                setEstimatedPose(rightPose);
+                LightningShuffleboard.setBool("Vision", "right functional", true);
+                LightningShuffleboard.setBool("Vision", "right hasTarget", rightResult.hasTargets());
+                LightningShuffleboard.setDouble("Vision", "right Timestamp", rightResult.getTimestampSeconds());
 
-            if (rightResult.hasTargets()) {
-                visionWorks = true;
-                poseEstimator.update(rightResult).ifPresentOrElse(
-                        (m_estimatedRobotPose) -> setEstimatedPose(m_estimatedRobotPose),
-                        () -> visionWorks = false);
             }
-        } catch (Exception e) {
-            visionWorks = false;
+        } catch (IndexOutOfBoundsException e) {
+            LightningShuffleboard.setBool("Vision", "right functional", false);
+            LightningShuffleboard.setBool("Vision", "right hasTarget", false);
+
         }
 
-        LightningShuffleboard.send("Vision", "Field", field);
         LightningShuffleboard.setBool("Vision", "PoseEstimatorWorks", visionWorks);
-        LightningShuffleboard.setBool("Vision", "left hasTarget", leftResult.hasTargets());
-        LightningShuffleboard.setBool("Vision", "right hasTarget", rightResult.hasTargets());
-        LightningShuffleboard.setDouble("Vision", "left Timestamp", leftResult.getTimestampSeconds());
-        LightningShuffleboard.setDouble("Vision", "right Timestamp", rightResult.getTimestampSeconds());
+        
     }
 
     @Override

@@ -39,6 +39,7 @@ import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.thunder.filter.XboxControllerFilter;
 
 public class RobotContainer extends LightningContainer {
 
@@ -55,16 +56,16 @@ public class RobotContainer extends LightningContainer {
     private AlgaeCollector algaeCollector;
     private Climber climber;
 
-    private XboxController driver;
-    private XboxController copilot;
+    private XboxControllerFilter driver;
+    private XboxControllerFilter copilot;
 
     @Override
     protected void initializeSubsystems() {
         drivetrain = TunerConstants.createDrivetrain();
         vision = new PhotonVision();
         logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
-        driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
-        copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
+        driver = new XboxControllerFilter(ControllerConstants.DRIVER_CONTROLLER, ControllerConstants.JOYSTICK_DEADBAND, -1, 1, XboxControllerFilter.filterMode.SQUARED);
+        copilot = new XboxControllerFilter(ControllerConstants.COPILOT_CONTROLLER, ControllerConstants.JOYSTICK_DEADBAND, -1, 1, XboxControllerFilter.filterMode.SQUARED);
 
         //this is temporary
         if(Robot.isSimulation()) {

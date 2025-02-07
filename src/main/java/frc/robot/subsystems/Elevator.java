@@ -119,6 +119,7 @@ public class Elevator extends SubsystemBase {
         final StatusSignal<Distance> canRange = rangeSensor.getDistance();
         var distance = canRange.refresh().getValue();
 
+        //makes shuffleboard values for CanRange and CanCoder Values
         LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", distance.in(Centimeters));
         LightningShuffleboard.setDouble("Diagnostic", "Elevator Encoder Value", currentPosition);
     }

@@ -211,7 +211,7 @@ public class RobotContainer extends LightningContainer {
                 new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
 
         switch (Constants.ROBOT_IDENTIFIER) {
-            case SIM:
+            case SIM -> {
                 NamedCommands.registerCommand("RodHome",
                         StandinCommands.rodStow()
                                 .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
@@ -230,11 +230,11 @@ public class RobotContainer extends LightningContainer {
                 NamedCommands.registerCommand("RodSource",
                         StandinCommands.rodSource()
                                 .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                break;
-            case TRITON:
+            }
+            case TRITON -> {
                 NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, () -> 1));
-                break;
-            default:
+            }
+            default -> {
                 NamedCommands.registerCommand("RodHome",
                         new SetRodState(rod, RodStates.STOW)
                                 .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
@@ -254,13 +254,14 @@ public class RobotContainer extends LightningContainer {
                         new SetRodState(rod, RodStates.SOURCE)
                                 .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("ScoreCoral", new ScoreCoral(coralCollector));
-                break;
+            }
         }
 
         autoChooser = AutoBuilder.buildAutoChooser();
-        LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);
+        LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
     }
 
+    @Override
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }

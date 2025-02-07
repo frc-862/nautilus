@@ -43,6 +43,7 @@ import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.thunder.filter.XboxControllerFilter;
 
 public class RobotContainer extends LightningContainer {
 

@@ -154,6 +154,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         // LightningShuffleboard.send("Drivetrain", "pose ig", );
 
         
+
+        LightningShuffleboard.setPose2d("Drivetrain", "pose", getState().Pose);
+
+        
     }
 
     private void configurePathPlanner() {
@@ -252,10 +256,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     public void addVisionMeasurement(EstimatedRobotPose pose) {
         if(DriverStation.isDisabled()) {
-            addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds,
+            addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
                 VecBuilder.fill(0.01, 0.01, 0.01));
         } else {
-            addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds,
+            addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
             VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV ));
         }
     }

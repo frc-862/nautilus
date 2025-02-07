@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.photonvision.EstimatedRobotPose;
@@ -15,6 +16,7 @@ import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.simulation.VisionTargetSim;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -25,12 +27,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Constants.VisionConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.thunder.util.Tuple;
 
 public class PhotonVision extends SubsystemBase {
 
     private PhotonCamera leftCam;
     private PhotonCamera rightCam;
-    private PhotonPoseEstimator poseEstimatorLeft;
     private PhotonPoseEstimator poseEstimatorRight;
 
     private VisionSystemSim visionSim;
@@ -39,10 +41,8 @@ public class PhotonVision extends SubsystemBase {
     private SimCameraProperties cameraProp;
     private VisionTargetSim visionTarget;
 
-    private PhotonPipelineResult leftResult = new PhotonPipelineResult();
     private PhotonPipelineResult rightResult = new PhotonPipelineResult();
 
-    private EstimatedRobotPose leftPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
     private EstimatedRobotPose rightPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
 
     private Field2d field = new Field2d();
@@ -55,12 +55,9 @@ public class PhotonVision extends SubsystemBase {
         leftCam = new PhotonCamera(VisionConstants.leftCamName);
         rightCam = new PhotonCamera(VisionConstants.rightCamName);
 
-        poseEstimatorLeft = new PhotonPoseEstimator(VisionConstants.tagLayout,
-                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.robotLeftToCamera);
         poseEstimatorRight = new PhotonPoseEstimator(VisionConstants.tagLayout,
                 PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.robotRightToCamera);
 
-        poseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         poseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         if (!Robot.isReal()) {
@@ -110,28 +107,7 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        try {
-            for (PhotonPipelineResult result : leftCam.getAllUnreadResults()) {
-                leftResult = result;
-                if (leftResult.hasTargets()) {
-                    poseEstimatorLeft.update(leftResult).ifPresentOrElse((pose) -> leftPose = pose,
-                            () -> DataLogManager.log("[VISION] Left pose update failed"));
-                    setEstimatedPose(leftPose);
-
-                    LightningShuffleboard.setBool("Vision", "LEFT targets found", !leftResult.targets.isEmpty());
-                    field.setRobotPose(leftPose.estimatedPose.toPose2d());
-                    LightningShuffleboard.send("Vision", "LEFT field", field);
-                }
-
-                LightningShuffleboard.setBool("Vision", "LEFT functional", true);
-                LightningShuffleboard.setBool("Vision", "LEFT hasTarget", leftResult.hasTargets());
-                LightningShuffleboard.setDouble("Vision", "LEFT Timestamp", leftResult.getTimestampSeconds());
-            }
-        } catch (IndexOutOfBoundsException e) {
-            LightningShuffleboard.setBool("Vision", "LEFT functional", false);
-            LightningShuffleboard.setBool("Vision", "LEFT hasTarget", false);
-
-        }
+        
 
         try {
             for (PhotonPipelineResult result : rightCam.getAllUnreadResults()) {
@@ -196,4 +172,63 @@ public class PhotonVision extends SubsystemBase {
         visionSim.update(drivetrain.getPose());
         LightningShuffleboard.send("Vision", "Field_SIM", visionSim.getDebugField());
     }
+
+
+    private synchronized void updateVision() {
+        
+    }
+
+
+    private class CameraThread extends Thread {
+        private EstimatedRobotPose pose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
+        private PhotonPoseEstimator poseEstimator;
+        private PhotonCamera camera;
+        private Double averageAmbiguity; //for latest result
+        private String camName; //for logging
+
+        public CameraThread(PhotonCamera camera, String camName) {
+            this.camera = camera;
+            this.camName = camName;
+
+            poseEstimator = new PhotonPoseEstimator(VisionConstants.tagLayout,
+                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.robotLeftToCamera);
+            poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        }
+
+        public void run() {
+            try {
+                List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+                double numberOfResults = results.size(); //double to prevent integer division errors
+                for (PhotonPipelineResult result : results) {
+                    if (result.hasTargets()) {
+                        poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose,
+                                () -> DataLogManager.log(camName + "pose update failed"));
+    
+                        LightningShuffleboard.setBool("Vision", camName + "targets found", !result.targets.isEmpty());
+                        LightningShuffleboard.setPose2d("Vision", camName + "pose", pose.estimatedPose.toPose2d());
+                        
+
+                        averageAmbiguity += result.getBestTarget().poseAmbiguity;
+    
+                        LightningShuffleboard.setBool("Vision", camName + "functional", true);
+                        LightningShuffleboard.setBool("Vision", camName + "hasTarget", result.hasTargets());
+                        LightningShuffleboard.setDouble("Vision", camName + "Timestamp", result.getTimestampSeconds());
+                }
+
+                averageAmbiguity = averageAmbiguity / numberOfResults;
+            }
+            } catch (IndexOutOfBoundsException e) {
+                LightningShuffleboard.setBool("Vision", camName + "functional", false);
+                LightningShuffleboard.setBool("Vision", camName + "hasTarget", false);
+    
+            }
+        }
+
+        // using a tuple as a type-safe alternative to the classic "return an array" (i hate java)
+        public Tuple<EstimatedRobotPose, Double> getUpdates() {
+            return new Tuple<EstimatedRobotPose, Double>(pose, averageAmbiguity);
+        }
+    }
+
+        
 }

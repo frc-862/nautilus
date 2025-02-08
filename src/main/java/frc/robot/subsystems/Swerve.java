@@ -279,8 +279,6 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         SmartDashboard.putBooleanArray("Reef Level One", reef1Status);
         SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);
         SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
-
-        LightningShuffleboard.setDouble("TestAutoAlign", "robot yaw", super.getPigeon2().getYaw().getValueAsDouble());
     }
 
     // SYSID

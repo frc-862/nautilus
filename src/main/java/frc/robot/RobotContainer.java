@@ -90,18 +90,18 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
-                DriveRequests.getDrive(
-                        () -> MathUtil.applyDeadband(-driver.getLeftX(),
-                                ControllerConstants.JOYSTICK_DEADBAND),
-                        () -> MathUtil.applyDeadband(-driver.getLeftY(),
-                                ControllerConstants.JOYSTICK_DEADBAND),
-                        () -> MathUtil.applyDeadband(-driver.getRightX(),
-                                ControllerConstants.JOYSTICK_DEADBAND))));
+            DriveRequests.getDrive(
+                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                    ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
-                    () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
+                () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
 
             new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.enableState(LEDStates.CORAL_SCORE));
             new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.enableState(LEDStates.CORAL_COLLECT));
@@ -122,32 +122,32 @@ public class RobotContainer extends LightningContainer {
         /* DRIVER BINDINGS */
         // robot centric driving
         new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
-                .getRobotCentric(
-                        () -> MathUtil.applyDeadband(-driver.getLeftX(),
-                                ControllerConstants.JOYSTICK_DEADBAND),
-                        () -> MathUtil.applyDeadband(-driver.getLeftY(),
-                                ControllerConstants.JOYSTICK_DEADBAND),
-                        () -> MathUtil.applyDeadband(-driver.getRightX(),
-                                ControllerConstants.JOYSTICK_DEADBAND))));
+            .getRobotCentric(
+                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                    ControllerConstants.JOYSTICK_DEADBAND))));
         // sets slow mode
         new Trigger(() -> driver.getRightTriggerAxis() > 0.25)
-                .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
-                .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+            .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
+            .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
         // drivetrain brake
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
         // reset forward
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
-                new InstantCommand(() -> drivetrain.seedFieldCentric()));
-
+            new InstantCommand(() -> drivetrain.seedFieldCentric()));
+        
         new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
 
         /* COPILOT BINDINGS */
         new Trigger(copilot::getRightBumperButton)
-                .whileTrue(new SetRodState(rod, RodStates.SOURCE));
+            .whileTrue(new SetRodState(rod, RodStates.SOURCE));
         new Trigger(copilot::getLeftBumperButton)
-                .whileTrue(new SetRodState(rod, RodStates.SOURCE));
+            .whileTrue(new SetRodState(rod, RodStates.SOURCE));
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             // default
@@ -165,38 +165,31 @@ public class RobotContainer extends LightningContainer {
 
             // unused algae stuff
             // (new Trigger(driver::getRightBumperButtonPressed))
-            // .whileTrue(new SetRodState(rod, RodStates.SOURCE));
+            //            .whileTrue(new SetRodState(rod, RodStates.SOURCE));
             // ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(
-            // new CollectAlgae(algaeCollector,
-            // driver::getRightTriggerAxis).deadlineFor(leds.enableState(LED_STATES.ALGAE_COLLECT)));
+            //     new CollectAlgae(algaeCollector, driver::getRightTriggerAxis).deadlineFor(leds.enableState(LEDStates.ALGAE_COLLECT)));
             // (new Trigger(copilot::getBButtonPressed).and(algaeMode))
-            // .whileTrue(new SetRodState(rod, RodStates.LOW));
+            //     .whileTrue(new SetRodState(rod, RodStates.LOW));
             // (new Trigger(copilot::getXButtonPressed).and(algaeMode))
-            // .whileTrue(new SetRodState(rod, RodStates.HIGH));
+            //     .whileTrue(new SetRodState(rod, RodStates.HIGH));
             // (new Trigger(copilot::getRightBumperButtonPressed))
-            // .whileTrue((new InstantCommand(() -> algaeCollector.setRollerPower(-1),
-            // algaeCollector)
-            // .andThen(() ->
-            // algaeCollector.setRollerPower(0d))).deadlineFor(leds.enableState(LED_STATES.ALGAE_SCORE)));
+            //     .whileTrue((new InstantCommand(() -> algaeCollector.setRollerPower(-1), algaeCollector)
+            //         .andThen(() -> algaeCollector.setRollerPower(0d))).deadlineFor(leds.enableState(LEDStates.ALGAE_SCORE)));
 
             // sim stuff
             // if (Robot.isSimulation()) {
-            // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() ->
-            // wrist.setRawPower(-1))))
-            // .onFalse(new InstantCommand(wrist::stop));
-            // new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((()
-            // -> wrist.setRawPower(1))))
-            // .onFalse(new InstantCommand(wrist::stop));
-
-            // new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision,
-            // drivetrain));
-
-            // new Trigger(() -> copilot.getXButton()).whileTrue(new InstantCommand((() ->
-            // coralCollector.setPower(0.75))))
-            // .onFalse(new InstantCommand(coralCollector::stop));
-            // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() ->
-            // coralCollector.setPower(-0.5))))
-            // .onFalse(new InstantCommand(coralCollector::stop));
+            //     new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setRawPower(-1))))
+            //             .onFalse(new InstantCommand(wrist::stop));
+            //     new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setRawPower(1))))
+            //             .onFalse(new InstantCommand(wrist::stop));
+    
+            //     new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision,
+            //             drivetrain));
+    
+            //     new Trigger(() -> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75))))
+            //             .onFalse(new InstantCommand(coralCollector::stop));
+            //     new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5))))
+            //             .onFalse(new InstantCommand(coralCollector::stop));
             // }
         }
 
@@ -205,7 +198,7 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void initializeNamedCommands() {
         // NamedCommands.registerCommand("ScoreCoral",
-        // StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
+        // StandinCommands.scoreCoral().deadlineFor(leds.enableState(LEDStates.CORAL_SCORE)));
         // TODO: Get actual offsets
 
         NamedCommands.registerCommand("ReefAlignLeft",

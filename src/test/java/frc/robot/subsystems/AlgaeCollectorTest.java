@@ -18,7 +18,7 @@ import frc.robot.Constants.RobotMotors;
 import frc.thunder.hardware.ThunderBird;
 
 /** Add your docs here. */
-public class AlgaeCollectorTest implements AutoCloseable{
+public class AlgaeCollectorTest implements AutoCloseable {
 
     ThunderBird rollerMotor;
     TalonFXSimState simRollerMotor;
@@ -30,8 +30,7 @@ public class AlgaeCollectorTest implements AutoCloseable{
 
     @BeforeEach
     void constructMotors() {
-        assert HAL.initialize(500, 0); 
-
+        assert HAL.initialize(500, 0);
 
         rollerMotor = RobotMotors.algaeCollectorRollerMotor;
         simRollerMotor = rollerMotor.getSimState();
@@ -61,16 +60,16 @@ public class AlgaeCollectorTest implements AutoCloseable{
     }
 
     @Test
-    public void testPivotInitialPosition() { 
+    public void testPivotInitialPosition() {
         assertEquals(0, algaeCollector.getPivotAngle(), 0.1);
     }
 
     @Test
     public void testRollerSetPower() {
         var dutyCycle = rollerMotor.getDutyCycle();
-        
+
         algaeCollector.setRollerPower(0);
-        
+
         dutyCycle.waitForUpdate(0.1);
 
         assertEquals(0, dutyCycle.getValue());
@@ -79,9 +78,9 @@ public class AlgaeCollectorTest implements AutoCloseable{
     @Test
     public void testPivotSetPower() {
         var dutyCycle = pivotMotor.getDutyCycle();
-        
+
         algaeCollector.setPivotPower(0);
-        
+
         dutyCycle.waitForUpdate(0.1);
 
         assertEquals(0, dutyCycle.getValue());

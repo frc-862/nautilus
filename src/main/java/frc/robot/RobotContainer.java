@@ -275,7 +275,7 @@ public class RobotContainer extends LightningContainer {
             }, () -> {
                 driver.setRumble(GenericHID.RumbleType.kRightRumble, 0);
                 driver.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
-            }).withDeadline(new WaitCommand(3));
+            }).withDeadline(new WaitCommand(1));
         } else {
             return new InstantCommand();
         }
@@ -289,7 +289,7 @@ public class RobotContainer extends LightningContainer {
             }, () -> {
                 copilot.setRumble(GenericHID.RumbleType.kRightRumble, 0);
                 copilot.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
-            }).withDeadline(new WaitCommand(3));
+            }).withDeadline(new WaitCommand(1));
         } else {
             return new InstantCommand();
         }

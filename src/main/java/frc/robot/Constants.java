@@ -432,8 +432,7 @@ public class Constants {
         public static final Transform3d robotLeftToCamera = new Transform3d(new Translation3d(-5.772, 11.281, 12).times(0.0254), robotToCameraRot);
         public static final Transform3d robotRightToCamera = new Transform3d(new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
-        // 
-        //
+        public static enum Camera {LEFT, RIGHT}
 
         public static final double VISION_X_STDEV = 1;
         public static final double VISION_Y_STDEV = 1;

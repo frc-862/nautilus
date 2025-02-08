@@ -22,7 +22,7 @@ run_simulator() {
             return 0
         fi
         cat $LOG_FILE
-        echo -e "\033[1;31mSimulation timed out after \033[1;34m${TIMEOUT}\033[1;31m seconds.\033[0m"
+        echo -e "\033[1;33mSimulation did not start successfully. (Is the timeout too short?)\033[0m"
         return 1
     fi
 
@@ -30,13 +30,13 @@ run_simulator() {
     if grep -q "Error" "$LOG_FILE"; then
         cat $LOG_FILE
         echo -e "\033[1;31mRuntime error(s) detected in the simulation!\033[0m"
-        return 2
+        return 1
     fi
 
     # Check if the simulation exited immediately
     cat $LOG_FILE
     echo -e "\033[1;33mSimulation exited immediately. (Is gradlew working?)\033[0m"
-    return 0
+    return 1
 }
 
 # first run the simulation for 40 seconds

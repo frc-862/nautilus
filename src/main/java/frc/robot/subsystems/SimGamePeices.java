@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.Constants.AlgaeCollectorConstants;
@@ -140,7 +141,7 @@ public class SimGamePeices extends SubsystemBase {
         }
 
         // check if the coral collector is moving fast enough to collect a peice
-        if (coralCollector.getVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
+        if (coralCollector.getVelocity() < -SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
 
             for (int i = 0; i < corals.size(); i++){
 
@@ -150,7 +151,7 @@ public class SimGamePeices extends SubsystemBase {
 
                 if(new Translation2d(peice.getPose().getX(), peice.getPose().getY())
                     .getDistance(drivetrain.getPose().getTranslation()) < SimGamePeicesConstants.COLLECTION_TOLERANCE
-                    && Math.abs(elevator.getPosition() + SimGamePeicesConstants.ELEATOR_ROOT_HEIGHT 
+                    && Math.abs(Units.inchesToMeters(elevator.getPosition()) + SimGamePeicesConstants.ELEATOR_ROOT_HEIGHT 
                     - peice.getPose().getTranslation().getZ()) < SimGamePeicesConstants.COLLECTION_TOLERANCE){
 
                         hasPeice = true;
@@ -163,7 +164,7 @@ public class SimGamePeices extends SubsystemBase {
         }
 
         // check if the algae collector is moving fast enough to collect a peice
-        if (algaeCollector.getRollerVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
+        if (algaeCollector.getRollerVelocity() < -SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
 
             for (int i = 0; i < algaes.size(); i++){
 
@@ -186,7 +187,7 @@ public class SimGamePeices extends SubsystemBase {
      * release the held peice if the collector is ejecting it
      */
     private void release(){
-        if (hasPeice && heldPeice instanceof Coral && coralCollector.getVelocity() < -SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
+        if (hasPeice && heldPeice instanceof Coral && coralCollector.getVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
             
             heldPeice = null;
             hasPeice = false;
@@ -195,7 +196,7 @@ public class SimGamePeices extends SubsystemBase {
             
         }
 
-        if (hasPeice && heldPeice instanceof Algae && algaeCollector.getRollerVelocity() < -SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
+        if (hasPeice && heldPeice instanceof Algae && algaeCollector.getRollerVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
     
             heldPeice = null;
             hasPeice = false;
@@ -210,7 +211,7 @@ public class SimGamePeices extends SubsystemBase {
         if (hasPeice){
             if (heldPeice instanceof Coral){
                 heldPeice.setPose(new Pose3d(drivetrain.getPose().getX(), drivetrain.getPose().getY(), 
-                elevator.getPosition() + SimGamePeicesConstants.ELEATOR_ROOT_HEIGHT, 
+                Units.inchesToMeters(elevator.getPosition()) + SimGamePeicesConstants.ELEATOR_ROOT_HEIGHT, 
                 new Rotation3d(0, wrist.getAngle(), drivetrain.getPose().getRotation().getDegrees() + 180)));
             }
             

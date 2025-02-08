@@ -10,11 +10,11 @@ import frc.robot.RobotContainer;
 
 public class CollectCoral extends Command {
 
-    private CoralCollector collector;
+    private final CoralCollector collector;
 
-    private DoubleSupplier triggerPower;
+    private final DoubleSupplier triggerPower;
 
-    private Debouncer debouncer = new Debouncer(CoralCollectorConstants.DEBOUNCE_TIME);
+    private final Debouncer debouncer = new Debouncer(CoralCollectorConstants.DEBOUNCE_TIME);
 
     public CollectCoral(CoralCollector collector, DoubleSupplier triggerPower) {
         this.collector = collector;

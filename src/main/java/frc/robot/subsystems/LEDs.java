@@ -96,7 +96,7 @@ public class LEDs extends SubsystemBase {
 	}
 
 	/**
-	 * @param hue the hue to blink
+	 * @param hue the hue to flash
 	 */
 	public void blink(int hue) {
 		if ((int) (Timer.getFPGATimestamp() * 10) % 2 == 0) {

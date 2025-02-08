@@ -9,7 +9,6 @@ import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
-import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class TagAutoAlign extends Command {

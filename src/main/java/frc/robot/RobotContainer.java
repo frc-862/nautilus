@@ -149,8 +149,6 @@ public class RobotContainer extends LightningContainer {
         new Trigger(copilot::getLeftBumperButton)
                 .whileTrue(new SetRodState(rod, RodStates.SOURCE));
 
-        new Trigger(driver::getAButton).whileTrue(leds.enableState(LEDStates.RAINBOW));
-
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             // default
             (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, RodStates.L1));

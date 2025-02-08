@@ -12,27 +12,27 @@ import frc.thunder.hardware.Thunderbolt;
 public class LEDs extends Thunderbolt {
 	public LEDs() {
 		super(LEDConstants.PWM_PORT, LEDConstants.LENGTH, RobotMap.UPDATE_FREQ);
+
 	}
 
 	@Override
 	public void updateLEDs(LEDStates state) {
 		switch (state) {
-
 			case DISABLED -> setSolidHSV(0, 0, 0);
 
 			case RAINBOW -> rainbow();
 
-			case ALIGNING -> pulse(LEDConstants.BLUE_HUE);
+			case ALIGNING -> pulse(Colors.BLUE.getHue());
 
-			case ROD_MOVING -> pulse(LEDConstants.YELLOW_HUE);
+			case ROD_MOVING -> pulse(Colors.PINK.getHue());
 
-			case ALGAE_COLLECT -> blink(LEDConstants.LIGHT_BLUE_HUE);
+			case ALGAE_COLLECT -> blink(Colors.LIGHT_BLUE.getHue());
 
-			case ALGAE_SCORE -> pulse(LEDConstants.LIGHT_BLUE_HUE);
+			case ALGAE_SCORE -> pulse(Colors.LIGHT_BLUE.getHue());
 
-			case CORAL_COLLECT -> blink(LEDConstants.PURPLE_HUE);
+			case CORAL_COLLECT -> blink(Colors.PURPLE.getHue());
 
-			case CORAL_SCORE -> pulse(LEDConstants.PURPLE_HUE);
+			case CORAL_SCORE -> pulse(Colors.PURPLE.getHue());
 
 			case MIXER -> {}
 		}

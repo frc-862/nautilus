@@ -1026,19 +1026,8 @@ public class Constants {
         public static class LEDConstants {
                 public static final int PWM_PORT = 0;
                 public static final int LENGTH = 60;
-                public static final int BUFFER_TIME = 60;
-                public static final int UPDATE_RATE = 100;
 
                 public static final int SWRIL_SEGMENT_SIZE = 5;
-
-                public static final int RED_HUE = 0;
-                public static final int ORANGE_HUE = 5;
-                public static final int YELLOW_HUE = 15;
-                public static final int GREEN_HUE = 240;
-                public static final int LIGHT_BLUE_HUE = 195;
-                public static final int BLUE_HUE = 120;
-                public static final int PURPLE_HUE = 315;
-                public static final int PINK_HUE = 355;
 
                 public enum LEDStates {
                         DISABLED(),

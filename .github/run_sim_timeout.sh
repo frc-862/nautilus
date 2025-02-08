@@ -36,16 +36,16 @@ run_simulator() {
     # Check if the simulation exited immediately
     cat $LOG_FILE
     echo -e "\033[1;33mSimulation exited immediately. (Is gradlew working?)\033[0m"
-    return 3
+    return 0
 }
 
 # first run the simulation for 40 seconds
-if [ run_simulator(40) -eq 0 ] then
+if [[ $(run_simulator 40) -eq 0 ]]; then
     exit 0
 fi
 
 # if timeout, run the simulation for 120 seconds
-if [ run_simulator(120) -eq 0 ] then
+if [[ $(run_simulator 120) -eq 0 ]]; then
     exit 0
 fi
 

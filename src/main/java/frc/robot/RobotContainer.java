@@ -5,43 +5,47 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
-import frc.robot.Constants.FishingRodConstants.states;
+import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
+import frc.robot.commands.CollectAlgae;
+import frc.robot.commands.CollectCoral;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.commands.TagAutoAlign;
+import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CoralCollector;
-import frc.robot.commands.TestAutoAlign;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
-import frc.robot.subsystems.SimGamePeices;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.thunder.filter.XboxControllerFilter;
 
 public class RobotContainer extends LightningContainer {
 
@@ -58,140 +62,237 @@ public class RobotContainer extends LightningContainer {
     private AlgaeCollector algaeCollector;
     private Climber climber;
 
-    @SuppressWarnings("unused")
-    private SimGamePeices simGamePeices;
-
-    private XboxController driver;
-    private XboxController copilot;
+    private static XboxController driver;
+    private static XboxController copilot;
 
     @Override
     protected void initializeSubsystems() {
-        drivetrain = TunerConstants.createDrivetrain();
-        vision = new PhotonVision();
-        leds = new LEDs();
-        logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
 
-        //this is temporary
-        if(Robot.isSimulation()) {
+        drivetrain = TunerConstants.createDrivetrain();
+        vision = new PhotonVision(drivetrain);
+        logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
+
+        leds = new LEDs();
+
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
             coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
-            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor, RobotMotors.algaeCollectorPivotMotor);
-            climber = new Climber(RobotMotors.climberMotor);
+            // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
+            // RobotMotors.algaeCollectorPivotMotor);
+            // climber = new Climber(RobotMotors.climberMotor);
         }
-
-        simGamePeices = RobotBase.isSimulation() ? new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector) : null;
     }
 
     @Override
     protected void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
-                DriveRequests.getDrive(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+            DriveRequests.getDrive(
+                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                    ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        vision.setDefaultCommand(vision.updateOdometry(drivetrain));
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+            coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
+                () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
 
-        // more sim stuff
-        if (Robot.isSimulation()){
-                // climber.setDefaultCommand(new RunCommand(() -> climber.setPower(copilot.getLeftY()), climber));
+            new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.enableState(LED_STATES.CORAL_SCORE));
+            new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.enableState(LED_STATES.CORAL_COLLECT));
 
-                coralCollector.setDefaultCommand(coralCollector.run(() -> coralCollector.setPower(copilot.getRightY())));
+            // climber.setDefaultCommand(new RunCommand(() ->
+            // climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(),
+            // ControllerConstants.JOYSTICK_DEADBAND)), climber));
 
-                algaeCollector.setDefaultCommand(algaeCollector.run(() -> algaeCollector.setRollerPower(copilot.getRightX())));
+            rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW));
+
+            new Trigger(() -> rod.onTarget()).whileFalse(leds.enableState(LED_STATES.ROD_MOVING));
         }
+
     }
 
     @Override
     protected void configureButtonBindings() {
-        new Trigger(() -> driver.getRightTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(
-                DriveRequests.getSlow(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+        /* DRIVER BINDINGS */
+        // robot centric driving
         new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
-                .getRobotCentric(() -> -driver.getLeftX(), () -> -driver.getLeftY(), () -> driver.getRightX())));
+            .getRobotCentric(
+                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                    ControllerConstants.JOYSTICK_DEADBAND),
+                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                    ControllerConstants.JOYSTICK_DEADBAND))));
+        // sets slow mode
+        new Trigger(() -> driver.getRightTriggerAxis() > 0.25)
+            .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
+            .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+
+        // drivetrain brake
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
+        // reset forward
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
-                new InstantCommand(() -> drivetrain.seedFieldCentric()));
+            new InstantCommand(() -> drivetrain.seedFieldCentric()));
+        
+        new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
 
-        new Trigger(() -> DriverStation.isEnabled()).whileTrue(new InstantCommand(() -> coralCollector.setPower(1)));
+        /* COPILOT BINDINGS */
+        new Trigger(copilot::getRightBumperButton)
+            .whileTrue(new SetRodState(rod, RodStates.SOURCE));
+        new Trigger(copilot::getLeftBumperButton)
+            .whileTrue(new SetRodState(rod, RodStates.SOURCE));
 
-                
-        // // TODO: Remove Standin Command
-        // new Trigger(() -> rod.onTarget()).whileTrue(leds.enableState(LED_STATES.ROD_ON_TARGET));
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+            // default
+            (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, RodStates.L1));
+            (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(rod, RodStates.L2));
+            (new Trigger(copilot::getXButton)).whileTrue(new SetRodState(rod, RodStates.L3));
+            (new Trigger(copilot::getYButton)).whileTrue(new SetRodState(rod, RodStates.L4));
 
-        //sim stuff
-        if(Robot.isSimulation()) {
-            // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(-1)))).onFalse(new InstantCommand(wrist::stop));
-            // new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setPower(1)))).onFalse(new InstantCommand(wrist::stop));
+            // biases
+            new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(2));
+            new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-2));
 
-        //     new Trigger(()-> copilot.getYButton()).whileTrue(new InstantCommand((() -> elevator.setPower(0.75)))).onFalse(new InstantCommand(elevator::stop));
-        //     new Trigger(() -> copilot.getAButton()).whileTrue(new InstantCommand((() -> elevator.setPower(-0.75)))).onFalse(new InstantCommand(elevator::stop));
+            new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-5));
+            new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(5));
 
-            // new Trigger (()-> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75)))).onFalse(new InstantCommand(coralCollector::stop));
-            // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5)))).onFalse(new InstantCommand(coralCollector::stop));
+            // unused algae stuff
+            // (new Trigger(driver::getRightBumperButtonPressed))
+            //            .whileTrue(new SetRodState(rod, RodStates.SOURCE));
+            // ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(
+            //     new CollectAlgae(algaeCollector, driver::getRightTriggerAxis).deadlineFor(leds.enableState(LED_STATES.ALGAE_COLLECT)));
+            // (new Trigger(copilot::getBButtonPressed).and(algaeMode))
+            //     .whileTrue(new SetRodState(rod, RodStates.LOW));
+            // (new Trigger(copilot::getXButtonPressed).and(algaeMode))
+            //     .whileTrue(new SetRodState(rod, RodStates.HIGH));
+            // (new Trigger(copilot::getRightBumperButtonPressed))
+            //     .whileTrue((new InstantCommand(() -> algaeCollector.setRollerPower(-1), algaeCollector)
+            //         .andThen(() -> algaeCollector.setRollerPower(0d))).deadlineFor(leds.enableState(LED_STATES.ALGAE_SCORE)));
 
-                new Trigger(() -> copilot.getYButton()).onTrue(new InstantCommand(() -> rod.setState(states.L1)));
-                new Trigger(() -> copilot.getBButton()).onTrue(new InstantCommand(() -> rod.setState(states.L2)));
-                new Trigger(() -> copilot.getAButton()).onTrue(new InstantCommand(() -> rod.setState(states.L3)));
-                new Trigger(() -> copilot.getXButton()).onTrue(new InstantCommand(() -> rod.setState(states.L4)));
-                new Trigger(() -> copilot.getBackButton()).onTrue(new InstantCommand(() -> rod.setState(states.STOW)));
-                new Trigger(() -> copilot.getStartButton()).onTrue(new InstantCommand(() -> rod.setState(states.SOURCE)));
-
+            // sim stuff
+            // if (Robot.isSimulation()) {
+            //     new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() -> wrist.setRawPower(-1))))
+            //             .onFalse(new InstantCommand(wrist::stop));
+            //     new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setRawPower(1))))
+            //             .onFalse(new InstantCommand(wrist::stop));
+    
+            //     new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision,
+            //             drivetrain));
+    
+            //     new Trigger(() -> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75))))
+            //             .onFalse(new InstantCommand(coralCollector::stop));
+            //     new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5))))
+            //             .onFalse(new InstantCommand(coralCollector::stop));
+            // }
         }
+
     }
 
     @Override
     protected void initializeNamedCommands() {
-        NamedCommands.registerCommand("IntakeCoral",
-                StandinCommands.intakeCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_COLLECT)));
-        NamedCommands.registerCommand("ScoreCoral", 
-                StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
+        // NamedCommands.registerCommand("ScoreCoral",
+        // StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
         // TODO: Get actual offsets
-        NamedCommands.registerCommand("ReefAlignLeft", 
-                new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
-        NamedCommands.registerCommand("ReefAlignRight", 
-                new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
-        NamedCommands.registerCommand("SourceAlignLeft", 
-                new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
-        NamedCommands.registerCommand("SourceAlignRight", 
-                new TestAutoAlign(vision, drivetrain, 0).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
-        if (Robot.isReal()){
+
+        NamedCommands.registerCommand("ReefAlignLeft",
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+        NamedCommands.registerCommand("ReefAlignRight",
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+        NamedCommands.registerCommand("SourceAlignLeft",
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+        NamedCommands.registerCommand("SourceAlignRight",
+                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LED_STATES.ALIGNING)));
+
+        switch (Constants.ROBOT_IDENTIFIER) {
+            case SIM -> {
                 NamedCommands.registerCommand("RodHome",
-                        StandinCommands.rodStow().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        StandinCommands.rodStow()
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL1",
-                        StandinCommands.rodL1().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        StandinCommands.rodL1()
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL2",
-                        StandinCommands.rodL2().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        StandinCommands.rodL2()
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL3",
-                        StandinCommands.rodL3().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        StandinCommands.rodL3()
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL4",
-                        StandinCommands.rodL4().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        StandinCommands.rodL4()
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
                 NamedCommands.registerCommand("RodSource",
-                        StandinCommands.rodSource().deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-        } else if(Robot.isSimulation()){
-                NamedCommands.registerCommand("RodHome", 
-                        new SetRodState(rod, states.STOW).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL1", 
-                        new SetRodState(rod, states.L1).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL2", 
-                        new SetRodState(rod, states.L2).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL3", 
-                        new SetRodState(rod, states.L3).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodL4", 
-                        new SetRodState(rod, states.L4).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
-                NamedCommands.registerCommand("RodSource", 
-                        new SetRodState(rod, states.SOURCE).deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                        StandinCommands.rodSource()
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+            }
+            case NAUTILUS -> {
+            }
+            default -> {
+                NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, () -> 1));
+
+                NamedCommands.registerCommand("RodHome",
+                        new SetRodState(rod, RodStates.STOW)
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL1",
+                        new SetRodState(rod, RodStates.L1)
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL2",
+                        new SetRodState(rod, RodStates.L2)
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL3",
+                        new SetRodState(rod, RodStates.L3)
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodL4",
+                        new SetRodState(rod, RodStates.L4)
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("RodSource",
+                        new SetRodState(rod, RodStates.SOURCE)
+                                .deadlineFor(leds.enableState(LED_STATES.ROD_MOVING)));
+                NamedCommands.registerCommand("ScoreCoral", new ScoreCoral(coralCollector));
+            }
         }
 
-        // autoChooser = AutoBuilder.buildAutoChooser();
-        // LightningShuffleboard.set("Auton", "Auto Chooser", autoChooser);
-}
+        autoChooser = AutoBuilder.buildAutoChooser();
+        LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
+    }
 
-        public Command getAutonomousCommand() {
-                return autoChooser.getSelected();
+    @Override
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
+
+    public static Command hapticDriverCommand() {
+        if (!DriverStation.isAutonomous()) {
+            return new StartEndCommand(() -> {
+                driver.setRumble(GenericHID.RumbleType.kRightRumble, 1d);
+                driver.setRumble(GenericHID.RumbleType.kLeftRumble, 1d);
+            }, () -> {
+                driver.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+                driver.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+            }).withDeadline(new WaitCommand(1));
+        } else {
+            return new InstantCommand();
         }
+    }
 
+    public static Command hapticCopilotCommand() {
+        if (!DriverStation.isAutonomous()) {
+            return new StartEndCommand(() -> {
+                copilot.setRumble(GenericHID.RumbleType.kRightRumble, 1d);
+                copilot.setRumble(GenericHID.RumbleType.kLeftRumble, 1d);
+            }, () -> {
+                copilot.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+                copilot.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+            }).withDeadline(new WaitCommand(1));
+        } else {
+            return new InstantCommand();
+        }
+    }
 
 }

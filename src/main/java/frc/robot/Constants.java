@@ -60,6 +60,16 @@ public class Constants {
     public static final String TRITON_IDENTIFIER = "/home/lvuser/triton"; // Differentiate between Triton and Nautlius
     public static final boolean IS_TRITON = Paths.get(TRITON_IDENTIFIER).toFile().exists();
 
+    public enum RobotIdentifiers {
+        NAUTILUS, TRITON, SIM
+    };
+
+    // note from kyle: wtf is this?? :sob:
+    // yeah its a double inline ternary operator fight me
+    // if(isTriton); else if(isSim); else, its nautilus
+    public static final RobotIdentifiers ROBOT_IDENTIFIER = Paths.get(TRITON_IDENTIFIER).toFile().exists() ? RobotIdentifiers.TRITON
+            : Robot.isSimulation() ? RobotIdentifiers.SIM : RobotIdentifiers.NAUTILUS;
+
     public static class EncoderConstants {
         // Nautilus values
         private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.25732421875);
@@ -72,8 +82,21 @@ public class Constants {
         private static final Angle tritonKFrontRightEncoderOffset = Rotations.of(0.033447);
         private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(0.1350);
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
+
+        public static final double tritonWristOffset = -0.246;
+
+        // Generic values
+        public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
+                : nautilusKFrontLeftEncoderOffset.in(Rotations);
+        public static final double frontRightOffset = IS_TRITON ? tritonKFrontRightEncoderOffset.in(Rotations)
+                : nautilusKFrontRightEncoderOffset.in(Rotations);
+        public static final double backLeftOffset = IS_TRITON ? tritonKBackLeftEncoderOffset.in(Rotations)
+                : nautilusKBackLeftEncoderOffset.in(Rotations);
+        public static final double backRightOffset = IS_TRITON ? tritonKBackRightEncoderOffset.in(Rotations)
+                : nautilusKBackRightEncoderOffset.in(Rotations);
+
     }
-    
+
     public static class RobotMap {
         public static final int FL_DRIVE = 1;
         public static final int FL_TURN = 2;
@@ -91,165 +114,175 @@ public class Constants {
         public static final int BR_TURN = 8;
         public static final int BR_ENCODER = 34;
 
-        public static final int L_ELEVATOR = 10; // temp
-        public static final int R_ELEVATOR = 9; // temp
-        public static final int ELEVATOR_CANRANGE = 41; // temp
+        public static final int L_ELEVATOR = 10;
+        public static final int R_ELEVATOR = 9;
+        public static final int ELEVATOR_CANRANGE = 41;
 
-        public static final int WRIST = 11; // temp
-        public static final int WRIST_ENCODER = 35; // temp
+        public static final int WRIST = 11;
+        public static final int WRIST_ENCODER = 35;
 
-        public static final int CORAL_COLLECTOR = 12; // temp
-        public static final int CORAL_COLLECTOR_ENCODER = 36; // temp
+        public static final int CORAL_COLLECTOR = 12;
+        public static final int CORAL_COLLECTOR_ENCODER = 36;
         public static final int CORAL_COLLECTOR_BEAM_BREAK_DIO = 0; // temp
 
         public static final int ALGAE_COLLECTOR_ROLLER = 13; // temp
         public static final int ALGAE_COLLECTOR_PIVOT = 14; // temp
-        
-        public static final int CLIMBER = 15; // temp
 
+        public static final int CLIMBER = 15;
 
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
         // 20ms default loop time
         public static final double UPDATE_FREQ = 0.020;
+    }
 
-        public static class ButtonBox {
-            public static final int GRAY_TOPLEFT = 5;
-            public static final int PINK = 3;
-            public static final int GREEN = 4;
-            public static final int GRAY_TOPRIGHT = 6;
-            public static final int GRAY_BOTTOMLEFT = 2; // AXIS
-            public static final int PURPLE = 1;
-            public static final int RED = 2;
-            public static final int GRAY_BOTTOMRIGHT = 3; // AXIS
-            public static final int SHARE = 7;
-            public static final int OPTIONS = 8;
-            public static final int L3_SL = 9;
-            public static final int R3_SL = 10;
+    // TODO: maybe put these in their own subsystem constants?
+    public static class RobotMotors {
+        public static final ThunderBird wristMotor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME,
+                WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
+        public static final ThunderBird leftElevatorMotor = new ThunderBird(RobotMap.L_ELEVATOR,
+                RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
+                ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
+        public static final ThunderBird rightElevatorMotor = new ThunderBird(RobotMap.R_ELEVATOR,
+                RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
+                ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
+        public static final ThunderBird coralCollectorMotor = new ThunderBird(RobotMap.CORAL_COLLECTOR,
+                RobotMap.CANIVORE_CAN_NAME, CoralCollectorConstants.INVERTED,
+                CoralCollectorConstants.STATOR_CURRENT_LIMIT, CoralCollectorConstants.BRAKE_MODE);
+        public static final ThunderBird algaeCollectorPivotMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_PIVOT,
+                RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.PIVOT_INVERTED,
+                AlgaeCollectorConstants.PIVOT_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.PIVOT_BRAKE_MODE);
+        public static final ThunderBird algaeCollectorRollerMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_ROLLER,
+                RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.ROLLER_INVERTED,
+                AlgaeCollectorConstants.ROLLER_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.ROLLER_BRAKE_MODE);
+        public static final ThunderBird climberMotor = new ThunderBird(RobotMap.CLIMBER, RobotMap.CANIVORE_CAN_NAME,
+                ClimberConstants.INVERTED,
+                ClimberConstants.STATOR_CURRENT_LIMIT, ClimberConstants.BREAK_MODE);
+    }
+
+    public static class FishingRodConstants {
+        public enum RodStates {
+            STOW, L1, L2, L3, L4, SOURCE, LOW, HIGH, ALGAE_SCORE
         }
+
+        public enum RodTransitionStates {
+            DEFAULT, // default travel state
+            X_SCORE, // any state to L4
+            SCORE_X, // L4 to any state
+            TRITON // specific state to deal with triton's loose belt
+        }
+
+        public static final HashMap<RodStates, Double> WRIST_MAP = new HashMap<RodStates, Double>() {
+            {
+                // put(ROD_STATES.STOW, 0d);
+                // put(ROD_STATES.L1, 0d);
+                // put(ROD_STATES.L2, -20d);
+                // put(ROD_STATES.L3, -20d);
+                // put(ROD_STATES.L4, -80d);
+                // put(ROD_STATES.SOURCE, 0d);
+
+                put(RodStates.STOW, 81d);
+                put(RodStates.L1, 0d);
+                put(RodStates.L2, -35d);
+                put(RodStates.L3, -35d);
+                put(RodStates.L4, -47d);
+                put(RodStates.SOURCE, 65d);
+            }
+        };
+
+        public static final HashMap<RodStates, Double> ELEVATOR_MAP = new HashMap<RodStates, Double>() {
+            {
+                // put(ROD_STATES.STOW, 1d);
+                // put(ROD_STATES.L1, 17.88d);
+                // put(ROD_STATES.L2, 31.72d);
+                // put(ROD_STATES.L3, 47.59d);
+                // put(ROD_STATES.L4, 71.87d);
+                // put(ROD_STATES.SOURCE, 36.5d);
+
+                put(RodStates.STOW, 3d);
+                put(RodStates.L1, 10d);
+                put(RodStates.L2, 13d);
+                put(RodStates.L3, 26d);
+                put(RodStates.L4, 46.5d);
+                put(RodStates.SOURCE, 6d);
+            }
+        };
     }
 
     public static class ElevatorConstants {
         public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 120d; // temp
-
-        //both motors are - to go up
+        // both motors are - to go up
         public static final boolean L_INVERTED = false;
         public static final boolean R_INVERTED = true;
+        
+        public static final double STATOR_CURRENT_LIMIT = 120d; // temp
 
-        public static final double GEAR_RATIO = 4d; 
+        public static final double GEAR_RATIO = 4d;
         public static final Distance DRUM_RADIUS = Millimeter.of(15);
         public static final double DRUM_CIRCUMFERENCE = Math.PI * 2 * DRUM_RADIUS.in(Inches);
         public static final double ROTOR_TO_SENSOR_RATIO = 1; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = DRUM_CIRCUMFERENCE / GEAR_RATIO;
 
-        public static final double MOTORS_KP = 3; // temp
+        public static final double MOTORS_KP = 6.5; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
-        public static final double MOTORS_KS = 0.32; // temp
-        public static final double MOTORS_KV = 0.15; // temp
+        public static final double MOTORS_KS = 1; // temp
+        public static final double MOTORS_KV = 0.18;// temp
         public static final double MOTORS_KA = 0.01; // temp
         public static final double MOTORS_KG = 0d; // temp
 
-        public static final double VELOC = 80d; // temp
-        public static final double ACCEL = 200d; // temp
+        public static final double VELOC = 80d; // 80
+        public static final double ACCEL = 400d; // 200
         public static final double JERK = 1600d; // temp
-
 
         public static final double TOLERANCE = 0.1; // temp
 
-        //kind of guessing the numbers here (didn't do a proper test)
+        // kind of guessing the numbers here (didn't do a proper test)
         public static final Distance MIN_EXTENSION = Inches.of(0);
-        public static final Distance MAX_EXTENSION = Inches.of(60);
-
-
-
+        public static final Distance MAX_EXTENSION = Inches.of(47);
 
         // SIM
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(30); // temp
         public static final double CUSHION_METERS = 0.05; // stages don't line up perfectly
-        public static final double STAGE_LEN_METERS = MAX_EXTENSION.in(Meters) / 3; 
+        public static final double STAGE_LEN_METERS = MAX_EXTENSION.in(Meters) / 3;
     }
-
-    public static class FishingRodConstants {
-        public enum states {
-            STOW, L1, L2, L3, L4, SOURCE
-        }
-
-        public static final HashMap<states, Double> WRIST_MAP = new HashMap<states, Double>() {
-            {
-                put(states.STOW, 0d);
-                put(states.L1, 0d);
-                put(states.L2, -20d);
-                put(states.L3, -20d);
-                put(states.L4, -80d);
-                put(states.SOURCE, 0d);
-            }
-        };
-
-        public static final HashMap<states, Double> ELEVATOR_MAP = new HashMap<states, Double>() {
-            {
-                put(states.STOW, 1d);
-                put(states.L1, 17.88d);
-                put(states.L2, 31.72d);
-                put(states.L3, 47.59d);
-                put(states.L4, 71.87d);
-                put(states.SOURCE, 36.5d);
-            }
-        };
-    }
-
-    public static class RobotMotors {
-        public static final ThunderBird wristMotor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME,
-            WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
-        public static final ThunderBird leftElevatorMotor = new ThunderBird(RobotMap.L_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
-                    ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
-        public static final ThunderBird rightElevatorMotor = new ThunderBird(RobotMap.R_ELEVATOR, RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
-            ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
-        public static final ThunderBird coralCollectorMotor = new ThunderBird(RobotMap.CORAL_COLLECTOR, RobotMap.CANIVORE_CAN_NAME, CoralCollectorConstants.INVERTED,
-            CoralCollectorConstants.STATOR_CURRENT_LIMIT, CoralCollectorConstants.BRAKE_MODE);
-        public static final ThunderBird algaeCollectorPivotMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_PIVOT, RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.PIVOT_INVERTED,
-            AlgaeCollectorConstants.PIVOT_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.PIVOT_BRAKE_MODE);
-        public static final ThunderBird algaeCollectorRollerMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_ROLLER, RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.ROLLER_INVERTED,
-            AlgaeCollectorConstants.ROLLER_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.ROLLER_BRAKE_MODE);
-        public static final ThunderBird climberMotor = new ThunderBird(RobotMap.CLIMBER, RobotMap.CANIVORE_CAN_NAME, ClimberConstants.INVERTED,
-            ClimberConstants.STATOR_CURRENT_LIMIT, ClimberConstants.BREAK_MODE);
-
-    }   
 
     public static class WristConstants {
         public static final boolean BRAKE_MODE = true;
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean INVERTED = false; // temp
 
-        public static final double ROTOR_TO_ENCODER_RATIO = 10d; // temp
+        public static final double ROTOR_TO_ENCODER_RATIO = 36d; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double MOTORS_KP = 3; // temp
+        public static final double MOTORS_KP = 15; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
         public static final double MOTORS_KS = 0; // temp
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
-        public static final double MOTORS_KG = 1.523; // temp
+        public static final double MOTORS_KG = 0.3; // temp
 
         public static final Angle MIN_ANGLE = Degrees.of(-85);
         public static final Angle MAX_ANGLE = Degrees.of(85);
 
-        public static final double TOLERANCE = 3d;
+        public static final double TOLERANCE = 10d;
 
-        //sim stuff
-        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.1096); // 5lb, 2.5in rad, 9in height
+        // sim stuff
+        public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.086); // 5lb, 2.5in rad, 9in height
         public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
 
     }
-    public static class CoralCollectorConstants{
+
+    public static class CoralCollectorConstants {
         public static final boolean BRAKE_MODE = true;
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean INVERTED = false; // temp
+        public static final double CORAL_ROLLER_SPEED = 1;
+        public static final double DEBOUNCE_TIME = 0.1;
 
         public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
@@ -258,28 +291,25 @@ public class Constants {
         public static final double KV = 0.24; // temp
         public static final double KA = 0.8; // temp
 
-    }
+        public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
-    public static class ControllerConstants {
-        public static final int DRIVER_CONTROLLER = 0;
-        public static final int COPILOT_CONTROLLER = 1;
-
-        public static final double JOYSTICK_DEADBAND = 0.1;
-        public static final double TRIGGER_DEADBAND = 0.05;
-
+        public static final double COLLECTED_CURRENT = 80d;
     }
 
     public class DrivetrainConstants {
         public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
-                                                                                                                        // desired
-                                                                                                                        // top
-                                                                                                                        // speed
+                                                                                                   // desired
+                                                                                                   // top
+                                                                                                   // speed
         public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a
                                                                                                         // rotation per
                                                                                                         // second max
                                                                                                         // angular
                                                                                                         // velocity
         public static final double SLOW_MODE_MULT = 0.3; // 3/4 of a rotation per second max angular velocity
+
+        public static final double SLOW_SPEED_MULT = 0.4; // temp
+        public static final double SLOW_TURN_MULT = 0.7; // temp
 
         public class DriveRequests {
             private static final SwerveRequest.FieldCentric DRIVE = new SwerveRequest.FieldCentric();
@@ -299,6 +329,18 @@ public class Constants {
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X (left)
 
+            }
+
+            public static SwerveRequest getDrive(double x, double y, double rot) {
+                return DRIVE
+                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                        .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
+                        .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
+                        .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
+                                                                                 // X
+                                                                                 // (left)
             }
 
             public static Supplier<SwerveRequest> getSlow(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
@@ -333,6 +375,18 @@ public class Constants {
                                                                                  // X (left)
             }
 
+            public static SwerveRequest getRobotCentric(double x, double y, double rot) {
+                return ROBO_CENTRIC
+                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                        .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
+                        .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
+                        .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
+                                                                                 // X
+                                                                                 // (left)
+            }
+
             public static Supplier<SwerveRequest> getBrake() {
                 return () -> BRAKE;
             }
@@ -365,17 +419,25 @@ public class Constants {
     }
 
     public static class VisionConstants {
-        public static final String camera1Name = "cam1";
+        public static final String leftCamName = "cam1";
+        public static final String rightCamName = "cam2";
         public static final TargetModel targetModel = TargetModel.kAprilTag36h11;
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
         public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout
-                .loadField(AprilTagFields.k2024Crescendo);
+                .loadField(AprilTagFields.k2025Reefscape);
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
-        public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, 0);
-        public static final Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
+        public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, Math.PI);
+        public static final Transform3d robotLeftToCamera = new Transform3d(new Translation3d(-5.772, 11.281, 12).times(0.0254), robotToCameraRot);
+        public static final Transform3d robotRightToCamera = new Transform3d(new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
+        // 
+        //
+
+        public static final double VISION_X_STDEV = 1;
+        public static final double VISION_Y_STDEV = 1;
+        public static final double VISION_THETA_STDEV = 1;
     }
 
     public static class PoseConstants {
@@ -396,11 +458,11 @@ public class Constants {
         public static final Pose2d REEFSCORE6_2 = new Pose2d(3.949, 5.282, new Rotation2d(300));
 
         public enum ScoringPoses {
-            REEFSCORE1_1, REEFSCORE1_2, REEFSCORE2_1, REEFSCORE2_2, REEFSCORE3_1, REEFSCORE3_2, 
+            REEFSCORE1_1, REEFSCORE1_2, REEFSCORE2_1, REEFSCORE2_2, REEFSCORE3_1, REEFSCORE3_2,
             REEFSCORE4_1, REEFSCORE4_2, REEFSCORE5_1, REEFSCORE5_2, REEFSCORE6_1, REEFSCORE6_2
         }
 
-        public static HashMap<ScoringPoses, Pose2d> poseHashMap = new HashMap<ScoringPoses, Pose2d>(){
+        public static HashMap<ScoringPoses, Pose2d> poseHashMap = new HashMap<ScoringPoses, Pose2d>() {
             {
                 put(ScoringPoses.REEFSCORE1_1, REEFSCORE1_1);
                 put(ScoringPoses.REEFSCORE1_2, REEFSCORE1_2);
@@ -427,17 +489,18 @@ public class Constants {
         public class NautliusTunerConstants {
             // Both sets of gains need to be tuned to your individual robot.
 
-            // The steer motor uses any SwerveModule.SteerRequestType control request with the
+            // The steer motor uses any SwerveModule.SteerRequestType control request with
+            // the
             // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
             private static final Slot0Configs steerGains = new Slot0Configs()
-                .withKP(20).withKI(0).withKD(0.5)
-                .withKS(0.224).withKV(2.6).withKA(0)
-                .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+                    .withKP(20).withKI(0).withKD(0.5)
+                    .withKS(0.224).withKV(2.6).withKA(0)
+                    .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                .withKP(0.1).withKI(0).withKD(0)
-                .withKS(0).withKV(0.124);
+                    .withKP(0.1).withKI(0).withKD(0)
+                    .withKS(0).withKV(0.124);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
@@ -452,31 +515,34 @@ public class Constants {
             private static final SteerMotorArrangement kSteerMotorType = SteerMotorArrangement.TalonFX_Integrated;
 
             // The remote sensor feedback type to use for the steer motors;
-            // When not Pro-licensed, FusedCANcoder/SyncCANcoder automatically fall back to RemoteCANcoder
+            // When not Pro-licensed, FusedCANcoder/SyncCANcoder automatically fall back to
+            // RemoteCANcoder
             private static final SteerFeedbackType kSteerFeedbackType = SteerFeedbackType.FusedCANcoder;
 
             // The stator current at which the wheels start to slip;
             // This needs to be tuned to your individual robot
             private static final Current kSlipCurrent = Amps.of(120.0);
 
-            // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
-            // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
+            // Initial configs for the drive and steer motors and the azimuth encoder; these
+            // cannot be null.
+            // Some configs will be overwritten; check the `with*InitialConfigs()` API
+            // documentation.
             private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
             private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
-                .withCurrentLimits(
-                    new CurrentLimitsConfigs()
-                        // Swerve azimuth does not require much torque output, so we can set a relatively low
-                        // stator current limit to help avoid brownouts without impacting performance.
-                        .withStatorCurrentLimit(Amps.of(60))
-                        .withStatorCurrentLimitEnable(true)
-                );
+                    .withCurrentLimits(
+                            new CurrentLimitsConfigs()
+                                    // Swerve azimuth does not require much torque output, so we can set a
+                                    // relatively low
+                                    // stator current limit to help avoid brownouts without impacting performance.
+                                    .withStatorCurrentLimit(Amps.of(60))
+                                    .withStatorCurrentLimitEnable(true));
             private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
             // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
             private static final Pigeon2Configuration pigeonConfigs = null;
 
             // CAN bus that the devices are located on;
             // All swerve devices must share the same CAN bus
-            public static final CANBus kCANBus = new CANBus("Canivore", "./logs/example.hoot");
+            public static final CANBus kCANBus = new CANBus(RobotMap.CANIVORE_CAN_NAME, "./logs/example.hoot");
 
             // Theoretical free speed (m/s) at 12 V applied output;
             // This needs to be tuned to your individual robot
@@ -493,7 +559,7 @@ public class Constants {
             private static final boolean kInvertLeftSide = false;
             private static final boolean kInvertRightSide = true;
 
-            private static final int kPigeonId = 23;
+            private static final int kPigeonId = RobotMap.PIGEON;
 
             // These are only used for simulation
             private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.01);
@@ -507,8 +573,7 @@ public class Constants {
                     .withPigeon2Id(kPigeonId)
                     .withPigeon2Configs(pigeonConfigs);
 
-            private static final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreator =
-                new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
+            private static final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreator = new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
                     .withDriveMotorGearRatio(kDriveGearRatio)
                     .withSteerMotorGearRatio(kSteerGearRatio)
                     .withCouplingGearRatio(kCoupleRatio)
@@ -530,11 +595,10 @@ public class Constants {
                     .withSteerFrictionVoltage(kSteerFrictionVoltage)
                     .withDriveFrictionVoltage(kDriveFrictionVoltage);
 
-
             // Front Left
-            private static final int kFrontLeftDriveMotorId = 1;
-            private static final int kFrontLeftSteerMotorId = 2;
-            private static final int kFrontLeftEncoderId = 31;
+            private static final int kFrontLeftDriveMotorId = RobotMap.FL_DRIVE;
+            private static final int kFrontLeftSteerMotorId = RobotMap.FL_TURN;
+            private static final int kFrontLeftEncoderId = RobotMap.FL_ENCODER;
             private static final Angle kFrontLeftEncoderOffset = EncoderConstants.nautilusKFrontLeftEncoderOffset;
             private static final boolean kFrontLeftSteerMotorInverted = true;
             private static final boolean kFrontLeftEncoderInverted = false;
@@ -543,9 +607,9 @@ public class Constants {
             private static final Distance kFrontLeftYPos = Inches.of(11);
 
             // Front Right
-            private static final int kFrontRightDriveMotorId = 3;
-            private static final int kFrontRightSteerMotorId = 4;
-            private static final int kFrontRightEncoderId = 32;
+            private static final int kFrontRightDriveMotorId = RobotMap.FR_DRIVE;
+            private static final int kFrontRightSteerMotorId = RobotMap.FR_TURN;
+            private static final int kFrontRightEncoderId = RobotMap.FR_ENCODER;
             private static final Angle kFrontRightEncoderOffset = EncoderConstants.nautilusKFrontRightEncoderOffset;
             private static final boolean kFrontRightSteerMotorInverted = true;
             private static final boolean kFrontRightEncoderInverted = false;
@@ -554,9 +618,9 @@ public class Constants {
             private static final Distance kFrontRightYPos = Inches.of(-11);
 
             // Back Left
-            private static final int kBackLeftDriveMotorId = 5;
-            private static final int kBackLeftSteerMotorId = 6;
-            private static final int kBackLeftEncoderId = 33;
+            private static final int kBackLeftDriveMotorId = RobotMap.BL_DRIVE;
+            private static final int kBackLeftSteerMotorId = RobotMap.BL_TURN;
+            private static final int kBackLeftEncoderId = RobotMap.BL_ENCODER;
             private static final Angle kBackLeftEncoderOffset = EncoderConstants.nautilusKBackLeftEncoderOffset;
             private static final boolean kBackLeftSteerMotorInverted = true;
             private static final boolean kBackLeftEncoderInverted = false;
@@ -565,9 +629,9 @@ public class Constants {
             private static final Distance kBackLeftYPos = Inches.of(11);
 
             // Back Right
-            private static final int kBackRightDriveMotorId = 7;
-            private static final int kBackRightSteerMotorId = 8;
-            private static final int kBackRightEncoderId = 34;
+            private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
+            private static final int kBackRightSteerMotorId = RobotMap.BR_DRIVE;
+            private static final int kBackRightEncoderId = RobotMap.BR_ENCODER;
             private static final Angle kBackRightEncoderOffset = EncoderConstants.nautilusKBackRightEncoderOffset;
             private static final boolean kBackRightSteerMotorInverted = true;
             private static final boolean kBackRightEncoderInverted = false;
@@ -575,27 +639,29 @@ public class Constants {
             private static final Distance kBackRightXPos = Inches.of(-11);
             private static final Distance kBackRightYPos = Inches.of(-11);
 
-
-            public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft =
-                ConstantCreator.createModuleConstants(
-                    kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId, kFrontLeftEncoderOffset,
-                    kFrontLeftXPos, kFrontLeftYPos, kInvertLeftSide, kFrontLeftSteerMotorInverted, kFrontLeftEncoderInverted
-                );
-            public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontRight =
-                ConstantCreator.createModuleConstants(
-                    kFrontRightSteerMotorId, kFrontRightDriveMotorId, kFrontRightEncoderId, kFrontRightEncoderOffset,
-                    kFrontRightXPos, kFrontRightYPos, kInvertRightSide, kFrontRightSteerMotorInverted, kFrontRightEncoderInverted
-                );
-            public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackLeft =
-                ConstantCreator.createModuleConstants(
-                    kBackLeftSteerMotorId, kBackLeftDriveMotorId, kBackLeftEncoderId, kBackLeftEncoderOffset,
-                    kBackLeftXPos, kBackLeftYPos, kInvertLeftSide, kBackLeftSteerMotorInverted, kBackLeftEncoderInverted
-                );
-            public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackRight =
-                ConstantCreator.createModuleConstants(
-                    kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId, kBackRightEncoderOffset,
-                    kBackRightXPos, kBackRightYPos, kInvertRightSide, kBackRightSteerMotorInverted, kBackRightEncoderInverted
-                );
+            public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft = ConstantCreator
+                    .createModuleConstants(
+                            kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId,
+                            kFrontLeftEncoderOffset,
+                            kFrontLeftXPos, kFrontLeftYPos, kInvertLeftSide, kFrontLeftSteerMotorInverted,
+                            kFrontLeftEncoderInverted);
+            public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontRight = ConstantCreator
+                    .createModuleConstants(
+                            kFrontRightSteerMotorId, kFrontRightDriveMotorId, kFrontRightEncoderId,
+                            kFrontRightEncoderOffset,
+                            kFrontRightXPos, kFrontRightYPos, kInvertRightSide, kFrontRightSteerMotorInverted,
+                            kFrontRightEncoderInverted);
+            public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackLeft = ConstantCreator
+                    .createModuleConstants(
+                            kBackLeftSteerMotorId, kBackLeftDriveMotorId, kBackLeftEncoderId, kBackLeftEncoderOffset,
+                            kBackLeftXPos, kBackLeftYPos, kInvertLeftSide, kBackLeftSteerMotorInverted,
+                            kBackLeftEncoderInverted);
+            public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackRight = ConstantCreator
+                    .createModuleConstants(
+                            kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId,
+                            kBackRightEncoderOffset,
+                            kBackRightXPos, kBackRightYPos, kInvertRightSide, kBackRightSteerMotorInverted,
+                            kBackRightEncoderInverted);
 
             /**
              * Creates a CommandSwerveDrivetrain instance.
@@ -605,8 +671,7 @@ public class Constants {
              */
             public static Swerve createDrivetrain() {
                 return new Swerve(
-                    DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight
-                );
+                        DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
             }
         }
 
@@ -727,8 +792,8 @@ public class Constants {
             private static final boolean kFrontLeftSteerMotorInverted = true;
             private static final boolean kFrontLeftEncoderInverted = false;
 
-            private static final Distance kFrontLeftXPos = Inches.of(13.5);
-            private static final Distance kFrontLeftYPos = Inches.of(13.5);
+            private static final Distance kFrontLeftXPos = Inches.of(11);
+            private static final Distance kFrontLeftYPos = Inches.of(11);
 
             // Front Right
             private static final int kFrontRightDriveMotorId = RobotMap.FR_DRIVE;
@@ -738,8 +803,8 @@ public class Constants {
             private static final boolean kFrontRightSteerMotorInverted = true;
             private static final boolean kFrontRightEncoderInverted = false;
 
-            private static final Distance kFrontRightXPos = Inches.of(13.5);
-            private static final Distance kFrontRightYPos = Inches.of(-13.5);
+            private static final Distance kFrontRightXPos = Inches.of(11);
+            private static final Distance kFrontRightYPos = Inches.of(-11);
 
             // Back Left
             private static final int kBackLeftDriveMotorId = RobotMap.BL_DRIVE;
@@ -749,8 +814,8 @@ public class Constants {
             private static final boolean kBackLeftSteerMotorInverted = true;
             private static final boolean kBackLeftEncoderInverted = false;
 
-            private static final Distance kBackLeftXPos = Inches.of(-13.5);
-            private static final Distance kBackLeftYPos = Inches.of(13.5);
+            private static final Distance kBackLeftXPos = Inches.of(-11);
+            private static final Distance kBackLeftYPos = Inches.of(11);
 
             // Back Right
             private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
@@ -760,8 +825,8 @@ public class Constants {
             private static final boolean kBackRightSteerMotorInverted = true;
             private static final boolean kBackRightEncoderInverted = false;
 
-            private static final Distance kBackRightXPos = Inches.of(-13.5);
-            private static final Distance kBackRightYPos = Inches.of(-13.5);
+            private static final Distance kBackRightXPos = Inches.of(-11);
+            private static final Distance kBackRightYPos = Inches.of(-11);
 
             public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft = ConstantCreator
                     .createModuleConstants(
@@ -797,41 +862,71 @@ public class Constants {
                 return new Swerve(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
             }
         }
-        
 
         // Combined Nautilus and Triton Tuner Constants
 
         public static final Current kSlipCurrent = IS_TRITON
-                ? TritonTunerConstants.kSlipCurrent : NautliusTunerConstants.kSlipCurrent;
+                ? TritonTunerConstants.kSlipCurrent
+                : NautliusTunerConstants.kSlipCurrent;
 
         public static final LinearVelocity kSpeedAt12Volts = IS_TRITON
-                ? TritonTunerConstants.kSpeedAt12Volts : NautliusTunerConstants.kSpeedAt12Volts;
+                ? TritonTunerConstants.kSpeedAt12Volts
+                : NautliusTunerConstants.kSpeedAt12Volts;
 
         public static final double kCoupleRatio = IS_TRITON
-                ? TritonTunerConstants.kCoupleRatio : NautliusTunerConstants.kCoupleRatio;
+                ? TritonTunerConstants.kCoupleRatio
+                : NautliusTunerConstants.kCoupleRatio;
 
         public static final double kDriveGearRatio = IS_TRITON
-                ? TritonTunerConstants.kDriveGearRatio : NautliusTunerConstants.kDriveGearRatio;
+                ? TritonTunerConstants.kDriveGearRatio
+                : NautliusTunerConstants.kDriveGearRatio;
         public static final double kSteerGearRatio = IS_TRITON
-                ? TritonTunerConstants.kSteerGearRatio : NautliusTunerConstants.kSteerGearRatio;
+                ? TritonTunerConstants.kSteerGearRatio
+                : NautliusTunerConstants.kSteerGearRatio;
 
         public static final Distance kWheelRadius = IS_TRITON
-                ? TritonTunerConstants.kWheelRadius : NautliusTunerConstants.kWheelRadius;
+                ? TritonTunerConstants.kWheelRadius
+                : NautliusTunerConstants.kWheelRadius;
 
         public static final boolean kInvertLeftSide = IS_TRITON
-                ? TritonTunerConstants.kInvertLeftSide : NautliusTunerConstants.kInvertLeftSide;
+                ? TritonTunerConstants.kInvertLeftSide
+                : NautliusTunerConstants.kInvertLeftSide;
         public static final boolean kInvertRightSide = IS_TRITON
-                ? TritonTunerConstants.kInvertRightSide : NautliusTunerConstants.kInvertRightSide;
-
+                ? TritonTunerConstants.kInvertRightSide
+                : NautliusTunerConstants.kInvertRightSide;
 
         public static Swerve createDrivetrain() {
             return IS_TRITON ? TritonTunerConstants.createDrivetrain() : NautliusTunerConstants.createDrivetrain();
         }
     }
 
+    public static class ControllerConstants {
+        public static final int DRIVER_CONTROLLER = 0;
+        public static final int COPILOT_CONTROLLER = 1;
+
+        public static final double JOYSTICK_DEADBAND = 0.1;
+        public static final double TRIGGER_DEADBAND = 0.05;
+
+        public static class ButtonBoxBindings {
+            public static final int GRAY_TOPLEFT = 5;
+            public static final int PINK = 3;
+            public static final int GREEN = 4;
+            public static final int GRAY_TOPRIGHT = 6;
+            public static final int GRAY_BOTTOMLEFT = 2; // AXIS
+            public static final int PURPLE = 1;
+            public static final int RED = 2;
+            public static final int GRAY_BOTTOMRIGHT = 3; // AXIS
+            public static final int SHARE = 7;
+            public static final int OPTIONS = 8;
+            public static final int L3_SL = 9;
+            public static final int R3_SL = 10;
+        }
+
+    }
+
     public static class LEDConstants {
         public static final int LED_PWM_PORT = 0;
-        public static final int LED_LENGTH = 13;
+        public static final int LED_LENGTH = 60;
         public static final int LED_BUFFER_TIME = 60;
 
         public static final int SWRIL_SEGMENT_SIZE = 5;
@@ -855,9 +950,31 @@ public class Constants {
             CORAL_COLLECT(),
             CORAL_SCORE(),
             ROD_MOVING(),
-            ROD_ON_TARGET(),
             OFF();
         }
+    }
+
+    public class AutoAlignConstants {
+        public static final double AutoAlignTolerance = 0.02d;
+
+        // X PID
+        public static final double X_Kp = 0.035d;
+        public static final double X_Ki = 0d;
+        public static final double X_Kd = 0d;
+
+        // Y PID
+        public static final double Y_Kp = 0.1d;
+        public static final double Y_Ki = 0d;
+        public static final double Y_Kd = 0d;
+
+        public static final double targetTX = 720d;
+
+        public static final HashMap<Integer, Double> tagAngles = new HashMap<Integer, Double>() {
+            {
+                put(6, 0d);
+                put(9, 0d);
+            }
+        };
 
     }
 
@@ -884,6 +1001,7 @@ public class Constants {
         public static final double PIVOT_MAX_ANGLE = 90; // temp
         public static final double PIVOT_LENGTH = 0.5; // temp
         public static final double PIVOT_START_ANGLE = 0; // temp
+        public static final double ALGAE_ROLLER_SPEED = 1;
 
         public static final double ROLLER_KV = 0.24; // temp
         public static final double ROLLER_KA = 0.8; // temp
@@ -891,7 +1009,6 @@ public class Constants {
         public static final boolean PIVOT_INVERTED = false; // temp
         public static final double PIVOT_STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean PIVOT_BRAKE_MODE = false; // temp
-        
 
         public static final boolean ROLLER_INVERTED = false; // temp
         public static final double ROLLER_STATOR_CURRENT_LIMIT = 100d; // temp
@@ -900,6 +1017,15 @@ public class Constants {
         public static final double PIVOT_KP = 3; // temp
         public static final double PIVOT_KI = 0; // temp
         public static final double PIVOT_KD = 0; // temp
+
+        public static final double DEPLOY_ANGLE = 90;
+        public static final double STOW_ANGLE = 0;
+
+        public static final double COLLECTED_CURRENT = 80d; // temp
+
+        public enum AlgaePivotStates {
+            DEPLOYED, STOWED
+        }
 
     }
 
@@ -919,6 +1045,6 @@ public class Constants {
         public static final boolean INVERTED = false; // temp
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean BREAK_MODE = true;
-        
+
     }
 }

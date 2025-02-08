@@ -82,7 +82,7 @@ public class RobotContainer extends LightningContainer {
             coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
             // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
             // RobotMotors.algaeCollectorPivotMotor);
-            // climber = new Climber(RobotMotors.climberMotor);
+            climber = new Climber(RobotMotors.climberMotor);
         }
     }
 
@@ -95,7 +95,7 @@ public class RobotContainer extends LightningContainer {
                 () -> MathUtil.applyDeadband(-driver.getLeftY(),
                     ControllerConstants.JOYSTICK_DEADBAND),
                 () -> MathUtil.applyDeadband(-driver.getRightX(),
-                    ControllerConstants.JOYSTICK_DEADBAND))));
+                    ControllerConstants.JOYSTICK_DEADBAND), drivetrain.getSpeedMult(), drivetrain.getTurnMult())));
         drivetrain.registerTelemetry(logger::telemeterize);
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
@@ -105,9 +105,7 @@ public class RobotContainer extends LightningContainer {
             new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.enableState(LED_STATES.CORAL_SCORE));
             new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.enableState(LED_STATES.CORAL_COLLECT));
 
-            // climber.setDefaultCommand(new RunCommand(() ->
-            // climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(),
-            // ControllerConstants.JOYSTICK_DEADBAND)), climber));
+            climber.setDefaultCommand(new RunCommand(() -> climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)), climber));
 
             rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW));
 
@@ -127,7 +125,7 @@ public class RobotContainer extends LightningContainer {
                 () -> MathUtil.applyDeadband(-driver.getLeftY(),
                     ControllerConstants.JOYSTICK_DEADBAND),
                 () -> MathUtil.applyDeadband(-driver.getRightX(),
-                    ControllerConstants.JOYSTICK_DEADBAND))));
+                    ControllerConstants.JOYSTICK_DEADBAND), drivetrain.getSpeedMult(), drivetrain.getTurnMult())));
         // sets slow mode
         new Trigger(() -> driver.getRightTriggerAxis() > 0.25)
             .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))

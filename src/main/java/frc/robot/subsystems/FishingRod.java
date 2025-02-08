@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Constants.ElevatorConstants;
@@ -69,16 +70,16 @@ public class FishingRod extends SubsystemBase {
                 case SCORE_X: // wrist up, move ele, move wrist
                     wrist.setState(RodStates.STOW);
                     if (wrist.isOnTarget()) {
-                        transitionState = RodTransitionStates.DEFAULT; // finalize transition
+                        transitionState = RodTransitionStates.TRANSITIONING; // finalize transition
                     }
                     break;
                 case X_SCORE: // wrist down, move ele
                     wrist.setState(targetState);
                     if (wrist.isOnTarget()) {
-                        transitionState = RodTransitionStates.DEFAULT; // finalize transition
+                        transitionState = RodTransitionStates.TRANSITIONING; // finalize transition
                     }
                     break;
-                case DEFAULT, TRITON: // all states should end here
+                case DEFAULT, TRITON, TRANSITIONING: // all states should end here
                     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
                     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
                     if (wrist.isOnTarget() && elevator.isOnTarget()) {
@@ -106,9 +107,9 @@ public class FishingRod extends SubsystemBase {
         targetState = state;
 
         // logic for transition states goes here
-        if (currState == RodStates.L4 || currState == RodStates.L3 || currState == RodStates.L2) {
+        if (currState == RodStates.L4 || currState == RodStates.L3 || currState == RodStates.L2 || targetState == RodStates.L4) { //TODO: temporary fix don't do this
             transitionState = RodTransitionStates.SCORE_X;
-        } else if (targetState == RodStates.L4 || targetState == RodStates.L3 || targetState == RodStates.L2) {
+        } else if (targetState == RodStates.L3 || targetState == RodStates.L2) {
             transitionState = RodTransitionStates.X_SCORE;
         } else {
             transitionState = Constants.IS_TRITON ? RodTransitionStates.TRITON : RodTransitionStates.DEFAULT;
@@ -121,14 +122,14 @@ public class FishingRod extends SubsystemBase {
 
     // biases will only work if no other position is actively being set.
     public Command addWristBias(double bias) {
-        return runOnce(() -> {
+        return new InstantCommand(() -> {
             wristBias += bias;
             wrist.setPosition(wrist.getTargetAngle() + wristBias);
         });
     }
 
     public Command addElevatorBias(double bias) {
-        return runOnce(() -> {
+        return new InstantCommand(() -> {
             elevatorBias += bias;
             elevator.setPosition(elevator.getTargetPosition() + elevatorBias);
         });

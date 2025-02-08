@@ -248,15 +248,19 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
     }
 
-    public void addVisionMeasurement(EstimatedRobotPose pose) {
+    public void addVisionMeasurement(EstimatedRobotPose pose, double ambiguity) {
         if (DriverStation.isDisabled()) {
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
                     VecBuilder.fill(0.01, 0.01, 0.01));
         } else {
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
-                    VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV,
-                            VisionConstants.VISION_THETA_STDEV));
-        }
+                    VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV));
+        
+            // for ambiguity-based (or distance-based) std deviations
+            // addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
+            //         VecBuilder.fill(ambiguity, ambiguity, ambiguity));
+
+            }
     }
 
     private void startSimThread() {

@@ -31,7 +31,7 @@ public class ElevatorTest implements AutoCloseable {
 
     @BeforeEach
     void constructMotors() {
-        assert HAL.initialize(500, 0); 
+        assert HAL.initialize(500, 0);
 
         leftMotor = RobotMotors.leftElevatorMotor;
         simLeftMotor = leftMotor.getSimState();
@@ -39,7 +39,7 @@ public class ElevatorTest implements AutoCloseable {
         rightMotor = RobotMotors.rightElevatorMotor;
         simRightMotor = rightMotor.getSimState();
 
-        if(elevator == null) {
+        if (elevator == null) {
             elevator = new Elevator(leftMotor, rightMotor);
         }
 
@@ -63,7 +63,7 @@ public class ElevatorTest implements AutoCloseable {
     }
 
     @Test
-    public void testInitialPosition() { 
+    public void testInitialPosition() {
         assertEquals(0, elevator.getPosition(), 0.1);
     }
 
@@ -71,7 +71,7 @@ public class ElevatorTest implements AutoCloseable {
     public void testSetPower() {
         var dutyCycle = leftMotor.getDutyCycle();
 
-        elevator.setPower(0d);
+        elevator.setRawPower(0d);
         Timer.delay(0.1);
 
         elevator.simulationPeriodic();
@@ -104,9 +104,10 @@ public class ElevatorTest implements AutoCloseable {
         // Create timer and start it
         timer.restart();
         timer.start();
-        
+
         /*
-         * Create a loop that will continue to update the simulation as long as the the position hasen't
+         * Create a loop that will continue to update the simulation as long as the the
+         * position hasen't
          * reached the target position and the time hasen't run out
          */
         while (!(Math.abs(targetPos - elevator.getPosition()) <= tolerance) && !timer.hasElapsed(timeOut)) {
@@ -117,8 +118,9 @@ public class ElevatorTest implements AutoCloseable {
                 System.out.println(elevator.getPosition());
             }
         }
-        
-        // Print the final position and check the elevator position is equal to the target position
+
+        // Print the final position and check the elevator position is equal to the
+        // target position
         System.out.println(elevator.getPosition() + "\n");
         assertEquals(targetPos, elevator.getPosition(), tolerance);
     }

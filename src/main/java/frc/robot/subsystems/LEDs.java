@@ -51,8 +51,6 @@ public class LEDs extends SubsystemBase {
 
 			case ROD_MOVING -> pulse(LEDConstants.YELLOW_HUE);
 
-			case ROD_ON_TARGET -> setSolidHSV(LEDConstants.GREEN_HUE, 255, 255);
-
 			case ALGAE_COLLECT -> blink(LEDConstants.LIGHT_BLUE_HUE);
 
 			case ALGAE_SCORE -> pulse(LEDConstants.LIGHT_BLUE_HUE);

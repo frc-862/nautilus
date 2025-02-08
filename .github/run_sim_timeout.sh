@@ -48,7 +48,7 @@ run_simulator() {
 run_simulator 40
 RUN_SUCCESSFULNESS=$?
 
-if [[ $RUN_SUCCESSFULNESS -eq 0]]; then
+if [[ $RUN_SUCCESSFULNESS -eq 0 ]]; then
     exit 0
 elif [[ $RUN_SUCCESSFULNESS -eq 1 ]]; then
     run_simulator 120

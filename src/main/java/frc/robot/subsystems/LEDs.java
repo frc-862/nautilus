@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import java.util.PriorityQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.LEDConstants.LED_STATES;
 
 public class LEDs extends SubsystemBase {
@@ -20,24 +23,31 @@ public class LEDs extends SubsystemBase {
 	AddressableLEDBuffer ledBuffer;
 	LED_STATES state;
 	PriorityQueue<LED_STATES> ledStates;
+	ScheduledExecutorService scheduler;
+	
 
 	public LEDs() {
 		leds = new AddressableLED(LEDConstants.LED_PWM_PORT);
 		ledBuffer = new AddressableLEDBuffer(LEDConstants.LED_LENGTH);
+		
 		leds.setLength(ledBuffer.getLength());
 		leds.start();
+
 		ledStates = new PriorityQueue<>();
 		ledStates.add(LED_STATES.OFF);
+
+		scheduler = Executors.newSingleThreadScheduledExecutor();
+		scheduler.scheduleAtFixedRate(this::updateLEDs, 0, (long) (RobotMap.UPDATE_FREQ * 100), java.util.concurrent.TimeUnit.MILLISECONDS);
+
 	}
 
 	@Override
-	public void periodic() {
-		Thread ledThread = new Thread(() -> updateLEDs());
-		ledThread.start();
+	public void periodic() {}
 
-	}
-
-	public void updateLEDs() {
+	/**
+	 * Updates the LEDs based on the current state
+	 */
+	private void updateLEDs() {
 		state = ledStates.peek();
 
 		switch (state) {
@@ -66,6 +76,10 @@ public class LEDs extends SubsystemBase {
 		leds.setData(ledBuffer);
 	}
 
+	/**
+	 * @param state the state to enable
+	 * @return a command that enables the state
+	 */
 	public Command enableState(LED_STATES state) {
 		return new StartEndCommand(() -> {
 			ledStates.add(state);
@@ -75,7 +89,10 @@ public class LEDs extends SubsystemBase {
 		}).ignoringDisable(true);
 	}
 
-	public void rainbow() {
+	/**
+	 * Sets the LED buffer to a rainbow pattern
+	 */
+	private void rainbow() {
 		for (int i = 0; i < LEDConstants.LED_LENGTH; i++) {
 			ledBuffer.setHSV(i, (i + (int) (Timer.getFPGATimestamp() * 20)) % ledBuffer.getLength() * 180 / 14, 255,
 					100);
@@ -85,7 +102,7 @@ public class LEDs extends SubsystemBase {
 	/**
 	 * @param segmentSize size of each color segment
 	 */
-	public void swirl(int segmentSize) {
+	private void swirl(int segmentSize) {
 		for (int i = 0; i < LEDConstants.LED_LENGTH; i++) {
 			if (((i + (int) (Timer.getFPGATimestamp() * 10)) / segmentSize) % 2 == 0) {
 				ledBuffer.setHSV(i, LEDConstants.BLUE_HUE, 255, 255);
@@ -98,7 +115,7 @@ public class LEDs extends SubsystemBase {
 	/**
 	 * @param hue the hue to blink
 	 */
-	public void blink(int hue) {
+	private void blink(int hue) {
 		if ((int) (Timer.getFPGATimestamp() * 10) % 2 == 0) {
 			setSolidHSV(hue, 255, 255);
 		} else {
@@ -109,11 +126,16 @@ public class LEDs extends SubsystemBase {
 	/**
 	 * @param hue the hue to blink
 	 */
-	public void pulse(int hue) {
+	private void pulse(int hue) {
 		setSolidHSV(hue, 255, (int) Math.abs((Math.sin(Timer.getFPGATimestamp() * 2) * 255)));
 	}
 
-	public void setSolidHSV(int h, int s, int v) {
+	/**
+	 * @param h hue
+	 * @param s saturation
+	 * @param v value
+	 */
+	private void setSolidHSV(int h, int s, int v) {
 		for (var i = 0; i < LEDConstants.LED_LENGTH; i++) {
 			ledBuffer.setHSV(i, h, s, v);
 		}

@@ -917,22 +917,12 @@ public class Constants {
     }
 
     public static class LEDConstants {
-        public static final int LED_PWM_PORT = 0;
-        public static final int LED_LENGTH = 60;
-        public static final int LED_BUFFER_TIME = 60;
+        public static final int PWM_PORT = 0;
+        public static final int LENGTH = 60;
 
         public static final int SWRIL_SEGMENT_SIZE = 5;
 
-        public static final int RED_HUE = 0;
-        public static final int ORANGE_HUE = 5;
-        public static final int YELLOW_HUE = 15;
-        public static final int GREEN_HUE = 240;
-        public static final int LIGHT_BLUE_HUE = 195;
-        public static final int BLUE_HUE = 120;
-        public static final int PURPLE_HUE = 315;
-        public static final int PINK_HUE = 355;
-
-        public enum LED_STATES {
+        public enum LEDStates {
             DISABLED(),
             MIXER(),
             RAINBOW(),
@@ -947,11 +937,6 @@ public class Constants {
     }
 
     public class AutoAlignConstants {
-        public enum Alignments {
-            LEFT, RIGHT
-            // LEFT_SOURCE, RIGHT_SOURCE, CENTER
-        }
-
         public static final double AutoAlignTolerance = 0.02d;
 
         // X PID

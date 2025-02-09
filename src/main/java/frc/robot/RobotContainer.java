@@ -182,7 +182,7 @@ public class RobotContainer extends LightningContainer {
             //     .whileTrue(new SetRodState(rod, RodStates.HIGH));
             // (new Trigger(copilot::getRightBumperButtonPressed))
             //     .whileTrue((new InstantCommand(() -> algaeCollector.setRollerPower(-1), algaeCollector)
-            //         .andThen(() -> algaeCollector.setRollerPower(0d))).deadlineFor(leds.enableState(LED_STATES.ALGAE_SCORE)));
+            //         .andThen(() -> algaeCollector.setRollerPower(0d))).deadlineFor(leds.enableState(LEDStates.ALGAE_SCORE)));
 
             // sim stuff
             // if (Robot.isSimulation()) {
@@ -206,7 +206,7 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void initializeNamedCommands() {
         // NamedCommands.registerCommand("ScoreCoral",
-        // StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
+        // StandinCommands.scoreCoral().deadlineFor(leds.enableState(LEDStates.CORAL_SCORE)));
         // TODO: Get actual offsets
 
         NamedCommands.registerCommand("ReefAlignLeft",

@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import java.util.HashMap;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,6 +17,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.Constants.AlgaeCollectorConstants;
 import frc.robot.Constants.SimGamePeicesConstants;
+import frc.robot.Constants.WristConstants;
 
 public class SimGamePeices extends SubsystemBase {
 
@@ -211,7 +214,8 @@ public class SimGamePeices extends SubsystemBase {
         if (hasPeice){
             if (heldPeice instanceof Coral){
                 heldPeice.setPose(new Pose3d(drivetrain.getPose().getX(), drivetrain.getPose().getY(), 
-                Units.inchesToMeters(elevator.getPosition()) + SimGamePeicesConstants.ELEATOR_ROOT_HEIGHT, 
+                Units.inchesToMeters(elevator.getPosition()) + SimGamePeicesConstants.ELEATOR_ROOT_HEIGHT + 
+                (Math.sin(wrist.getAngle()) * WristConstants.LENGTH.in(Meters)), 
                 new Rotation3d(0, wrist.getAngle(), drivetrain.getPose().getRotation().getDegrees() + 180)));
             }
             

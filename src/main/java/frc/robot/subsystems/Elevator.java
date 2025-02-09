@@ -98,7 +98,7 @@ public class Elevator extends SubsystemBase {
             gearbox = DCMotor.getKrakenX60(2);
             elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.GEAR_RATIO,
                     ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters),
-                    ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), false, 0, 0d,
+                    ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 0, 0d,
                     1d);
 
             leftSim = new TalonFXSimState(leftMotor);

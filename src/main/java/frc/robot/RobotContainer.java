@@ -85,8 +85,8 @@ public class RobotContainer extends LightningContainer {
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
             coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
-            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
-            RobotMotors.algaeCollectorPivotMotor);
+            // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
+                // RobotMotors.algaeCollectorPivotMotor);
             // climber = new Climber(RobotMotors.climberMotor);
         }
 
@@ -182,11 +182,7 @@ public class RobotContainer extends LightningContainer {
             //     .whileTrue(new SetRodState(rod, RodStates.HIGH));
             // (new Trigger(copilot::getRightBumperButtonPressed))
             //     .whileTrue((new InstantCommand(() -> algaeCollector.setRollerPower(-1), algaeCollector)
-            //         .andThen(() -> algaeCollector.setRollerPower(0d))).deadlineFor(leds.enableState(LEDStates.ALGAE_SCORE)));
-
-            new Trigger(() -> copilot.getStartButton()).whileTrue(new CollectAlgae(algaeCollector, () -> -1));
-            new Trigger(() -> copilot.getBackButton()).onTrue(new InstantCommand(() -> algaeCollector.setRollerPower(1))).onFalse(new InstantCommand(() -> algaeCollector.setRollerPower(0)));
-
+            //         .andThen(() -> algaeCollector.setRollerPower(0d))).deadlineFor(leds.enableState(LED_STATES.ALGAE_SCORE)));
 
             // sim stuff
             // if (Robot.isSimulation()) {
@@ -210,7 +206,7 @@ public class RobotContainer extends LightningContainer {
     @Override
     protected void initializeNamedCommands() {
         // NamedCommands.registerCommand("ScoreCoral",
-        // StandinCommands.scoreCoral().deadlineFor(leds.enableState(LEDStates.CORAL_SCORE)));
+        // StandinCommands.scoreCoral().deadlineFor(leds.enableState(LED_STATES.CORAL_SCORE)));
         // TODO: Get actual offsets
 
         NamedCommands.registerCommand("ReefAlignLeft",

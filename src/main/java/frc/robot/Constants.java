@@ -978,9 +978,9 @@ public class Constants {
 
         public static final Pose3d DEFAULT_POSE = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
 
-        public static final double ELEATOR_ROOT_HEIGHT = 0.1;
+        public static final double ELEATOR_ROOT_HEIGHT = 0.5;
         public static final double COLLECTION_TOLERANCE = 0.5;
-        public static final double ALGAE_COLLECTOR_ROOT_HEIGHT = 0.5;
+        public static final double ALGAE_COLLECTOR_ROOT_HEIGHT = 0.33;
         public static final double COLECTOR_SPEED_THRESHHOLD = 5;
     }
     public class AlgaeCollectorConstants {

@@ -255,17 +255,17 @@ public class Constants {
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean INVERTED = false; // temp
 
-        public static final double ROTOR_TO_ENCODER_RATIO = 36d; // temp
+        public static final double ROTOR_TO_ENCODER_RATIO = 74; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double MOTORS_KP = 15; // temp
+        public static final double MOTORS_KP = 35; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
         public static final double MOTORS_KS = 0; // temp
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
-        public static final double MOTORS_KG = 0.3; // temp
+        public static final double MOTORS_KG = 0.1; // temp
 
         public static final Angle MIN_ANGLE = Degrees.of(-85);
         public static final Angle MAX_ANGLE = Degrees.of(85);
@@ -947,6 +947,11 @@ public class Constants {
     }
 
     public class AutoAlignConstants {
+        public enum Alignments {
+            LEFT, RIGHT
+            // LEFT_SOURCE, RIGHT_SOURCE, CENTER
+        }
+
         public static final double AutoAlignTolerance = 0.02d;
 
         // X PID

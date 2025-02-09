@@ -27,11 +27,13 @@ import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.LEDConstants.LED_STATES;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
+import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
 import frc.robot.commands.TagAutoAlign;
+import frc.robot.commands.ThreeDeeAutoAlign;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Climber;
@@ -138,7 +140,8 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
             new InstantCommand(() -> drivetrain.seedFieldCentric()));
         
-        new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
+        new Trigger(driver::getLeftBumperButton).whileTrue(new ThreeDeeAutoAlign(vision, drivetrain, Camera.LEFT));
+        new Trigger(driver::getRightBumperButton).whileTrue(new ThreeDeeAutoAlign(vision, drivetrain, Camera.RIGHT));
 
         /* COPILOT BINDINGS */
         new Trigger(copilot::getRightBumperButton)

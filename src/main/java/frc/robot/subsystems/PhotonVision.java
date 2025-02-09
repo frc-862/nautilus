@@ -13,6 +13,8 @@ import org.photonvision.simulation.VisionTargetSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -164,7 +166,28 @@ public class PhotonVision extends SubsystemBase {
             DataLogManager.log("[PhotonVision] ERROR: NO TAG FOUND");
             return -1;
         }
-        
+    }
+
+    /**
+     * get the target's tag number
+     * @param camera - the camera to check
+     * @return FiducialID of tag with least ambiguity (-1 if no tag found)
+     */
+    public Transform3d getTransformToTag(Camera camera) throws Exception {
+        //this is performed independently of the thread, mainly because its a simple operation and happens regardless of pose
+        if(!hasTarget(camera) || !(camera == Camera.LEFT ? leftThread.cameraInitialized : rightThread.cameraInitialized)){
+            throw new Exception("No target found");
+        } else {
+            switch(camera){
+                case LEFT:
+                    return leftThread.getCameraObject().getLatestResult().getBestTarget().bestCameraToTarget;
+                case RIGHT:
+                    return rightThread.getCameraObject().getLatestResult().getBestTarget().bestCameraToTarget;
+
+                default:
+                    throw new IllegalArgumentException("Invalid camera");
+            }
+        }
     }
 
     private boolean isCameraInitialized(Camera camName) {

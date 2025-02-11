@@ -311,6 +311,12 @@ public class Constants {
         public static final double SLOW_SPEED_MULT = 0.4; // temp
         public static final double SLOW_TURN_MULT = 0.7; // temp
 
+        public enum SysIdTestType {
+            DRIVE,
+            STEER,
+            ROTATE
+        }
+
         public class DriveRequests {
             private static final SwerveRequest.FieldCentric DRIVE = new SwerveRequest.FieldCentric();
             private static final SwerveRequest.FieldCentric SLOW = new SwerveRequest.FieldCentric();
@@ -689,14 +695,14 @@ public class Constants {
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
                     .withKP(0.34807).withKI(0).withKD(0)
-                    .withKS(0.18408).withKV(0.11928).withKA(0.0022307);
+                    .withKS(0.23986).withKV(0.12318).withKA(0.0059707);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
             private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
             // The closed-loop output type to use for the drive motors;
             // This affects the PID/FF gains for the drive motors
-            private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
+            private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.TorqueCurrentFOC;
 
             // The type of motor used for the drive motor
             private static final DriveMotorArrangement kDriveMotorType = DriveMotorArrangement.TalonFX_Integrated;

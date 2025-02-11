@@ -7,10 +7,12 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -21,7 +23,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
@@ -33,6 +37,7 @@ import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.TagAutoAlign;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
@@ -148,7 +153,7 @@ public class RobotContainer extends LightningContainer {
         // reset forward
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
             new InstantCommand(() -> drivetrain.seedFieldCentric()));
-        
+
         new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
 
         /* COPILOT BINDINGS */
@@ -190,16 +195,19 @@ public class RobotContainer extends LightningContainer {
             //             .onFalse(new InstantCommand(wrist::stop));
             //     new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setRawPower(1))))
             //             .onFalse(new InstantCommand(wrist::stop));
-    
+
             //     new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision,
             //             drivetrain));
-    
+
             //     new Trigger(() -> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75))))
             //             .onFalse(new InstantCommand(coralCollector::stop));
             //     new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5))))
             //             .onFalse(new InstantCommand(coralCollector::stop));
             // }
         }
+
+        // SYSID
+        // new Trigger(driver::getLeftBumperButton).whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.ROTATE));
 
     }
 

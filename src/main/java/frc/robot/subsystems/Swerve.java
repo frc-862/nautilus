@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
@@ -345,27 +346,24 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
                     this));
 
     /**
-     * Runs the SysId Quasistatic test in the given direction for the routine
-     * specified by {@link #m_sysIdRoutineToApply}.
+     * Runs the SysIdtest in the given direction for the routine
+     * specified
      *
+     * @param testType Type of test to run (ex. DRIVE)
      * @param direction Direction of the SysId Quasistatic test
+     * @param isDynamic Whether to run a dynamic/quasistatic test (both need to run for full sysid)
      * @return Command to run
      */
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.quasistatic(direction);
+    public Command sysId(DrivetrainConstants.SysIdTestType testType, SysIdRoutine.Direction direction, boolean isDynamic) {
+        switch (testType) {
+            case DRIVE:
+                return isDynamic ? m_sysIdRoutineTranslation.dynamic(direction) : m_sysIdRoutineTranslation.quasistatic(direction);
+            case STEER:
+                return isDynamic ? m_sysIdRoutineSteer.dynamic(direction) : m_sysIdRoutineSteer.quasistatic(direction);
+            case ROTATE:
+                return isDynamic ? m_sysIdRoutineRotation.dynamic(direction) : m_sysIdRoutineRotation.quasistatic(direction);
+            default:
+                return new InstantCommand();
+        }
     }
-
-    /**
-     * Runs the SysId Dynamic test in the given direction for the routine
-     * specified by {@link #m_sysIdRoutineToApply}.
-     *
-     * @param direction Direction of the SysId Dynamic test
-     * @return Command to run
-     */
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.dynamic(direction);
-    }
-
-    /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 }

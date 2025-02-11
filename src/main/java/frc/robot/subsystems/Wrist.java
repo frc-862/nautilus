@@ -100,6 +100,8 @@ public class Wrist extends SubsystemBase {
 
         LightningShuffleboard.setDouble("Wrist", "Current Position", currentPosition);
         LightningShuffleboard.setBool("Wrist", "onTarget", isOnTarget());
+
+        LightningShuffleboard.setDouble("Diagnostics", "wrist motor temp", motor.getDeviceTemp().getValueAsDouble());
     }
 
     /**

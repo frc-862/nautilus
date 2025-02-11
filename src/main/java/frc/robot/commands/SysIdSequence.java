@@ -19,7 +19,7 @@ public class SysIdSequence extends SequentialCommandGroup {
     /**
      * Sys Id test sequence (dynamic first, then quazistatic).
      * Starts and ends the SignalLogger
-     * 
+     *
      * @param swerve subsystem
      * @param testType type of test to run
      * @param deadlineSeconds deadline for each command in the sequence

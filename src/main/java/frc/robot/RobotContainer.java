@@ -153,7 +153,7 @@ public class RobotContainer extends LightningContainer {
         // reset forward
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
             new InstantCommand(() -> drivetrain.seedFieldCentric()));
-        
+
         new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision, drivetrain));
 
         /* COPILOT BINDINGS */
@@ -195,10 +195,10 @@ public class RobotContainer extends LightningContainer {
             //             .onFalse(new InstantCommand(wrist::stop));
             //     new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setRawPower(1))))
             //             .onFalse(new InstantCommand(wrist::stop));
-    
+
             //     new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision,
             //             drivetrain));
-    
+
             //     new Trigger(() -> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75))))
             //             .onFalse(new InstantCommand(coralCollector::stop));
             //     new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5))))

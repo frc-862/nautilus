@@ -364,7 +364,6 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
                 return isDynamic ? m_sysIdRoutineRotation.dynamic(direction) : m_sysIdRoutineRotation.quasistatic(direction);
             default:
                 return new InstantCommand();
-
         }
     }
 }

@@ -974,6 +974,21 @@ public class Constants {
 
     }
 
+    public class SimGamePeicesConstants {
+        public static final Pose3d A1B = new Pose3d(1.216, 5.850, 0.5, new Rotation3d(0, 0, 0));
+        public static final Pose3d A2B = new Pose3d(1.216, 4.020, 0.5, new Rotation3d(0, 0, 0));
+        public static final Pose3d A3B = new Pose3d(1.216, 2.190, 0.5, new Rotation3d(0, 0, 0));
+        public static final Pose3d A1R = new Pose3d(16.330, 2.190, 0.5,  new Rotation3d(0, 0, 0));
+        public static final Pose3d A2R = new Pose3d(16.330, 4.020, 0.5, new Rotation3d(0, 0, 0));
+        public static final Pose3d A3R = new Pose3d(16.330, 5.850, 0.5, new Rotation3d(0, 0, 0));
+
+        public static final Pose3d DEFAULT_POSE = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+
+        public static final double ELEATOR_ROOT_HEIGHT = 0.5;
+        public static final double COLLECTION_TOLERANCE = 0.5;
+        public static final double ALGAE_COLLECTOR_ROOT_HEIGHT = 0.33;
+        public static final double COLECTOR_SPEED_THRESHHOLD = 5;
+    }
     public class AlgaeCollectorConstants {
         public static final double PIVOT_TOLERANCE = 5; // temp
         public static final double PIVOT_GEAR_RATIO = 1; // temp

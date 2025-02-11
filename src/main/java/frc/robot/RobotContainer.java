@@ -32,6 +32,7 @@ import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
+import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.SetRodState;
@@ -46,6 +47,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
+import frc.robot.subsystems.SimGamePeices;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
@@ -67,6 +69,8 @@ public class RobotContainer extends LightningContainer {
     private AlgaeCollector algaeCollector;
     private Climber climber;
 
+    private SimGamePeices simGamePeices;
+
     private static XboxController driver;
     private static XboxController copilot;
 
@@ -81,14 +85,18 @@ public class RobotContainer extends LightningContainer {
 
         leds = new LEDs();
 
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS || Robot.isSimulation()) {
             elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
             coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
             // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
-            // RobotMotors.algaeCollectorPivotMotor);
+                // RobotMotors.algaeCollectorPivotMotor);
             // climber = new Climber(RobotMotors.climberMotor);
+        }
+
+        if (Robot.isSimulation()){
+            simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector);
         }
     }
 
@@ -104,7 +112,7 @@ public class RobotContainer extends LightningContainer {
                     ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS || Robot.isSimulation()) {
             coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
                 () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
 
@@ -154,7 +162,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(copilot::getLeftBumperButton)
             .whileTrue(new SetRodState(rod, RodStates.SOURCE));
 
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS || Robot.isSimulation()) {
             // default
             (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, RodStates.L1));
             (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(rod, RodStates.L2));

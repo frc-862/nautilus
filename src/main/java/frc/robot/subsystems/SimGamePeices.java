@@ -59,7 +59,7 @@ public class SimGamePeices extends SubsystemBase {
 
     }
 
-    private class Coral extends Peice {
+    private final class Coral extends Peice {
 
         private Coral(Pose3d pose){
             super(NetworkTableInstance.getDefault().getTable("Shuffleboard")
@@ -73,7 +73,7 @@ public class SimGamePeices extends SubsystemBase {
         }
     }
 
-    private class Algae extends Peice {
+    private  final class Algae extends Peice {
         private Algae(Pose3d pose){
             super(NetworkTableInstance.getDefault().getTable("Shuffleboard")
                 .getSubTable("SimGamePeices").getStructTopic("Algae: Peice# " + peices.size(), Pose3d.struct).publish());

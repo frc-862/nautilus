@@ -36,6 +36,7 @@ import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.TagAutoAlign;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
@@ -89,9 +90,6 @@ public class RobotContainer extends LightningContainer {
             // RobotMotors.algaeCollectorPivotMotor);
             // climber = new Climber(RobotMotors.climberMotor);
         }
-
-        // WARNING: Ensure driver POV buttons are clear of any functions
-        configureSysIdBindings(DrivetrainConstants.SysIdTestType.ROTATE);
     }
 
     @Override
@@ -200,6 +198,9 @@ public class RobotContainer extends LightningContainer {
             // }
         }
 
+        // SYSID
+        new Trigger(driver::getLeftBumperButton).whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.ROTATE));
+
     }
 
     @Override
@@ -272,19 +273,6 @@ public class RobotContainer extends LightningContainer {
     @Override
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
-    }
-
-    private void configureSysIdBindings(DrivetrainConstants.SysIdTestType currentTestType) {
-        DataLogManager.log("\033[0;35m\033[1mSYSID TESTS AND BUTTON BINDINGS ARE ENABLED!\033[0m");
-
-        SignalLogger.start();
-
-        new Trigger(() -> driver.getPOV() == 0).whileTrue(drivetrain.sysId(currentTestType, Direction.kForward, false).withDeadline(new WaitCommand(5)));
-        new Trigger(() -> driver.getPOV() == 180).whileTrue(drivetrain.sysId(currentTestType, Direction.kReverse, false).withDeadline(new WaitCommand(5)));
-        new Trigger(() -> driver.getPOV() == 90).whileTrue(drivetrain.sysId(currentTestType, Direction.kForward, true).withDeadline(new WaitCommand(5)));
-        new Trigger(() -> driver.getPOV() == 270).whileTrue(drivetrain.sysId(currentTestType, Direction.kReverse, true).withDeadline(new WaitCommand(5)));
-
-        new Trigger(driver::getLeftBumperButton).onTrue(new InstantCommand(() -> SignalLogger.stop()));
     }
 
     public static Command hapticDriverCommand() {

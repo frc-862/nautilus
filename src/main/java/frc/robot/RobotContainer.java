@@ -104,11 +104,11 @@ public class RobotContainer extends LightningContainer {
     protected void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
             DriveRequests.getDrive(
-                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                () -> MathUtil.applyDeadband(-(driver.getLeftX() * drivetrain.getSpeedMult()),
                     ControllerConstants.JOYSTICK_DEADBAND),
-                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                () -> MathUtil.applyDeadband(-(driver.getLeftY() * drivetrain.getSpeedMult()),
                     ControllerConstants.JOYSTICK_DEADBAND),
-                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                () -> MathUtil.applyDeadband(-(driver.getRightX() * drivetrain.getTurnMult()),
                     ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -136,12 +136,13 @@ public class RobotContainer extends LightningContainer {
         // robot centric driving
         new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
             .getRobotCentric(
-                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                () -> MathUtil.applyDeadband(-(driver.getLeftX() * drivetrain.getSpeedMult()),
                     ControllerConstants.JOYSTICK_DEADBAND),
-                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                () -> MathUtil.applyDeadband(-(driver.getLeftY() * drivetrain.getSpeedMult()),
                     ControllerConstants.JOYSTICK_DEADBAND),
-                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                () -> MathUtil.applyDeadband(-(driver.getRightX() * drivetrain.getTurnMult()),
                     ControllerConstants.JOYSTICK_DEADBAND))));
+        
         // sets slow mode
         new Trigger(() -> driver.getRightTriggerAxis() > 0.25)
             .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))

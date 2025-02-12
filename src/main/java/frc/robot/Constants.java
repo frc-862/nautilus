@@ -312,29 +312,35 @@ public class Constants {
         public static final double SLOW_SPEED_MULT = 0.4; // temp
         public static final double SLOW_TURN_MULT = 0.7; // temp
 
+        public enum SysIdTestType {
+            DRIVE,
+            STEER,
+            ROTATE
+        }
+
         public class DriveRequests {
             private static final SwerveRequest.FieldCentric DRIVE = new SwerveRequest.FieldCentric();
             private static final SwerveRequest.FieldCentric SLOW = new SwerveRequest.FieldCentric();
             private static final SwerveRequest.RobotCentric ROBO_CENTRIC = new SwerveRequest.RobotCentric();
             private static final SwerveRequest.SwerveDriveBrake BRAKE = new SwerveRequest.SwerveDriveBrake();
 
-            public static Supplier<SwerveRequest> getDrive(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot, double speedMult, double turnMult) {
+            public static Supplier<SwerveRequest> getDrive(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
                 return () -> DRIVE
-                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED * speedMult) // Drive forward with negative Y
+                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y
                                                                                         // (forward)
-                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED * speedMult) // Drive left with negative X
+                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
                                                                                         // (left)
-                        .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE * turnMult)
+                        .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X (left)
 
             }
 
-            public static SwerveRequest getDrive(double x, double y, double rot, double speedMult, double turnMult) {
+            public static SwerveRequest getDrive(double x, double y, double rot) {
                 return DRIVE
-                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED * speedMult) // Drive forward with negative Y (forward)
-                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED * speedMult) // Drive left with negative X (left)
-                        .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE * turnMult)
+                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                        .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X
                                                                                  // (left)
@@ -359,22 +365,22 @@ public class Constants {
         //     }
 
             public static Supplier<SwerveRequest> getRobotCentric(DoubleSupplier x, DoubleSupplier y,
-                    DoubleSupplier rot, double speedMult, double turnMult) {
+                    DoubleSupplier rot) {
                 return () -> ROBO_CENTRIC
-                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED * speedMult) // Drive forward with negative Y
+                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y
                                                                                         // (forward)
-                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED * speedMult) // Drive left with negative X
+                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
                                                                                         // (left)
-                        .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE * turnMult)
+                        .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X (left)
             }
 
-            public static SwerveRequest getRobotCentric(double x, double y, double rot, double speedMult, double turnMult) {
+            public static SwerveRequest getRobotCentric(double x, double y, double rot) {
                 return ROBO_CENTRIC
-                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED * speedMult) // Drive forward with negative Y (forward)
-                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED * speedMult) // Drive left with negative X (left)
-                        .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE * turnMult)
+                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                        .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X
                                                                                  // (left)
@@ -681,14 +687,14 @@ public class Constants {
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
                     .withKP(0.34807).withKI(0).withKD(0)
-                    .withKS(0.18408).withKV(0.11928).withKA(0.0022307);
+                    .withKS(0.23986).withKV(0.12318).withKA(0.0059707);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
             private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
             // The closed-loop output type to use for the drive motors;
             // This affects the PID/FF gains for the drive motors
-            private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
+            private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.TorqueCurrentFOC;
 
             // The type of motor used for the drive motor
             private static final DriveMotorArrangement kDriveMotorType = DriveMotorArrangement.TalonFX_Integrated;
@@ -976,6 +982,21 @@ public class Constants {
 
     }
 
+    public class SimGamePeicesConstants {
+        public static final Pose3d A1B = new Pose3d(1.216, 5.850, 0.5, new Rotation3d(0, 0, 0));
+        public static final Pose3d A2B = new Pose3d(1.216, 4.020, 0.5, new Rotation3d(0, 0, 0));
+        public static final Pose3d A3B = new Pose3d(1.216, 2.190, 0.5, new Rotation3d(0, 0, 0));
+        public static final Pose3d A1R = new Pose3d(16.330, 2.190, 0.5,  new Rotation3d(0, 0, 0));
+        public static final Pose3d A2R = new Pose3d(16.330, 4.020, 0.5, new Rotation3d(0, 0, 0));
+        public static final Pose3d A3R = new Pose3d(16.330, 5.850, 0.5, new Rotation3d(0, 0, 0));
+
+        public static final Pose3d DEFAULT_POSE = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+
+        public static final double ELEATOR_ROOT_HEIGHT = 0.5;
+        public static final double COLLECTION_TOLERANCE = 0.5;
+        public static final double ALGAE_COLLECTOR_ROOT_HEIGHT = 0.33;
+        public static final double COLECTOR_SPEED_THRESHHOLD = 5;
+    }
     public class AlgaeCollectorConstants {
         public static final double PIVOT_TOLERANCE = 5; // temp
         public static final double PIVOT_GEAR_RATIO = 1; // temp

@@ -77,7 +77,7 @@ public class ThreeDeeAutoAlign extends Command {
 
 
         try {
-            targetPose = 
+            // targetPose = 
         } catch (Exception e) {
             System.out.println("Error: Cannot See April Tag");
             cancel();
@@ -106,7 +106,7 @@ public class ThreeDeeAutoAlign extends Command {
         drivetrain.setControl(DriveRequests.getRobotCentric(
             xVeloc, 
             yVeloc, 
-            rotationVeloc, 1, 1));
+            rotationVeloc));
 
         setGains(controllerX, "x");        
         setGains(controllerY, "y");        

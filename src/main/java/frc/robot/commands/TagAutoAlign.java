@@ -177,14 +177,14 @@ public class TagAutoAlign extends Command {
         }
 
         // give the new velocity values to the drivetrain
-        drivetrain.setControl(DriveRequests.getRobotCentric(dx_dt, dy_dt, dr_dt, drivetrain.getSpeedMult(), drivetrain.getTurnMult()));
+        drivetrain.setControl(DriveRequests.getRobotCentric(dx_dt, dy_dt, dr_dt));
     }
 
 
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.setControl(DriveRequests.getRobotCentric(0, 0, 0, drivetrain.getSpeedMult(), drivetrain.getTurnMult()));
+        drivetrain.setControl(DriveRequests.getRobotCentric(0, 0, 0));
     }
 
     @Override

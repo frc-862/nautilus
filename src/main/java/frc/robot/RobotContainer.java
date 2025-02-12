@@ -7,10 +7,12 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -21,7 +23,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
@@ -29,10 +33,12 @@ import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
+import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.TagAutoAlign;
 import frc.robot.commands.ThreeDeeAutoAlign;
 import frc.robot.commands.auton.ScoreCoral;
@@ -43,6 +49,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
+import frc.robot.subsystems.SimGamePeices;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
@@ -64,6 +71,8 @@ public class RobotContainer extends LightningContainer {
     private AlgaeCollector algaeCollector;
     private Climber climber;
 
+    private SimGamePeices simGamePeices;
+
     private static XboxController driver;
     private static XboxController copilot;
 
@@ -78,7 +87,7 @@ public class RobotContainer extends LightningContainer {
 
         leds = new LEDs();
 
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS || Robot.isSimulation()) {
             elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
@@ -87,21 +96,25 @@ public class RobotContainer extends LightningContainer {
             // RobotMotors.algaeCollectorPivotMotor);
             climber = new Climber(RobotMotors.climberMotor);
         }
+
+        if (Robot.isSimulation()){
+            simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector);
+        }
     }
 
     @Override
     protected void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
             DriveRequests.getDrive(
-                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                () -> MathUtil.applyDeadband(-(driver.getLeftX() * drivetrain.getSpeedMult()),
                     ControllerConstants.JOYSTICK_DEADBAND),
-                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                () -> MathUtil.applyDeadband(-(driver.getLeftY() * drivetrain.getSpeedMult()),
                     ControllerConstants.JOYSTICK_DEADBAND),
-                () -> MathUtil.applyDeadband(-driver.getRightX(),
-                    ControllerConstants.JOYSTICK_DEADBAND), drivetrain.getSpeedMult(), drivetrain.getTurnMult())));
+                () -> MathUtil.applyDeadband(-(driver.getRightX() * drivetrain.getTurnMult()),
+                    ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS || Robot.isSimulation()) {
             coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
                 () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
 
@@ -125,12 +138,13 @@ public class RobotContainer extends LightningContainer {
         // robot centric driving
         new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
             .getRobotCentric(
-                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                () -> MathUtil.applyDeadband(-(driver.getLeftX() * drivetrain.getSpeedMult()),
                     ControllerConstants.JOYSTICK_DEADBAND),
-                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                () -> MathUtil.applyDeadband(-(driver.getLeftY() * drivetrain.getSpeedMult()),
                     ControllerConstants.JOYSTICK_DEADBAND),
-                () -> MathUtil.applyDeadband(-driver.getRightX(),
-                    ControllerConstants.JOYSTICK_DEADBAND), drivetrain.getSpeedMult(), drivetrain.getTurnMult())));
+                () -> MathUtil.applyDeadband(-(driver.getRightX() * drivetrain.getTurnMult()),
+                    ControllerConstants.JOYSTICK_DEADBAND))));
+        
         // sets slow mode
         new Trigger(() -> driver.getRightTriggerAxis() > 0.25)
             .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
@@ -152,7 +166,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(copilot::getLeftBumperButton)
             .whileTrue(new SetRodState(rod, RodStates.SOURCE));
 
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS || Robot.isSimulation()) {
             // default
             (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, RodStates.L1));
             (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(rod, RodStates.L2));
@@ -185,16 +199,19 @@ public class RobotContainer extends LightningContainer {
             //             .onFalse(new InstantCommand(wrist::stop));
             //     new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((() -> wrist.setRawPower(1))))
             //             .onFalse(new InstantCommand(wrist::stop));
-    
+
             //     new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision,
             //             drivetrain));
-    
+
             //     new Trigger(() -> copilot.getXButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(0.75))))
             //             .onFalse(new InstantCommand(coralCollector::stop));
             //     new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() -> coralCollector.setPower(-0.5))))
             //             .onFalse(new InstantCommand(coralCollector::stop));
             // }
         }
+
+        // SYSID
+        // new Trigger(driver::getLeftBumperButton).whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.ROTATE));
 
     }
 

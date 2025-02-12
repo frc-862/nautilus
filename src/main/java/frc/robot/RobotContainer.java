@@ -211,7 +211,8 @@ public class RobotContainer extends LightningContainer {
         }
 
         // SYSID
-        // new Trigger(driver::getLeftBumperButton).whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.ROTATE));
+        // SignalLogger.start();
+        // new Trigger(driver::getYButton).whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.STEER));
 
     }
 

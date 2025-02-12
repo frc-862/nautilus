@@ -26,7 +26,7 @@ public class SysIdSequence extends SequentialCommandGroup {
      */
     public SysIdSequence(Swerve swerve, SysIdTestType testType, double deadlineSeconds) {
         addCommands(
-            new InstantCommand(() -> SignalLogger.start()),
+            // new InstantCommand(() -> SignalLogger.start()),
             new InstantCommand(() -> DataLogManager.log("\033[0;35m\033[1mSYSID Start " + testType.toString() + "\033[0m")),
             swerve.sysId(testType, Direction.kForward, true).withDeadline(new WaitCommand(deadlineSeconds)),
             swerve.sysId(testType, Direction.kReverse, true).withDeadline(new WaitCommand(deadlineSeconds)),

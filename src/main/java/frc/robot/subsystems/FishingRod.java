@@ -123,6 +123,9 @@ public class FishingRod extends SubsystemBase {
     // biases will only work if no other position is actively being set.
     public Command addWristBias(double bias) {
         return new InstantCommand(() -> {
+            if (Math.signum(bias) != Math.signum(wristBias)) {
+                wristBias = 0;
+            }
             wristBias += bias;
             wrist.setPosition(wrist.getTargetAngle() + wristBias);
         });
@@ -130,6 +133,9 @@ public class FishingRod extends SubsystemBase {
 
     public Command addElevatorBias(double bias) {
         return new InstantCommand(() -> {
+            if (Math.signum(bias) != Math.signum(elevatorBias)) {
+                elevatorBias = 0;
+            }
             elevatorBias += bias;
             elevator.setPosition(elevator.getTargetPosition() + elevatorBias);
         });

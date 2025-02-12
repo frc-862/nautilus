@@ -144,14 +144,14 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     public void periodic() {
         updateCANcoderOffsets();
 
-        LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", currentCANCoderValues);
+        // LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", currentCANCoderValues);
 
         // update reef status booleans in the future
         SmartDashboard.putBooleanArray("Reef Level One", reef1Status);
         SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);
         SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
 
-        LightningShuffleboard.setPose2d("Drivetrain", "pose", getState().Pose);
+        // LightningShuffleboard.setPose2d("Drivetrain", "pose", getState().Pose);
     }
 
     private void configurePathPlanner() {

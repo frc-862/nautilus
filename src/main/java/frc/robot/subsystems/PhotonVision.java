@@ -271,7 +271,7 @@ public class PhotonVision extends SubsystemBase {
                                 totalDistances += result.getBestTarget().getBestCameraToTarget().getTranslation().getNorm();
                                 
                                 LightningShuffleboard.setBool("Vision", camName.toString() + " targets found", !result.targets.isEmpty());
-                                LightningShuffleboard.setPose2d("Vision", camName.toString() + " pose", pose.estimatedPose.toPose2d());
+                                // LightningShuffleboard.setPose2d("Vision", camName.toString() + " pose", pose.estimatedPose.toPose2d());
                                 LightningShuffleboard.setDouble("Vision", camName.toString() + " Timestamp", result.getTimestampSeconds());
                                 LightningShuffleboard.setBool("Vision", camName.toString() + " hasTarget", true);
                             } else {

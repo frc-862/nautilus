@@ -160,11 +160,11 @@ public class RobotContainer extends LightningContainer {
             (new Trigger(copilot::getYButton)).whileTrue(new SetRodState(rod, RodStates.L4));
 
             // biases
-            new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(2));
-            new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-2));
+            new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d));
+            new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-0.5d));
 
-            new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-5));
-            new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(5));
+            new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5));
+            new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5));
 
             // unused algae stuff
             // (new Trigger(driver::getRightBumperButtonPressed))

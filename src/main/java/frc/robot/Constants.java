@@ -83,7 +83,7 @@ public class Constants {
         private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(0.1350);
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
-        public static final double tritonWristOffset = -0.246;
+        public static final double tritonWristOffset = -0.227;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
@@ -180,15 +180,15 @@ public class Constants {
                 // put(ROD_STATES.L1, 0d);
                 // put(ROD_STATES.L2, -20d);
                 // put(ROD_STATES.L3, -20d);
-                // put(ROD_STATES.L4, -80d);
+                // put(ROD_STATES.L94, -80d);
                 // put(ROD_STATES.SOURCE, 0d);
 
-                put(RodStates.STOW, 81d);
+                put(RodStates.STOW, 75d);
                 put(RodStates.L1, 0d);
                 put(RodStates.L2, -35d);
                 put(RodStates.L3, -35d);
                 put(RodStates.L4, -47d);
-                put(RodStates.SOURCE, 65d);
+                put(RodStates.SOURCE, 39.5d);
             }
         };
 
@@ -205,8 +205,8 @@ public class Constants {
                 put(RodStates.L1, 10d);
                 put(RodStates.L2, 13d);
                 put(RodStates.L3, 26d);
-                put(RodStates.L4, 46.5d);
-                put(RodStates.SOURCE, 6d);
+                put(RodStates.L4, 47d);
+                put(RodStates.SOURCE, 8.2d);
             }
         };
     }
@@ -242,7 +242,7 @@ public class Constants {
 
         // kind of guessing the numbers here (didn't do a proper test)
         public static final Distance MIN_EXTENSION = Inches.of(0);
-        public static final Distance MAX_EXTENSION = Inches.of(47);
+        public static final Distance MAX_EXTENSION = Inches.of(49.7);
 
         // SIM
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(30); // temp
@@ -258,7 +258,7 @@ public class Constants {
         public static final double ROTOR_TO_ENCODER_RATIO = 74; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double MOTORS_KP = 35; // temp
+        public static final double MOTORS_KP = 40; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
@@ -279,9 +279,9 @@ public class Constants {
     }
 
     public static class CoralCollectorConstants {
-        public static final boolean BRAKE_MODE = true;
+        public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
-        public static final boolean INVERTED = false; // temp
+        public static final boolean INVERTED = true;
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1;
 
@@ -948,6 +948,22 @@ public class Constants {
         public static final double Y_Kp = 0.1d;
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
+
+        public static final double THREE_DEE_xP = 1;
+        public static final double THREE_DEE_xI = 0;
+        public static final double THREE_DEE_xD = 0;
+
+
+        public static final double THREE_DEE_yP = 0.5;
+        public static final double THREE_DEE_yI = 0;
+        public static final double THREE_DEE_yD = 0;
+        
+
+
+        public static final double THREE_DEE_rP = 0;
+        public static final double THREE_DEE_rI = 0;
+        public static final double THREE_DEE_rD = 0;
+        
 
         public static final double targetTX = 720d;
 

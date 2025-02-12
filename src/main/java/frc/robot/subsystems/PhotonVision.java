@@ -148,7 +148,7 @@ public class PhotonVision extends SubsystemBase {
     public int getTagNum(VisionConstants.Camera camera) {
         //this is performed independently of the thread, mainly because its a simple operation and happens regardless of pose
         try {
-            if(!hasTarget(camera) || !leftThread.cameraInitialized){
+            if(!hasTarget(camera)){
                 throw new Exception("No target found");
             } else {
                 switch(camera){
@@ -175,7 +175,7 @@ public class PhotonVision extends SubsystemBase {
      */
     public Transform3d getTransformToTag(Camera camera) throws Exception {
         //this is performed independently of the thread, mainly because its a simple operation and happens regardless of pose
-        if(!hasTarget(camera) || !(camera == Camera.LEFT ? leftThread.cameraInitialized : rightThread.cameraInitialized)){
+        if(!hasTarget(camera)){
             throw new Exception("No target found");
         } else {
             switch(camera){

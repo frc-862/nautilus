@@ -36,6 +36,7 @@ import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
+import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.StandinCommands;
 import frc.robot.commands.SysIdSequence;
@@ -94,7 +95,7 @@ public class RobotContainer extends LightningContainer {
             coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
             // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
             // RobotMotors.algaeCollectorPivotMotor);
-            climber = new Climber(RobotMotors.climberMotor);
+            // climber = new Climber(RobotMotors.climberMotor);
         }
 
         if (Robot.isSimulation()){
@@ -157,8 +158,8 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
             new InstantCommand(() -> drivetrain.seedFieldCentric()));
         
-        new Trigger(driver::getLeftBumperButton).whileTrue(new ThreeDeeAutoAlign(vision, drivetrain, Camera.LEFT));
-        new Trigger(driver::getRightBumperButton).whileTrue(new ThreeDeeAutoAlign(vision, drivetrain, Camera.RIGHT));
+        new Trigger(driver::getLeftBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT));
+        new Trigger(driver::getRightBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
 
         /* COPILOT BINDINGS */
         new Trigger(copilot::getRightBumperButton)
@@ -223,9 +224,9 @@ public class RobotContainer extends LightningContainer {
         // TODO: Get actual offsets
 
         NamedCommands.registerCommand("ReefAlignLeft",
-                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LEDStates.ALIGNING)));
+                new ThreeDeeAutoAlign(vision, drivetrain, Camera.LEFT).deadlineFor(leds.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("ReefAlignRight",
-                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LEDStates.ALIGNING)));
+                new ThreeDeeAutoAlign(vision, drivetrain, Camera.RIGHT).deadlineFor(leds.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignLeft",
                 new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignRight",

@@ -74,14 +74,6 @@ public class ThreeDeeAutoAlign extends Command {
         // controllerR.setSetpoint(0);
         controllerY.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "z tolerance", 0));
         controllerR.enableContinuousInput(0, 360);
-
-
-        try {
-            // targetPose = 
-        } catch (Exception e) {
-            System.out.println("Error: Cannot See April Tag");
-            cancel();
-        }
     }
 
     @Override
@@ -89,7 +81,7 @@ public class ThreeDeeAutoAlign extends Command {
         try {
             // currentPose = new Pose3d(drivetrain.getState().Pose);
             // targetPose = currentPose.plus(vision.getTransformToTag(camera).plus(new Transform3d(-9.228, 0, 0, new Rotation3d())));
-            // currentTransform = vision.getTransformToTag(camera);
+            currentTransform = vision.getTransformToTag(camera);
         } catch (Exception e) {
             System.out.println("Error: Cannot See April Tag");
             cancel();

@@ -54,6 +54,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.HashMap;
 
 import frc.thunder.hardware.ThunderBird;
+import frc.thunder.util.Tuple;
 
 public class Constants {
 
@@ -461,20 +462,20 @@ public class Constants {
         }
 
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        public static HashMap<Tuple<Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<ScoringPoses, Integer>, Pose2d>() {
+        public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
             {
-                put(new Tuple(ScoringPoses.REEFSCORE1_1, 20), REEFSCORE1_1);
-                put(new Tuple(ScoringPoses.REEFSCORE1_2, 20), REEFSCORE1_2);
-                put(new Tuple(ScoringPoses.REEFSCORE2_1, 21), REEFSCORE2_1);
-                put(new Tuple(ScoringPoses.REEFSCORE2_2, 21), REEFSCORE2_2);
-                put(new Tuple(ScoringPoses.REEFSCORE3_1, 22), REEFSCORE3_1);
-                put(new Tuple(ScoringPoses.REEFSCORE3_2, 22), REEFSCORE3_2);
-                put(new Tuple(ScoringPoses.REEFSCORE4_1, 17), REEFSCORE4_1);
-                put(new Tuple(ScoringPoses.REEFSCORE4_2, 17), REEFSCORE4_2);
-                put(new Tuple(ScoringPoses.REEFSCORE5_1, 18), REEFSCORE5_1);
-                put(new Tuple(ScoringPoses.REEFSCORE5_2, 18), REEFSCORE5_2);
-                put(new Tuple(ScoringPoses.REEFSCORE6_1, 19), REEFSCORE6_1);
-                put(new Tuple(ScoringPoses.REEFSCORE6_2, 19), REEFSCORE6_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 20), REEFSCORE1_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 20), REEFSCORE1_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 21), REEFSCORE2_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 21), REEFSCORE2_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 22), REEFSCORE3_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 22), REEFSCORE3_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 17), REEFSCORE4_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 17), REEFSCORE4_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 18), REEFSCORE5_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 18), REEFSCORE5_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 19), REEFSCORE6_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 19), REEFSCORE6_2);
 
             }
         };

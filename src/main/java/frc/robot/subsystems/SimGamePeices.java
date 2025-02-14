@@ -143,8 +143,6 @@ public class SimGamePeices extends SubsystemBase {
         collect();
         release();
         updateHeldPeicePose();
-
-        LightningShuffleboard.setDouble("SimGamePeices", "CC Diif", coralCollectorPose.getTranslation().getDistance(peices.get(2).getPose().getTranslation()));
     }
 
     /**

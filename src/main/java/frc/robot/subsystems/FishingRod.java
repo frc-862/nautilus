@@ -146,6 +146,15 @@ public class FishingRod extends SubsystemBase {
     }
 
     /**
+     * gets the target state of the fishing rod
+     * @return the target state of the fishing rod
+     */
+    @Logged(importance = Importance.DEBUG)
+    public RodStates getTargetState() {
+        return targetState;
+    }
+
+    /**
      * Checks if the whole fishing rod system is on target
      *
      * @return true if the wrist and elevator are on target false otherwise

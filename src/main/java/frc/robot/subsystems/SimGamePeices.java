@@ -19,6 +19,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.Constants.AlgaeCollectorConstants;
 import frc.robot.Constants.SimGamePeicesConstants;
 import frc.robot.Constants.WristConstants;
+import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class SimGamePeices extends SubsystemBase {
 
@@ -47,6 +48,8 @@ public class SimGamePeices extends SubsystemBase {
 
     private boolean hasPeice = false;
     private Peice heldPeice;
+
+    private boolean heldPeiceInCoralCollector = false;
 
     private StructPublisher<Pose3d> robotPosePublisher = NetworkTableInstance.getDefault().getTable("Shuffleboard")
         .getSubTable("SimGamePeices").getStructTopic("Robot: Robot Pose", Pose3d.struct).publish();
@@ -129,6 +132,7 @@ public class SimGamePeices extends SubsystemBase {
         Peice startingCoral = new Coral();
         addPeice(startingCoral);
 
+        heldPeiceInCoralCollector = true;
         hasPeice = true;
         heldPeice = startingCoral;
   }
@@ -139,6 +143,8 @@ public class SimGamePeices extends SubsystemBase {
         collect();
         release();
         updateHeldPeicePose();
+
+        LightningShuffleboard.setDouble("SimGamePeices", "CC Diif", coralCollectorPose.getTranslation().getDistance(peices.get(2).getPose().getTranslation()));
     }
 
     /**
@@ -171,9 +177,9 @@ public class SimGamePeices extends SubsystemBase {
         // check if the coral collector is moving fast enough to collect a peice
         if (coralCollector.getVelocity() < -SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
 
-            for (int i = 0; i < corals.size(); i++){
+            for (int i = 0; i < peices.size(); i++){
 
-                Coral peice = corals.get(i);
+                Peice peice = peices.get(i);
 
                 // check if the peice is close enough to the robot to be collected
 
@@ -183,6 +189,7 @@ public class SimGamePeices extends SubsystemBase {
                         hasPeice = true;
                         heldPeice = peice;
                         coralCollector.setSimBeamBreak(true);
+                        heldPeiceInCoralCollector = true;
                         return;
                 }
             }
@@ -202,6 +209,7 @@ public class SimGamePeices extends SubsystemBase {
 
                         hasPeice = true;
                         heldPeice = peice;
+                        heldPeiceInCoralCollector = false;
                         return;
                 }
             }
@@ -215,14 +223,14 @@ public class SimGamePeices extends SubsystemBase {
 
         // check collector speeds, and distance from applicable collector
 
-        if (hasPeice && heldPeice instanceof Coral && coralCollector.getVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
+        if (hasPeice && heldPeiceInCoralCollector && coralCollector.getVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
             
             heldPeice = null;
             hasPeice = false;
             coralCollector.setSimBeamBreak(false);
         }
 
-        if (hasPeice && heldPeice instanceof Algae && algaeCollector.getRollerVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
+        if (hasPeice && !heldPeiceInCoralCollector && algaeCollector.getRollerVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
     
             heldPeice = null;
             hasPeice = false;
@@ -243,8 +251,8 @@ public class SimGamePeices extends SubsystemBase {
         double algaeCollectorAngle = Units.degreesToRadians(algaeCollector.getPivotAngle());
         double elevatorHeight = Units.inchesToMeters(elevator.getPosition());
 
-        double wristLength = WristConstants.LENGTH.in(Meters);
-        double algaeCollectorLength = AlgaeCollectorConstants.PIVOT_LENGTH;
+        double wristLength = WristConstants.LENGTH.in(Meters) * 0.5;
+        double algaeCollectorLength = AlgaeCollectorConstants.PIVOT_LENGTH * 0.5;
 
         // add offsets to robot pose to get collector poses
 
@@ -274,11 +282,11 @@ public class SimGamePeices extends SubsystemBase {
         // set the pose of the peice to that of the applicable collector
 
         if (hasPeice){
-            if (heldPeice instanceof Coral){
+            if (heldPeiceInCoralCollector){
                 heldPeice.setPose(coralCollectorPose);
             }
             
-            if (heldPeice instanceof Algae){
+            if (!heldPeiceInCoralCollector){
                 heldPeice.setPose(algaeCollectorPose);
             }
 

@@ -984,10 +984,11 @@ public class Constants {
 
         public static final Pose3d DEFAULT_POSE = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
 
-        public static final double ELEATOR_ROOT_HEIGHT = 0.5;
         public static final double COLLECTION_TOLERANCE = 0.5;
-        public static final double ALGAE_COLLECTOR_ROOT_HEIGHT = 0.33;
-        public static final double COLECTOR_SPEED_THRESHHOLD = 5;
+        public static final double COLECTOR_SPEED_THRESHHOLD = 3;
+
+        public static final Translation3d ELEVATOR_OFFSET = new Translation3d(0, -0.15, 0.35); // temp, robot relative
+        public static final Translation3d ALGAE_COLLECTOR_OFFSET = new Translation3d(0, 0.15, 0.33); // temp, robot relative
     }
     public class AlgaeCollectorConstants {
         public static final double PIVOT_TOLERANCE = 5; // temp
@@ -995,7 +996,7 @@ public class Constants {
         public static final double PIVOT_MOI = 0.01096; // temp
         public static final double PIVOT_MIN_ANGLE = 0; // temp
         public static final double PIVOT_MAX_ANGLE = 90; // temp
-        public static final double PIVOT_LENGTH = 0.5; // temp
+        public static final double PIVOT_LENGTH = 0.33; // temp
         public static final double PIVOT_START_ANGLE = 0; // temp
         public static final double ALGAE_ROLLER_SPEED = 1;
 

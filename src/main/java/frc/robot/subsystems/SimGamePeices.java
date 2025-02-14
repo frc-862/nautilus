@@ -10,8 +10,9 @@ import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -21,18 +22,39 @@ import frc.robot.Constants.WristConstants;
 
 public class SimGamePeices extends SubsystemBase {
 
+    /* 
+     * Instructions:
+     * 
+     * 0. Open 3d Field in AdvantageScope
+     * 1. Drag in the poses in the tab "SimGamePieces" (only need those listed under Algae and Coral)
+     * 2. You Start With a coral in the robot, and the Algaes should be where they start in the match
+     * 3. Collecting/ejecting peices is based on the collector speed and estimated position of the collectors
+     */
+
     private Swerve drivetrain;
     private Elevator elevator;
     private Wrist wrist;
     private CoralCollector coralCollector;
     private AlgaeCollector algaeCollector;
+    private Climber climber;
 
     private HashMap<Integer, Peice> peices = new HashMap<Integer, Peice>();
     private HashMap<Integer, Coral> corals = new HashMap<Integer, Coral>();
     private HashMap<Integer, Algae> algaes = new HashMap<Integer, Algae>();
 
+    private Pose3d coralCollectorPose;
+    private Pose3d algaeCollectorPose;
+
     private boolean hasPeice = false;
     private Peice heldPeice;
+
+    private StructPublisher<Pose3d> robotPosePublisher = NetworkTableInstance.getDefault().getTable("Shuffleboard")
+        .getSubTable("SimGamePeices").getStructTopic("Robot: Robot Pose", Pose3d.struct).publish();
+    private StructPublisher<Pose3d> coralCollectorPosePublisher = NetworkTableInstance.getDefault().getTable("Shuffleboard")
+        .getSubTable("SimGamePeices").getStructTopic("Robot: Coral Collector Pose", Pose3d.struct).publish();
+    private StructPublisher<Pose3d> algaeCollectorPosePublisher = NetworkTableInstance.getDefault().getTable("Shuffleboard")
+        .getSubTable("SimGamePeices").getStructTopic("Robot: Algae Collector Pose", Pose3d.struct).publish();
+
     private class Peice{
         private Pose3d pose;
         private StructPublisher<Pose3d> publisher;
@@ -73,7 +95,7 @@ public class SimGamePeices extends SubsystemBase {
         }
     }
 
-    private  final class Algae extends Peice {
+    private final class Algae extends Peice {
         private Algae(Pose3d pose){
             super(NetworkTableInstance.getDefault().getTable("Shuffleboard")
                 .getSubTable("SimGamePeices").getStructTopic("Algae: Peice# " + peices.size(), Pose3d.struct).publish());
@@ -86,13 +108,15 @@ public class SimGamePeices extends SubsystemBase {
         }
     }
 
-    public SimGamePeices(Elevator elevator, Wrist wrist, Swerve drivetrain, CoralCollector coralCollector, AlgaeCollector algaeCollector) {
+    public SimGamePeices(Elevator elevator, Wrist wrist, Swerve drivetrain, CoralCollector coralCollector, AlgaeCollector algaeCollector,
+            Climber climber) {
 
         this.drivetrain = drivetrain;
         this.elevator = elevator;
         this.wrist = wrist;
         this.coralCollector = coralCollector;
         this.algaeCollector = algaeCollector;
+        this.climber = climber;
         
         // add default peices
         addPeice(new Algae(SimGamePeicesConstants.A1B));
@@ -111,6 +135,7 @@ public class SimGamePeices extends SubsystemBase {
 
     @Override
     public void periodic() {
+        updateRobotPoses();
         collect();
         release();
         updateHeldPeicePose();
@@ -152,14 +177,11 @@ public class SimGamePeices extends SubsystemBase {
 
                 // check if the peice is close enough to the robot to be collected
 
-                if(new Translation2d(peice.getPose().getX(), peice.getPose().getY())
-                    .getDistance(drivetrain.getPose().getTranslation()) < SimGamePeicesConstants.COLLECTION_TOLERANCE
-                    && Math.abs(Units.inchesToMeters(elevator.getPosition()) + SimGamePeicesConstants.ELEATOR_ROOT_HEIGHT 
-                    - peice.getPose().getTranslation().getZ()) < SimGamePeicesConstants.COLLECTION_TOLERANCE){
+                if(peice.getPose().getTranslation().getDistance(coralCollectorPose.getTranslation()) 
+                    < SimGamePeicesConstants.COLLECTION_TOLERANCE){
 
                         hasPeice = true;
                         heldPeice = peice;
-
                         coralCollector.setSimBeamBreak(true);
                         return;
                 }
@@ -175,8 +197,8 @@ public class SimGamePeices extends SubsystemBase {
 
                 // check if the peice is close enough to the robot to be collected
 
-                if(new Translation2d(peice.getPose().getX(), peice.getPose().getY())
-                    .getDistance(drivetrain.getPose().getTranslation()) < SimGamePeicesConstants.COLLECTION_TOLERANCE){
+                if(peice.getPose().getTranslation().getDistance(algaeCollectorPose.getTranslation())
+                    < SimGamePeicesConstants.COLLECTION_TOLERANCE){
 
                         hasPeice = true;
                         heldPeice = peice;
@@ -190,13 +212,14 @@ public class SimGamePeices extends SubsystemBase {
      * release the held peice if the collector is ejecting it
      */
     private void release(){
+
+        // check collector speeds, and distance from applicable collector
+
         if (hasPeice && heldPeice instanceof Coral && coralCollector.getVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
             
             heldPeice = null;
             hasPeice = false;
-
             coralCollector.setSimBeamBreak(false);
-            
         }
 
         if (hasPeice && heldPeice instanceof Algae && algaeCollector.getRollerVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
@@ -208,21 +231,55 @@ public class SimGamePeices extends SubsystemBase {
     }
 
     /**
+     * update collector poses for peice pose estimation
+     */
+    private void updateRobotPoses(){
+
+        Pose3d robotPose = new Pose3d(drivetrain.getPose()).plus(new Transform3d(0, 0, -Units.inchesToMeters(climber.getPostion()), 
+            new Rotation3d()));
+        double robotAngle = robotPose.getRotation().getZ();
+
+        double wristAngle = Units.degreesToRadians(wrist.getAngle());
+        double algaeCollectorAngle = Units.degreesToRadians(algaeCollector.getPivotAngle());
+        double elevatorHeight = Units.inchesToMeters(elevator.getPosition());
+
+        double wristLength = WristConstants.LENGTH.in(Meters);
+        double algaeCollectorLength = AlgaeCollectorConstants.PIVOT_LENGTH;
+
+        // add offsets to robot pose to get collector poses
+
+        coralCollectorPose = new Pose3d(
+            // elevator root offset + wrist length (take angle into account) + elevator height -> make field centric -> add robot pose & rotation
+            SimGamePeicesConstants.ELEVATOR_OFFSET.plus(new Translation3d(0, -Math.cos(wristAngle) * wristLength, 
+            Math.sin(wristAngle) * wristLength + elevatorHeight)).rotateBy(new Rotation3d(0, 0, robotAngle - Math.PI / 2))
+            .plus(robotPose.getTranslation()), new Rotation3d(0, Units.degreesToRadians(wrist.getAngle()), robotAngle - Math.PI));
+
+        algaeCollectorPose = new Pose3d(
+            // algae collector root offset + arm length (take angle into account) -> make feild centric -> add robot pose and rotation
+            SimGamePeicesConstants.ALGAE_COLLECTOR_OFFSET.plus(new Translation3d(0, Math.cos(algaeCollectorAngle) * algaeCollectorLength, 
+            Math.sin(algaeCollectorAngle) * algaeCollectorLength)).rotateBy(new Rotation3d(0, 0, robotAngle - Math.PI / 2))
+            .plus(robotPose.getTranslation()), new Rotation3d(drivetrain.getPose().getRotation()));
+
+        // publish poses to networktables (mostly useless, but can be used to see poses in advantagescope)
+        robotPosePublisher.set(robotPose);
+        coralCollectorPosePublisher.set(coralCollectorPose);
+        algaeCollectorPosePublisher.set(algaeCollectorPose);
+    }
+
+    /**
      * set the pose of the held peice to the current pose of the robot
      */
     private void updateHeldPeicePose(){
+
+        // set the pose of the peice to that of the applicable collector
+
         if (hasPeice){
             if (heldPeice instanceof Coral){
-                heldPeice.setPose(new Pose3d(drivetrain.getPose().getX(), drivetrain.getPose().getY(), 
-                Units.inchesToMeters(elevator.getPosition()) + SimGamePeicesConstants.ELEATOR_ROOT_HEIGHT + 
-                (Math.sin(wrist.getAngle()) * WristConstants.LENGTH.in(Meters)), 
-                new Rotation3d(0, wrist.getAngle(), drivetrain.getPose().getRotation().getDegrees() + 180)));
+                heldPeice.setPose(coralCollectorPose);
             }
             
             if (heldPeice instanceof Algae){
-                heldPeice.setPose(new Pose3d(drivetrain.getPose().getX(), drivetrain.getPose().getY(), 
-                SimGamePeicesConstants.ALGAE_COLLECTOR_ROOT_HEIGHT + (Math.sin(algaeCollector.getPivotAngle()) * AlgaeCollectorConstants.PIVOT_LENGTH), 
-                new Rotation3d(0, algaeCollector.getPivotAngle(), drivetrain.getPose().getRotation().getDegrees())));
+                heldPeice.setPose(algaeCollectorPose);
             }
 
             heldPeice.publish();

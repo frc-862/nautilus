@@ -207,7 +207,7 @@ public class Constants {
                 put(RodStates.L2, 13d);
                 put(RodStates.L3, 26d);
                 put(RodStates.L4, 47d);
-                put(RodStates.SOURCE, 8.2d);
+                put(RodStates.SOURCE, 9d);
             }
         };
     }
@@ -281,7 +281,7 @@ public class Constants {
 
     public static class CoralCollectorConstants {
         public static final boolean BRAKE_MODE = false;
-        public static final double STATOR_CURRENT_LIMIT = 100d; // temp
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final boolean INVERTED = true;
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1;
@@ -449,8 +449,8 @@ public class Constants {
         public static final Pose2d REEFSCORE2_2 = new Pose2d(5.89, 3.876, new Rotation2d(180));
         public static final Pose2d REEFSCORE3_1 = new Pose2d(5.327, 2.935, new Rotation2d(120));
         public static final Pose2d REEFSCORE3_2 = new Pose2d(5.019, 2.803, new Rotation2d(120));
-        public static final Pose2d REEFSCORE4_1 = new Pose2d(3.881, 2.728, new Rotation2d(60));
-        public static final Pose2d REEFSCORE4_2 = new Pose2d(3.639, 2.904, new Rotation2d(60));
+        public static final Pose2d REEFSCORE4_1 = new Pose2d(4.070, 2.880, new Rotation2d(-120));
+        public static final Pose2d REEFSCORE4_2 = new Pose2d(3.708, 2.968, new Rotation2d(-120));
         public static final Pose2d REEFSCORE5_1 = new Pose2d(3.072, 3.875, new Rotation2d(0));
         public static final Pose2d REEFSCORE5_2 = new Pose2d(3.101, 4.175, new Rotation2d(0));
         public static final Pose2d REEFSCORE6_1 = new Pose2d(3.656, 5.122, new Rotation2d(300));
@@ -682,7 +682,7 @@ public class Constants {
             // the
             // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
             private static final Slot0Configs steerGains = new Slot0Configs()
-                    .withKP(43.429).withKI(0).withKD(2.6054)
+                    .withKP(50).withKI(0).withKD(0.5)
                     .withKS(0.27425).withKV(2.4308).withKA(0.094343)
                     .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
             // When using closed-loop control, the drive motor uses the control

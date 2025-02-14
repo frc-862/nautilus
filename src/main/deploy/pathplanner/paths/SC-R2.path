@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.996283783783784,
-        "y": 1.9498310810810802
+        "x": 7.123974609375,
+        "y": 0.5083168754364522
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.989889481671353,
-        "y": 3.0573978037591525
+        "x": 6.117580307262569,
+        "y": 1.6158835981145245
       },
       "isLocked": false,
       "linkedName": "S3"
     },
     {
       "anchor": {
-        "x": 4.9094156446403625,
-        "y": 2.891007168732541
+        "x": 5.07170642021648,
+        "y": 2.675608851256983
       },
       "prevControl": {
-        "x": 5.145918036758866,
-        "y": 2.4491974692031917
+        "x": 5.308208812334984,
+        "y": 2.233799151727634
       },
       "nextControl": null,
       "isLocked": false,
@@ -35,7 +35,7 @@
       "minWaypointRelativePos": 0.599120020604396,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 0.75,
+        "maxVelocity": 1.5,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -62,7 +62,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 3.0,
     "rotation": -59.99999999999999
   },
   "reversed": false,

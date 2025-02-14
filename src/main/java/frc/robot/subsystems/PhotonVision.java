@@ -204,6 +204,9 @@ public class PhotonVision extends SubsystemBase {
         Tuple<EstimatedRobotPose, Double> leftUpdates = leftThread.getUpdates();
         Tuple<EstimatedRobotPose, Double> rightUpdates = rightThread.getUpdates();
 
+        LightningShuffleboard.setDouble("Vision", "left dist", leftUpdates.v);
+        LightningShuffleboard.setDouble("Vision", "right dist", rightUpdates.v);
+
         // prefer the camera that called the function (has known good values)
         // if the other camera has a target, prefer the one with the lower distance to best tag
         switch (caller) {

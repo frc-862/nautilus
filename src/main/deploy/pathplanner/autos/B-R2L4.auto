@@ -26,6 +26,12 @@
         {
           "type": "named",
           "data": {
+            "name": "ReefAlignLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "ScoreCoral"
           }
         }

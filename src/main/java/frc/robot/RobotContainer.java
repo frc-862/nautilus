@@ -88,7 +88,7 @@ public class RobotContainer extends LightningContainer {
 
         leds = new LEDs();
 
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS || Robot.isSimulation()) {
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
             rod = new FishingRod(wrist, elevator);
@@ -99,7 +99,12 @@ public class RobotContainer extends LightningContainer {
         }
 
         if (Robot.isSimulation()){
-            simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector);
+            // algae collector and climber are temp because not initialized above
+            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
+                RobotMotors.algaeCollectorPivotMotor);
+            climber = new Climber(RobotMotors.climberMotor);
+
+            simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector, climber);
         }
     }
 
@@ -115,7 +120,7 @@ public class RobotContainer extends LightningContainer {
                     ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS || Robot.isSimulation()) {
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
                 () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
 
@@ -167,7 +172,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(copilot::getLeftBumperButton)
             .whileTrue(new SetRodState(rod, RodStates.SOURCE));
 
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS || Robot.isSimulation()) {
+        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             // default
             (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, RodStates.L1));
             (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(rod, RodStates.L2));

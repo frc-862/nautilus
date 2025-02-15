@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.695943446665503,
-        "y": 2.8128458886173178
+        "x": 5.423926872381284,
+        "y": 2.732163276885474
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.643536352070908,
-        "y": 1.7900840642929943
+        "x": 4.591702485375122,
+        "y": 2.4710137028620895
       },
       "isLocked": false,
       "linkedName": "R2"
     },
     {
       "anchor": {
-        "x": 1.5514806651536313,
-        "y": 0.6154255957576811
+        "x": 1.9773303836417597,
+        "y": 1.047722263442737
       },
       "prevControl": {
-        "x": 2.707646205694171,
-        "y": 1.356557352514438
+        "x": 3.4806688296244173,
+        "y": 1.8235531098169662
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,23 +34,16 @@
       "rotationDegrees": -59.85861444792467
     }
   ],
-  "constraintZones": [
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
     {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.12450206043956047,
-      "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
+      "name": "RodSource",
+      "waypointRelativePos": 0.7668655563186813,
+      "endWaypointRelativePos": null,
+      "command": null
     }
   ],
-  "pointTowardsZones": [],
-  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
-import frc.robot.Constants.PoseConstants.ScoringPoses;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
@@ -48,10 +47,14 @@ public class PoseBasedAutoAlign extends Command {
      * @param camera
      */
     public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera) {
+        this(vision, drivetrain, camera, 22);
+    }
+
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tagID) {
         this.vision = vision;
         this.drivetrain = drivetrain;
         this.camera = camera;
-        targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, 22));
+        targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tagID));
 
         publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("TestAutoAlign").getStructTopic("TARGET POSE", Pose2d.struct).publish();
 

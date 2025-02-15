@@ -305,7 +305,7 @@ public class Constants {
 
         public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
-        public static final double COLLECTED_CURRENT = 80d;
+        public static final double COLLECTED_CURRENT = 20d;
     }
 
     public class DrivetrainConstants {
@@ -453,39 +453,24 @@ public class Constants {
         public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
                 Units.feetToMeters(26.0));
 
-        public static final Pose2d REEFSCORE1_1 = new Pose2d(4.864, 5.235, new Rotation2d(Degrees.of(240)));
-        public static final Pose2d REEFSCORE1_2 = new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(240)));
-        public static final Pose2d REEFSCORE2_1 = new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(180)));
-        public static final Pose2d REEFSCORE2_2 = new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(180)));
-        public static final Pose2d REEFSCORE3_1 = new Pose2d(5.237, 3.056, new Rotation2d(Degrees.of(-60)));
-        public static final Pose2d REEFSCORE3_2 = new Pose2d(4.982, 2.857, new Rotation2d(Degrees.of(-60)));
-        public static final Pose2d REEFSCORE4_1 = new Pose2d(4.070, 2.880, new Rotation2d(Degrees.of(-120)));
-        public static final Pose2d REEFSCORE4_2 = new Pose2d(3.708, 2.968, new Rotation2d(Degrees.of(-120)));
-        public static final Pose2d REEFSCORE5_1 = new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(0)));
-        public static final Pose2d REEFSCORE5_2 = new Pose2d(3.101, 4.175, new Rotation2d(Degrees.of(0)));
-        public static final Pose2d REEFSCORE6_1 = new Pose2d(3.656, 5.122, new Rotation2d(Degrees.of(300)));
-        public static final Pose2d REEFSCORE6_2 = new Pose2d(3.949, 5.282, new Rotation2d(Degrees.of(300)));
-
-        public enum ScoringPoses {
-            REEFSCORE1_1, REEFSCORE1_2, REEFSCORE2_1, REEFSCORE2_2, REEFSCORE3_1, REEFSCORE3_2,
-            REEFSCORE4_1, REEFSCORE4_2, REEFSCORE5_1, REEFSCORE5_2, REEFSCORE6_1, REEFSCORE6_2
-        }
-
         @SuppressWarnings({ "rawtypes", "unchecked" })
         public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
             {
-                put(new Tuple(VisionConstants.Camera.LEFT, 20), REEFSCORE1_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 20), REEFSCORE1_2);
-                put(new Tuple(VisionConstants.Camera.LEFT, 21), REEFSCORE2_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 21), REEFSCORE2_2);
-                put(new Tuple(VisionConstants.Camera.LEFT, 22), REEFSCORE3_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 22), REEFSCORE3_2);
-                put(new Tuple(VisionConstants.Camera.LEFT, 17), REEFSCORE4_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 17), REEFSCORE4_2);
-                put(new Tuple(VisionConstants.Camera.LEFT, 18), REEFSCORE5_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 18), REEFSCORE5_2);
-                put(new Tuple(VisionConstants.Camera.LEFT, 19), REEFSCORE6_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 19), REEFSCORE6_2);
+                // put(new Tuple(VisionConstants.Camera.LEFT, 12), new Pose2d(1.625, 2.880, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 12), new Pose2d(1.759, 0.678, new Rotation2d(Degrees.of(55))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 17), new Pose2d(4.000, 2.870, new Rotation2d(Degrees.of(60))));
+
+                put(new Tuple(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.708, 2.968, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 18), new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(0))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 18), new Pose2d(3.101, 4.175, new Rotation2d(Degrees.of(0))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 19), new Pose2d(3.656, 5.122, new Rotation2d(Degrees.of(300))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 19), new Pose2d(3.949, 5.282, new Rotation2d(Degrees.of(300))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 20), new Pose2d(4.864, 5.235, new Rotation2d(Degrees.of(240))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 20), new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(240))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 21), new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(180))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(180))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 22), new Pose2d(5.237, 3.056, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 22), new Pose2d(4.982, 2.857, new Rotation2d(Degrees.of(-60))));
 
             }
         };

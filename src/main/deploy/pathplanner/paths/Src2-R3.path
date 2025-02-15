@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5514806651536313,
-        "y": 0.6154255957576811
+        "x": 1.9773303836417597,
+        "y": 1.047722263442737
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4947940161214053,
-        "y": 2.990335949000861
+        "x": 2.895859341798064,
+        "y": 3.3175768002966763
       },
       "isLocked": false,
       "linkedName": "Src2"
     },
     {
       "anchor": {
-        "x": 4.028832598638267,
-        "y": 2.867261969710195
+        "x": 3.8514776645425974,
+        "y": 2.5871069199546084
       },
       "prevControl": {
-        "x": 3.17852338813935,
-        "y": 1.872207911372157
+        "x": 2.9175339381008225,
+        "y": 1.6746383613444866
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,30 +29,9 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.8870106456043959,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 3.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "RodL4",
-      "waypointRelativePos": 0.8310224931318682,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -62,7 +41,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.5,
     "rotation": -119.99999999999999
   },
   "reversed": false,

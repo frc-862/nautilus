@@ -156,10 +156,13 @@ public class RobotContainer extends LightningContainer {
             .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
             .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
         
-        // // sets slow mode if the elevator is above L3
-        // new Trigger(() -> ((rod.getTargetState() == RodStates.L3) || (rod.getTargetState() == RodStates.L4)))
-        //     .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
-        //     .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+        if(DriverStation.isTeleop()) {
+            // sets slow mode if the elevator is above L3
+            new Trigger(() -> ((rod.getTargetState() == RodStates.L3) || (rod.getTargetState() == RodStates.L4)))
+                .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
+            new Trigger(() -> (!((rod.getTargetState() == RodStates.L3) || (rod.getTargetState() == RodStates.L4)) && !(driver.getRightTriggerAxis() > 0.25)))
+                .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+        }
 
         // drivetrain brake
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));

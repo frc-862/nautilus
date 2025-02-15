@@ -164,13 +164,23 @@ public class Constants {
 
     public static class FishingRodConstants {
         public enum RodStates {
-            STOW, L1, L2, L3, L4, SOURCE, LOW, HIGH, ALGAE_SCORE
+            STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true), ALGAE_SCORE(true), DEFAULT(false);
+            
+            private boolean scoring;
+
+            RodStates(boolean scoring) {
+                this.scoring = scoring;
+            }
+            
+            public boolean isScoring() {
+                return scoring;
+            }
         }
 
         public enum RodTransitionStates {
             DEFAULT, // default travel state
-            X_SCORE, // any state to L4
-            SCORE_X, // L4 to any state
+            WRIST_DOWN_THEN_ELE, // any state to L4
+            WRIST_UP_THEN_ELE, // L4 to any state
             TRITON, // specific state to deal with triton's loose belt,
             TRANSITIONING
         }
@@ -184,7 +194,7 @@ public class Constants {
                 // put(ROD_STATES.L94, -80d);
                 // put(ROD_STATES.SOURCE, 0d);
 
-                put(RodStates.STOW, 75d);
+                put(RodStates.STOW, 80d);
                 put(RodStates.L1, 0d);
                 put(RodStates.L2, -35d);
                 put(RodStates.L3, -35d);
@@ -443,18 +453,18 @@ public class Constants {
         public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
                 Units.feetToMeters(26.0));
 
-        public static final Pose2d REEFSCORE1_1 = new Pose2d(4.864, 5.235, new Rotation2d(240));
-        public static final Pose2d REEFSCORE1_2 = new Pose2d(5.283, 5.069, new Rotation2d(240));
-        public static final Pose2d REEFSCORE2_1 = new Pose2d(5.837, 4.203, new Rotation2d(180));
-        public static final Pose2d REEFSCORE2_2 = new Pose2d(5.89, 3.876, new Rotation2d(180));
-        public static final Pose2d REEFSCORE3_1 = new Pose2d(5.327, 2.935, new Rotation2d(120));
-        public static final Pose2d REEFSCORE3_2 = new Pose2d(5.019, 2.803, new Rotation2d(120));
-        public static final Pose2d REEFSCORE4_1 = new Pose2d(4.070, 2.880, new Rotation2d(-120));
-        public static final Pose2d REEFSCORE4_2 = new Pose2d(3.708, 2.968, new Rotation2d(-120));
-        public static final Pose2d REEFSCORE5_1 = new Pose2d(3.072, 3.875, new Rotation2d(0));
-        public static final Pose2d REEFSCORE5_2 = new Pose2d(3.101, 4.175, new Rotation2d(0));
-        public static final Pose2d REEFSCORE6_1 = new Pose2d(3.656, 5.122, new Rotation2d(300));
-        public static final Pose2d REEFSCORE6_2 = new Pose2d(3.949, 5.282, new Rotation2d(300));
+        public static final Pose2d REEFSCORE1_1 = new Pose2d(4.864, 5.235, new Rotation2d(Degrees.of(240)));
+        public static final Pose2d REEFSCORE1_2 = new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(240)));
+        public static final Pose2d REEFSCORE2_1 = new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(180)));
+        public static final Pose2d REEFSCORE2_2 = new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(180)));
+        public static final Pose2d REEFSCORE3_1 = new Pose2d(5.237, 3.056, new Rotation2d(Degrees.of(-60)));
+        public static final Pose2d REEFSCORE3_2 = new Pose2d(4.982, 2.857, new Rotation2d(Degrees.of(-60)));
+        public static final Pose2d REEFSCORE4_1 = new Pose2d(4.070, 2.880, new Rotation2d(Degrees.of(-120)));
+        public static final Pose2d REEFSCORE4_2 = new Pose2d(3.708, 2.968, new Rotation2d(Degrees.of(-120)));
+        public static final Pose2d REEFSCORE5_1 = new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(0)));
+        public static final Pose2d REEFSCORE5_2 = new Pose2d(3.101, 4.175, new Rotation2d(Degrees.of(0)));
+        public static final Pose2d REEFSCORE6_1 = new Pose2d(3.656, 5.122, new Rotation2d(Degrees.of(300)));
+        public static final Pose2d REEFSCORE6_2 = new Pose2d(3.949, 5.282, new Rotation2d(Degrees.of(300)));
 
         public enum ScoringPoses {
             REEFSCORE1_1, REEFSCORE1_2, REEFSCORE2_1, REEFSCORE2_2, REEFSCORE3_1, REEFSCORE3_2,
@@ -956,18 +966,18 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double THREE_DEE_xP = 1;
+        public static final double THREE_DEE_xP = 1d;
         public static final double THREE_DEE_xI = 0;
         public static final double THREE_DEE_xD = 0;
 
 
-        public static final double THREE_DEE_yP = 0.5;
+        public static final double THREE_DEE_yP = 1d;
         public static final double THREE_DEE_yI = 0;
         public static final double THREE_DEE_yD = 0;
         
 
 
-        public static final double THREE_DEE_rP = 0;
+        public static final double THREE_DEE_rP = 0.02;
         public static final double THREE_DEE_rI = 0;
         public static final double THREE_DEE_rD = 0;
         

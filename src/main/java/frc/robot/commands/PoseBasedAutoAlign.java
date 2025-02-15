@@ -31,7 +31,8 @@ public class PoseBasedAutoAlign extends Command {
     private PIDController controllerY = new PIDController(AutoAlignConstants.THREE_DEE_yP, AutoAlignConstants.THREE_DEE_yI,
         AutoAlignConstants.THREE_DEE_yD);
 
-    private PIDController controllerR = new PIDController(0, 0, 0);
+    private PIDController controllerR = new PIDController(AutoAlignConstants.THREE_DEE_rP, AutoAlignConstants.THREE_DEE_rI,
+        AutoAlignConstants.THREE_DEE_rD);
 
     private Transform3d currentTransform = new Transform3d();
     private Pose2d targetPose;
@@ -50,7 +51,7 @@ public class PoseBasedAutoAlign extends Command {
         this.vision = vision;
         this.drivetrain = drivetrain;
         this.camera = camera;
-        targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, 17));
+        targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, 22));
 
         publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("TestAutoAlign").getStructTopic("TARGET POSE", Pose2d.struct).publish();
 
@@ -61,15 +62,15 @@ public class PoseBasedAutoAlign extends Command {
     public void initialize() {
 
         // controllerX.setSetpoint(0);
-        controllerX.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "x tolerance", 0));
+        controllerX.setTolerance(0.02);
         // controllerX.enableContinuousInput(0, 360);
 
         // controllerY.setSetpoint(Units.inchesToMeters(9.228));
-        controllerY.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "y tolerance", 0));
+        controllerY.setTolerance(0.02);
 
 
         // controllerR.setSetpoint(0);
-        controllerY.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", "r tolerance", 0));
+        controllerR.setTolerance(2);
         controllerR.enableContinuousInput(0, 360);
 
 
@@ -88,9 +89,9 @@ public class PoseBasedAutoAlign extends Command {
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "Y static", 0);
-        double yKs = LightningShuffleboard.getDouble("TestAutoAlign", "X static", 0);
-        double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0);
+        double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "Y static", 0d);
+        double yKs = LightningShuffleboard.getDouble("TestAutoAlign", "X static", 0d);
+        double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
         double yVeloc = -controllerY.calculate(currentPose.getY(), targetPose.getY()) + Math.signum(controllerY.getError()) * xKs;
         double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX()) + Math.signum(controllerY.getError()) * yKs;
@@ -101,9 +102,9 @@ public class PoseBasedAutoAlign extends Command {
             yVeloc,
             rotationVeloc));
 
-        setXGains();
-        setYGains();
-        setRGains();
+        // setXGains();
+        // setYGains();
+        // setRGains();
 
         // LightningShuffleboard.setPose2d("TestAutoAlign", "current pose veloc", currentPose.toPose2d());
         // LightningShuffleboard.setPose2d("TestAutoAlign", "target pose", targetPose.toPose2d());
@@ -129,7 +130,7 @@ public class PoseBasedAutoAlign extends Command {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return controllerX.atSetpoint() && controllerY.atSetpoint() && controllerR.atSetpoint();
     }
 
     private void setXGains() {

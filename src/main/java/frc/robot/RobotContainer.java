@@ -67,7 +67,7 @@ public class RobotContainer extends LightningContainer {
 
     private Elevator elevator;
     private Wrist wrist;
-    private FishingRod fishingRod;
+    private FishingRod rod;
     private CoralCollector coralCollector;
     private AlgaeCollector algaeCollector;
     private Climber climber;
@@ -91,7 +91,7 @@ public class RobotContainer extends LightningContainer {
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
             wrist = new Wrist(RobotMotors.wristMotor);
-            fishingRod = new FishingRod(wrist, elevator);
+            rod = new FishingRod(wrist, elevator);
             coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
             // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
             // RobotMotors.algaeCollectorPivotMotor);
@@ -131,9 +131,9 @@ public class RobotContainer extends LightningContainer {
             // climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(),
             // ControllerConstants.JOYSTICK_DEADBAND)), climber));
 
-            fishingRod.setDefaultCommand(new SetRodState(fishingRod, RodStates.STOW));
+            rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW));
 
-            new Trigger(() -> fishingRod.onTarget()).whileFalse(leds.enableState(LEDStates.ROD_MOVING));
+            new Trigger(() -> rod.onTarget()).whileFalse(leds.enableState(LEDStates.ROD_MOVING));
         }
 
     }
@@ -157,7 +157,7 @@ public class RobotContainer extends LightningContainer {
             .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
         
         // sets slow mode if the elevator is above L3
-        new Trigger(() -> ((fishingRod.getTargetState() == RodStates.L3) || (fishingRod.getTargetState() == RodStates.L4)))
+        new Trigger(() -> ((rod.getTargetState() == RodStates.L3) || (rod.getTargetState() == RodStates.L4)))
             .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
             .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
@@ -180,10 +180,10 @@ public class RobotContainer extends LightningContainer {
                 .whileTrue(new SetRodState(rod, RodStates.SOURCE));
 
             // default
-            (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(fishingRod, RodStates.L1));
-            (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(fishingRod, RodStates.L2));
-            (new Trigger(copilot::getXButton)).whileTrue(new SetRodState(fishingRod, RodStates.L3));
-            (new Trigger(copilot::getYButton)).whileTrue(new SetRodState(fishingRod, RodStates.L4));
+            (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, RodStates.L1));
+            (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(rod, RodStates.L2));
+            (new Trigger(copilot::getXButton)).whileTrue(new SetRodState(rod, RodStates.L3));
+            (new Trigger(copilot::getYButton)).whileTrue(new SetRodState(rod, RodStates.L4));
 
             // biases
             new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d));
@@ -270,22 +270,22 @@ public class RobotContainer extends LightningContainer {
                 NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, () -> 1));
 
                 NamedCommands.registerCommand("RodHome",
-                        new SetRodState(fishingRod, RodStates.STOW)
+                        new SetRodState(rod, RodStates.STOW)
                                 .deadlineFor(leds.enableState(LEDStates.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL1",
-                        new SetRodState(fishingRod, RodStates.L1)
+                        new SetRodState(rod, RodStates.L1)
                                 .deadlineFor(leds.enableState(LEDStates.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL2",
-                        new SetRodState(fishingRod, RodStates.L2)
+                        new SetRodState(rod, RodStates.L2)
                                 .deadlineFor(leds.enableState(LEDStates.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL3",
-                        new SetRodState(fishingRod, RodStates.L3)
+                        new SetRodState(rod, RodStates.L3)
                                 .deadlineFor(leds.enableState(LEDStates.ROD_MOVING)));
                 NamedCommands.registerCommand("RodL4",
-                        new SetRodState(fishingRod, RodStates.L4)
+                        new SetRodState(rod, RodStates.L4)
                                 .deadlineFor(leds.enableState(LEDStates.ROD_MOVING)));
                 NamedCommands.registerCommand("RodSource",
-                        new SetRodState(fishingRod, RodStates.SOURCE)
+                        new SetRodState(rod, RodStates.SOURCE)
                                 .deadlineFor(leds.enableState(LEDStates.ROD_MOVING)));
                 NamedCommands.registerCommand("ScoreCoral", new ScoreCoral(coralCollector));
             }

@@ -20,6 +20,7 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
 
 public class PoseBasedAutoAlign extends Command {
+
     private PhotonVision vision;
     private Swerve drivetrain;
     private Camera camera;
@@ -43,6 +44,7 @@ public class PoseBasedAutoAlign extends Command {
      * will always use PID Controllers
      * @param vision
      * @param drivetrain
+     * @param camera
      */
     public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera) {
         this.vision = vision;
@@ -79,7 +81,7 @@ public class PoseBasedAutoAlign extends Command {
         //     cancel();
         // }
 
-        
+
     }
 
     @Override
@@ -95,14 +97,14 @@ public class PoseBasedAutoAlign extends Command {
         double rotationVeloc = controllerR.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees()) + Math.signum(controllerY.getError()) * rKs;
 
         drivetrain.setControl(DriveRequests.getRobotCentric(
-            xVeloc, 
-            yVeloc, 
+            xVeloc,
+            yVeloc,
             rotationVeloc));
 
-        setXGains();        
-        setYGains();        
+        setXGains();
+        setYGains();
         setRGains();
-        
+
         // LightningShuffleboard.setPose2d("TestAutoAlign", "current pose veloc", currentPose.toPose2d());
         // LightningShuffleboard.setPose2d("TestAutoAlign", "target pose", targetPose.toPose2d());
 

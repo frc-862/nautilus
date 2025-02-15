@@ -13,10 +13,8 @@ import org.photonvision.simulation.VisionTargetSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.Camera;
@@ -84,11 +82,11 @@ public class PhotonVision extends SubsystemBase {
     public void switchPipelines(PhotonCamera camera, int pipeline) {
         camera.setPipelineIndex(pipeline);
 
-        /**
+        /*
          * if pipeline is switched out of 3d mode, the camera's thread should be paused, then resumed when switched back
          * this is to prevent the camera from trying to update the pose when it's unable to
          * error handling should catch this, but it's better to be safe than sorry
-         * 
+         *
          * threads should be paused with Thread.wait() and resumed with Thread.notify()
          */
     }
@@ -100,8 +98,8 @@ public class PhotonVision extends SubsystemBase {
      */
     public boolean hasTarget(Camera camera) {
         if(isCameraInitialized(camera)) {
-        return camera == Camera.LEFT 
-            ? leftThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false) 
+        return camera == Camera.LEFT
+            ? leftThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false)
             : rightThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
         } else {
             return false;
@@ -116,8 +114,8 @@ public class PhotonVision extends SubsystemBase {
      */
     public double getTY(VisionConstants.Camera camera, double offset) {
         if(isCameraInitialized(camera)) {
-            return camera == Camera.LEFT 
-                ? leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset 
+            return camera == Camera.LEFT
+                ? leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset
                 : rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
         } else {
             return 0;
@@ -132,8 +130,8 @@ public class PhotonVision extends SubsystemBase {
      */
     public double getTX(Camera camera, double offset) {
         if(isCameraInitialized(camera)) {
-            return camera == Camera.LEFT 
-                ? leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset 
+            return camera == Camera.LEFT
+                ? leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset
                 : rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
         } else {
             return 0;
@@ -154,7 +152,7 @@ public class PhotonVision extends SubsystemBase {
                 switch(camera){
                     case LEFT:
                         return leftThread.getCameraObject().getLatestResult().getBestTarget().getFiducialId();
-        
+
                     case RIGHT:
                         return rightThread.getCameraObject().getLatestResult().getBestTarget().getFiducialId();
 
@@ -239,9 +237,9 @@ public class PhotonVision extends SubsystemBase {
 
         public boolean cameraInitialized = false;
 
-        public CameraThread(Camera camName) {
+        CameraThread(Camera camName) {
             this.camName = camName;
-            
+
             initializeCamera();
 
             poseEstimator = new PhotonPoseEstimator(VisionConstants.tagLayout,
@@ -269,10 +267,10 @@ public class PhotonVision extends SubsystemBase {
                                 hasTarget = true;
                                 poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose,
                                         () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed"));
-                                        
+
                                 // grabs the distance to the best target (for the latest set of result)
                                 totalDistances += result.getBestTarget().getBestCameraToTarget().getTranslation().getNorm();
-                                
+
                                 LightningShuffleboard.setBool("Vision", camName.toString() + " targets found", !result.targets.isEmpty());
                                 // LightningShuffleboard.setPose2d("Vision", camName.toString() + " pose", pose.estimatedPose.toPose2d());
                                 LightningShuffleboard.setDouble("Vision", camName.toString() + " Timestamp", result.getTimestampSeconds());
@@ -308,10 +306,10 @@ public class PhotonVision extends SubsystemBase {
 
         /**
          * Returns the most recent pose and average distance to the best target <p>
-         * 
+         *
          * using a tuple as a type-safe alternative to the classic "return an array" (i hate java) <p>
          * this is also thread-safe, and will onlu return the most recent values from the same timestamp <p>
-         * 
+         *
          * @return Tuple<EstimatedRobotPose, Double> - the most recent pose and average distance to the best target
          */
         public Tuple<EstimatedRobotPose, Double> getUpdates() {
@@ -320,12 +318,13 @@ public class PhotonVision extends SubsystemBase {
 
         /**
          * Returns if the camera (during latest loop cycle) has a target
-         * 
+         *
          * This is separate from the value on the NetworkTables, as this value is updated for the entire loop cycle <p>
          * there is an edge case where a target is found, but the pose is not updated <p>
          * likewise, there is an edge case where a target is found and then lost, but the pose is updated <p>
          * to solve this, the hasTarget value is marked as true iff any update has been sent to the estimator <p>
          * @ImplNote this is NOT strictly synchronized with the value from {@link #getUpdates()}; be careful when using this value. should use PhotonVision's hasTarget() function for most cases
+         * @return has a target or not
          */
         public boolean hasTarget() {
             return hasTarget;

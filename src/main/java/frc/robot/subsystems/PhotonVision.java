@@ -20,6 +20,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.Robot;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.thunder.util.FieldParse;
 import frc.thunder.util.Tuple;
 
 public class PhotonVision extends SubsystemBase {
@@ -242,8 +243,15 @@ public class PhotonVision extends SubsystemBase {
 
             initializeCamera();
 
-            poseEstimator = new PhotonPoseEstimator(VisionConstants.tagLayout,
-                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camName == Camera.LEFT ? VisionConstants.robotLeftToCamera : VisionConstants.robotRightToCamera);
+            try {
+                poseEstimator = new PhotonPoseEstimator(FieldParse.wpicalParse(),
+                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camName == Camera.LEFT ? VisionConstants.robotLeftToCamera : VisionConstants.robotRightToCamera);
+                
+            } catch (Exception e) {
+                poseEstimator = new PhotonPoseEstimator(VisionConstants.tagLayout,
+                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camName == Camera.LEFT ? VisionConstants.robotLeftToCamera : VisionConstants.robotRightToCamera);
+            }
+
             poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         }
 

@@ -54,6 +54,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.HashMap;
 
 import frc.thunder.hardware.ThunderBird;
+import frc.thunder.util.Tuple;
 
 public class Constants {
 
@@ -83,7 +84,7 @@ public class Constants {
         private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(0.1350);
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
-        public static final double tritonWristOffset = -0.246;
+        public static final double tritonWristOffset = -0.227;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
@@ -170,7 +171,8 @@ public class Constants {
             DEFAULT, // default travel state
             X_SCORE, // any state to L4
             SCORE_X, // L4 to any state
-            TRITON // specific state to deal with triton's loose belt
+            TRITON, // specific state to deal with triton's loose belt,
+            TRANSITIONING
         }
 
         public static final HashMap<RodStates, Double> WRIST_MAP = new HashMap<RodStates, Double>() {
@@ -179,15 +181,15 @@ public class Constants {
                 // put(ROD_STATES.L1, 0d);
                 // put(ROD_STATES.L2, -20d);
                 // put(ROD_STATES.L3, -20d);
-                // put(ROD_STATES.L4, -80d);
+                // put(ROD_STATES.L94, -80d);
                 // put(ROD_STATES.SOURCE, 0d);
 
-                put(RodStates.STOW, 81d);
+                put(RodStates.STOW, 75d);
                 put(RodStates.L1, 0d);
                 put(RodStates.L2, -35d);
                 put(RodStates.L3, -35d);
                 put(RodStates.L4, -47d);
-                put(RodStates.SOURCE, 65d);
+                put(RodStates.SOURCE, 39.5d);
             }
         };
 
@@ -204,8 +206,8 @@ public class Constants {
                 put(RodStates.L1, 10d);
                 put(RodStates.L2, 13d);
                 put(RodStates.L3, 26d);
-                put(RodStates.L4, 46.5d);
-                put(RodStates.SOURCE, 6d);
+                put(RodStates.L4, 47d);
+                put(RodStates.SOURCE, 9d);
             }
         };
     }
@@ -234,14 +236,14 @@ public class Constants {
         public static final double MOTORS_KG = 0d; // temp
 
         public static final double VELOC = 80d; // 80
-        public static final double ACCEL = 400d; // 200
+        public static final double ACCEL = 200d; // 200
         public static final double JERK = 1600d; // temp
 
         public static final double TOLERANCE = 0.1; // temp
 
         // kind of guessing the numbers here (didn't do a proper test)
         public static final Distance MIN_EXTENSION = Inches.of(0);
-        public static final Distance MAX_EXTENSION = Inches.of(47);
+        public static final Distance MAX_EXTENSION = Inches.of(49.7);
 
         // SIM
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(30); // temp
@@ -254,17 +256,17 @@ public class Constants {
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean INVERTED = false; // temp
 
-        public static final double ROTOR_TO_ENCODER_RATIO = 36d; // temp
+        public static final double ROTOR_TO_ENCODER_RATIO = 74; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double MOTORS_KP = 15; // temp
+        public static final double MOTORS_KP = 40; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
         public static final double MOTORS_KS = 0; // temp
         public static final double MOTORS_KV = 0; // temp
         public static final double MOTORS_KA = 0; // temp
-        public static final double MOTORS_KG = 0.3; // temp
+        public static final double MOTORS_KG = 0.1; // temp
 
         public static final Angle MIN_ANGLE = Degrees.of(-85);
         public static final Angle MAX_ANGLE = Degrees.of(85);
@@ -278,9 +280,9 @@ public class Constants {
     }
 
     public static class CoralCollectorConstants {
-        public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 100d; // temp
-        public static final boolean INVERTED = false; // temp
+        public static final boolean BRAKE_MODE = false;
+        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
+        public static final boolean INVERTED = true;
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1;
 
@@ -330,8 +332,6 @@ public class Constants {
                         .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
                                                                                         // (left)
                         .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
-                        .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
-                        .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X (left)
 
@@ -342,30 +342,28 @@ public class Constants {
                         .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
                         .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
                         .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
-                        .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
-                        .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X
                                                                                  // (left)
             }
 
-            public static Supplier<SwerveRequest> getSlow(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
-                return () -> SLOW
-                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive
-                                                                                                         // forward with
-                                                                                                         // negative Y
-                                                                                                         // (forward)
-                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive left
-                                                                                                         // with
-                                                                                                         // negative X
-                                                                                                         // (left)
-                        .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE * SLOW_MODE_MULT)
-                        .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
-                        .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
-                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
-                                                                                 // X (left)
+        //     public static Supplier<SwerveRequest> getSlow(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
+        //         return () -> SLOW
+        //                 .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive
+        //                                                                                                  // forward with
+        //                                                                                                  // negative Y
+        //                                                                                                  // (forward)
+        //                 .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive left
+        //                                                                                                  // with
+        //                                                                                                  // negative X
+        //                                                                                                  // (left)
+        //                 .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE * SLOW_MODE_MULT)
+        //                 .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
+        //                 .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
+        //                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
+        //                                                                          // X (left)
 
-            }
+        //     }
 
             public static Supplier<SwerveRequest> getRobotCentric(DoubleSupplier x, DoubleSupplier y,
                     DoubleSupplier rot) {
@@ -375,8 +373,6 @@ public class Constants {
                         .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
                                                                                         // (left)
                         .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
-                        .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
-                        .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X (left)
             }
@@ -386,8 +382,6 @@ public class Constants {
                         .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
                         .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
                         .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
-                        .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
-                        .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X
                                                                                  // (left)
@@ -438,8 +432,7 @@ public class Constants {
         public static final Transform3d robotLeftToCamera = new Transform3d(new Translation3d(-5.772, 11.281, 12).times(0.0254), robotToCameraRot);
         public static final Transform3d robotRightToCamera = new Transform3d(new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
-        // 
-        //
+        public enum Camera {LEFT, RIGHT}
 
         public static final double VISION_X_STDEV = 1;
         public static final double VISION_Y_STDEV = 1;
@@ -456,8 +449,8 @@ public class Constants {
         public static final Pose2d REEFSCORE2_2 = new Pose2d(5.89, 3.876, new Rotation2d(180));
         public static final Pose2d REEFSCORE3_1 = new Pose2d(5.327, 2.935, new Rotation2d(120));
         public static final Pose2d REEFSCORE3_2 = new Pose2d(5.019, 2.803, new Rotation2d(120));
-        public static final Pose2d REEFSCORE4_1 = new Pose2d(3.881, 2.728, new Rotation2d(60));
-        public static final Pose2d REEFSCORE4_2 = new Pose2d(3.639, 2.904, new Rotation2d(60));
+        public static final Pose2d REEFSCORE4_1 = new Pose2d(4.070, 2.880, new Rotation2d(-120));
+        public static final Pose2d REEFSCORE4_2 = new Pose2d(3.708, 2.968, new Rotation2d(-120));
         public static final Pose2d REEFSCORE5_1 = new Pose2d(3.072, 3.875, new Rotation2d(0));
         public static final Pose2d REEFSCORE5_2 = new Pose2d(3.101, 4.175, new Rotation2d(0));
         public static final Pose2d REEFSCORE6_1 = new Pose2d(3.656, 5.122, new Rotation2d(300));
@@ -468,20 +461,21 @@ public class Constants {
             REEFSCORE4_1, REEFSCORE4_2, REEFSCORE5_1, REEFSCORE5_2, REEFSCORE6_1, REEFSCORE6_2
         }
 
-        public static HashMap<ScoringPoses, Pose2d> poseHashMap = new HashMap<ScoringPoses, Pose2d>() {
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
             {
-                put(ScoringPoses.REEFSCORE1_1, REEFSCORE1_1);
-                put(ScoringPoses.REEFSCORE1_2, REEFSCORE1_2);
-                put(ScoringPoses.REEFSCORE2_1, REEFSCORE2_1);
-                put(ScoringPoses.REEFSCORE2_2, REEFSCORE2_2);
-                put(ScoringPoses.REEFSCORE3_1, REEFSCORE3_1);
-                put(ScoringPoses.REEFSCORE3_2, REEFSCORE3_2);
-                put(ScoringPoses.REEFSCORE4_1, REEFSCORE4_1);
-                put(ScoringPoses.REEFSCORE4_2, REEFSCORE4_2);
-                put(ScoringPoses.REEFSCORE5_1, REEFSCORE5_1);
-                put(ScoringPoses.REEFSCORE5_2, REEFSCORE5_2);
-                put(ScoringPoses.REEFSCORE6_1, REEFSCORE6_1);
-                put(ScoringPoses.REEFSCORE6_2, REEFSCORE6_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 20), REEFSCORE1_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 20), REEFSCORE1_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 21), REEFSCORE2_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 21), REEFSCORE2_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 22), REEFSCORE3_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 22), REEFSCORE3_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 17), REEFSCORE4_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 17), REEFSCORE4_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 18), REEFSCORE5_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 18), REEFSCORE5_2);
+                put(new Tuple(VisionConstants.Camera.LEFT, 19), REEFSCORE6_1);
+                put(new Tuple(VisionConstants.Camera.RIGHT, 19), REEFSCORE6_2);
 
             }
         };
@@ -688,8 +682,8 @@ public class Constants {
             // the
             // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
             private static final Slot0Configs steerGains = new Slot0Configs()
-                    .withKP(100).withKI(0).withKD(0.5)
-                    .withKS(0.1).withKV(2.66).withKA(0)
+                    .withKP(50).withKI(0).withKD(0.5)
+                    .withKS(0.27425).withKV(2.4308).withKA(0.094343)
                     .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
@@ -962,6 +956,22 @@ public class Constants {
         public static final double Y_Kp = 0.1d;
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
+
+        public static final double THREE_DEE_xP = 1;
+        public static final double THREE_DEE_xI = 0;
+        public static final double THREE_DEE_xD = 0;
+
+
+        public static final double THREE_DEE_yP = 0.5;
+        public static final double THREE_DEE_yI = 0;
+        public static final double THREE_DEE_yD = 0;
+        
+
+
+        public static final double THREE_DEE_rP = 0;
+        public static final double THREE_DEE_rI = 0;
+        public static final double THREE_DEE_rD = 0;
+        
 
         public static final double targetTX = 720d;
 

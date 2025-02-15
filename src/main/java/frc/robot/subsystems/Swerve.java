@@ -145,14 +145,14 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     public void periodic() {
         updateCANcoderOffsets();
 
-        LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", currentCANCoderValues);
+        // LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", currentCANCoderValues);
 
         // update reef status booleans in the future
         SmartDashboard.putBooleanArray("Reef Level One", reef1Status);
         SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);
         SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
 
-        LightningShuffleboard.setPose2d("Drivetrain", "pose", getState().Pose);
+        // LightningShuffleboard.setPose2d("Drivetrain", "pose", getState().Pose);
     }
 
     private void configurePathPlanner() {
@@ -249,15 +249,19 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
     }
 
-    public void addVisionMeasurement(EstimatedRobotPose pose) {
+    public void addVisionMeasurement(EstimatedRobotPose pose, double ambiguity) {
         if (DriverStation.isDisabled()) {
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
                     VecBuilder.fill(0.01, 0.01, 0.01));
         } else {
+            // addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
+            //         VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV));
+        
+            // for ambiguity-based (or distance-based) std deviations
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
-                    VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV,
-                            VisionConstants.VISION_THETA_STDEV));
-        }
+                    VecBuilder.fill(ambiguity / 2, ambiguity / 2, ambiguity / 2));
+
+            }
     }
 
     private void startSimThread() {

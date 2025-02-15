@@ -81,6 +81,8 @@ public class AlgaeCollector extends SubsystemBase {
         LightningShuffleboard.setDouble("Algae Collector", "Pivot Target", getTargetAngle());
         LightningShuffleboard.setDouble("Algae Collector", "Pivot Motor current", pivotMotorSim.getMotorVoltage());
         LightningShuffleboard.setDouble("Algae Collector", "Pivot raw rotor position", pivotSim.getAngleRads());
+        LightningShuffleboard.setDouble("Diagnostics", "algae roller motor temp", rollerMotor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.setDouble("Diagnostics", "algae pivot motor temp", pivotMotor.getDeviceTemp().getValueAsDouble());
     }
 
     /**

@@ -23,9 +23,9 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class SimGamePeices extends SubsystemBase {
 
-    /* 
+    /*
      * Instructions:
-     * 
+     *
      * 0. Open 3d Field in AdvantageScope
      * 1. Drag in the poses in the tab "SimGamePieces" (only need those listed under Algae and Coral)
      * 2. You Start With a coral in the robot, and the Algaes should be where they start in the match
@@ -120,7 +120,7 @@ public class SimGamePeices extends SubsystemBase {
         this.coralCollector = coralCollector;
         this.algaeCollector = algaeCollector;
         this.climber = climber;
-        
+
         // add default peices
         addPeice(new Algae(SimGamePeicesConstants.A1B));
         addPeice(new Algae(SimGamePeicesConstants.A2B));
@@ -181,7 +181,7 @@ public class SimGamePeices extends SubsystemBase {
 
                 // check if the peice is close enough to the robot to be collected
 
-                if(peice.getPose().getTranslation().getDistance(coralCollectorPose.getTranslation()) 
+                if(peice.getPose().getTranslation().getDistance(coralCollectorPose.getTranslation())
                     < SimGamePeicesConstants.COLLECTION_TOLERANCE){
 
                         hasPeice = true;
@@ -222,14 +222,14 @@ public class SimGamePeices extends SubsystemBase {
         // check collector speeds, and distance from applicable collector
 
         if (hasPeice && heldPeiceInCoralCollector && coralCollector.getVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
-            
+
             heldPeice = null;
             hasPeice = false;
             coralCollector.setSimBeamBreak(false);
         }
 
         if (hasPeice && !heldPeiceInCoralCollector && algaeCollector.getRollerVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
-    
+
             heldPeice = null;
             hasPeice = false;
 
@@ -241,7 +241,7 @@ public class SimGamePeices extends SubsystemBase {
      */
     private void updateRobotPoses(){
 
-        Pose3d robotPose = new Pose3d(drivetrain.getPose()).plus(new Transform3d(0, 0, -Units.inchesToMeters(climber.getPostion()), 
+        Pose3d robotPose = new Pose3d(drivetrain.getPose()).plus(new Transform3d(0, 0, -Units.inchesToMeters(climber.getPostion()),
             new Rotation3d()));
         double robotAngle = robotPose.getRotation().getZ();
 
@@ -256,13 +256,13 @@ public class SimGamePeices extends SubsystemBase {
 
         coralCollectorPose = new Pose3d(
             // elevator root offset + wrist length (take angle into account) + elevator height -> make field centric -> add robot pose & rotation
-            SimGamePeicesConstants.ELEVATOR_OFFSET.plus(new Translation3d(0, -Math.cos(wristAngle) * wristLength, 
+            SimGamePeicesConstants.ELEVATOR_OFFSET.plus(new Translation3d(0, -Math.cos(wristAngle) * wristLength,
             Math.sin(wristAngle) * wristLength + elevatorHeight)).rotateBy(new Rotation3d(0, 0, robotAngle - Math.PI / 2))
             .plus(robotPose.getTranslation()), new Rotation3d(0, Units.degreesToRadians(wrist.getAngle()), robotAngle - Math.PI));
 
         algaeCollectorPose = new Pose3d(
             // algae collector root offset + arm length (take angle into account) -> make feild centric -> add robot pose and rotation
-            SimGamePeicesConstants.ALGAE_COLLECTOR_OFFSET.plus(new Translation3d(0, Math.cos(algaeCollectorAngle) * algaeCollectorLength, 
+            SimGamePeicesConstants.ALGAE_COLLECTOR_OFFSET.plus(new Translation3d(0, Math.cos(algaeCollectorAngle) * algaeCollectorLength,
             Math.sin(algaeCollectorAngle) * algaeCollectorLength)).rotateBy(new Rotation3d(0, 0, robotAngle - Math.PI / 2))
             .plus(robotPose.getTranslation()), new Rotation3d(drivetrain.getPose().getRotation()));
 
@@ -283,7 +283,7 @@ public class SimGamePeices extends SubsystemBase {
             if (heldPeiceInCoralCollector){
                 heldPeice.setPose(coralCollectorPose);
             }
-            
+
             if (!heldPeiceInCoralCollector){
                 heldPeice.setPose(algaeCollectorPose);
             }
@@ -291,6 +291,6 @@ public class SimGamePeices extends SubsystemBase {
             heldPeice.publish();
         }
     }
-    
+
 
 }

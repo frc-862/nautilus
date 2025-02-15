@@ -120,7 +120,11 @@ public class Elevator extends SubsystemBase {
         LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", currentPosition);
 
         LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
+        LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
         LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
+
+        LightningShuffleboard.setDouble("Diagnostics", "left elevator motor temp", leftMotor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.setDouble("Diagnostics", "right elevator motor temp", rightMotor.getDeviceTemp().getValueAsDouble());
     }
 
     /**

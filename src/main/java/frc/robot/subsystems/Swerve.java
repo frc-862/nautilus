@@ -153,8 +153,6 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
 
         // LightningShuffleboard.setPose2d("Drivetrain", "pose", getState().Pose);
-
-        SmartDashboard.putBoolean("in slow mode", inSlowMode());
     }
 
     private void configurePathPlanner() {

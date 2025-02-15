@@ -252,20 +252,22 @@ public class PhotonVision extends SubsystemBase {
 
             tags = poseEstimator.getFieldTags();
 
-            switch (DriverStation.getAlliance().get()) {
-                case Blue:
-                    tags.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-                    break;
-            
-                case Red:
-                    tags.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-                    break;
+            if(!DriverStation.getAlliance().isEmpty()) {
+                switch (DriverStation.getAlliance().get()) {
+                    case Blue:
+                        tags.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+                        break;
+                
+                    case Red:
+                        tags.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+                        break;
 
-                default:
-                    DataLogManager.log("[PhotonVision]: Failed to get driver station alliance");
-                    break;
+                    default:
+                        DataLogManager.log("[PhotonVision]: Failed to get driver station alliance");
+                        break;
+                }
             }
-            
+
             poseEstimator.setFieldTags(tags);
 
         }

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Constants.ElevatorConstants;
@@ -121,14 +122,20 @@ public class FishingRod extends SubsystemBase {
 
     // biases will only work if no other position is actively being set.
     public Command addWristBias(double bias) {
-        return runOnce(() -> {
+        return new InstantCommand(() -> {
+            if (Math.signum(bias) != Math.signum(wristBias)) {
+                wristBias = 0;
+            }
             wristBias += bias;
             wrist.setPosition(wrist.getTargetAngle() + wristBias);
         });
     }
 
     public Command addElevatorBias(double bias) {
-        return runOnce(() -> {
+        return new InstantCommand(() -> {
+            if (Math.signum(bias) != Math.signum(elevatorBias)) {
+                elevatorBias = 0;
+            }
             elevatorBias += bias;
             elevator.setPosition(elevator.getTargetPosition() + elevatorBias);
         });

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.854814854753587,
-        "y": 0.7912368950773011
+        "x": 6.840641126955852,
+        "y": 0.8034893944543374
       },
       "isLocked": false,
       "linkedName": "S4"
     },
     {
       "anchor": {
-        "x": 5.063655821917808,
-        "y": 2.7403039383561647
+        "x": 5.07170642021648,
+        "y": 2.675608851256983
       },
       "prevControl": {
-        "x": 5.283495194355811,
-        "y": 2.621263397673314
+        "x": 5.394090075792564,
+        "y": 2.515454019822929
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,9 +29,30 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.8492917239010992,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "RodL4",
+      "waypointRelativePos": 0.7426296359890115,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -42,7 +63,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 122.18345184059635
+    "rotation": -59.99999999999999
   },
   "reversed": false,
   "folder": null,

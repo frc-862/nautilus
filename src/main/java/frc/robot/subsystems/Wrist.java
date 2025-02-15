@@ -100,6 +100,10 @@ public class Wrist extends SubsystemBase {
 
         LightningShuffleboard.setDouble("Wrist", "Current Position", currentPosition);
         LightningShuffleboard.setBool("Wrist", "onTarget", isOnTarget());
+
+        LightningShuffleboard.setDouble("Diagnostics", "wrist motor temp", motor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.setDouble("Diagnostics", "wrist encoder raw", encoder.getAbsolutePosition().getValue().in(Rotations) - EncoderConstants.tritonWristOffset);
+
     }
 
     /**
@@ -204,5 +208,6 @@ public class Wrist extends SubsystemBase {
         LightningShuffleboard.setDouble("Wrist", "current angle", getAngle());
         LightningShuffleboard.setDouble("Wrist", "target angle", getTargetAngle());
         LightningShuffleboard.setBool("Wrist", "on target", isOnTarget());
+
     }
 }

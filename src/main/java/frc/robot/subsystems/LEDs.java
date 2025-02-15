@@ -9,51 +9,44 @@ import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.thunder.leds.Lightningstrip;
 import frc.thunder.leds.Thunderbolt;
 import frc.robot.Constants.RobotMap;
-import frc.thunder.leds.Lightningbolt;
+import frc.thunder.leds.Colors;
 
 public class LEDs extends Thunderbolt {
-	public LEDs() {
-		super(LEDConstants.PWM_PORT, LEDConstants.LENGTH, RobotMap.UPDATE_FREQ);
-
-	}
-
-	Lightningstrip strip1 = new Lightningstrip(0, 60) {
+	public final Lightningstrip strip = new Lightningstrip(LEDConstants.LENGTH, 0, leds, LEDStates.DISABLED, LEDStates.RAINBOW, LEDStates.ALIGNING, LEDStates.ROD_MOVING, LEDStates.ALGAE_COLLECT, LEDStates.ALGAE_SCORE, LEDStates.CORAL_COLLECT, LEDStates.CORAL_SCORE, LEDStates.MIXER) {
 		@Override
-		protected void updateLEDs(LEDStates state) {
+		public void updateLEDs(LEDStates state) {
 			switch (state) {
-				case DISABLED -> setSolidHSV(0, 0, 0);
+				case DISABLED -> color(Colors.BLACK);
 
 				case RAINBOW -> rainbow();
 
-				case ALIGNING -> pulse(Colors.BLUE.getHue());
+				case ALIGNING -> pulse(Colors.BLUE);
 
-				case ROD_MOVING -> pulse(Colors.PINK.getHue());
+				case ROD_MOVING -> pulse(Colors.PINK);
 
-				case ALGAE_COLLECT -> blink(Colors.LIGHT_BLUE.getHue());
+				case ALGAE_COLLECT -> blink(Colors.LIGHT_BLUE);
 
-				case ALGAE_SCORE -> pulse(Colors.LIGHT_BLUE.getHue());
+				case ALGAE_SCORE -> pulse(Colors.LIGHT_BLUE);
 
-				case CORAL_COLLECT -> blink(Colors.PURPLE.getHue());
+				case CORAL_COLLECT -> blink(Colors.PURPLE);
 
-				case CORAL_SCORE -> pulse(Colors.PURPLE.getHue());
+				case CORAL_SCORE -> pulse(Colors.PURPLE);
+				
+				default -> throw new IllegalArgumentException("Unexpected value: " + state);
 
-				case MIXER -> {}
 			}
 		}
 
 		@Override
-		protected void defaultLEDs() {
-			swirl(LEDConstants.SWRIL_SEGMENT_SIZE);
+		public void defaultLEDs() {
+			swirl(Colors.BLUE, Colors.ORANGE, LEDConstants.SWRIL_SEGMENT_SIZE);
 		}
-
-            @Override
-            protected void updateLEDs(Lightningbolt leds, LEDStates state) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            protected void defaultLEDs(Lightningbolt leds) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
 	};
+
+	public LEDs() {
+		super(LEDConstants.PWM_PORT, LEDConstants.LENGTH, RobotMap.UPDATE_FREQ);
+
+		addStrip(strip);
+
+	}
 }

@@ -259,6 +259,8 @@ public class Constants {
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(30); // temp
         public static final double CUSHION_METERS = 0.05; // stages don't line up perfectly
         public static final double STAGE_LEN_METERS = MAX_EXTENSION.in(Meters) / 3;
+
+        public static final double SLOW_MODE_HEIGHT_LIMIT = 29d;
     }
 
     public static class WristConstants {

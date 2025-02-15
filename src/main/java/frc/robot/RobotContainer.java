@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
@@ -157,10 +158,12 @@ public class RobotContainer extends LightningContainer {
             .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
         
         if(DriverStation.isTeleop()) {
-            // sets slow mode if the elevator is above L3
-            new Trigger(() -> ((rod.getTargetState() == RodStates.L3) || (rod.getTargetState() == RodStates.L4)))
+            // sets slow mode if the elevator is above L3 (around 29 inches)
+            new Trigger(() -> elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT)
                 .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
-            new Trigger(() -> (!((rod.getTargetState() == RodStates.L3) || (rod.getTargetState() == RodStates.L4)) && !(driver.getRightTriggerAxis() > 0.25)))
+            
+            // stops slow mode if below L3 (around 29 inches)
+            new Trigger(() -> (!(elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() > 0.25)))
                 .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
         }
 

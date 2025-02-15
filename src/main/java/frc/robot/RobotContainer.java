@@ -95,7 +95,7 @@ public class RobotContainer extends LightningContainer {
             coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
             // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
             // RobotMotors.algaeCollectorPivotMotor);
-            // climber = new Climber(RobotMotors.climberMotor);
+            climber = new Climber(RobotMotors.climberMotor);
         }
 
         if (Robot.isSimulation()){
@@ -127,9 +127,9 @@ public class RobotContainer extends LightningContainer {
             new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.enableState(LEDStates.CORAL_SCORE));
             new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.enableState(LEDStates.CORAL_COLLECT));
 
-            // climber.setDefaultCommand(new RunCommand(() ->
-            // climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(),
-            // ControllerConstants.JOYSTICK_DEADBAND)), climber));
+            climber.setDefaultCommand(new RunCommand(() ->
+            climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(),
+            ControllerConstants.JOYSTICK_DEADBAND)), climber));
 
             rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW));
 
@@ -229,10 +229,11 @@ public class RobotContainer extends LightningContainer {
         // StandinCommands.scoreCoral().deadlineFor(leds.enableState(LEDStates.CORAL_SCORE)));
         // TODO: Get actual offsets
 
+        // Swap cameras because the robot is backwards
         NamedCommands.registerCommand("ReefAlignLeft",
-                new ThreeDeeAutoAlign(vision, drivetrain, Camera.LEFT).deadlineFor(leds.enableState(LEDStates.ALIGNING)));
+                new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT).deadlineFor(leds.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("ReefAlignRight",
-                new ThreeDeeAutoAlign(vision, drivetrain, Camera.RIGHT).deadlineFor(leds.enableState(LEDStates.ALIGNING)));
+                new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT).deadlineFor(leds.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignLeft",
                 new TagAutoAlign(vision, drivetrain).deadlineFor(leds.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignRight",

@@ -249,7 +249,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
     }
 
-    public void addVisionMeasurement(EstimatedRobotPose pose, double ambiguity) {
+    public void addVisionMeasurement(EstimatedRobotPose pose, double distance) {
         if (DriverStation.isDisabled()) {
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
                     VecBuilder.fill(0.01, 0.01, 0.01));
@@ -257,9 +257,15 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             // addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
             //         VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV));
         
-            // for ambiguity-based (or distance-based) std deviations
-            addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
-                    VecBuilder.fill(ambiguity / 2, ambiguity / 2, ambiguity / 2));
+            if(distance < 0.25) {
+                addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
+                    VecBuilder.fill(0.01, 0.01, 0.01));
+            } else {
+
+                // for ambiguity-based (or distance-based) std deviations
+                addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
+                        VecBuilder.fill(distance / 2, distance / 2, distance / 2));
+            }
 
             }
     }

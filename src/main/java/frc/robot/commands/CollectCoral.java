@@ -35,7 +35,7 @@ public class CollectCoral extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        collector.stop();
+        collector.setPower(0.2);
         RobotContainer.hapticCopilotCommand().schedule();
     }
 

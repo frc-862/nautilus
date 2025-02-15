@@ -12,9 +12,12 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.simulation.VisionTargetSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.Camera;
@@ -234,6 +237,7 @@ public class PhotonVision extends SubsystemBase {
         private Camera camName;
         private Tuple<EstimatedRobotPose, Double> updates;
         private boolean hasTarget = false;
+        private AprilTagFieldLayout tags;
 
         public boolean cameraInitialized = false;
 
@@ -245,6 +249,27 @@ public class PhotonVision extends SubsystemBase {
             poseEstimator = new PhotonPoseEstimator(VisionConstants.tagLayout,
                 PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camName == Camera.LEFT ? VisionConstants.robotLeftToCamera : VisionConstants.robotRightToCamera);
             poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+            tags = poseEstimator.getFieldTags();
+
+            if(!DriverStation.getAlliance().isEmpty()) {
+                switch (DriverStation.getAlliance().get()) {
+                    case Blue:
+                        tags.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+                        break;
+                
+                    case Red:
+                        tags.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+                        break;
+
+                    default:
+                        DataLogManager.log("[PhotonVision]: Failed to get driver station alliance");
+                        break;
+                }
+            }
+
+            poseEstimator.setFieldTags(tags);
+
         }
 
         @Override

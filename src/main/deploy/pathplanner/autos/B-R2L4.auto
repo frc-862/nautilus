@@ -5,28 +5,21 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "S3-R2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "RodL4"
-                }
-              }
-            ]
+            "pathName": "SC-R2"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "ReefAlignLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RodL4"
           }
         },
         {

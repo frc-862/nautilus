@@ -24,7 +24,7 @@ public class FishingRod extends SubsystemBase {
     private Wrist wrist;
     private Elevator elevator;
 
-    private RodStates currState = RodStates.STOW;
+    private RodStates currState = RodStates.DEFAULT;
     private RodStates targetState = RodStates.STOW;
     private RodTransitionStates transitionState = RodTransitionStates.DEFAULT;
 
@@ -67,13 +67,16 @@ public class FishingRod extends SubsystemBase {
         // if the rod hasn't reached target state
         if (!onTarget()) {
             switch (transitionState) {
-                case SCORE_X: // wrist up, move ele, move wrist
+                case WRIST_UP_THEN_ELE: // wrist up, move ele, move wrist
                     wrist.setState(RodStates.STOW);
                     if (wrist.isOnTarget()) {
-                        transitionState = RodTransitionStates.DEFAULT; // finalize transition
+                        elevator.setState(targetState);
+                        if(elevator.isOnTarget()) {
+                            transitionState = RodTransitionStates.DEFAULT; // finalize transition
+                        }
                     }
                     break;
-                case X_SCORE: // wrist down, move ele
+                case WRIST_DOWN_THEN_ELE: // wrist down, move ele
                     wrist.setState(targetState);
                     if (wrist.isOnTarget()) {
                         transitionState = RodTransitionStates.DEFAULT; // finalize transition
@@ -107,11 +110,13 @@ public class FishingRod extends SubsystemBase {
         targetState = state;
 
         // logic for transition states goes here
-        if (currState == RodStates.L4 || currState == RodStates.L3 || currState == RodStates.L2) {
-            transitionState = RodTransitionStates.SCORE_X;
-        } else if (targetState == RodStates.L4 || targetState == RodStates.L3 || targetState == RodStates.L2) {
-            transitionState = RodTransitionStates.X_SCORE;
-        } else {
+        if (currState.isScoring() || targetState.isScoring()) {
+            transitionState = RodTransitionStates.WRIST_UP_THEN_ELE;
+        } 
+        // else if (targetState == RodStates.L4 || targetState == RodStates.L3 || targetState == RodStates.L2) {
+        //     transitionState = RodTransitionStates.WRIST_DOWN_THEN_ELE;
+        // } 
+        else {
             transitionState = Constants.IS_TRITON ? RodTransitionStates.TRITON : RodTransitionStates.DEFAULT;
         }
 

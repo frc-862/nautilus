@@ -25,6 +25,7 @@
   <suppress checks="TodoComment"/>
   <suppress checks="HideUtilityClassConstructor"/>
   <suppress checks="MagicNumber"/>
+  <suppress checks="RightCurly"/>
   <suppress checks="VisibilityModifier"/> <!-- May delete this one later -->
   <suppress checks="MemberName"/> <!-- May delete this one later -->
   <suppress checks="FinalParameters"/> <!-- May delete this one later -->

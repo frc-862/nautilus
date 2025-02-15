@@ -167,12 +167,13 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getRightBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
 
         /* COPILOT BINDINGS */
-        new Trigger(copilot::getRightBumperButton)
-            .whileTrue(new SetRodState(rod, RodStates.SOURCE));
-        new Trigger(copilot::getLeftBumperButton)
-            .whileTrue(new SetRodState(rod, RodStates.SOURCE));
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+            new Trigger(copilot::getRightBumperButton)
+                .whileTrue(new SetRodState(rod, RodStates.SOURCE));
+            new Trigger(copilot::getLeftBumperButton)
+                .whileTrue(new SetRodState(rod, RodStates.SOURCE));
+
             // default
             (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, RodStates.L1));
             (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(rod, RodStates.L2));

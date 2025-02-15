@@ -168,7 +168,7 @@ public class Constants {
             
             private boolean scoring;
 
-            private RodStates(boolean scoring) {
+            RodStates(boolean scoring) {
                 this.scoring = scoring;
             }
             

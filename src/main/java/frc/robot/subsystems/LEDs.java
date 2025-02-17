@@ -28,7 +28,7 @@ public class LEDs extends Thunderbolt {
 
 				case ROD_MOVING -> pulse(LightningColors.PINK);
 
-				case UPDATING_POSE -> pulse(LightningColors.GREEN);
+				case UPDATING_POSE -> pulse(LightningColors.YELLOW);
 
 				case POSE_BAD -> solid(LightningColors.RED);
 

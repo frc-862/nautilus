@@ -196,9 +196,11 @@ public class Constants {
 
                 put(RodStates.STOW, 80d);
                 put(RodStates.L1, 0d);
-                put(RodStates.L2, -35d);
+                put(RodStates.L2, -30d);
                 put(RodStates.L3, -35d);
-                put(RodStates.L4, -47d);
+                put(RodStates.L4, -44d);
+                put(RodStates.LOW, -30d);
+                put(RodStates.HIGH, -30d);
                 put(RodStates.SOURCE, 39.5d);
             }
         };
@@ -217,7 +219,9 @@ public class Constants {
                 put(RodStates.L2, 13d);
                 put(RodStates.L3, 26d);
                 put(RodStates.L4, 47d);
-                put(RodStates.SOURCE, 9d);
+                put(RodStates.LOW, 15d);
+                put(RodStates.HIGH, 28d);
+                put(RodStates.SOURCE, 9.5d);
             }
         };
     }
@@ -281,7 +285,7 @@ public class Constants {
         public static final Angle MIN_ANGLE = Degrees.of(-85);
         public static final Angle MAX_ANGLE = Degrees.of(85);
 
-        public static final double TOLERANCE = 10d;
+        public static final double TOLERANCE = 5d;
 
         // sim stuff
         public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.086); // 5lb, 2.5in rad, 9in height
@@ -292,7 +296,7 @@ public class Constants {
     public static class CoralCollectorConstants {
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
-        public static final boolean INVERTED = true;
+        public static final boolean INVERTED = false;
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1;
 
@@ -305,7 +309,10 @@ public class Constants {
 
         public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
-        public static final double COLLECTED_CURRENT = 20d;
+        public static final double COLLECTED_CURRENT = 35d;
+        public static final double COLLECTOR_DEADBAND = 0.1;
+        public static final double HOLD_POWER = 0.1;
+
     }
 
     public class DrivetrainConstants {
@@ -457,7 +464,7 @@ public class Constants {
         public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
             {
                 // put(new Tuple(VisionConstants.Camera.LEFT, 12), new Pose2d(1.625, 2.880, new Rotation2d(Degrees.of(-120))));
-                put(new Tuple(VisionConstants.Camera.RIGHT, 12), new Pose2d(1.759, 0.678, new Rotation2d(Degrees.of(55))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 12), new Pose2d(1.611, 0.757, new Rotation2d(Degrees.of(55))));
                 put(new Tuple(VisionConstants.Camera.LEFT, 17), new Pose2d(4.000, 2.870, new Rotation2d(Degrees.of(60))));
 
                 put(new Tuple(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.708, 2.968, new Rotation2d(Degrees.of(-120))));
@@ -469,7 +476,7 @@ public class Constants {
                 put(new Tuple(VisionConstants.Camera.RIGHT, 20), new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(240))));
                 put(new Tuple(VisionConstants.Camera.LEFT, 21), new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(180))));
                 put(new Tuple(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(180))));
-                put(new Tuple(VisionConstants.Camera.LEFT, 22), new Pose2d(5.237, 3.056, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 22), new Pose2d(5.27, 2.987, new Rotation2d(Degrees.of(-60))));
                 put(new Tuple(VisionConstants.Camera.RIGHT, 22), new Pose2d(4.982, 2.857, new Rotation2d(Degrees.of(-60))));
 
             }
@@ -951,18 +958,18 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double THREE_DEE_xP = 1d;
+        public static final double THREE_DEE_xP = 0.0d;
         public static final double THREE_DEE_xI = 0;
         public static final double THREE_DEE_xD = 0;
 
 
-        public static final double THREE_DEE_yP = 1d;
+        public static final double THREE_DEE_yP = 0.0d;
         public static final double THREE_DEE_yI = 0;
         public static final double THREE_DEE_yD = 0;
         
 
 
-        public static final double THREE_DEE_rP = 0.02;
+        public static final double THREE_DEE_rP = 0.00; //0.02
         public static final double THREE_DEE_rI = 0;
         public static final double THREE_DEE_rD = 0;
         

@@ -30,7 +30,11 @@ public class CollectCoral extends Command {
 
     @Override
     public void execute() {
-        collector.setPower(triggerPower.getAsDouble() * CoralCollectorConstants.CORAL_ROLLER_SPEED);
+        double power = triggerPower.getAsDouble();
+        if (triggerPower.getAsDouble() == 0) {
+            power = CoralCollectorConstants.HOLD_POWER;
+        }
+        collector.setPower(power * CoralCollectorConstants.CORAL_ROLLER_SPEED);
     }
 
     @Override

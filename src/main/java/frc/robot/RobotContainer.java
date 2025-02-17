@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -122,7 +123,7 @@ public class RobotContainer extends LightningContainer {
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
-                () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
+                () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(), CoralCollectorConstants.COLLECTOR_DEADBAND)));
 
             new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.CORAL_SCORE));
             new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.CORAL_COLLECT));
@@ -157,9 +158,9 @@ public class RobotContainer extends LightningContainer {
             .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
         
         // sets slow mode if the elevator is above L3
-        new Trigger(() -> ((rod.getTargetState() == RodStates.L3) || (rod.getTargetState() == RodStates.L4)))
-            .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
-            .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+        // new Trigger(() -> ((rod.getTargetState() == RodStates.L3) || (rod.getTargetState() == RodStates.L4)))
+        //     .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
+        //     .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
         // drivetrain brake
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
@@ -168,22 +169,35 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
             new InstantCommand(() -> drivetrain.seedFieldCentric()));
         
-        new Trigger(driver::getLeftBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT));
-        new Trigger(driver::getRightBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
+        new Trigger(driver::getLeftBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22));
+        new Trigger(driver::getRightBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 12));
 
         /* COPILOT BINDINGS */
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+            /* now that these are tap instead of hold buttons
+             * there is a problem where changing a state while 
+             * in another transition state gets it "stuck" until
+             * you change it to a different state
+             * 
+             * stuck means current = target in the wrong position
+             */
+            
             new Trigger(copilot::getRightBumperButton)
-                .whileTrue(new SetRodState(rod, RodStates.SOURCE));
+                .onTrue(new SetRodState(rod, RodStates.SOURCE));
             new Trigger(copilot::getLeftBumperButton)
-                .whileTrue(new SetRodState(rod, RodStates.SOURCE));
+                .onTrue(new SetRodState(rod, RodStates.STOW));
+
+            new Trigger(copilot::getBackButton)
+                .onTrue(new SetRodState(rod, RodStates.LOW));
+            new Trigger(copilot::getStartButton)
+                .onTrue(new SetRodState(rod, RodStates.HIGH));
 
             // default
-            (new Trigger(copilot::getAButton)).whileTrue(new SetRodState(rod, RodStates.L1));
-            (new Trigger(copilot::getBButton)).whileTrue(new SetRodState(rod, RodStates.L2));
-            (new Trigger(copilot::getXButton)).whileTrue(new SetRodState(rod, RodStates.L3));
-            (new Trigger(copilot::getYButton)).whileTrue(new SetRodState(rod, RodStates.L4));
+            (new Trigger(copilot::getAButton)).onTrue(new SetRodState(rod, RodStates.L1));
+            (new Trigger(copilot::getBButton)).onTrue(new SetRodState(rod, RodStates.L2));
+            (new Trigger(copilot::getXButton)).onTrue(new SetRodState(rod, RodStates.L3));
+            (new Trigger(copilot::getYButton)).onTrue(new SetRodState(rod, RodStates.L4));
 
             // biases
             new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d));
@@ -244,24 +258,6 @@ public class RobotContainer extends LightningContainer {
         NamedCommands.registerCommand("SourceAlignRight",
                 new TagAutoAlign(vision, drivetrain).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
-            // NamedCommands.registerCommand("AlignTo12Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 12).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo12Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 12).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo13Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 13).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo13Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 13).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo17Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 17).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo17Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 17).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo18Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 18).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo18Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 18).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo19Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 19).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo19Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 19).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo20Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 20).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo20Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 20).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo21Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 21).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo21Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 21).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo22Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            // NamedCommands.registerCommand("AlignTo22Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-
-            // do the stuff above in a loop
             for (Integer i = 1; i < 23; i++) {
                 NamedCommands.registerCommand("AlignTo" + i + "Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, i).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                 NamedCommands.registerCommand("AlignTo" + i + "Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, i).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));

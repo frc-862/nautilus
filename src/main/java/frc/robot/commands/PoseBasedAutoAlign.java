@@ -38,6 +38,10 @@ public class PoseBasedAutoAlign extends Command {
 
     private final StructPublisher<Pose2d> publisher;
 
+    double xKp = 0;
+    double yKp = 0;
+    double rKp = 0;
+
 
     /**
      * Used to align to Tag
@@ -92,15 +96,19 @@ public class PoseBasedAutoAlign extends Command {
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "Y static", 0d);
-        double yKs = LightningShuffleboard.getDouble("TestAutoAlign", "X static", 0d);
-        double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
+        // double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "Y static", 0d);
+        // double yKs = LightningShuffleboard.getDouble("TestAutoAlign", "X static", 0d);
+        // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
-        double yVeloc = -controllerY.calculate(currentPose.getY(), targetPose.getY()) + Math.signum(controllerY.getError()) * xKs;
-        double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX()) + Math.signum(controllerY.getError()) * yKs;
-        double rotationVeloc = controllerR.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees()) + Math.signum(controllerY.getError()) * rKs;
+        // double yVeloc = -controllerY.calculate(currentPose.getY(), targetPose.getX()) + Math.signum(controllerX.getError()) * xKs;
+        // double xVeloc = -controllerX.calculate(currentPose.getX(), targetPose.getY()) + Math.signum(controllerY.getError()) * yKs;
+        // double rotationVeloc = controllerR.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees()) + Math.signum(controllerR.getError()) * rKs;
 
-        drivetrain.setControl(DriveRequests.getRobotCentric(
+        double yVeloc = (currentPose.getY() - targetPose.getX()) * xKp;
+        double xVeloc = (currentPose.getX() - targetPose.getY()) * yKp;
+        double rotationVeloc = (currentPose.getRotation().getDegrees() - targetPose.getRotation().getDegrees()) * rKp;
+
+        drivetrain.setControl(DriveRequests.getDrive(
             xVeloc,
             yVeloc,
             rotationVeloc));
@@ -109,6 +117,10 @@ public class PoseBasedAutoAlign extends Command {
         // setYGains();
         // setRGains();
 
+        xKp = LightningShuffleboard.getDouble("TestAutoAlign", "x" + " Kp", AutoAlignConstants.THREE_DEE_xP);
+        yKp = LightningShuffleboard.getDouble("TestAutoAlign", "y" + " Ki", AutoAlignConstants.THREE_DEE_xI);
+        rKp = LightningShuffleboard.getDouble("TestAutoAlign", "r" + " Kd", AutoAlignConstants.THREE_DEE_xD);
+
         // LightningShuffleboard.setPose2d("TestAutoAlign", "current pose veloc", currentPose.toPose2d());
         // LightningShuffleboard.setPose2d("TestAutoAlign", "target pose", targetPose.toPose2d());
 
@@ -116,14 +128,12 @@ public class PoseBasedAutoAlign extends Command {
         LightningShuffleboard.setDouble("TestAutoAlign", "X veloc", xVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "Y veloc", yVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "R veloc", rotationVeloc);
-        // LightningShuffleboard.setDouble("TestAutoAlign", "targ X", targetPose.getX());
-        // LightningShuffleboard.setDouble("TestAutoAlign", "targ Y", targetPose.getY());
-        // LightningShuffleboard.setDouble("TestAutoAlign", "targ R", targetPose.getRotation().getDegrees());
+        LightningShuffleboard.setDouble("TestAutoAlign", "error X", controllerX.getError());
+        LightningShuffleboard.setDouble("TestAutoAlign", "error Y", controllerY.getError());
+        LightningShuffleboard.setDouble("TestAutoAlign", "error R", controllerR.getError());
         // LightningShuffleboard.setPose2d("TestAutoAlign", "targg pose", targetPose);
 
         publisher.accept(targetPose);
-
-        // LightningShuffleboard.setPose2d("TestAutoAlign", "target pose", targetPose);
     }
 
     @Override
@@ -138,10 +148,12 @@ public class PoseBasedAutoAlign extends Command {
 
     private void setXGains() {
         String key = "x";
-        controllerX.setPID(
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.THREE_DEE_xP),
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.THREE_DEE_xI),
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.THREE_DEE_xD));
+        // controllerX.setPID(
+        //     LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.THREE_DEE_xP),
+        //     LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.THREE_DEE_xI),
+        //     LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.THREE_DEE_xD));
+
+        
 
         controllerX.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", key + " tolerance", 0));
     }

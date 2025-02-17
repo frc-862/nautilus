@@ -163,7 +163,7 @@ public class RobotContainer extends LightningContainer {
             .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
         
         // stops slow mode if below L3 (around 29 inches)
-        new Trigger(() -> (!(elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() > 0.25) && (DriverStation.isTeleop())))
+        new Trigger(() -> !(elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() > 0.25) && (DriverStation.isTeleop()))
             .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
         // drivetrain brake

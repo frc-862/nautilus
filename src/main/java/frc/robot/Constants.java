@@ -938,22 +938,23 @@ public class Constants {
         public static final int PWM_PORT = 0;
         public static final int LENGTH = 60;
 
+        public static final int PULSE_TIME = 5;
+
         public static final int SWRIL_SEGMENT_SIZE = 5;
 
         public enum LEDStates {
-            DISABLED(),
-            MIXER(),
-            RAINBOW(),
+            COLLECTED(),
+            SCORED(),
             ALIGNING(),
-            ALGAE_COLLECT(),
-            ALGAE_SCORE(),
-            CORAL_COLLECT(),
-            CORAL_SCORE(),
+            COLLECTING(),
+            SCORING(),
             ROD_MOVING(),
+            UPDATING_POSE(),
+            POSE_BAD(),
         }
     }
 
-    public class AutoAlignConstants {
+        public class AutoAlignConstants {
         public static final double AutoAlignTolerance = 0.02d;
 
         // X PID

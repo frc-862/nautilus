@@ -5,19 +5,24 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.CoralCollectorConstants;
+import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.subsystems.CoralCollector;
+import frc.robot.subsystems.LEDs;
 import frc.robot.RobotContainer;
 
 public class CollectCoral extends Command {
 
     private CoralCollector collector;
+    private LEDs leds;
 
     private DoubleSupplier triggerPower;
 
     private Debouncer debouncer = new Debouncer(CoralCollectorConstants.DEBOUNCE_TIME);
 
-    public CollectCoral(CoralCollector collector, DoubleSupplier triggerPower) {
+    public CollectCoral(CoralCollector collector, LEDs leds, DoubleSupplier triggerPower) {
         this.collector = collector;
+        this.leds = leds;
         this.triggerPower = triggerPower;
 
         addRequirements(collector);
@@ -37,6 +42,10 @@ public class CollectCoral extends Command {
     public void end(boolean interrupted) {
         collector.setPower(0.2);
         RobotContainer.hapticCopilotCommand().schedule();
+        if (!interrupted) {
+            leds.strip.enableStateFor(LEDStates.COLLECTED, LEDConstants.PULSE_TIME).schedule();
+        }
+
     }
 
     @Override

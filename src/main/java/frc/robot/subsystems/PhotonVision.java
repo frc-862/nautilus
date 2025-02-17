@@ -106,6 +106,14 @@ public class PhotonVision extends SubsystemBase {
         }
     }
 
+     /**
+     * check if the vision has a target using networktables
+     * @return boolean - if the camera has a target
+     */
+    public boolean hasTarget() {
+        return hasTarget(Camera.LEFT) || hasTarget(Camera.RIGHT);
+    }
+
     /**
      * get the target's Y position in pixels
      * @param camera - the camera to check

@@ -6,40 +6,39 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
-import frc.thunder.leds.Lightningstrip;
+import frc.thunder.leds.ThunderStrip;
 import frc.thunder.leds.Thunderbolt;
 import frc.robot.Constants.RobotMap;
-import frc.thunder.leds.Colors;
+import frc.thunder.leds.LightningColors;
 
 public class LEDs extends Thunderbolt {
-	public final Lightningstrip strip = new Lightningstrip(LEDConstants.LENGTH, 0, leds, LEDStates.DISABLED, LEDStates.RAINBOW, LEDStates.ALIGNING, LEDStates.ROD_MOVING, LEDStates.ALGAE_COLLECT, LEDStates.ALGAE_SCORE, LEDStates.CORAL_COLLECT, LEDStates.CORAL_SCORE, LEDStates.MIXER) {
+	public final ThunderStrip strip = new ThunderStrip(LEDConstants.LENGTH, 0, leds) {
 		@Override
 		public void updateLEDs(LEDStates state) {
 			switch (state) {
-				case DISABLED -> color(Colors.BLACK);
+				case COLLECTED -> pulse(LightningColors.GREEN);
 
-				case RAINBOW -> rainbow();
+				case SCORED -> pulse(LightningColors.GREEN);
 
-				case ALIGNING -> pulse(Colors.BLUE);
+				case ALIGNING -> blink(LightningColors.BLUE);
 
-				case ROD_MOVING -> pulse(Colors.PINK);
+				case COLLECTING -> blink(LightningColors.YELLOW);
 
-				case ALGAE_COLLECT -> blink(Colors.LIGHT_BLUE);
+				case SCORING -> pulse(LightningColors.YELLOW);
 
-				case ALGAE_SCORE -> pulse(Colors.LIGHT_BLUE);
+				case ROD_MOVING -> pulse(LightningColors.PINK);
 
-				case CORAL_COLLECT -> blink(Colors.PURPLE);
+				case UPDATING_POSE -> pulse(LightningColors.GREEN);
 
-				case CORAL_SCORE -> pulse(Colors.PURPLE);
-				
-				default -> throw new IllegalArgumentException("Unexpected value: " + state);
+				case POSE_BAD -> solid(LightningColors.RED);
 
+				default -> System.err.println("Unexpected State: " + state);
 			}
 		}
 
 		@Override
 		public void defaultLEDs() {
-			swirl(Colors.BLUE, Colors.ORANGE, LEDConstants.SWRIL_SEGMENT_SIZE);
+			swirl(LightningColors.BLUE, LightningColors.ORANGE, LEDConstants.SWRIL_SEGMENT_SIZE);
 		}
 	};
 

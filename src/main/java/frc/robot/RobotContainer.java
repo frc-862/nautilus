@@ -57,6 +57,7 @@ import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.filter.XboxControllerFilter;
+import frc.thunder.leds.LightningColors;
 
 public class RobotContainer extends LightningContainer {
 
@@ -122,11 +123,11 @@ public class RobotContainer extends LightningContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
-            coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
+            coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,
                 () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()));
 
-            new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.CORAL_SCORE));
-            new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.CORAL_COLLECT));
+            new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.SCORING));
+            new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
             climber.setDefaultCommand(new RunCommand(() ->
             climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(),
@@ -136,6 +137,9 @@ public class RobotContainer extends LightningContainer {
 
             new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
         }
+
+        new Trigger(() -> (drivetrain.poseZero() && DriverStation.isDisabled() && !vision.hasTarget())).whileTrue(leds.strip.enableState(LEDStates.POSE_BAD));
+        new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled() && vision.hasTarget())).whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
     }
 
@@ -177,9 +181,8 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getLeftBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT));
         new Trigger(driver::getRightBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
 
-        /* COPILOT BINDINGS */
-
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+            /* COPILOT BINDINGS */
             new Trigger(copilot::getRightBumperButton)
                 .whileTrue(new SetRodState(rod, RodStates.SOURCE));
             new Trigger(copilot::getLeftBumperButton)
@@ -275,7 +278,7 @@ public class RobotContainer extends LightningContainer {
             case NAUTILUS -> {
             }
             default -> {
-                NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, () -> 1));
+                NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, leds, () -> 1));
 
                 NamedCommands.registerCommand("RodHome",
                         new SetRodState(rod, RodStates.STOW)

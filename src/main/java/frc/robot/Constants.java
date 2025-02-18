@@ -954,7 +954,7 @@ public class Constants {
         }
     }
 
-        public class AutoAlignConstants {
+    public class AutoAlignConstants {
         public static final double AutoAlignTolerance = 0.02d;
 
         // X PID

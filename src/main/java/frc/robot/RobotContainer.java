@@ -149,12 +149,12 @@ public class RobotContainer extends LightningContainer {
                     ControllerConstants.JOYSTICK_DEADBAND),
                 () -> MathUtil.applyDeadband(-(driver.getRightX() * drivetrain.getTurnMult()),
                     ControllerConstants.JOYSTICK_DEADBAND))));
-        
+
         // sets slow mode
         new Trigger(() -> driver.getRightTriggerAxis() > 0.25)
             .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
             .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
-        
+
         // sets slow mode if the elevator is above L3
         // new Trigger(() -> ((rod.getTargetState() == RodStates.L3) || (rod.getTargetState() == RodStates.L4)))
         //     .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
@@ -166,21 +166,20 @@ public class RobotContainer extends LightningContainer {
         // reset forward
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
             new InstantCommand(() -> drivetrain.seedFieldCentric()));
-        
+
         new Trigger(driver::getLeftBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 17));
         new Trigger(driver::getRightBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 18));
 
         /* COPILOT BINDINGS */
-
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             /* now that these are tap instead of hold buttons
-             * there is a problem where changing a state while 
+             * there is a problem where changing a state while
              * in another transition state gets it "stuck" until
              * you change it to a different state
-             * 
+             *
              * stuck means current = target in the wrong position
              */
-            
+
             new Trigger(copilot::getRightBumperButton)
                 .onTrue(new SetRodState(rod, RodStates.SOURCE));
             new Trigger(copilot::getLeftBumperButton)
@@ -260,7 +259,7 @@ public class RobotContainer extends LightningContainer {
         //     NamedCommands.registerCommand("AlignTo" + i + "Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, i).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         //     NamedCommands.registerCommand("AlignTo" + i + "Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, i).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         // }
-        
+
 
         switch (Constants.ROBOT_IDENTIFIER) {
             case SIM -> {

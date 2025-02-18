@@ -38,13 +38,13 @@ public class PoseBasedAutoAlign extends Command {
 
     private final StructPublisher<Pose2d> publisher;
 
-
     /**
      * Used to align to Tag
      * will always use PID Controllers
      * @param vision
      * @param drivetrain
      * @param camera
+     * @param tag
      */
     public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tag) {
         this.vision = vision;
@@ -57,6 +57,7 @@ public class PoseBasedAutoAlign extends Command {
         addRequirements(drivetrain);
     }
 
+    // TODO: DELETE
     public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera) {
         this(vision, drivetrain, camera, 22);
     }
@@ -76,7 +77,6 @@ public class PoseBasedAutoAlign extends Command {
         controllerR.setTolerance(2);
         controllerR.enableContinuousInput(0, 360);
 
-
         // try {
         //     vision.getTagNum(camera);
         //     PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, vision.getTagNum(camera)));
@@ -84,17 +84,15 @@ public class PoseBasedAutoAlign extends Command {
         //     System.out.println("Error: Cannot See April Tag");
         //     cancel();
         // }
-
-
     }
 
     @Override
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "Y static", 0d);
-        double yKs = LightningShuffleboard.getDouble("TestAutoAlign", "X static", 0d);
-        double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
+        // double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "Y static", 0d);
+        // double yKs = LightningShuffleboard.getDouble("TestAutoAlign", "X static", 0d);
+        // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
         double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX());// + Math.signum(controllerY.getError()) * yKs;
         double yVeloc = controllerY.calculate(currentPose.getY(), targetPose.getY());// + Math.signum(controllerY.getError()) * xKs;

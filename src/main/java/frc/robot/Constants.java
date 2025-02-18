@@ -165,13 +165,13 @@ public class Constants {
     public static class FishingRodConstants {
         public enum RodStates {
             STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true), ALGAE_SCORE(true), DEFAULT(false);
-            
+
             private boolean scoring;
 
             RodStates(boolean scoring) {
                 this.scoring = scoring;
             }
-            
+
             public boolean isScoring() {
                 return scoring;
             }
@@ -231,7 +231,7 @@ public class Constants {
         // both motors are - to go up
         public static final boolean L_INVERTED = false;
         public static final boolean R_INVERTED = true;
-        
+
         public static final double STATOR_CURRENT_LIMIT = 120d; // temp
 
         public static final double GEAR_RATIO = 4d;
@@ -668,7 +668,7 @@ public class Constants {
             /**
              * Creates a CommandSwerveDrivetrain instance.
              * This should only be called once in your robot program,.
-             * 
+             *
              * @return Swerve
              */
             public static Swerve createDrivetrain() {
@@ -857,7 +857,7 @@ public class Constants {
             /**
              * Creates a CommandSwerveDrivetrain instance.
              * This should only be called once in your robot program,.
-             * 
+             *
              * @return Swerve
              */
             public static Swerve createDrivetrain() {
@@ -962,17 +962,14 @@ public class Constants {
         public static final double THREE_DEE_xI = 0;
         public static final double THREE_DEE_xD = 0;
 
-
         public static final double THREE_DEE_yP = 0.5d;
         public static final double THREE_DEE_yI = 0;
         public static final double THREE_DEE_yD = 0;
-        
-
 
         public static final double THREE_DEE_rP = 0.02; //0.02
         public static final double THREE_DEE_rI = 0;
         public static final double THREE_DEE_rD = 0;
-        
+
 
         public static final double targetTX = 720d;
 

@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.CoralCollectorConstants;
@@ -39,6 +38,7 @@ public class CollectCoral extends Command {
     public void end(boolean interrupted) {
         collector.setPower(0.2);
         RobotContainer.hapticCopilotCommand().schedule();
+
     }
 
     @Override

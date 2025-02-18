@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
@@ -57,6 +58,7 @@ import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.filter.XboxControllerFilter;
+import frc.thunder.leds.LightningColors;
 
 public class RobotContainer extends LightningContainer {
 
@@ -125,8 +127,8 @@ public class RobotContainer extends LightningContainer {
             coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(), CoralCollectorConstants.COLLECTOR_DEADBAND)));
 
-            new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.CORAL_SCORE));
-            new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.CORAL_COLLECT));
+            new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.SCORING));
+            new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
             climber.setDefaultCommand(new RunCommand(() -> climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)), climber));
 
@@ -134,6 +136,9 @@ public class RobotContainer extends LightningContainer {
 
             new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
         }
+
+        new Trigger(() -> (drivetrain.poseZero() && DriverStation.isDisabled() && !vision.hasTarget())).whileTrue(leds.strip.enableState(LEDStates.POSE_BAD));
+        new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled() && vision.hasTarget())).whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
     }
 
@@ -154,11 +159,16 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getRightTriggerAxis() > 0.25)
             .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
             .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
-
-        // sets slow mode if the elevator is above L3
-        // new Trigger(() -> ((rod.getTargetState() == RodStates.L3) || (rod.getTargetState() == RodStates.L4)))
-        //     .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
-        //     .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+        
+        if(DriverStation.isTeleop()) {
+            // sets slow mode if the elevator is above L3 (around 29 inches)
+            new Trigger(() -> elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT)
+                .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
+            
+            // stops slow mode if below L3 (around 29 inches)
+            new Trigger(() -> (!(elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() > 0.25)))
+                .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+        }
 
         // drivetrain brake
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));

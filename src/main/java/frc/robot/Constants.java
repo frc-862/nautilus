@@ -263,6 +263,8 @@ public class Constants {
         public static final Mass CARRIAGE_WEIGHT = Pounds.of(30); // temp
         public static final double CUSHION_METERS = 0.05; // stages don't line up perfectly
         public static final double STAGE_LEN_METERS = MAX_EXTENSION.in(Meters) / 3;
+
+        public static final double SLOW_MODE_HEIGHT_LIMIT = 29d;
     }
 
     public static class WristConstants {
@@ -930,18 +932,19 @@ public class Constants {
         public static final int PWM_PORT = 0;
         public static final int LENGTH = 60;
 
+        public static final int PULSE_TIME = 5;
+
         public static final int SWRIL_SEGMENT_SIZE = 5;
 
         public enum LEDStates {
-            DISABLED(),
-            MIXER(),
-            RAINBOW(),
+            COLLECTED(),
+            SCORED(),
             ALIGNING(),
-            ALGAE_COLLECT(),
-            ALGAE_SCORE(),
-            CORAL_COLLECT(),
-            CORAL_SCORE(),
+            COLLECTING(),
+            SCORING(),
             ROD_MOVING(),
+            UPDATING_POSE(),
+            POSE_BAD(),
         }
     }
 

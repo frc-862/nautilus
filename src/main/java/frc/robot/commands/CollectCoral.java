@@ -3,6 +3,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.subsystems.CoralCollector;
@@ -11,10 +12,7 @@ import frc.robot.RobotContainer;
 public class CollectCoral extends Command {
 
     private CoralCollector collector;
-
     private DoubleSupplier triggerPower;
-
-    private Debouncer debouncer = new Debouncer(CoralCollectorConstants.DEBOUNCE_TIME);
 
     public CollectCoral(CoralCollector collector, DoubleSupplier triggerPower) {
         this.collector = collector;
@@ -45,8 +43,10 @@ public class CollectCoral extends Command {
 
     @Override
     public boolean isFinished() {
-        // return debouncer.calculate(collector.getBeamBreakOutput()) && triggerPower.getAsDouble() > 0;
-        // return false;
-        return collector.getCollectCurrentHit() && triggerPower.getAsDouble() > 0;
+        if (DriverStation.isAutonomous()) {
+            return collector.getCollectCurrentHit() && triggerPower.getAsDouble() > 0;
+        } else {
+            return false;
+        }
     }
 }

@@ -296,7 +296,7 @@ public class Constants {
     public static class CoralCollectorConstants {
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
-        public static final boolean INVERTED = false;
+        public static final boolean INVERTED = true;
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1;
 
@@ -344,9 +344,9 @@ public class Constants {
 
             public static Supplier<SwerveRequest> getDrive(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
                 return () -> DRIVE
-                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y
+                        .withVelocityX(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y
                                                                                         // (forward)
-                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
+                        .withVelocityY(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
                                                                                         // (left)
                         .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
@@ -356,8 +356,8 @@ public class Constants {
 
             public static SwerveRequest getDrive(double x, double y, double rot) {
                 return DRIVE
-                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
-                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                        .withVelocityX(x * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                        .withVelocityY(y * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
                         .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X
@@ -495,7 +495,7 @@ public class Constants {
             // the
             // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
             private static final Slot0Configs steerGains = new Slot0Configs()
-                    .withKP(20).withKI(0).withKD(0.5)
+                    .withKP(50).withKI(0).withKD(0.5)
                     .withKS(0.224).withKV(2.6).withKA(0)
                     .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
             // When using closed-loop control, the drive motor uses the control
@@ -509,7 +509,7 @@ public class Constants {
             private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
             // The closed-loop output type to use for the drive motors;
             // This affects the PID/FF gains for the drive motors
-            private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
+            private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.TorqueCurrentFOC;
 
             // The type of motor used for the drive motor
             private static final DriveMotorArrangement kDriveMotorType = DriveMotorArrangement.TalonFX_Integrated;
@@ -632,7 +632,7 @@ public class Constants {
 
             // Back Right
             private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
-            private static final int kBackRightSteerMotorId = RobotMap.BR_DRIVE;
+            private static final int kBackRightSteerMotorId = RobotMap.BR_TURN;
             private static final int kBackRightEncoderId = RobotMap.BR_ENCODER;
             private static final Angle kBackRightEncoderOffset = EncoderConstants.nautilusKBackRightEncoderOffset;
             private static final boolean kBackRightSteerMotorInverted = true;
@@ -958,18 +958,18 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double THREE_DEE_xP = 0.0d;
+        public static final double THREE_DEE_xP = 0.5d;
         public static final double THREE_DEE_xI = 0;
         public static final double THREE_DEE_xD = 0;
 
 
-        public static final double THREE_DEE_yP = 0.0d;
+        public static final double THREE_DEE_yP = 0.5d;
         public static final double THREE_DEE_yI = 0;
         public static final double THREE_DEE_yD = 0;
         
 
 
-        public static final double THREE_DEE_rP = 0.00; //0.02
+        public static final double THREE_DEE_rP = 0.02; //0.02
         public static final double THREE_DEE_rI = 0;
         public static final double THREE_DEE_rD = 0;
         

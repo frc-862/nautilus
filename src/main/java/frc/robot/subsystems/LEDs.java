@@ -32,7 +32,7 @@ public class LEDs extends Thunderbolt {
 
 				case POSE_BAD -> solid(LightningColors.RED);
 
-				default -> System.err.println("Unexpected State: " + state);
+				default -> System.err.println("Unexpected State Found: " + state);
 			}
 		}
 

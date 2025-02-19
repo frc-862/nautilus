@@ -24,6 +24,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
@@ -70,6 +71,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     // other swerve requests are in Constants.java/DrivetrainConstants/DriveRequests
     private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
+
+    private final LinearFilter xFilter = LinearFilter.movingAverage(5);
+    private final LinearFilter yFilter = LinearFilter.movingAverage(5);
+    private final LinearFilter rotFilter = LinearFilter.movingAverage(5);
 
     private boolean slowMode = false;
 
@@ -145,6 +150,11 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     public void periodic() {
         updateCANcoderOffsets();
 
+        Pose2d pose = getPose();
+        xFilter.calculate(pose.getX());
+        yFilter.calculate(pose.getY());
+        rotFilter.calculate(pose.getRotation().getRadians());
+
         // LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", currentCANCoderValues);
 
         // update reef status booleans in the future
@@ -172,12 +182,24 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
                 this); // Subsystem for requirements
     }
 
+    public boolean poseZero() {
+        return getPose().equals(new Pose2d());
+    }
+
     public Pose2d getPose() {
         SwerveDriveState state = getState();
         if (state == null || getState().Pose == null) {
             return new Pose2d();
         }
         return state.Pose;
+    }
+
+    public boolean poseStable() {
+        Pose2d pose = getPose();
+        return (
+            Math.abs(xFilter.calculate(pose.getX()) - pose.getX()) < 0.01 &&
+            Math.abs(yFilter.calculate(pose.getY()) - pose.getY()) < 0.01 &&
+            Math.abs(rotFilter.calculate(pose.getRotation().getRadians()) - pose.getRotation().getRadians()) < 0.01);
     }
 
     /**
@@ -257,15 +279,15 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             // addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
             //         VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV));
         
-            if(distance < 0.25) {
-                addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
-                    VecBuilder.fill(0.01, 0.01, 0.01));
-            } else {
+            // if(distance < 0.25) {
+            //     addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
+            //         VecBuilder.fill(0.01, 0.01, 0.01));
+            // } else {
 
                 // for ambiguity-based (or distance-based) std deviations
                 addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
                         VecBuilder.fill(distance / 2, distance / 2, distance / 2));
-            }
+            // }
 
             }
     }

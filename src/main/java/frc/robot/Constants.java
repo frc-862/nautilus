@@ -85,6 +85,7 @@ public class Constants {
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
         public static final double tritonWristOffset = -0.227;
+        public static final double nautilusWristOffset = 0.318;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
@@ -96,6 +97,7 @@ public class Constants {
         public static final double backRightOffset = IS_TRITON ? tritonKBackRightEncoderOffset.in(Rotations)
                 : nautilusKBackRightEncoderOffset.in(Rotations);
 
+        public static final double wristOffset = IS_TRITON ? tritonWristOffset : nautilusWristOffset;
     }
 
     public static class RobotMap {
@@ -165,13 +167,13 @@ public class Constants {
     public static class FishingRodConstants {
         public enum RodStates {
             STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true), ALGAE_SCORE(true), DEFAULT(false);
-            
+
             private boolean scoring;
 
             RodStates(boolean scoring) {
                 this.scoring = scoring;
             }
-            
+
             public boolean isScoring() {
                 return scoring;
             }
@@ -196,9 +198,11 @@ public class Constants {
 
                 put(RodStates.STOW, 80d);
                 put(RodStates.L1, 0d);
-                put(RodStates.L2, -35d);
+                put(RodStates.L2, -30d);
                 put(RodStates.L3, -35d);
-                put(RodStates.L4, -47d);
+                put(RodStates.L4, -39d);
+                put(RodStates.LOW, -30d);
+                put(RodStates.HIGH, -30d);
                 put(RodStates.SOURCE, 39.5d);
             }
         };
@@ -217,7 +221,9 @@ public class Constants {
                 put(RodStates.L2, 13d);
                 put(RodStates.L3, 26d);
                 put(RodStates.L4, 47d);
-                put(RodStates.SOURCE, 9d);
+                put(RodStates.LOW, 15d);
+                put(RodStates.HIGH, 28d);
+                put(RodStates.SOURCE, 9.5d);
             }
         };
     }
@@ -227,7 +233,7 @@ public class Constants {
         // both motors are - to go up
         public static final boolean L_INVERTED = false;
         public static final boolean R_INVERTED = true;
-        
+
         public static final double STATOR_CURRENT_LIMIT = 120d; // temp
 
         public static final double GEAR_RATIO = 4d;
@@ -271,7 +277,7 @@ public class Constants {
         public static final double ROTOR_TO_ENCODER_RATIO = 74; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double MOTORS_KP = 40; // temp
+        public static final double MOTORS_KP = 60; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
@@ -283,7 +289,7 @@ public class Constants {
         public static final Angle MIN_ANGLE = Degrees.of(-85);
         public static final Angle MAX_ANGLE = Degrees.of(85);
 
-        public static final double TOLERANCE = 10d;
+        public static final double TOLERANCE = 5d;
 
         // sim stuff
         public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.086); // 5lb, 2.5in rad, 9in height
@@ -294,7 +300,7 @@ public class Constants {
     public static class CoralCollectorConstants {
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
-        public static final boolean INVERTED = true;
+        public static final boolean INVERTED = false;
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1;
 
@@ -307,7 +313,10 @@ public class Constants {
 
         public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
-        public static final double COLLECTED_CURRENT = 80d;
+        public static final double COLLECTED_CURRENT = 35d;
+        public static final double COLLECTOR_DEADBAND = 0.1;
+        public static final double HOLD_POWER = 0.025;
+
     }
 
     public class DrivetrainConstants {
@@ -339,9 +348,9 @@ public class Constants {
 
             public static Supplier<SwerveRequest> getDrive(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
                 return () -> DRIVE
-                        .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y
+                        .withVelocityX(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y
                                                                                         // (forward)
-                        .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
+                        .withVelocityY(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
                                                                                         // (left)
                         .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
@@ -351,8 +360,8 @@ public class Constants {
 
             public static SwerveRequest getDrive(double x, double y, double rot) {
                 return DRIVE
-                        .withVelocityX(y * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
-                        .withVelocityY(x * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+                        .withVelocityX(x * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                        .withVelocityY(y * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
                         .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
                                                                                  // X
@@ -431,8 +440,8 @@ public class Constants {
     }
 
     public static class VisionConstants {
-        public static final String leftCamName = "cam1";
-        public static final String rightCamName = "cam2";
+        public static final String leftCamName = "leftCam";
+        public static final String rightCamName = "rightCam";
         public static final TargetModel targetModel = TargetModel.kAprilTag36h11;
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
@@ -455,39 +464,24 @@ public class Constants {
         public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
                 Units.feetToMeters(26.0));
 
-        public static final Pose2d REEFSCORE1_1 = new Pose2d(4.864, 5.235, new Rotation2d(Degrees.of(240)));
-        public static final Pose2d REEFSCORE1_2 = new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(240)));
-        public static final Pose2d REEFSCORE2_1 = new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(180)));
-        public static final Pose2d REEFSCORE2_2 = new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(180)));
-        public static final Pose2d REEFSCORE3_1 = new Pose2d(5.237, 3.056, new Rotation2d(Degrees.of(-60)));
-        public static final Pose2d REEFSCORE3_2 = new Pose2d(4.982, 2.857, new Rotation2d(Degrees.of(-60)));
-        public static final Pose2d REEFSCORE4_1 = new Pose2d(4.070, 2.880, new Rotation2d(Degrees.of(-120)));
-        public static final Pose2d REEFSCORE4_2 = new Pose2d(3.708, 2.968, new Rotation2d(Degrees.of(-120)));
-        public static final Pose2d REEFSCORE5_1 = new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(0)));
-        public static final Pose2d REEFSCORE5_2 = new Pose2d(3.101, 4.175, new Rotation2d(Degrees.of(0)));
-        public static final Pose2d REEFSCORE6_1 = new Pose2d(3.656, 5.122, new Rotation2d(Degrees.of(300)));
-        public static final Pose2d REEFSCORE6_2 = new Pose2d(3.949, 5.282, new Rotation2d(Degrees.of(300)));
-
-        public enum ScoringPoses {
-            REEFSCORE1_1, REEFSCORE1_2, REEFSCORE2_1, REEFSCORE2_2, REEFSCORE3_1, REEFSCORE3_2,
-            REEFSCORE4_1, REEFSCORE4_2, REEFSCORE5_1, REEFSCORE5_2, REEFSCORE6_1, REEFSCORE6_2
-        }
-
         @SuppressWarnings({ "rawtypes", "unchecked" })
         public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
             {
-                put(new Tuple(VisionConstants.Camera.LEFT, 20), REEFSCORE1_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 20), REEFSCORE1_2);
-                put(new Tuple(VisionConstants.Camera.LEFT, 21), REEFSCORE2_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 21), REEFSCORE2_2);
-                put(new Tuple(VisionConstants.Camera.LEFT, 22), REEFSCORE3_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 22), REEFSCORE3_2);
-                put(new Tuple(VisionConstants.Camera.LEFT, 17), REEFSCORE4_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 17), REEFSCORE4_2);
-                put(new Tuple(VisionConstants.Camera.LEFT, 18), REEFSCORE5_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 18), REEFSCORE5_2);
-                put(new Tuple(VisionConstants.Camera.LEFT, 19), REEFSCORE6_1);
-                put(new Tuple(VisionConstants.Camera.RIGHT, 19), REEFSCORE6_2);
+                // put(new Tuple(VisionConstants.Camera.LEFT, 12), new Pose2d(1.625, 2.880, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 12), new Pose2d(1.611, 0.757, new Rotation2d(Degrees.of(55))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 17), new Pose2d(4.000, 2.870, new Rotation2d(Degrees.of(-120))));
+
+                put(new Tuple(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.708, 2.968, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 18), new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(0))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 18), new Pose2d(3.101, 4.175, new Rotation2d(Degrees.of(0))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 19), new Pose2d(3.656, 5.122, new Rotation2d(Degrees.of(300))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 19), new Pose2d(3.949, 5.282, new Rotation2d(Degrees.of(300))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 20), new Pose2d(4.864, 5.235, new Rotation2d(Degrees.of(240))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 20), new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(240))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 21), new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(180))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(180))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 22), new Pose2d(5.292, 2.936, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 22), new Pose2d(5.002, 2.820, new Rotation2d(Degrees.of(-60))));
 
             }
         };
@@ -505,7 +499,7 @@ public class Constants {
             // the
             // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
             private static final Slot0Configs steerGains = new Slot0Configs()
-                    .withKP(20).withKI(0).withKD(0.5)
+                    .withKP(50).withKI(0).withKD(0.5)
                     .withKS(0.224).withKV(2.6).withKA(0)
                     .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
             // When using closed-loop control, the drive motor uses the control
@@ -519,7 +513,7 @@ public class Constants {
             private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
             // The closed-loop output type to use for the drive motors;
             // This affects the PID/FF gains for the drive motors
-            private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
+            private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.TorqueCurrentFOC;
 
             // The type of motor used for the drive motor
             private static final DriveMotorArrangement kDriveMotorType = DriveMotorArrangement.TalonFX_Integrated;
@@ -642,7 +636,7 @@ public class Constants {
 
             // Back Right
             private static final int kBackRightDriveMotorId = RobotMap.BR_DRIVE;
-            private static final int kBackRightSteerMotorId = RobotMap.BR_DRIVE;
+            private static final int kBackRightSteerMotorId = RobotMap.BR_TURN;
             private static final int kBackRightEncoderId = RobotMap.BR_ENCODER;
             private static final Angle kBackRightEncoderOffset = EncoderConstants.nautilusKBackRightEncoderOffset;
             private static final boolean kBackRightSteerMotorInverted = true;
@@ -678,7 +672,7 @@ public class Constants {
             /**
              * Creates a CommandSwerveDrivetrain instance.
              * This should only be called once in your robot program,.
-             * 
+             *
              * @return Swerve
              */
             public static Swerve createDrivetrain() {
@@ -867,7 +861,7 @@ public class Constants {
             /**
              * Creates a CommandSwerveDrivetrain instance.
              * This should only be called once in your robot program,.
-             * 
+             *
              * @return Swerve
              */
             public static Swerve createDrivetrain() {
@@ -940,18 +934,19 @@ public class Constants {
         public static final int PWM_PORT = 0;
         public static final int LENGTH = 60;
 
+        public static final int PULSE_TIME = 5;
+
         public static final int SWRIL_SEGMENT_SIZE = 5;
 
         public enum LEDStates {
-            DISABLED(),
-            MIXER(),
-            RAINBOW(),
+            COLLECTED(),
+            SCORED(),
             ALIGNING(),
-            ALGAE_COLLECT(),
-            ALGAE_SCORE(),
-            CORAL_COLLECT(),
-            CORAL_SCORE(),
+            COLLECTING(),
+            SCORING(),
             ROD_MOVING(),
+            UPDATING_POSE(),
+            POSE_BAD(),
         }
     }
 
@@ -968,21 +963,18 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double THREE_DEE_xP = 1d;
+        public static final double THREE_DEE_xP = 0.5d;
         public static final double THREE_DEE_xI = 0;
         public static final double THREE_DEE_xD = 0;
 
-
-        public static final double THREE_DEE_yP = 1d;
+        public static final double THREE_DEE_yP = 0.5d;
         public static final double THREE_DEE_yI = 0;
         public static final double THREE_DEE_yD = 0;
-        
 
-
-        public static final double THREE_DEE_rP = 0.02;
+        public static final double THREE_DEE_rP = 0.02; //0.02
         public static final double THREE_DEE_rI = 0;
         public static final double THREE_DEE_rD = 0;
-        
+
 
         public static final double targetTX = 720d;
 

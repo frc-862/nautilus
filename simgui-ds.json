@@ -100,7 +100,7 @@
       "useGamepad": true
     },
     {
-      "guid": "Keyboard0"
+      "useGamepad": true
     }
   ]
 }

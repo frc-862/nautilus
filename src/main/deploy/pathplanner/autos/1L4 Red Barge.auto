@@ -13,7 +13,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ReefAlignLeft"
+            "name": "AlignTo22Left"
           }
         },
         {
@@ -26,6 +26,12 @@
           "type": "named",
           "data": {
             "name": "ScoreCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RodStow"
           }
         }
       ]

@@ -13,7 +13,7 @@ public class ScoreCoral extends SequentialCommandGroup {
     public ScoreCoral(CoralCollector coral) {
         addCommands(
             new InstantCommand(() -> coral.setPower(-1), coral),
-            new WaitCommand(0.5),
+            new WaitCommand(0.75),
             new InstantCommand(() -> coral.setPower(0), coral)
         );
     }

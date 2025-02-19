@@ -160,15 +160,15 @@ public class RobotContainer extends LightningContainer {
             .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
             .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
         
-        if(DriverStation.isTeleop()) {
-            // sets slow mode if the elevator is above L3 (around 29 inches)
-            new Trigger(() -> elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT)
-                .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
+        // if(DriverStation.isTeleop()) {
+        //     // sets slow mode if the elevator is above L3 (around 29 inches)
+        //     new Trigger(() -> elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT)
+        //         .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
             
-            // stops slow mode if below L3 (around 29 inches)
-            new Trigger(() -> (!(elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() > 0.25)))
-                .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
-        }
+        //     // stops slow mode if below L3 (around 29 inches)
+        //     new Trigger(() -> (!(elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() > 0.25)))
+        //         .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+        // }
 
         // drivetrain brake
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
@@ -177,8 +177,8 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
             new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
-        new Trigger(driver::getLeftBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 17));
-        new Trigger(driver::getRightBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 18));
+        new Trigger(driver::getLeftBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 12));
+        new Trigger(driver::getRightBumperButton).whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22));
 
         /* COPILOT BINDINGS */
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
@@ -272,7 +272,7 @@ public class RobotContainer extends LightningContainer {
 
 
         switch (Constants.ROBOT_IDENTIFIER) {
-            case SIM -> {
+            case SIM, NAUTILUS -> {
                 NamedCommands.registerCommand("RodStow",
                         StandinCommands.rodStow()
                                 .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
@@ -291,8 +291,6 @@ public class RobotContainer extends LightningContainer {
                 NamedCommands.registerCommand("RodSource",
                         StandinCommands.rodSource()
                                 .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
-            }
-            case NAUTILUS -> {
             }
             default -> {
                 NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, () -> 1));

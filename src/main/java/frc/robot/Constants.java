@@ -438,8 +438,8 @@ public class Constants {
     }
 
     public static class VisionConstants {
-        public static final String leftCamName = "cam1";
-        public static final String rightCamName = "cam2";
+        public static final String leftCamName = "leftCam";
+        public static final String rightCamName = "rightCam";
         public static final TargetModel targetModel = TargetModel.kAprilTag36h11;
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
@@ -467,7 +467,7 @@ public class Constants {
             {
                 // put(new Tuple(VisionConstants.Camera.LEFT, 12), new Pose2d(1.625, 2.880, new Rotation2d(Degrees.of(-120))));
                 put(new Tuple(VisionConstants.Camera.RIGHT, 12), new Pose2d(1.611, 0.757, new Rotation2d(Degrees.of(55))));
-                put(new Tuple(VisionConstants.Camera.LEFT, 17), new Pose2d(4.000, 2.870, new Rotation2d(Degrees.of(60))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 17), new Pose2d(4.000, 2.870, new Rotation2d(Degrees.of(-120))));
 
                 put(new Tuple(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.708, 2.968, new Rotation2d(Degrees.of(-120))));
                 put(new Tuple(VisionConstants.Camera.LEFT, 18), new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(0))));

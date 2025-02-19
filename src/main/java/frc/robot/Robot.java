@@ -19,7 +19,7 @@ public class Robot extends LightningRobot {
     public void robotInit() {
         super.robotInit();
 
-        WebServer.start(5800, Filesystem.getDeployDirectory().getPath() + "/elastic");
+        // WebServer.start(5800, Filesystem.getDeployDirectory().getPath() + "/elastic");
     }
 
     @Override

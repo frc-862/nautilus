@@ -85,6 +85,7 @@ public class Constants {
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
         public static final double tritonWristOffset = -0.227;
+        public static final double nautilusWristOffset = 0.318;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
@@ -96,6 +97,7 @@ public class Constants {
         public static final double backRightOffset = IS_TRITON ? tritonKBackRightEncoderOffset.in(Rotations)
                 : nautilusKBackRightEncoderOffset.in(Rotations);
 
+        public static final double wristOffset = IS_TRITON ? tritonWristOffset : nautilusWristOffset;
     }
 
     public static class RobotMap {
@@ -198,7 +200,7 @@ public class Constants {
                 put(RodStates.L1, 0d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -35d);
-                put(RodStates.L4, -44d);
+                put(RodStates.L4, -39d);
                 put(RodStates.LOW, -30d);
                 put(RodStates.HIGH, -30d);
                 put(RodStates.SOURCE, 39.5d);
@@ -275,7 +277,7 @@ public class Constants {
         public static final double ROTOR_TO_ENCODER_RATIO = 74; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double MOTORS_KP = 40; // temp
+        public static final double MOTORS_KP = 60; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
@@ -298,7 +300,7 @@ public class Constants {
     public static class CoralCollectorConstants {
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
-        public static final boolean INVERTED = true;
+        public static final boolean INVERTED = false;
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1;
 
@@ -313,7 +315,7 @@ public class Constants {
 
         public static final double COLLECTED_CURRENT = 35d;
         public static final double COLLECTOR_DEADBAND = 0.1;
-        public static final double HOLD_POWER = 0.1;
+        public static final double HOLD_POWER = 0.025;
 
     }
 
@@ -478,8 +480,8 @@ public class Constants {
                 put(new Tuple(VisionConstants.Camera.RIGHT, 20), new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(240))));
                 put(new Tuple(VisionConstants.Camera.LEFT, 21), new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(180))));
                 put(new Tuple(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(180))));
-                put(new Tuple(VisionConstants.Camera.LEFT, 22), new Pose2d(5.27, 2.987, new Rotation2d(Degrees.of(-60))));
-                put(new Tuple(VisionConstants.Camera.RIGHT, 22), new Pose2d(4.982, 2.857, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 22), new Pose2d(5.292, 2.936, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 22), new Pose2d(5.002, 2.820, new Rotation2d(Degrees.of(-60))));
 
             }
         };

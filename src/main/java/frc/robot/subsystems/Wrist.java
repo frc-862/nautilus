@@ -60,7 +60,7 @@ public class Wrist extends SubsystemBase {
 
         encoder = new CANcoder(RobotMap.WRIST_ENCODER, RobotMap.CANIVORE_CAN_NAME);
         angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-        angleConfig.MagnetSensor.MagnetOffset = Robot.isReal() ? EncoderConstants.tritonWristOffset : 0;
+        angleConfig.MagnetSensor.MagnetOffset = Robot.isReal() ? EncoderConstants.wristOffset : 0;
         encoder.getConfigurator().apply(angleConfig);
 
         motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
@@ -73,7 +73,7 @@ public class Wrist extends SubsystemBase {
         motorConfig.Slot0.kG = WristConstants.MOTORS_KG;
 
         motorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
-        motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         motorConfig.Feedback.SensorToMechanismRatio = WristConstants.ENCODER_TO_MECHANISM_RATIO;
         motorConfig.Feedback.RotorToSensorRatio = WristConstants.ROTOR_TO_ENCODER_RATIO;
 
@@ -102,7 +102,7 @@ public class Wrist extends SubsystemBase {
         LightningShuffleboard.setBool("Wrist", "onTarget", isOnTarget());
 
         LightningShuffleboard.setDouble("Diagnostics", "wrist motor temp", motor.getDeviceTemp().getValueAsDouble());
-        LightningShuffleboard.setDouble("Diagnostics", "wrist encoder raw", encoder.getAbsolutePosition().getValue().in(Rotations) - EncoderConstants.tritonWristOffset);
+        LightningShuffleboard.setDouble("Diagnostics", "wrist encoder raw", encoder.getAbsolutePosition().getValue().in(Rotations) - EncoderConstants.wristOffset);
 
     }
 

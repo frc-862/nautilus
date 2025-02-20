@@ -168,16 +168,13 @@ public class RobotContainer extends LightningContainer {
                 .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
         // if(DriverStation.isTeleop()) {
-        // // sets slow mode if the elevator is above L3 (around 29 inches)
-        // new Trigger(() -> elevator.getPosition() >
-        // ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT)
-        // .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
+        //     // sets slow mode if the elevator is above L3 (around 29 inches)
+        //     new Trigger(() -> elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT)
+        //         .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
 
-        // // stops slow mode if below L3 (around 29 inches)
-        // new Trigger(() -> (!(elevator.getPosition() >
-        // ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() >
-        // 0.25)))
-        // .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+        //     // stops slow mode if below L3 (around 29 inches)
+        //     new Trigger(() -> (!(elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() > 0.25)))
+        //         .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
         // }
 
         // drivetrain brake
@@ -225,23 +222,10 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5));
         new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5));
 
-        // unused algae stuff
-        // (new Trigger(driver::getRightBumperButtonPressed))
-        // .whileTrue(new SetRodState(rod, RodStates.SOURCE));
-        // ((new Trigger(() -> driver.getRightTriggerAxis() > -1))).whileTrue(
-        // new CollectAlgae(algaeCollector,
-        // driver::getRightTriggerAxis).deadlineFor(leds.enableState(LED_STATES.ALGAE_COLLECT)));
-        // new CollectAlgae(algaeCollector,
-        // driver::getRightTriggerAxis).deadlineFor(leds.elevatorStrip.enableState(LEDStates.ALGAE_COLLECT)));
-        // (new Trigger(copilot::getBButtonPressed).and(algaeMode))
-        // .whileTrue(new SetRodState(rod, RodStates.LOW));
-        // (new Trigger(copilot::getXButtonPressed).and(algaeMode))
-        // .whileTrue(new SetRodState(rod, RodStates.HIGH));
-        // (new Trigger(copilot::getRightBumperButtonPressed))
-        // .whileTrue((new InstantCommand(() -> algaeCollector.setRollerPower(-1),
-        // algaeCollector)
-        // .andThen(() ->
-        // algaeCollector.setRollerPower(0d))).deadlineFor(leds.elevatorStrip.enableState(LEDStates.ALGAE_SCORE)));
+        //  algae control
+        // new Trigger(() -> copilot.getRightTriggerAxis() > -1)
+        //     .whileTrue(new CollectAlgae(algaeCollector, copilot::getRightTriggerAxis).deadlineFor(leds.strip.enableState(LEDStates.COLLECTING))); 
+
 
         // sim stuff
         // if (Robot.isSimulation()) {

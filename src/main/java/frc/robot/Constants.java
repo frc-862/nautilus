@@ -494,12 +494,12 @@ public class Constants {
         // POPULATE WITH REAL VALUES
         public static HashMap<Rectangle2d, Integer> aprilTagRegions = new HashMap<Rectangle2d, Integer>(){
             {
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 17);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 18);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 19);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 20);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 21);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 22);
+                put(new Rectangle2d(new Translation2d(3.321, 3.324), new Translation2d(3.512, 1.885)), 17);
+                put(new Rectangle2d(new Translation2d(3.297, 4.642), new Translation2d(2.206, 3.360)), 18);
+                put(new Rectangle2d(new Translation2d(4.495, 5.362), new Translation2d(2.997, 5.949)), 19);
+                put(new Rectangle2d(new Translation2d(5.658, 4.678), new Translation2d(5.370, 6.429)), 20);
+                put(new Rectangle2d(new Translation2d(5.658, 3.372), new Translation2d(6.773, 4.798)), 21);
+                put(new Rectangle2d(new Translation2d(4.483, 2.676), new Translation2d(6.365, 2.449)), 22);
             }
         };
 

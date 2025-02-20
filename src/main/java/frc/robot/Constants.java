@@ -27,18 +27,21 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.ConstraintsZone;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.constraint.RectangularRegionConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -493,6 +496,18 @@ public class Constants {
         };
 
         public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);
+
+        // POPULATE WITH REAL VALUES
+        public static HashMap<Rectangle2d, Integer> aprilTagRegions = new HashMap<Rectangle2d, Integer>(){
+            {
+                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 17);
+                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 18);
+                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 19);
+                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 20);
+                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 21);
+                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 22);
+            }
+        };
 
     }
 

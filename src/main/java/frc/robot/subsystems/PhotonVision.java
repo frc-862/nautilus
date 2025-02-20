@@ -28,7 +28,9 @@ import frc.thunder.util.Tuple;
 public class PhotonVision extends SubsystemBase {
     private VisionSystemSim visionSim;
 
-    private PhotonCameraSim cameraSim;
+    private PhotonCameraSim leftCameraSim;
+    private PhotonCameraSim rightCameraSim;
+
     private SimCameraProperties cameraProp;
     private VisionTargetSim visionTarget;
 
@@ -63,12 +65,18 @@ public class PhotonVision extends SubsystemBase {
             // cameraProp.setAvgLatencyMs(35);
             // cameraProp.setLatencyStdDevMs(5);
 
-            cameraSim = new PhotonCameraSim(leftThread.getCameraObject(), cameraProp);
-            visionSim.addCamera(cameraSim, VisionConstants.robotLeftToCamera);
+            leftCameraSim = new PhotonCameraSim(leftThread.getCameraObject(), cameraProp);
+            rightCameraSim = new PhotonCameraSim(rightThread.getCameraObject(), cameraProp);
+
+            visionSim.addCamera(leftCameraSim, VisionConstants.robotLeftToCamera);
+            visionSim.addCamera(rightCameraSim, VisionConstants.robotRightToCamera);
 
             // Enable the raw and processed streams. These are enabled by default.
-            cameraSim.enableRawStream(true);
-            cameraSim.enableProcessedStream(true);
+            leftCameraSim.enableRawStream(true);
+            leftCameraSim.enableProcessedStream(true);
+
+            rightCameraSim.enableRawStream(true);
+            rightCameraSim.enableProcessedStream(true);
 
             // Enable drawing a wireframe visualization of the field to the camera streams.
             // This is extremely resource-intensive and is disabled by default.

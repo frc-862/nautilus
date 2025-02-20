@@ -318,7 +318,7 @@ public class Constants {
 
         public static final double COLLECTED_CURRENT = 35d;
         public static final double COLLECTOR_DEADBAND = 0.1;
-        public static final double HOLD_POWER = 0.025;
+        public static final double HOLD_POWER = 0d;
 
     }
 
@@ -470,21 +470,24 @@ public class Constants {
         @SuppressWarnings({ "rawtypes", "unchecked" })
         public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
             {
-                // put(new Tuple(VisionConstants.Camera.LEFT, 12), new Pose2d(1.625, 2.880, new Rotation2d(Degrees.of(-120))));
-                put(new Tuple(VisionConstants.Camera.RIGHT, 12), new Pose2d(1.611, 0.757, new Rotation2d(Degrees.of(55))));
-                put(new Tuple(VisionConstants.Camera.LEFT, 17), new Pose2d(4.000, 2.870, new Rotation2d(Degrees.of(-120))));
+                // put(new Tuple(VisionConstants.Camera.LEFT, 12), new Pose2d(1.625, 2.880, new Rotation2d(Degrees.of(54))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 12), new Pose2d(1.712, 0.643, new Rotation2d(Degrees.of(54))));
 
-                put(new Tuple(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.708, 2.968, new Rotation2d(Degrees.of(-120))));
-                put(new Tuple(VisionConstants.Camera.LEFT, 18), new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(0))));
-                put(new Tuple(VisionConstants.Camera.RIGHT, 18), new Pose2d(3.101, 4.175, new Rotation2d(Degrees.of(0))));
-                put(new Tuple(VisionConstants.Camera.LEFT, 19), new Pose2d(3.656, 5.122, new Rotation2d(Degrees.of(300))));
-                put(new Tuple(VisionConstants.Camera.RIGHT, 19), new Pose2d(3.949, 5.282, new Rotation2d(Degrees.of(300))));
-                put(new Tuple(VisionConstants.Camera.LEFT, 20), new Pose2d(4.864, 5.235, new Rotation2d(Degrees.of(240))));
-                put(new Tuple(VisionConstants.Camera.RIGHT, 20), new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(240))));
-                put(new Tuple(VisionConstants.Camera.LEFT, 21), new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(180))));
-                put(new Tuple(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(180))));
-                put(new Tuple(VisionConstants.Camera.LEFT, 22), new Pose2d(5.292, 2.936, new Rotation2d(Degrees.of(-60))));
-                put(new Tuple(VisionConstants.Camera.RIGHT, 22), new Pose2d(5.002, 2.820, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 17), new Pose2d(3.965, 2.804, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.657, 2.936, new Rotation2d(Degrees.of(-120))));
+
+                put(new Tuple(VisionConstants.Camera.LEFT, 18), new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(180))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 18), new Pose2d(3.101, 4.175, new Rotation2d(Degrees.of(180))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 19), new Pose2d(3.656, 5.122, new Rotation2d(Degrees.of(120))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 19), new Pose2d(3.949, 5.282, new Rotation2d(Degrees.of(120)))); //FIX
+                put(new Tuple(VisionConstants.Camera.LEFT, 20), new Pose2d(4.864, 5.235, new Rotation2d(Degrees.of(60)))); // SUS POSE
+                put(new Tuple(VisionConstants.Camera.RIGHT, 20), new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(60))));
+
+                put(new Tuple(VisionConstants.Camera.LEFT, 21), new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(0))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(0))));
+
+                put(new Tuple(VisionConstants.Camera.LEFT, 22), new Pose2d(5.303, 2.971, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 22), new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
 
             }
         };
@@ -986,7 +989,7 @@ public class Constants {
         public static final double THREE_DEE_yI = 0;
         public static final double THREE_DEE_yD = 0;
 
-        public static final double THREE_DEE_rP = 0.02; //0.02
+        public static final double THREE_DEE_rP = 0.0225; //0.02
         public static final double THREE_DEE_rI = 0;
         public static final double THREE_DEE_rD = 0;
 

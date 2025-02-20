@@ -167,15 +167,13 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
                 .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
-        // if(DriverStation.isTeleop()) {
-        //     // sets slow mode if the elevator is above L3 (around 29 inches)
-        //     new Trigger(() -> elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT)
-        //         .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
+        // // sets slow mode if the elevator is above L3 (around 29 inches)
+        // new Trigger(() -> (elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && (DriverStation.isTeleop()))
+        //     .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
 
-        //     // stops slow mode if below L3 (around 29 inches)
-        //     new Trigger(() -> (!(elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() > 0.25)))
-        //         .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
-        // }
+        // // stops slow mode if below L3 (around 29 inches)
+        // new Trigger(() -> (!(elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() > 0.25) && (DriverStation.isTeleop())))
+        //     .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
         // drivetrain brake
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));

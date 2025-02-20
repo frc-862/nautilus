@@ -2,6 +2,9 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Map.Entry;
+import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import org.ejml.simple.SimpleMatrix;
@@ -26,6 +29,7 @@ import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -42,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.EncoderConstants;
+import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
@@ -311,6 +316,15 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     public void simulationPeriodic() {
         /* Assume 20ms update rate, get battery voltage from WPILib */
         // updateSimState(0.020, RobotController.getBatteryVoltage());
+    }
+
+    public int reefTagToRobot(Pose2d pos){
+        for (Entry<Rectangle2d, Integer> entry : PoseConstants.aprilTagRegions.entrySet()){
+            if(entry.getKey().contains(pos.getTranslation())){
+                return entry.getValue().intValue();
+            }
+        }
+        return 0;
     }
 
     // SYSID

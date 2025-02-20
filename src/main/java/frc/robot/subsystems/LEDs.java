@@ -15,7 +15,7 @@ import frc.robot.Constants.RobotMap;
 import frc.thunder.leds.LightningColors;
 
 public class LEDs extends Thunderbolt {
-	// public final PowerDistribution pdh;
+	public PowerDistribution pdh;
 
 	public final ThunderStrip strip = new ThunderStrip(LEDConstants.LENGTH, 0, leds) {
 		@Override
@@ -50,7 +50,6 @@ public class LEDs extends Thunderbolt {
 	public LEDs() {
 		super(LEDConstants.PWM_PORT, LEDConstants.LENGTH, RobotMap.UPDATE_FREQ);
 
-		// pdh = new PowerDistribution(1, ModuleType.kRev);
 
 		addStrip(strip);
 
@@ -58,8 +57,10 @@ public class LEDs extends Thunderbolt {
 	
 	@Override
 	public void periodic() {
-		// if (pdh.getSwitchableChannel()) {
-		// 	pdh.setSwitchableChannel(true);	
-		// }
+		if (pdh == null) {
+			pdh = new PowerDistribution(1, ModuleType.kRev);
+		} else {
+			pdh.setSwitchableChannel(true);	
+		}
 	}
 }

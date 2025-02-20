@@ -256,7 +256,7 @@ public class PhotonVision extends SubsystemBase {
             initializeCamera();
 
             try {
-                poseEstimator = new PhotonPoseEstimator(FieldParse.wpicalParse(),
+                poseEstimator = new PhotonPoseEstimator(FieldParse.wpicalParse(VisionConstants.tagLayout, new AprilTagFieldLayout("~/nautilus/src/main/deploy/wpical/output.json")),
                     PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camName == Camera.LEFT ? VisionConstants.robotLeftToCamera : VisionConstants.robotRightToCamera);
                 
             } catch (Exception e) {

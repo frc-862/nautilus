@@ -1,0 +1,38 @@
+{
+    "ip": "10.8.62.6",
+    "mode": 2,
+    "tabs": [
+        {
+            "cols": 6,
+            "rows": 10,
+            "title": "Comp-Dashboard",
+            "widgets": [
+                {
+                    "colSpan": 4,
+                    "column": 0,
+                    "properties": {
+                        "field": "2025",
+                        "robotShape": "Robot"
+                    },
+                    "row": 0,
+                    "rowSpan": 7,
+                    "title": "Pose",
+                    "topic": "/Pose",
+                    "type": "Field2d"
+                },
+                {
+                    "colSpan": 2,
+                    "column": 4,
+                    "properties": {
+                    },
+                    "row": 0,
+                    "rowSpan": 4,
+                    "title": "Auto Chooser",
+                    "topic": "/Shuffleboard/Auton/Auto Chooser",
+                    "type": "String Chooser"
+                }
+            ]
+        }
+    ],
+    "team": 862
+}

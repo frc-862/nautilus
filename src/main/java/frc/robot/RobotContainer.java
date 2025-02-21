@@ -95,17 +95,16 @@ public class RobotContainer extends LightningContainer {
         wrist = new Wrist(RobotMotors.wristMotor);
         rod = new FishingRod(wrist, elevator);
         coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
+        
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
-            // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
-            // RobotMotors.algaeCollectorPivotMotor);
+            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor, RobotMotors.algaeCollectorPivotMotor);
             climber = new Climber(RobotMotors.climberMotor);
         }
 
         if (Robot.isSimulation()) {
             // algae collector and climber are temp because not initialized above
-            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
-                    RobotMotors.algaeCollectorPivotMotor);
+            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor, RobotMotors.algaeCollectorPivotMotor);
             climber = new Climber(RobotMotors.climberMotor);
 
             simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector, climber);

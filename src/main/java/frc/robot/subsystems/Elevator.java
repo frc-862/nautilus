@@ -107,7 +107,7 @@ public class Elevator extends SubsystemBase {
                     1d);
 
             leftSim = new TalonFXSimState(leftMotor);
-            rightSim =new TalonFXSimState(rightMotor);
+            rightSim = new TalonFXSimState(rightMotor);
             rangeSensorSim = new CANrangeSimState(rangeSensor);
 
             // TalonFX sim states do not retain inverts.
@@ -122,7 +122,9 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         currentPosition = getPosition();
 
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", currentPosition);
+        LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", getCanRange());
+
+        LightningShuffleboard.setDouble("Elevator", "current pos inches", Units.metersToInches(currentPosition));
 
         LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
         LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
@@ -187,6 +189,15 @@ public class Elevator extends SubsystemBase {
     @Logged(importance = Importance.DEBUG)
     public double getPosition() {
         return leftMotor.getPosition().getValueAsDouble();
+    }
+
+    /**
+     * gets the range of the range sensor
+     *
+     * @return range sensor distance
+     */
+    public double getCanRange() {
+        return rangeSensor.getDistance().getValueAsDouble();
     }
 
     /**

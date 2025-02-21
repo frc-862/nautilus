@@ -304,9 +304,9 @@ public class Constants {
     }
 
     public static class CoralCollectorConstants {
+        // public static final boolean INVERTED = false;
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
-        public static final boolean INVERTED = false;
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1;
 
@@ -319,9 +319,13 @@ public class Constants {
 
         public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
-        public static final double COLLECTED_CURRENT = 35d;
+        // public static final double COLLECTED_CURRENT = 35d;
         public static final double COLLECTOR_DEADBAND = 0.1;
-        public static final double HOLD_POWER = 0d;
+
+        //2.5 constants
+        public static final boolean INVERTED = true;
+        public static final double COLLECTED_CURRENT = 13d;
+        public static final double HOLD_POWER = 0.05d;
 
     }
 
@@ -484,14 +488,21 @@ public class Constants {
             {
                 // put(new Tuple(VisionConstants.Camera.LEFT, 12), new Pose2d(1.625, 2.880, new
                 // Rotation2d(Degrees.of(54))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
-                        new Pose2d(1.712, 0.643, new Rotation2d(Degrees.of(54))));
 
+                //DONE
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22),
+                        new Pose2d(5.286, 2.973, new Rotation2d(Degrees.of(-60))));
+
+                //TESTING
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 17),
-                        new Pose2d(3.965, 2.804, new Rotation2d(Degrees.of(-120))));
+                        new Pose2d(3.961, 2.788, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
+                        new Pose2d(1.575, 0.697, new Rotation2d(Degrees.of(54))));
+
+                //OTHER
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17),
                         new Pose2d(3.657, 2.936, new Rotation2d(Degrees.of(-120))));
-
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18),
                         new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(180))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 18),
@@ -510,8 +521,6 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21),
                         new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(0))));
 
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22),
-                        new Pose2d(5.303, 2.971, new Rotation2d(Degrees.of(-60))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22),
                         new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
 
@@ -549,8 +558,8 @@ public class Constants {
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                    .withKP(0.1).withKI(0).withKD(0)
-                    .withKS(0).withKV(0.124);
+                    .withKP(0.34807).withKI(0).withKD(0)
+                    .withKS(0.23986).withKV(0.12318).withKA(0.0059707);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
@@ -1007,11 +1016,11 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double THREE_DEE_xP = 0.5d;
+        public static final double THREE_DEE_xP = 0.65d;
         public static final double THREE_DEE_xI = 0;
         public static final double THREE_DEE_xD = 0;
 
-        public static final double THREE_DEE_yP = 0.5d;
+        public static final double THREE_DEE_yP = 0.65d;
         public static final double THREE_DEE_yI = 0;
         public static final double THREE_DEE_yD = 0;
 

@@ -112,7 +112,6 @@ public class PoseBasedAutoAlign extends Command {
         // LightningShuffleboard.setDouble("TestAutoAlign", "targ R", targetPose.getRotation().getDegrees());
         // LightningShuffleboard.setPose2d("TestAutoAlign", "targg pose", targetPose);
 
-        publisher.accept(targetPose);
 
         // LightningShuffleboard.setPose2d("TestAutoAlign", "target pose", targetPose);
     }

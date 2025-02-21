@@ -333,6 +333,20 @@ public class RobotContainer extends LightningContainer {
         return autoChooser.getSelected();
     }
 
+    public static Command hapticDriverCommand() {
+        if (!DriverStation.isAutonomous()) {
+            return new StartEndCommand(() -> {
+                driver.setRumble(GenericHID.RumbleType.kRightRumble, 1d);
+                driver.setRumble(GenericHID.RumbleType.kLeftRumble, 1d);
+            }, () -> {
+                driver.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+                driver.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+            }).withDeadline(new WaitCommand(1));
+        } else {
+            return new InstantCommand();
+        }
+    }
+
     public static Command hapticCopilotCommand() {
         if (!DriverStation.isAutonomous()) {
             return new StartEndCommand(() -> {

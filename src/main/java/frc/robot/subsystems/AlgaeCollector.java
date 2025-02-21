@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
@@ -21,32 +22,40 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Robot;
 import frc.robot.Constants.AlgaeCollectorConstants;
 import frc.robot.Constants.RobotMap;
+import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
+import frc.robot.Constants.CoralCollectorConstants;
 
 public class AlgaeCollector extends SubsystemBase {
 
     private ThunderBird rollerMotor;
     private ThunderBird pivotMotor;
 
-    private PositionVoltage pivotPID = new PositionVoltage(0);
     private double targetAngle = 0;
 
+    private final PositionVoltage pivotPID = new PositionVoltage(0);
+
+    // sim stuff
     private TalonFXSimState rollerMotorSim;
     private TalonFXSimState pivotMotorSim;
 
     private SingleJointedArmSim pivotSim;
-    @SuppressWarnings("rawtypes")
-    private LinearSystemSim rollerSim;
+    private LinearSystemSim<N1, N1, N1> rollerSim;
 
     private DCMotor pivotGearbox;
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public AlgaeCollector(ThunderBird rollerMotor, ThunderBird pivotMotor) {
         this.rollerMotor = rollerMotor;
         this.pivotMotor = pivotMotor;
 
         TalonFXConfiguration pivotMotorConfig = pivotMotor.getConfig();
 
-        if(Robot.isSimulation()){
+        pivotMotorConfig.Slot0.kP = AlgaeCollectorConstants.PIVOT_KP;
+        pivotMotorConfig.Slot0.kI = AlgaeCollectorConstants.PIVOT_KI;
+        pivotMotorConfig.Slot0.kD = AlgaeCollectorConstants.PIVOT_KD;
+
+        pivotMotor.applyConfig(pivotMotorConfig);
+
+        if (Robot.isSimulation()) {
             // simulate motors
             rollerMotorSim = new TalonFXSimState(rollerMotor);
             pivotMotorSim = new TalonFXSimState(pivotMotor);
@@ -54,19 +63,15 @@ public class AlgaeCollector extends SubsystemBase {
             pivotGearbox = DCMotor.getKrakenX60(1);
 
             // create physics sims
-            pivotSim = new SingleJointedArmSim(pivotGearbox, AlgaeCollectorConstants.PIVOT_GEAR_RATIO, 
-                AlgaeCollectorConstants.PIVOT_MOI, AlgaeCollectorConstants.PIVOT_LENGTH, Units.degreesToRadians(AlgaeCollectorConstants.PIVOT_MIN_ANGLE), 
-                Units.degreesToRadians(AlgaeCollectorConstants.PIVOT_MAX_ANGLE), true, AlgaeCollectorConstants.PIVOT_START_ANGLE, 0, 1);
+            pivotSim = new SingleJointedArmSim(pivotGearbox, AlgaeCollectorConstants.PIVOT_GEAR_RATIO,
+                    AlgaeCollectorConstants.PIVOT_MOI, AlgaeCollectorConstants.PIVOT_LENGTH,
+                    Units.degreesToRadians(AlgaeCollectorConstants.PIVOT_MIN_ANGLE),
+                    Units.degreesToRadians(AlgaeCollectorConstants.PIVOT_MAX_ANGLE), true,
+                    AlgaeCollectorConstants.PIVOT_START_ANGLE, 0, 1);
 
-            rollerSim = new LinearSystemSim(LinearSystemId.identifyVelocitySystem(AlgaeCollectorConstants.ROLLER_KV, 
-                AlgaeCollectorConstants.ROLLER_KA));
+            rollerSim = new LinearSystemSim<N1, N1, N1>(LinearSystemId.identifyVelocitySystem(AlgaeCollectorConstants.ROLLER_KV,
+                    AlgaeCollectorConstants.ROLLER_KA));
         }
-
-        pivotMotorConfig.Slot0.kP = AlgaeCollectorConstants.PIVOT_KP;
-        pivotMotorConfig.Slot0.kI = AlgaeCollectorConstants.PIVOT_KI;
-        pivotMotorConfig.Slot0.kD = AlgaeCollectorConstants.PIVOT_KD;
-
-        pivotMotor.applyConfig(pivotMotorConfig);
     }
 
     @Override
@@ -75,8 +80,88 @@ public class AlgaeCollector extends SubsystemBase {
         LightningShuffleboard.setDouble("Algae Collector", "Roller Velocity", getRollerVelocity());
         LightningShuffleboard.setDouble("Algae Collector", "Pivot Target", getTargetAngle());
         LightningShuffleboard.setDouble("Algae Collector", "Pivot Motor current", pivotMotorSim.getMotorVoltage());
-        LightningShuffleboard.setDouble("Algae Collector", "Pivot raw roter pos0ition", pivotSim.getAngleRads());
-        
+        LightningShuffleboard.setDouble("Algae Collector", "Pivot raw rotor position", pivotSim.getAngleRads());
+        LightningShuffleboard.setDouble("Diagnostics", "algae roller motor temp", rollerMotor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.setDouble("Diagnostics", "algae pivot motor temp", pivotMotor.getDeviceTemp().getValueAsDouble());
+    }
+
+    /**
+     * Set the power of the roller motor
+     *
+     * @param power
+     */
+    public void setRollerPower(double power) {
+        rollerMotor.setControl(new DutyCycleOut(power));
+    }
+
+    /**
+     * Set the power of the pivot motor
+     *
+     * @param speed
+     */
+    public void setPivotPower(double speed) {
+        pivotMotor.setControl(new DutyCycleOut(speed));
+    }
+
+    /**
+     * set target state for pivot
+     *
+     * @param state to set
+     */
+    public void setPivotState(AlgaePivotStates state) {
+        double angle = (state == AlgaePivotStates.DEPLOYED) ? AlgaeCollectorConstants.DEPLOY_ANGLE
+                : AlgaeCollectorConstants.STOW_ANGLE;
+        pivotMotor.setControl(pivotPID.withPosition(Units.degreesToRotations(angle)));
+        targetAngle = angle;
+    }
+
+    /**
+     * @return current target angle for pivot in degrees
+     */
+    public double getTargetAngle() {
+        return targetAngle;
+    }
+
+    /**
+     * @return current angle of pivot in degrees
+     */
+    public double getPivotAngle() {
+        return Units.rotationsToDegrees(pivotMotor.getPosition().getValueAsDouble());
+    }
+
+    /**
+     * @return if pivot is on target
+     */
+    public boolean pivotOnTarget() {
+        return Math.abs(getPivotAngle() - targetAngle) < AlgaeCollectorConstants.PIVOT_TOLERANCE;
+    }
+
+    /**
+     * @return if the roller is stalling due to algae in the collector
+     */
+    public boolean getRollerHit() {
+        return rollerMotor.getStatorCurrent().getValueAsDouble() >= CoralCollectorConstants.COLLECTED_CURRENT;
+    }
+
+    /**
+     * @return current velocity of roller in rot/sec
+     */
+    public double getRollerVelocity() {
+        return rollerMotor.getVelocity().getValueAsDouble();
+    }
+
+    /**
+     * @return current power of roller
+     */
+    public double getRollerPower() {
+        return rollerMotor.get();
+    }
+
+    /**
+     * stops the roller
+     */
+    public void stop() {
+        setRollerPower(0d);
     }
 
     @Override
@@ -101,69 +186,9 @@ public class AlgaeCollector extends SubsystemBase {
         // use motor voltages to set input voltages for physics simulations
         pivotSim.setInputVoltage(pivotMotorSim.getMotorVoltage());
         rollerSim.setInput(rollerMotorSim.getMotorVoltage());
-        
+
         // update physics simulations
         pivotSim.update(RobotMap.UPDATE_FREQ);
         rollerSim.update(RobotMap.UPDATE_FREQ);
-    }
-
-    /**
-     * Set the power of the roller motor
-     * @param power
-     */
-    public void setRollerPower(double power) {
-        rollerMotor.setControl(new DutyCycleOut(power));
-    }
-
-    /**
-     * Set the power of the pivot motor
-     * @param speed
-     */
-    public void setPivotPower(double speed) {
-        pivotMotor.setControl(new DutyCycleOut(speed));
-    }
-
-    /**
-     * set target angle for pivot in degrees
-     * @param angle
-     */
-    public void setPivotTargetAngle(double angle) {
-        pivotMotor.setControl(pivotPID.withPosition(Units.degreesToRotations(angle)));
-        targetAngle = angle;
-    }
-
-    /**
-     * @return current target angle for pivot in degrees
-     */
-    public double getTargetAngle() {
-        return targetAngle;
-    }
-
-    /**
-     * @return current angle of pivot in degrees
-     */
-    public double getPivotAngle() {
-        return Units.rotationsToDegrees(pivotMotor.getPosition().getValueAsDouble());
-    }
-
-    /**
-     * @return if pivot is on target
-     */
-    public boolean pivotOnTarget(){
-        return Math.abs(getPivotAngle() - targetAngle) < AlgaeCollectorConstants.PIVOT_TOLERANCE;
-    }
-
-    /**
-     * @return current velocity of roller in rot/sec
-     */
-    public double getRollerVelocity() {
-        return rollerMotor.getVelocity().getValueAsDouble();
-    }
-
-    /**
-     * @return current power of roller
-     */
-    public double getRollerPower() {
-        return rollerMotor.get();
     }
 }

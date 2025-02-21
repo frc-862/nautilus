@@ -5,34 +5,33 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "S3-R2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "RodL4"
-                }
-              }
-            ]
+            "pathName": "SC-R2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ReefAlignLeft"
+            "name": "AlignTo22Left"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RodL4"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "ScoreCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RodStow"
           }
         }
       ]

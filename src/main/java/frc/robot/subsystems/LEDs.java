@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
@@ -55,11 +56,13 @@ public class LEDs extends Thunderbolt {
 
 	private boolean pdhDisabled = false;
 
-	public Command pdhControl(PowerDistribution pdh) {
-		return new RepeatCommand(new InstantCommand(() -> pdh.setSwitchableChannel(!pdh.getSwitchableChannel() && !pdhDisabled)).alongWith(new WaitCommand(1.5)).ignoringDisable(true));
+	public void pdhLedsBlink(PowerDistribution pdh) {
+		if ((Timer.getFPGATimestamp() % 1000) / 1000 == 0) {
+			pdh.setSwitchableChannel(!pdh.getSwitchableChannel());
+		}
 	}
 
-	public void enablePdhLeds(PowerDistribution pdh) {
+	public void pdhLedsSolid(PowerDistribution pdh) {
 		pdh.setSwitchableChannel(true);
 	}
 

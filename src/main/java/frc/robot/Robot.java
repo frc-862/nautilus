@@ -27,7 +27,7 @@ public class Robot extends LightningRobot {
         super.autonomousInit();
 
         RobotContainer container = (RobotContainer) getContainer();
-        container.leds.enablePdhLeds(container.pdh);
+        container.leds.pdhLedsBlink(container.pdh);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class Robot extends LightningRobot {
         super.teleopInit();
 
         RobotContainer container = (RobotContainer) getContainer();
-        container.leds.enablePdhLeds(container.pdh);
+        container.leds.pdhLedsBlink(container.pdh);
     }
 
     @Override
@@ -50,6 +50,6 @@ public class Robot extends LightningRobot {
         RobotContainer container = (RobotContainer) getContainer();
 
         container.drivetrain.setControl(DriveRequests.getBrake().get());
-        container.leds.enablePdhLeds(container.pdh);
+        container.leds.pdhLedsSolid(container.pdh);
     }
 }

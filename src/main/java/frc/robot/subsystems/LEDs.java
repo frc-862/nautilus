@@ -21,9 +21,9 @@ public class LEDs extends Thunderbolt {
 		@Override
 		public void updateLEDs(LEDStates state) {
 			switch (state) {
+				case ERROR -> blink(LightningColors.RED);
+				
 				case COLLECTED -> pulse(LightningColors.GREEN);
-
-				case SCORED -> pulse(LightningColors.GREEN);
 
 				case ALIGNING -> blink(LightningColors.BLUE);
 
@@ -31,11 +31,13 @@ public class LEDs extends Thunderbolt {
 
 				case SCORING -> pulse(LightningColors.YELLOW);
 
+				case READY_TO_ALIGN -> solid(LightningColors.BLUE);
+
 				case ROD_MOVING -> pulse(LightningColors.PINK);
 
-				case UPDATING_POSE -> pulse(LightningColors.YELLOW);
+				case UPDATING_POSE -> pulse(LightningColors.GREEN);
 
-				case POSE_BAD -> solid(LightningColors.RED);
+				case POSE_BAD -> solid(LightningColors.YELLOW);
 
 				default -> System.err.println("Unexpected State Found: " + state);
 			}

@@ -165,6 +165,17 @@ public class Elevator extends SubsystemBase {
     }
 
     /**
+     * Checks if either motor is overheating
+     *
+     * @return true if either motor temperature exceeds the overheat threshold
+     */
+    @Logged(importance = Importance.DEBUG)
+    public boolean isOverheating() {
+        return leftMotor.getDeviceTemp().getValueAsDouble() > ElevatorConstants.OVERHEAT_TEMP
+                || rightMotor.getDeviceTemp().getValueAsDouble() > ElevatorConstants.OVERHEAT_TEMP;
+    }
+
+    /**
      * checks if the elevator is on target
      *
      * @return true if the elevator is within the tolerance of the target position

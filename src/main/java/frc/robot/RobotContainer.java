@@ -80,6 +80,8 @@ public class RobotContainer extends LightningContainer {
     private static XboxController driver;
     private static XboxController copilot;
 
+    private boolean erroring = false;
+
     @Override
     protected void initializeSubsystems() {
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
@@ -123,7 +125,7 @@ public class RobotContainer extends LightningContainer {
                                 ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
+        coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
                         CoralCollectorConstants.COLLECTOR_DEADBAND)));
 
@@ -131,15 +133,16 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
-            climber.setDefaultCommand(new RunCommand(
-                    () -> climber.setPower(
-                            MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
-                    climber));
+            climber.setDefaultCommand(new RunCommand(() -> climber.setPower(MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)), climber));
 
             rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));
 
             new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
+        
         }
+        new Trigger(() -> elevator.isOverheating()).onTrue(new InstantCommand(() -> erroring = true));
+
+        new Trigger(() -> erroring && DriverStation.isDisabled()).whileTrue(leds.strip.enableState(LEDStates.ERROR));
 
         new Trigger(() -> (drivetrain.poseZero() && DriverStation.isDisabled() && !vision.hasTarget()))
                 .whileTrue(leds.strip.enableState(LEDStates.POSE_BAD));
@@ -226,7 +229,6 @@ public class RobotContainer extends LightningContainer {
         // new Trigger(() -> copilot.getRightTriggerAxis() > -1)
         //     .whileTrue(new CollectAlgae(algaeCollector, copilot::getRightTriggerAxis).deadlineFor(leds.strip.enableState(LEDStates.COLLECTING))); 
 
-
         // sim stuff
         // if (Robot.isSimulation()) {
         // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() ->
@@ -302,7 +304,7 @@ public class RobotContainer extends LightningContainer {
                                 .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
             }
             default -> {
-                NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, () -> 1));
+                NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, leds, () -> 1));
 
                 NamedCommands.registerCommand("RodStow",
                         new SetRodState(rod, RodStates.STOW)

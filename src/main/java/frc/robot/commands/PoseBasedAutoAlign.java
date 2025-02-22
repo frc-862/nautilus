@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import java.util.function.IntSupplier;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -38,7 +36,7 @@ public class PoseBasedAutoAlign extends Command {
     private Transform3d currentTransform = new Transform3d();
     private Pose2d targetPose;
 
-    private StructPublisher<Pose2d> publisher;
+    private final StructPublisher<Pose2d> publisher;
 
     /**
      * Used to align to Tag
@@ -54,16 +52,24 @@ public class PoseBasedAutoAlign extends Command {
         this.camera = camera;
         targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tag));
 
+        publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("TestAutoAlign").getStructTopic("TARGET POSE", Pose2d.struct).publish();
+
         addRequirements(drivetrain);
+    }
+
+    // TODO: DELETE
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera) {
+        this(vision, drivetrain, camera, 22);
     }
 
     @Override
     public void initialize() {
-        publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("TestAutoAlign").getStructTopic("TARGET POSE", Pose2d.struct).publish();
-        publisher.accept(targetPose);
 
+        // controllerX.setSetpoint(0);
         controllerX.setTolerance(0.02);
+        // controllerX.enableContinuousInput(0, 360);
 
+        // controllerY.setSetpoint(Units.inchesToMeters(9.228));
         controllerY.setTolerance(0.02);
 
 
@@ -84,13 +90,13 @@ public class PoseBasedAutoAlign extends Command {
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        // double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "Y static", 0d);
-        // double yKs = LightningShuffleboard.getDouble("TestAutoAlign", "X static", 0d);
-        // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
+        double xKs = 0.02d;//LightningShuffleboard.getDouble("TestAutoAlign", "Y static", 0d);
+        double yKs = 0.02d;//LightningShuffleboard.getDouble("TestAutoAlign", "X static", 0d);
+        double rKs = 0d;//LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
-        double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX());// + Math.signum(controllerY.getError()) * yKs;
-        double yVeloc = controllerY.calculate(currentPose.getY(), targetPose.getY());// + Math.signum(controllerY.getError()) * xKs;
-        double rotationVeloc = controllerR.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
+        double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX()) + Math.signum(controllerY.getError()) * yKs;
+        double yVeloc = controllerY.calculate(currentPose.getY(), targetPose.getY()) + Math.signum(controllerY.getError()) * xKs;
+        double rotationVeloc = controllerR.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees()) + Math.signum(controllerY.getError()) * rKs;
 
         drivetrain.setControl(DriveRequests.getDrive(
             xVeloc,
@@ -104,6 +110,7 @@ public class PoseBasedAutoAlign extends Command {
         // LightningShuffleboard.setPose2d("TestAutoAlign", "current pose veloc", currentPose.toPose2d());
         // LightningShuffleboard.setPose2d("TestAutoAlign", "target pose", targetPose.toPose2d());
 
+
         LightningShuffleboard.setDouble("TestAutoAlign", "X veloc", xVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "Y veloc", yVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "R veloc", rotationVeloc);
@@ -112,6 +119,7 @@ public class PoseBasedAutoAlign extends Command {
         // LightningShuffleboard.setDouble("TestAutoAlign", "targ R", targetPose.getRotation().getDegrees());
         // LightningShuffleboard.setPose2d("TestAutoAlign", "targg pose", targetPose);
 
+        publisher.accept(targetPose);
 
         // LightningShuffleboard.setPose2d("TestAutoAlign", "target pose", targetPose);
     }

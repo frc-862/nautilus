@@ -221,8 +221,8 @@ public class PhotonVision extends SubsystemBase {
         Tuple<EstimatedRobotPose, Double> leftUpdates = leftThread.getUpdates();
         Tuple<EstimatedRobotPose, Double> rightUpdates = rightThread.getUpdates();
 
-        // LightningShuffleboard.setDouble("Vision", "left dist", leftUpdates.v);
-        // LightningShuffleboard.setDouble("Vision", "right dist", rightUpdates.v);
+        LightningShuffleboard.setDouble("Vision", "left dist", leftUpdates.v);
+        LightningShuffleboard.setDouble("Vision", "right dist", rightUpdates.v);
 
         // prefer the camera that called the function (has known good values)
         // if the other camera has a target, prefer the one with the lower distance to best tag
@@ -306,24 +306,20 @@ public class PhotonVision extends SubsystemBase {
                             if (result.hasTargets()) {
                                 // the local hasTarget variable will turn true if ANY PipelineResult within this loop has a target
                                 hasTarget = true;
+                                poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose,
+                                        () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed"));
 
-                                if(!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {                                
-                                    poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose,
-                                            () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed"));
-                                } else {
-                                    DataLogManager.log("[PhotonVision] WARNING: " + camName.toString() + " pose ambiguity is high");
-                                }
                                 // grabs the distance to the best target (for the latest set of result)
                                 totalDistances += result.getBestTarget().getBestCameraToTarget().getTranslation().getNorm();
 
-                                // LightningShuffleboard.setBool("Vision", camName.toString() + " targets found", !result.targets.isEmpty());
+                                LightningShuffleboard.setBool("Vision", camName.toString() + " targets found", !result.targets.isEmpty());
                                 // LightningShuffleboard.setPose2d("Vision", camName.toString() + " pose", pose.estimatedPose.toPose2d());
-                                // LightningShuffleboard.setDouble("Vision", camName.toString() + " Timestamp", result.getTimestampSeconds());
-                                // LightningShuffleboard.setBool("Vision", camName.toString() + " hasTarget", true);
+                                LightningShuffleboard.setDouble("Vision", camName.toString() + " Timestamp", result.getTimestampSeconds());
+                                LightningShuffleboard.setBool("Vision", camName.toString() + " hasTarget", true);
                             } else {
                                 //note there is no hasTarget = false here, as the variable should not be set to false if a target was found in a previous iteration
-                                // LightningShuffleboard.setBool("Vision", camName.toString() + " hasTarget", false);
-                                // LightningShuffleboard.setBool("Vision", camName.toString() + " functional", true);
+                                LightningShuffleboard.setBool("Vision", camName.toString() + " hasTarget", false);
+                                LightningShuffleboard.setBool("Vision", camName.toString() + " functional", true);
                             }
                         }
 

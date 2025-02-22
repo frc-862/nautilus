@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.thunder.leds.ThunderStrip;
@@ -15,8 +12,6 @@ import frc.robot.Constants.RobotMap;
 import frc.thunder.leds.LightningColors;
 
 public class LEDs extends Thunderbolt {
-	// public final PowerDistribution pdh;
-
 	public final ThunderStrip strip = new ThunderStrip(LEDConstants.LENGTH, 0, leds) {
 		@Override
 		public void updateLEDs(LEDStates state) {
@@ -50,16 +45,7 @@ public class LEDs extends Thunderbolt {
 	public LEDs() {
 		super(LEDConstants.PWM_PORT, LEDConstants.LENGTH, RobotMap.UPDATE_FREQ);
 
-		// pdh = new PowerDistribution(1, ModuleType.kRev);
-
 		addStrip(strip);
 
-	}
-	
-	@Override
-	public void periodic() {
-		// if (pdh.getSwitchableChannel()) {
-		// 	pdh.setSwitchableChannel(true);	
-		// }
 	}
 }

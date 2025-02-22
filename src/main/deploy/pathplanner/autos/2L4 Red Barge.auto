@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "SC-R2"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "AlignTo22Left"
@@ -32,12 +38,6 @@
           "type": "path",
           "data": {
             "pathName": "R2-Src2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignTo12Right"
           }
         },
         {

@@ -50,7 +50,6 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
@@ -72,8 +71,7 @@ public class Constants {
     // note from kyle: wtf is this?? :sob:
     // yeah its a double inline ternary operator fight me
     // if(isTriton); else if(isSim); else, its nautilus
-    public static final RobotIdentifiers ROBOT_IDENTIFIER = Paths.get(TRITON_IDENTIFIER).toFile().exists()
-            ? RobotIdentifiers.TRITON
+    public static final RobotIdentifiers ROBOT_IDENTIFIER = Paths.get(TRITON_IDENTIFIER).toFile().exists() ? RobotIdentifiers.TRITON
             : Robot.isSimulation() ? RobotIdentifiers.SIM : RobotIdentifiers.NAUTILUS;
 
     public static class EncoderConstants {
@@ -171,8 +169,7 @@ public class Constants {
 
     public static class FishingRodConstants {
         public enum RodStates {
-            STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
-            ALGAE_SCORE(true), DEFAULT(false);
+            STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true), ALGAE_SCORE(true), DEFAULT(false);
 
             private boolean scoring;
 
@@ -304,9 +301,9 @@ public class Constants {
     }
 
     public static class CoralCollectorConstants {
-        // public static final boolean INVERTED = false;
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
+        public static final boolean INVERTED = false;
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1;
 
@@ -319,13 +316,9 @@ public class Constants {
 
         public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
-        // public static final double COLLECTED_CURRENT = 35d;
+        public static final double COLLECTED_CURRENT = 35d;
         public static final double COLLECTOR_DEADBAND = 0.1;
-
-        //2.5 constants
-        public static final boolean INVERTED = true;
-        public static final double COLLECTED_CURRENT = 13d;
-        public static final double HOLD_POWER = 0.05d;
+        public static final double HOLD_POWER = 0.025;
 
     }
 
@@ -378,29 +371,23 @@ public class Constants {
                                                                                  // (left)
             }
 
-            // public static Supplier<SwerveRequest> getSlow(DoubleSupplier x,
-            // DoubleSupplier y, DoubleSupplier rot) {
-            // return () -> SLOW
-            // .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED *
-            // SLOW_MODE_MULT) // Drive
-            // // forward with
-            // // negative Y
-            // // (forward)
-            // .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED *
-            // SLOW_MODE_MULT) // Drive left
-            // // with
-            // // negative X
-            // // (left)
-            // .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE
-            // * SLOW_MODE_MULT)
-            // .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
-            // .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a
-            // 10% deadband
-            // .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive
-            // counterclockwise with negative
-            // // X (left)
+        //     public static Supplier<SwerveRequest> getSlow(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
+        //         return () -> SLOW
+        //                 .withVelocityX(y.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive
+        //                                                                                                  // forward with
+        //                                                                                                  // negative Y
+        //                                                                                                  // (forward)
+        //                 .withVelocityY(x.getAsDouble() * DrivetrainConstants.MAX_SPEED * SLOW_MODE_MULT) // Drive left
+        //                                                                                                  // with
+        //                                                                                                  // negative X
+        //                                                                                                  // (left)
+        //                 .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE * SLOW_MODE_MULT)
+        //                 .withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
+        //                 .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * 0.1) // Add a 10% deadband
+        //                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
+        //                                                                          // X (left)
 
-            // }
+        //     }
 
             public static Supplier<SwerveRequest> getRobotCentric(DoubleSupplier x, DoubleSupplier y,
                     DoubleSupplier rot) {
@@ -466,14 +453,10 @@ public class Constants {
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
         public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, Math.PI);
-        public static final Transform3d robotLeftToCamera = new Transform3d(
-                new Translation3d(-5.772, 11.281, 12).times(0.0254), robotToCameraRot);
-        public static final Transform3d robotRightToCamera = new Transform3d(
-                new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
+        public static final Transform3d robotLeftToCamera = new Transform3d(new Translation3d(-5.772, 11.281, 12).times(0.0254), robotToCameraRot);
+        public static final Transform3d robotRightToCamera = new Transform3d(new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
-        public enum Camera {
-            LEFT, RIGHT
-        }
+        public enum Camera {LEFT, RIGHT}
 
         public static final double VISION_X_STDEV = 1;
         public static final double VISION_Y_STDEV = 1;
@@ -484,45 +467,24 @@ public class Constants {
         public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
                 Units.feetToMeters(26.0));
 
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
             {
-                // put(new Tuple(VisionConstants.Camera.LEFT, 12), new Pose2d(1.625, 2.880, new
-                // Rotation2d(Degrees.of(54))));
+                // put(new Tuple(VisionConstants.Camera.LEFT, 12), new Pose2d(1.625, 2.880, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 12), new Pose2d(1.611, 0.757, new Rotation2d(Degrees.of(55))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 17), new Pose2d(4.000, 2.870, new Rotation2d(Degrees.of(-120))));
 
-                //DONE
-
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22),
-                        new Pose2d(5.286, 2.973, new Rotation2d(Degrees.of(-60))));
-
-                //TESTING
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 17),
-                        new Pose2d(3.961, 2.788, new Rotation2d(Degrees.of(-120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
-                        new Pose2d(1.575, 0.697, new Rotation2d(Degrees.of(54))));
-
-                //OTHER
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17),
-                        new Pose2d(3.657, 2.936, new Rotation2d(Degrees.of(-120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18),
-                        new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(180))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 18),
-                        new Pose2d(3.101, 4.175, new Rotation2d(Degrees.of(180))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 19),
-                        new Pose2d(3.656, 5.122, new Rotation2d(Degrees.of(120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 19),
-                        new Pose2d(3.949, 5.282, new Rotation2d(Degrees.of(120)))); // FIX
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 20),
-                        new Pose2d(4.864, 5.235, new Rotation2d(Degrees.of(60)))); // SUS POSE
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 20),
-                        new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(60))));
-
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 21),
-                        new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(0))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21),
-                        new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(0))));
-
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22),
-                        new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.708, 2.968, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 18), new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(0))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 18), new Pose2d(3.101, 4.175, new Rotation2d(Degrees.of(0))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 19), new Pose2d(3.656, 5.122, new Rotation2d(Degrees.of(300))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 19), new Pose2d(3.949, 5.282, new Rotation2d(Degrees.of(300))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 20), new Pose2d(4.864, 5.235, new Rotation2d(Degrees.of(240))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 20), new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(240))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 21), new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(180))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(180))));
+                put(new Tuple(VisionConstants.Camera.LEFT, 22), new Pose2d(5.292, 2.936, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple(VisionConstants.Camera.RIGHT, 22), new Pose2d(5.002, 2.820, new Rotation2d(Degrees.of(-60))));
 
             }
         };
@@ -530,7 +492,7 @@ public class Constants {
         public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);
 
         // POPULATE WITH REAL VALUES
-        public static HashMap<Rectangle2d, Integer> aprilTagRegions = new HashMap<Rectangle2d, Integer>() {
+        public static HashMap<Rectangle2d, Integer> aprilTagRegions = new HashMap<Rectangle2d, Integer>(){
             {
                 put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 17);
                 put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 18);
@@ -558,8 +520,8 @@ public class Constants {
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                    .withKP(0.34807).withKI(0).withKD(0)
-                    .withKS(0.23986).withKV(0.12318).withKA(0.0059707);
+                    .withKP(0.1).withKI(0).withKD(0)
+                    .withKS(0).withKV(0.124);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
@@ -1016,17 +978,18 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double THREE_DEE_xP = 0.65d;
+        public static final double THREE_DEE_xP = 0.5d;
         public static final double THREE_DEE_xI = 0;
         public static final double THREE_DEE_xD = 0;
 
-        public static final double THREE_DEE_yP = 0.65d;
+        public static final double THREE_DEE_yP = 0.5d;
         public static final double THREE_DEE_yI = 0;
         public static final double THREE_DEE_yD = 0;
 
-        public static final double THREE_DEE_rP = 0.0225; // 0.02
+        public static final double THREE_DEE_rP = 0.02; //0.02
         public static final double THREE_DEE_rI = 0;
         public static final double THREE_DEE_rD = 0;
+
 
         public static final double targetTX = 720d;
 
@@ -1043,7 +1006,7 @@ public class Constants {
         public static final Pose3d A1B = new Pose3d(1.216, 5.850, 0.5, new Rotation3d(0, 0, 0));
         public static final Pose3d A2B = new Pose3d(1.216, 4.020, 0.5, new Rotation3d(0, 0, 0));
         public static final Pose3d A3B = new Pose3d(1.216, 2.190, 0.5, new Rotation3d(0, 0, 0));
-        public static final Pose3d A1R = new Pose3d(16.330, 2.190, 0.5, new Rotation3d(0, 0, 0));
+        public static final Pose3d A1R = new Pose3d(16.330, 2.190, 0.5,  new Rotation3d(0, 0, 0));
         public static final Pose3d A2R = new Pose3d(16.330, 4.020, 0.5, new Rotation3d(0, 0, 0));
         public static final Pose3d A3R = new Pose3d(16.330, 5.850, 0.5, new Rotation3d(0, 0, 0));
 
@@ -1053,10 +1016,8 @@ public class Constants {
         public static final double COLECTOR_SPEED_THRESHHOLD = 3;
 
         public static final Translation3d ELEVATOR_OFFSET = new Translation3d(0, -0.15, 0.35); // temp, robot relative
-        public static final Translation3d ALGAE_COLLECTOR_OFFSET = new Translation3d(0, 0.15, 0.33); // temp, robot
-                                                                                                     // relative
+        public static final Translation3d ALGAE_COLLECTOR_OFFSET = new Translation3d(0, 0.15, 0.33); // temp, robot relative
     }
-
     public class AlgaeCollectorConstants {
         public static final double PIVOT_TOLERANCE = 5; // temp
         public static final double PIVOT_GEAR_RATIO = 1; // temp

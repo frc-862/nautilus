@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "SC-R2"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "AlignTo22Left"
@@ -31,7 +37,7 @@
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }

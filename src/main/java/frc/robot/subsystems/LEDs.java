@@ -4,23 +4,28 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.thunder.leds.ThunderStrip;
 import frc.thunder.leds.Thunderbolt;
 import frc.robot.Constants.RobotMap;
 import frc.thunder.leds.LightningColors;
+import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class LEDs extends Thunderbolt {
-	// public final PowerDistribution pdh;
+	// LED testing
+	SendableChooser<LEDStates> ledChooser;
 
 	public final ThunderStrip strip = new ThunderStrip(LEDConstants.LENGTH, 0, leds) {
 		@Override
 		public void updateLEDs(LEDStates state) {
 			switch (state) {
+				case MIXER -> {
+					LEDStates testState = getTestState();
+					if (testState != null) {updateLEDs(testState);}
+				}
+
 				case ERROR -> blink(LightningColors.RED);
 				
 				case COLLECTED -> pulse(LightningColors.GREEN);
@@ -52,10 +57,24 @@ public class LEDs extends Thunderbolt {
 	public LEDs() {
 		super(LEDConstants.PWM_PORT, LEDConstants.LENGTH, RobotMap.UPDATE_FREQ);
 
+		ledChooser = new SendableChooser<LEDStates>() {{
+			addOption("None", null);
+			for (LEDStates state : LEDStates.values()) {
+				if (state != LEDStates.MIXER) {
+					addOption(state.name(), state);
+				}
+			}
+		}};
+		LightningShuffleboard.send("LEDs", "Test State", ledChooser);
+
 		// pdh = new PowerDistribution(1, ModuleType.kRev);
 
 		addStrip(strip);
 
+	}
+
+	public LEDStates getTestState() {
+		return ledChooser.getSelected();
 	}
 	
 	@Override

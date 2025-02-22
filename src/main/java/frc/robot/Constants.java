@@ -994,6 +994,7 @@ public class Constants {
         public static final int SWRIL_SEGMENT_SIZE = 5;
 
         public enum LEDStates {
+            MIXER(),
             ERROR(),
             COLLECTED(),
             ALIGNING(),

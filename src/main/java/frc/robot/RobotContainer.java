@@ -36,6 +36,7 @@ import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
+import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.PoseBasedAutoAlign;
@@ -249,6 +250,9 @@ public class RobotContainer extends LightningContainer {
         // .onFalse(new InstantCommand(coralCollector::stop));
         // }
 
+        // LED testing
+        new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
+        
         // SYSID
         // SignalLogger.start();
         // new Trigger(driver::getYButton).whileTrue(new SysIdSequence(drivetrain,

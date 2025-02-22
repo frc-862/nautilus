@@ -79,11 +79,13 @@ public class Elevator extends SubsystemBase {
         config.Feedback.RotorToSensorRatio = ElevatorConstants.ROTOR_TO_SENSOR_RATIO;
         config.Feedback.SensorToMechanismRatio = ElevatorConstants.ENCODER_TO_MECHANISM_RATIO;
 
-        rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE);
+        rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE, RobotMap.CANIVORE_CAN_NAME);
 
         CANrangeConfiguration rangeConfig = new CANrangeConfiguration();
         rangeConfig.ToFParams.UpdateFrequency = 50;
         rangeConfig.ToFParams.UpdateMode = UpdateModeValue.LongRangeUserFreq;
+        rangeConfig.FovParams.FOVRangeX = 7;
+        rangeConfig.FovParams.FOVRangeY = 7;
         rangeSensor.getConfigurator().apply(rangeConfig);
 
         leftMotor.applyConfig(config);
@@ -123,8 +125,6 @@ public class Elevator extends SubsystemBase {
         currentPosition = getPosition();
 
         LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", getCanRange());
-
-        LightningShuffleboard.setDouble("Elevator", "current pos inches", Units.metersToInches(currentPosition));
 
         LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
         LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
@@ -192,12 +192,16 @@ public class Elevator extends SubsystemBase {
     }
 
     /**
-     * gets the range of the range sensor
+     * gets the range of the range sensor (limit is 25 inches)
      *
      * @return range sensor distance
      */
     public double getCanRange() {
-        return rangeSensor.getDistance().getValueAsDouble();
+        if(getPosition() < 25) {
+            return (Units.metersToInches(rangeSensor.getDistance().getValueAsDouble()));
+        } else {
+            return 25;
+        }
     }
 
     /**

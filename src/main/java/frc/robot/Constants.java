@@ -32,6 +32,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -503,6 +504,44 @@ public class Constants {
             }
         };
 
+        public static Pose2d getScorePose(Pose2d robotPose){
+            Translation2d robotToReef = robotPose.getTranslation().minus(new Translation2d(4.5, 4));
+            double theta = MathUtil.inputModulus(robotToReef.getAngle().getRadians(), 0, Math.PI * 2);
+            double r = Math.hypot(robotToReef.getX(), robotToReef.getY());
+        
+            if (r > 2){
+                return null;
+            }
+    
+
+            if (theta >= 0 && theta <= Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 21));
+            } else if (theta > Math.PI/6 && theta <= 2 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 20));
+            } else if (theta > 2 * Math.PI/6 && theta <= 3 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 20));
+            } else if (theta > 3 * Math.PI/6 && theta <= 4 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 19));
+            } else if (theta > 4 * Math.PI/3 && theta <= 5 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 19));
+            } else if (theta > 5 * Math.PI/6 && theta <= 6 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 18));
+            } else if (theta > 6 * Math.PI/6 && theta <= 7 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 18));
+            } else if (theta > 7 * Math.PI/6 && theta <= 8 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 17));
+            } else if (theta > 8 * Math.PI/6 && theta <= 9 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 17));
+            } else if (theta > 9 * Math.PI/6 && theta <= 10 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 22));
+            } else if (theta > 10 * Math.PI/6 && theta <= 11 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 22));
+            } else if (theta > 11 * Math.PI/6 && theta <= 12 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 21));
+            } else {
+                return null;
+            }
+        }
     }
 
     public class TunerConstants {

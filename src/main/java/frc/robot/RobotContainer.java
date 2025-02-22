@@ -181,9 +181,9 @@ public class RobotContainer extends LightningContainer {
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
         new Trigger(driver::getRightBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT));
 
         new Trigger(() -> driver.getPOV() == 90)
                 .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 12));

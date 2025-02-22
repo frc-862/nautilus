@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -36,9 +37,13 @@ public class PoseBasedAutoAlign extends Command {
         AutoAlignConstants.THREE_DEE_rD);
 
     private Transform3d currentTransform = new Transform3d();
-    private Pose2d targetPose;
+    private Pose2d targetPose = new Pose2d();
 
     private StructPublisher<Pose2d> publisher;
+
+    private int tagID = 0;
+    private boolean customTagSet = false;
+    private boolean invokeCancel = false;
 
     /**
      * Used to align to Tag
@@ -49,11 +54,21 @@ public class PoseBasedAutoAlign extends Command {
      * @param tag
      */
     public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tag) {
+        this(vision, drivetrain, camera);
+
+        customTagSet = true;
+
+        tagID = tag;
+    }
+
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera) {
         this.vision = vision;
         this.drivetrain = drivetrain;
         this.camera = camera;
-        targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tag));
 
+        tagID = 0;
+        customTagSet = false;
+        
         addRequirements(drivetrain);
     }
 
@@ -61,6 +76,17 @@ public class PoseBasedAutoAlign extends Command {
     public void initialize() {
         publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("TestAutoAlign").getStructTopic("TARGET POSE", Pose2d.struct).publish();
         publisher.accept(targetPose);
+
+        if (!customTagSet) {
+            tagID = PoseConstants.getScorePose(drivetrain.getPose());
+        }
+
+        if (tagID == 0) {
+            invokeCancel = true;
+            CommandScheduler.getInstance().cancel(this);
+        } else {
+            targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tagID));
+        }
 
         controllerX.setTolerance(0.02);
 
@@ -123,7 +149,7 @@ public class PoseBasedAutoAlign extends Command {
 
     @Override
     public boolean isFinished() {
-        return controllerX.atSetpoint() && controllerY.atSetpoint() && controllerR.atSetpoint();
+        return (controllerX.atSetpoint() && controllerY.atSetpoint() && controllerR.atSetpoint()) || invokeCancel;
     }
 
     private void setXGains() {

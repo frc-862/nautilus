@@ -4,9 +4,11 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.thunder.leds.ThunderStrip;
@@ -15,8 +17,6 @@ import frc.robot.Constants.RobotMap;
 import frc.thunder.leds.LightningColors;
 
 public class LEDs extends Thunderbolt {
-	public PowerDistribution pdh;
-
 	public final ThunderStrip strip = new ThunderStrip(LEDConstants.LENGTH, 0, leds) {
 		@Override
 		public void updateLEDs(LEDStates state) {
@@ -50,17 +50,20 @@ public class LEDs extends Thunderbolt {
 	public LEDs() {
 		super(LEDConstants.PWM_PORT, LEDConstants.LENGTH, RobotMap.UPDATE_FREQ);
 
-
 		addStrip(strip);
-
 	}
-	
-	@Override
-	public void periodic() {
-		if (pdh == null) {
-			pdh = new PowerDistribution(1, ModuleType.kRev);
-		} else {
-			pdh.setSwitchableChannel(true);	
-		}
+
+	private boolean pdhDisabled = false;
+
+	public Command pdhControl(PowerDistribution pdh) {
+		return new RepeatCommand(new InstantCommand(() -> pdh.setSwitchableChannel(!pdh.getSwitchableChannel() && !pdhDisabled)).alongWith(new WaitCommand(1.5)).ignoringDisable(true));
+	}
+
+	public void enablePdhLeds(PowerDistribution pdh) {
+		pdh.setSwitchableChannel(true);
+	}
+
+	public Command togglePdh() {
+		return new InstantCommand(() -> pdhDisabled = !pdhDisabled).ignoringDisable(true);
 	}
 }

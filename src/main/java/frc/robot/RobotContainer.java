@@ -15,13 +15,19 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControllerConstants;
@@ -62,10 +68,13 @@ import frc.thunder.leds.LightningColors;
 
 public class RobotContainer extends LightningContainer {
 
+    public PowerDistribution pdh;
+
     public Swerve drivetrain;
     public PhotonVision vision;
     private Telemetry logger;
-    private LEDs leds;
+    public LEDs leds;
+
     private SendableChooser<Command> autoChooser;
 
     private Elevator elevator;
@@ -82,6 +91,8 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeSubsystems() {
+        pdh = new PowerDistribution(2, ModuleType.kRev);
+
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
 
@@ -147,6 +158,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled() && vision.hasTarget()))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
+        new Trigger(RobotController::getUserButton).onTrue(leds.togglePdh());
     }
 
     @Override

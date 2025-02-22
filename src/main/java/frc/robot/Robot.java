@@ -25,11 +25,17 @@ public class Robot extends LightningRobot {
     @Override
     public void autonomousInit() {
         super.autonomousInit();
+
+        RobotContainer container = (RobotContainer) getContainer();
+        container.leds.enablePdhLeds(container.pdh);
     }
 
     @Override
     public void teleopInit() {
         super.teleopInit();
+
+        RobotContainer container = (RobotContainer) getContainer();
+        container.leds.enablePdhLeds(container.pdh);
     }
 
     @Override
@@ -44,5 +50,6 @@ public class Robot extends LightningRobot {
         RobotContainer container = (RobotContainer) getContainer();
 
         container.drivetrain.setControl(DriveRequests.getBrake().get());
+        container.leds.enablePdhLeds(container.pdh);
     }
 }

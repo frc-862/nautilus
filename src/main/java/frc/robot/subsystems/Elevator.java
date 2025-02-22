@@ -39,6 +39,7 @@ import frc.robot.Constants.RobotMap;
 import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Elevator extends SubsystemBase {
 
@@ -49,6 +50,10 @@ public class Elevator extends SubsystemBase {
 
     private double targetPosition = 0;
     private double currentPosition = 0;
+
+    private double rangeSensorDistance = 0;
+
+    private double syncTime = 0d;
 
     private MotionMagicVoltage positionPID;
 
@@ -80,6 +85,8 @@ public class Elevator extends SubsystemBase {
         config.Feedback.SensorToMechanismRatio = ElevatorConstants.ENCODER_TO_MECHANISM_RATIO;
 
         rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE, RobotMap.CANIVORE_CAN_NAME);
+
+        syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
 
         CANrangeConfiguration rangeConfig = new CANrangeConfiguration();
         rangeConfig.ToFParams.UpdateFrequency = 50;
@@ -123,15 +130,23 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         currentPosition = getPosition();
+        rangeSensorDistance = getCANRangeDist();
 
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", getCanRange());
+        // LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", rangeSensorDistance);
+        // LightningShuffleboard.setBool("Diagnostic", "Elevator Pos and CANRange in Sync", !shouldSyncCANRange());
 
-        LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
-        LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
-        LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
+        // LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
+        // LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
+        // LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
 
-        LightningShuffleboard.setDouble("Diagnostics", "left elevator motor temp", leftMotor.getDeviceTemp().getValueAsDouble());
-        LightningShuffleboard.setDouble("Diagnostics", "right elevator motor temp", rightMotor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setDouble("Diagnostics", "left elevator motor temp", leftMotor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setDouble("Diagnostics", "right elevator motor temp", rightMotor.getDeviceTemp().getValueAsDouble());
+
+        // checks if the elevator is in sync with the CANRange sensor every 2 seconds
+        if (shouldSyncCANRange() && (Timer.getFPGATimestamp() > syncTime)) {
+            leftMotor.setPosition(rangeSensorDistance);
+            syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
+        }
     }
 
     /**
@@ -178,7 +193,20 @@ public class Elevator extends SubsystemBase {
      */
     @Logged(importance = Importance.DEBUG)
     public boolean isOnTarget() {
-        return Math.abs(targetPosition - currentPosition) <= ElevatorConstants.TOLERANCE;
+        return Math.abs(targetPosition - currentPosition) <= ElevatorConstants.POSITION_TOLERANCE;
+    }
+
+    /**
+     * checks if elevator position should start syncing with the CANrange sensor
+     *
+     * @return true if the elevator position is outside the tolerance of the CANrange sensor
+     */
+    public boolean shouldSyncCANRange() {
+        return Math.abs(rangeSensorDistance - currentPosition) >= ElevatorConstants.CANRANGE_TOLERANCE // checks if within tolerance
+        && Math.abs(rangeSensorDistance - currentPosition) <= ElevatorConstants.OK_TO_SYNC_TOLERANCE // AND checks if too desynced (CANRange could be blocked or something)
+        && Math.abs(leftMotor.getVelocity().getValueAsDouble()) < 0.1 // AND checks if the elevator isn't moving
+        && rangeSensorDistance <= 25d // AND checks if the CANRange is below 25 inches
+        && rangeSensorDistance >= 0d; // AND checks if the CANRange is above 0 inches
     }
 
     /**
@@ -192,16 +220,13 @@ public class Elevator extends SubsystemBase {
     }
 
     /**
-     * gets the range of the range sensor (limit is 25 inches)
+     * gets the distance from the CANRange sensor
      *
-     * @return range sensor distance
+     * @return CANRange distance
      */
-    public double getCanRange() {
-        if(getPosition() < 25) {
-            return (Units.metersToInches(rangeSensor.getDistance().getValueAsDouble()));
-        } else {
-            return 25;
-        }
+    public double getCANRangeDist() {
+        return ElevatorConstants.TRITON_INTERPOLATION_SLOPE * Units.metersToInches(rangeSensor.getDistance().getValueAsDouble())
+         + ElevatorConstants.TRITON_INTERPOLATION_INTERCEPT;
     }
 
     /**

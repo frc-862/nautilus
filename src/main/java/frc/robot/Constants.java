@@ -57,6 +57,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.HashMap;
 
 import frc.thunder.hardware.ThunderBird;
+import frc.thunder.math.InterpolationMap;
 import frc.thunder.util.Tuple;
 
 public class Constants {
@@ -258,7 +259,11 @@ public class Constants {
         public static final double ACCEL = 200d; // 200
         public static final double JERK = 1600d; // temp
 
-        public static final double TOLERANCE = 0.1; // temp
+        public static final double POSITION_TOLERANCE = 0.1; // temp
+        public static final double CANRANGE_TOLERANCE = 0.75; // temp
+        public static final double OK_TO_SYNC_TOLERANCE = 3d; // temp
+
+        public static final double SYNC_TIMEOUT = 0.5d;
 
         // kind of guessing the numbers here (didn't do a proper test)
         public static final Distance MIN_EXTENSION = Inches.of(0);
@@ -270,6 +275,9 @@ public class Constants {
         public static final double STAGE_LEN_METERS = MAX_EXTENSION.in(Meters) / 3;
 
         public static final double SLOW_MODE_HEIGHT_LIMIT = 29d;
+
+        public static final double TRITON_INTERPOLATION_SLOPE = 0.692679;
+        public static final double TRITON_INTERPOLATION_INTERCEPT = -2.53443;
     }
 
     public static class WristConstants {

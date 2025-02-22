@@ -32,6 +32,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -502,15 +503,53 @@ public class Constants {
         // POPULATE WITH REAL VALUES
         public static HashMap<Rectangle2d, Integer> aprilTagRegions = new HashMap<Rectangle2d, Integer>(){
             {
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 17);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 18);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 19);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 20);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 21);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 22);
+                put(new Rectangle2d(new Translation2d(3.321, 3.324), new Translation2d(3.512, 1.885)), 17);
+                put(new Rectangle2d(new Translation2d(3.297, 4.642), new Translation2d(2.206, 3.360)), 18);
+                put(new Rectangle2d(new Translation2d(4.495, 5.362), new Translation2d(2.997, 5.949)), 19);
+                put(new Rectangle2d(new Translation2d(5.658, 4.678), new Translation2d(5.370, 6.429)), 20);
+                put(new Rectangle2d(new Translation2d(5.658, 3.372), new Translation2d(6.773, 4.798)), 21);
+                put(new Rectangle2d(new Translation2d(4.483, 2.676), new Translation2d(6.365, 2.449)), 22);
             }
         };
 
+        public static Pose2d getScorePose(Pose2d robotPose){
+            Translation2d robotToReef = robotPose.getTranslation().minus(new Translation2d(4.5, 4));
+            double theta = MathUtil.inputModulus(robotToReef.getAngle().getRadians(), 0, Math.PI * 2);
+            double r = Math.hypot(robotToReef.getX(), robotToReef.getY());
+        
+            if (r > 2){
+                return null;
+            }
+    
+
+            if (theta >= 0 && theta <= Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 21));
+            } else if (theta > Math.PI/6 && theta <= 2 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 20));
+            } else if (theta > 2 * Math.PI/6 && theta <= 3 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 20));
+            } else if (theta > 3 * Math.PI/6 && theta <= 4 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 19));
+            } else if (theta > 4 * Math.PI/3 && theta <= 5 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 19));
+            } else if (theta > 5 * Math.PI/6 && theta <= 6 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 18));
+            } else if (theta > 6 * Math.PI/6 && theta <= 7 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 18));
+            } else if (theta > 7 * Math.PI/6 && theta <= 8 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 17));
+            } else if (theta > 8 * Math.PI/6 && theta <= 9 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 17));
+            } else if (theta > 9 * Math.PI/6 && theta <= 10 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 22));
+            } else if (theta > 10 * Math.PI/6 && theta <= 11 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 22));
+            } else if (theta > 11 * Math.PI/6 && theta <= 12 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 21));
+            } else {
+                return null;
+            }
+        }
     }
 
     public class TunerConstants {

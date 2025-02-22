@@ -8,9 +8,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,6 +30,8 @@ public class Climber extends SubsystemBase {
 
     private final PositionVoltage positionPID = new PositionVoltage(0);
     private double targetPostion = 0;
+
+    private DigitalInput limitSwitch;
     
     public Climber(ThunderBird motor) {
 
@@ -50,8 +52,9 @@ public class Climber extends SubsystemBase {
         config.Slot0.kP = ClimberConstants.KP;
         config.Slot0.kI = ClimberConstants.KI;
         config.Slot0.kD = ClimberConstants.KD;  
-
         motor.applyConfig(config);
+
+        limitSwitch = new DigitalInput(RobotMap.CLIMBER_LIMIT_SWITCH_DIO);
     }
 
     @Override
@@ -60,6 +63,10 @@ public class Climber extends SubsystemBase {
         // LightningShuffleboard.setBool("Climber", "On Target", getOnTarget());
         // LightningShuffleboard.setDouble("Climber", "targetPosition", targetPostion);
         // LightningShuffleboard.setDouble("Diagnostics", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
+
+        if(getLimitSwitch()) {
+            motor.stopMotor();
+        }
     }
 
     @Override
@@ -99,6 +106,14 @@ public class Climber extends SubsystemBase {
      */
     public boolean getOnTarget() {
         return Math.abs(getPostion() - targetPostion) < ClimberConstants.TOLERANCE;
+    }
+
+    /**
+     * assuming that true means triggered and false means not triggered
+     * @return if the limit switch is triggered
+     */
+    public boolean getLimitSwitch() {
+        return limitSwitch.get();
     }
 
 

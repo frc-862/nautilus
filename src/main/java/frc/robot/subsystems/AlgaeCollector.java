@@ -76,13 +76,13 @@ public class AlgaeCollector extends SubsystemBase {
 
     @Override
     public void periodic() {
-        LightningShuffleboard.setDouble("Algae Collector", "Pivot Angle", getPivotAngle());
-        LightningShuffleboard.setDouble("Algae Collector", "Roller Velocity", getRollerVelocity());
-        LightningShuffleboard.setDouble("Algae Collector", "Pivot Target", getTargetAngle());
-        LightningShuffleboard.setDouble("Algae Collector", "Pivot Motor current", pivotMotorSim.getMotorVoltage());
-        LightningShuffleboard.setDouble("Algae Collector", "Pivot raw rotor position", pivotSim.getAngleRads());
-        LightningShuffleboard.setDouble("Diagnostics", "algae roller motor temp", rollerMotor.getDeviceTemp().getValueAsDouble());
-        LightningShuffleboard.setDouble("Diagnostics", "algae pivot motor temp", pivotMotor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setDouble("Algae Collector", "Pivot Angle", getPivotAngle());
+        // LightningShuffleboard.setDouble("Algae Collector", "Roller Velocity", getRollerVelocity());
+        // LightningShuffleboard.setDouble("Algae Collector", "Pivot Target", getTargetAngle());
+        // LightningShuffleboard.setDouble("Algae Collector", "Pivot Motor current", pivotMotorSim.getMotorVoltage());
+        // LightningShuffleboard.setDouble("Algae Collector", "Pivot raw rotor position", pivotSim.getAngleRads());
+        // LightningShuffleboard.setDouble("Diagnostics", "algae roller motor temp", rollerMotor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setDouble("Diagnostics", "algae pivot motor temp", pivotMotor.getDeviceTemp().getValueAsDouble());
     }
 
     /**

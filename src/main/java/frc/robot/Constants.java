@@ -32,6 +32,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -304,9 +305,9 @@ public class Constants {
     }
 
     public static class CoralCollectorConstants {
+        // public static final boolean INVERTED = false;
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
-        public static final boolean INVERTED = false;
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1;
 
@@ -319,9 +320,13 @@ public class Constants {
 
         public static final double BEAMBREAK_DEBOUNCE = 0.1;
 
-        public static final double COLLECTED_CURRENT = 35d;
+        // public static final double COLLECTED_CURRENT = 35d;
         public static final double COLLECTOR_DEADBAND = 0.1;
-        public static final double HOLD_POWER = 0d;
+
+        //2.5 constants
+        public static final boolean INVERTED = true;
+        public static final double COLLECTED_CURRENT = 13d;
+        public static final double HOLD_POWER = 0.05d;
 
     }
 
@@ -484,14 +489,21 @@ public class Constants {
             {
                 // put(new Tuple(VisionConstants.Camera.LEFT, 12), new Pose2d(1.625, 2.880, new
                 // Rotation2d(Degrees.of(54))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
-                        new Pose2d(1.712, 0.643, new Rotation2d(Degrees.of(54))));
 
+                //DONE
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22),
+                        new Pose2d(5.286, 2.973, new Rotation2d(Degrees.of(-60))));
+
+                //TESTING
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 17),
-                        new Pose2d(3.965, 2.804, new Rotation2d(Degrees.of(-120))));
+                        new Pose2d(3.961, 2.788, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
+                        new Pose2d(1.575, 0.697, new Rotation2d(Degrees.of(54))));
+
+                //OTHER
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17),
                         new Pose2d(3.657, 2.936, new Rotation2d(Degrees.of(-120))));
-
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18),
                         new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(180))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 18),
@@ -510,8 +522,6 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21),
                         new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(0))));
 
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22),
-                        new Pose2d(5.303, 2.971, new Rotation2d(Degrees.of(-60))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22),
                         new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
 
@@ -523,15 +533,53 @@ public class Constants {
         // POPULATE WITH REAL VALUES
         public static HashMap<Rectangle2d, Integer> aprilTagRegions = new HashMap<Rectangle2d, Integer>() {
             {
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 17);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 18);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 19);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 20);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 21);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 22);
+                put(new Rectangle2d(new Translation2d(3.321, 3.324), new Translation2d(3.512, 1.885)), 17);
+                put(new Rectangle2d(new Translation2d(3.297, 4.642), new Translation2d(2.206, 3.360)), 18);
+                put(new Rectangle2d(new Translation2d(4.495, 5.362), new Translation2d(2.997, 5.949)), 19);
+                put(new Rectangle2d(new Translation2d(5.658, 4.678), new Translation2d(5.370, 6.429)), 20);
+                put(new Rectangle2d(new Translation2d(5.658, 3.372), new Translation2d(6.773, 4.798)), 21);
+                put(new Rectangle2d(new Translation2d(4.483, 2.676), new Translation2d(6.365, 2.449)), 22);
             }
         };
 
+        public static Pose2d getScorePose(Pose2d robotPose){
+            Translation2d robotToReef = robotPose.getTranslation().minus(new Translation2d(4.5, 4));
+            double theta = MathUtil.inputModulus(robotToReef.getAngle().getRadians(), 0, Math.PI * 2);
+            double r = Math.hypot(robotToReef.getX(), robotToReef.getY());
+        
+            if (r > 2){
+                return null;
+            }
+    
+
+            if (theta >= 0 && theta <= Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 21));
+            } else if (theta > Math.PI/6 && theta <= 2 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 20));
+            } else if (theta > 2 * Math.PI/6 && theta <= 3 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 20));
+            } else if (theta > 3 * Math.PI/6 && theta <= 4 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 19));
+            } else if (theta > 4 * Math.PI/3 && theta <= 5 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 19));
+            } else if (theta > 5 * Math.PI/6 && theta <= 6 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 18));
+            } else if (theta > 6 * Math.PI/6 && theta <= 7 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 18));
+            } else if (theta > 7 * Math.PI/6 && theta <= 8 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 17));
+            } else if (theta > 8 * Math.PI/6 && theta <= 9 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 17));
+            } else if (theta > 9 * Math.PI/6 && theta <= 10 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 22));
+            } else if (theta > 10 * Math.PI/6 && theta <= 11 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 22));
+            } else if (theta > 11 * Math.PI/6 && theta <= 12 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 21));
+            } else {
+                return null;
+            }
+        }
     }
 
     public class TunerConstants {
@@ -549,8 +597,8 @@ public class Constants {
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                    .withKP(0.1).withKI(0).withKD(0)
-                    .withKS(0).withKV(0.124);
+                    .withKP(0.34807).withKI(0).withKD(0)
+                    .withKS(0.23986).withKV(0.12318).withKA(0.0059707);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
@@ -1007,11 +1055,11 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double THREE_DEE_xP = 0.5d;
+        public static final double THREE_DEE_xP = 0.65d;
         public static final double THREE_DEE_xI = 0;
         public static final double THREE_DEE_xD = 0;
 
-        public static final double THREE_DEE_yP = 0.5d;
+        public static final double THREE_DEE_yP = 0.65d;
         public static final double THREE_DEE_yI = 0;
         public static final double THREE_DEE_yD = 0;
 

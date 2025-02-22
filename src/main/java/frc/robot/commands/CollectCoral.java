@@ -28,15 +28,15 @@ public class CollectCoral extends Command {
     @Override
     public void execute() {
         double power = triggerPower.getAsDouble();
-        // if (triggerPower.getAsDouble() == 0) {
-        //     power = CoralCollectorConstants.HOLD_POWER;
-        // }
+        if (triggerPower.getAsDouble() == 0) {
+            power = CoralCollectorConstants.HOLD_POWER;
+        }
         collector.setPower(power * CoralCollectorConstants.CORAL_ROLLER_SPEED);
     }
 
     @Override
     public void end(boolean interrupted) {
-        collector.setPower(0.2);
+        collector.setPower(CoralCollectorConstants.HOLD_POWER);
         RobotContainer.hapticCopilotCommand().schedule();
 
     }

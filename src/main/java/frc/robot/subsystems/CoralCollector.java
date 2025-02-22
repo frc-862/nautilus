@@ -58,10 +58,10 @@ public class CoralCollector extends SubsystemBase {
 
     @Override
     public void periodic() {
-        LightningShuffleboard.setBool("Collector", "BeamBreak", getBeamBreakOutput());
-        LightningShuffleboard.setDouble("Collector", "Velocity", getVelocity());
-        LightningShuffleboard.setBool("Diagnostic", "Collector Raw BeamBreak", beamBreak.get());
-        LightningShuffleboard.setDouble("Diagnostics", "coral collector motor temp", motor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setBool("Collector", "BeamBreak", getBeamBreakOutput());
+        // LightningShuffleboard.setDouble("Collector", "Velocity", getVelocity());
+        // LightningShuffleboard.setBool("Diagnostic", "Collector Raw BeamBreak", beamBreak.get());
+        // LightningShuffleboard.setDouble("Diagnostics", "coral collector motor temp", motor.getDeviceTemp().getValueAsDouble());
     }
 
     @Override

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6156835872715682,
-        "y": 0.5654699524093587
+        "x": 1.9025840716655025,
+        "y": 0.8491434619413405
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.253708633307264,
-        "y": 1.476664150156782
+        "x": 2.540609117701198,
+        "y": 1.7603376596887639
       },
       "isLocked": false,
       "linkedName": "Src2"
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.33780175682507574,
+      "waypointRelativePos": 0.4713567997977756,
       "rotationDegrees": -119.99999999999999
     }
   ],
@@ -41,14 +41,19 @@
       "name": "RodStow",
       "waypointRelativePos": 0.11267170329670316,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodStow"
+        }
+      }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 1.5,
-    "maxAngularVelocity": 500.0,
-    "maxAngularAcceleration": 500.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -62,5 +67,5 @@
     "velocity": 0,
     "rotation": 52.85331330197823
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

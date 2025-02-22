@@ -182,9 +182,12 @@ public class RobotContainer extends LightningContainer {
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 12));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22));
         new Trigger(driver::getRightBumperButton)
                 .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22));
+
+        new Trigger(() -> driver.getPOV() == 90)
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 12));
 
         /* COPILOT BINDINGS */
         /*
@@ -258,10 +261,10 @@ public class RobotContainer extends LightningContainer {
         // TODO: Get actual offsets
 
         NamedCommands.registerCommand("ReefAlignLeft",
-                new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT)
+                new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("ReefAlignRight",
-                new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT)
+                new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignLeft",
                 new TagAutoAlign(vision, drivetrain).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));

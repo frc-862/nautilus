@@ -10,11 +10,13 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
@@ -51,14 +53,14 @@ public class PoseBasedAutoAlign extends Command {
      * @param vision
      * @param drivetrain
      * @param camera
-     * @param tag
+     * @param IDCode the Lightning-specific ID code for the tag
      */
-    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tag) {
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LightningTagID IDCode) {
         this(vision, drivetrain, camera);
 
         customTagSet = true;
 
-        tagID = tag;
+        tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? IDCode.redID : IDCode.blueID;
     }
 
     public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera) {
@@ -70,6 +72,14 @@ public class PoseBasedAutoAlign extends Command {
         customTagSet = false;
         
         addRequirements(drivetrain);
+    }
+
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tagID) {
+        this(vision, drivetrain, camera);
+
+        customTagSet = true;
+
+        this.tagID = tagID;
     }
 
     @Override

@@ -325,7 +325,9 @@ public class Constants {
 
         //2.5 constants
         public static final boolean INVERTED = true;
-        public static final double COLLECTED_CURRENT = 13d;
+        // public static final double COLLECTED_CURRENT = 13d;
+        public static final double COLLECTED_CURRENT = 30d;
+
         public static final double HOLD_POWER = 0.05d;
 
     }
@@ -482,6 +484,9 @@ public class Constants {
     }
 
     public static class PoseConstants {
+        //temporary variable until red poses are properly tuned
+        static final double blueRedTransform = 8.575;
+
         public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
                 Units.feetToMeters(26.0));
 
@@ -500,7 +505,7 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
                         new Pose2d(1.575, 0.697, new Rotation2d(Degrees.of(54))));
 
-                //UNTUEN
+                //UNTUNED
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17),
                         new Pose2d(3.689, 2.973, new Rotation2d(Degrees.of(-120))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18),
@@ -523,6 +528,49 @@ public class Constants {
 
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22),
                         new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
+
+
+
+                        
+
+                //red
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6),
+                        new Pose2d(5.286 + blueRedTransform, 2.973, new Rotation2d(Degrees.of(-60))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
+                        new Pose2d(1.575 + blueRedTransform, 0.697, new Rotation2d(Degrees.of(54))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 11),
+                        new Pose2d(3.689 + blueRedTransform, 2.973, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 11),
+                    new Pose2d(3.961 + blueRedTransform, 2.788, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 10),
+                        new Pose2d(3.172 + blueRedTransform, 3.869, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 10),
+                        new Pose2d(3.172 + blueRedTransform, 4.199, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 9),
+                        new Pose2d(12.285, 5.053, new Rotation2d(Degrees.of(120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 9),
+                        new Pose2d(3.965 + blueRedTransform, 5.231, new Rotation2d(Degrees.of(120)))); // FIX
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 8),
+                        new Pose2d(4.971 + blueRedTransform, 5.257, new Rotation2d(Degrees.of(60)))); // SUS POSE
+
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 8),
+                        new Pose2d(13.843, 5.039, new Rotation2d(Degrees.of(60))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 7),
+                        new Pose2d(5.789 + blueRedTransform, 4.186, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 7),
+                        new Pose2d(5.795 + blueRedTransform, 3.855, new Rotation2d(Degrees.of(0))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 6),
+                        new Pose2d(4.962 + blueRedTransform, 2.813, new Rotation2d(Degrees.of(-60))));
+
+
+                //source
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 1),
+                    new Pose2d(15.953, 7.312, new Rotation2d(Degrees.of(-126))));
 
             }
         };
@@ -567,6 +615,26 @@ public class Constants {
                 return 21;
             } else {
                 return 0;
+            }
+        }
+
+
+        public enum LightningTagID {
+            // reef poses
+            One(7, 18),
+            Two(8, 17),
+            Three(9, 22),
+            Four(10, 21),
+            Five(11, 20),
+            Six(6, 19),
+
+            RightSource(1, 12),
+            LeftSource(2, 13);
+
+            public final int redID, blueID;
+            private LightningTagID(int redID, int blueID) {
+                this.redID = redID;
+                this.blueID = blueID;
             }
         }
     }

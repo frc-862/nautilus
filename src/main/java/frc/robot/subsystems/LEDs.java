@@ -7,17 +7,24 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.thunder.leds.ThunderStrip;
 import frc.thunder.leds.Thunderbolt;
+import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Constants.RobotMap;
 import frc.thunder.leds.LightningColors;
 
 public class LEDs extends Thunderbolt {
+	
+	public boolean pdhEnabled = true;
+	private boolean pdhSim = false;
+
 	public final ThunderStrip strip = new ThunderStrip(LEDConstants.LENGTH, 0, leds) {
 		@Override
 		public void updateLEDs(LEDStates state) {
@@ -54,19 +61,39 @@ public class LEDs extends Thunderbolt {
 		addStrip(strip);
 	}
 
-	private boolean pdhDisabled = false;
-
-	public void pdhLedsBlink(PowerDistribution pdh) {
-		if ((Timer.getFPGATimestamp() % 1000) / 1000 == 0) {
+	/**
+	 * blinks the PDH leds with a given rate
+	 * @param pdh power distribution to switch
+	 * @param tps ticks per second
+	 */
+	public void pdhLedsBlink(PowerDistribution pdh, double tps) {
+		// 2 decimals of precision when checking time in seconds
+		if ((int)(Timer.getFPGATimestamp() * 100) % (100 * tps) <= 1 && pdhEnabled) {
 			pdh.setSwitchableChannel(!pdh.getSwitchableChannel());
+			// pdhSim = !pdhSim;
+			// LightningShuffleboard.setBool("PDH", "on", pdhSim);
 		}
 	}
 
+	/**
+	 * sets the PDH leds to on
+	 * @param pdh
+	 */
 	public void pdhLedsSolid(PowerDistribution pdh) {
 		pdh.setSwitchableChannel(true);
+		// pdhSim = pdhEnabled;
+		// LightningShuffleboard.setBool("PDH", "on", pdhSim);
 	}
 
-	public Command togglePdh() {
-		return new InstantCommand(() -> pdhDisabled = !pdhDisabled).ignoringDisable(true);
+	/**
+	 * Turns on or off the PDH leds (ignores any blink states)
+	 * @param pdh
+	 * @return command to use
+	 */
+	public Command togglePdh(PowerDistribution pdh) {
+		return new InstantCommand(() -> {
+			pdhEnabled = !pdhEnabled;
+			pdh.setSwitchableChannel(pdhEnabled);
+		}).ignoringDisable(true);
 	}
 }

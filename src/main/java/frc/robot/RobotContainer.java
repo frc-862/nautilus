@@ -34,6 +34,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
@@ -106,10 +107,10 @@ public class RobotContainer extends LightningContainer {
         rod = new FishingRod(wrist, elevator);
         coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
         
+        climber = new Climber(RobotMotors.climberMotor);
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor, RobotMotors.algaeCollectorPivotMotor);
-            climber = new Climber(RobotMotors.climberMotor);
         }
 
         if (Robot.isSimulation()) {
@@ -140,13 +141,13 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.SCORING));
         new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
+        climber.setDefaultCommand(new RunCommand(
+                () -> climber.setPower(
+                        MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
+                climber));
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
-            climber.setDefaultCommand(new RunCommand(
-                    () -> climber.setPower(
-                            MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
-                    climber));
 
-            rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));
+        //     rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));
 
             new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
         }
@@ -156,7 +157,11 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled() && vision.hasTarget()))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
-        new Trigger(RobotController::getUserButton).onTrue(leds.togglePdh());
+        // Allow the Rio userbutton to toggle the pdh leds
+        new Trigger(RobotController::getUserButton).onTrue(leds.togglePdh(pdh));
+
+        // Turn off the PDH leds if the voltage ever dips below a certain value
+        new Trigger(() -> pdh.getVoltage() < LEDConstants.PDH_LED_POWEROFF_VOLTAGE && leds.pdhEnabled).onTrue(leds.togglePdh(pdh));
     }
 
     @Override
@@ -259,9 +264,9 @@ public class RobotContainer extends LightningContainer {
         // }
 
         // SYSID
-        // SignalLogger.start();
-        // new Trigger(driver::getYButton).whileTrue(new SysIdSequence(drivetrain,
-        // DrivetrainConstants.SysIdTestType.STEER));
+        new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
+        new Trigger(driver::getYButton).whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.DRIVE));
+        new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() -> SignalLogger.stop()));
 
     }
 

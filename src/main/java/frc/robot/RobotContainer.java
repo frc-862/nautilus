@@ -36,6 +36,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.RobotIdentifiers;
+import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.LEDConstants.LEDStates;
@@ -91,7 +92,7 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeSubsystems() {
-        pdh = new PowerDistribution(2, ModuleType.kRev);
+        pdh = new PowerDistribution(RobotMap.PDH, RobotMap.PDH_MODULE_TYPE);
 
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);

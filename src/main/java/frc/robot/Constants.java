@@ -51,6 +51,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.Swerve;
 
@@ -142,6 +143,10 @@ public class Constants {
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
+        
+        public static final int PDH = 2; // RIO LOOP
+        public static final ModuleType PDH_MODULE_TYPE = ModuleType.kRev;
+
         // 20ms default loop time
         public static final double UPDATE_FREQ = 0.020;
     }
@@ -203,7 +208,7 @@ public class Constants {
                 // put(ROD_STATES.L94, -80d);
                 // put(ROD_STATES.SOURCE, 0d);
 
-                put(RodStates.STOW, 75d);//80d);
+                put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
                 put(RodStates.L1, 0d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -35d);

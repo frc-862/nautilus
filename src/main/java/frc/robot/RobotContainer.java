@@ -119,7 +119,6 @@ public class RobotContainer extends LightningContainer {
             // algae collector and climber are temp because not initialized above
             algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
                     RobotMotors.algaeCollectorPivotMotor);
-            climber = new Climber(RobotMotors.climberMotor);
 
             simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector, climber);
         }
@@ -127,6 +126,7 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void configureDefaultCommands() {
+        // FIELD CENTRIC DRIVE
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
                 DriveRequests.getDrive(
                         () -> MathUtil.applyDeadband(-(driver.getLeftY() * drivetrain.getSpeedMult()),
@@ -137,30 +137,33 @@ public class RobotContainer extends LightningContainer {
                                 ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
+        // CORAL INTAKE
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
                         CoralCollectorConstants.COLLECTOR_DEADBAND)));
-
-        new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.SCORING));
-        new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
         climber.setDefaultCommand(new RunCommand(
                 () -> climber.setPower(
                         MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
                 climber));
+
+        // This should not be here, but is commented just to be safe if ever needed again
+        // rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));
+
+        /* LED TRIGGERS */
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
-
-            // rod.setDefaultCommand(new SetRodState(rod,
-            // RodStates.STOW).onlyIf(DriverStation::isTeleop));
-
             new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
         }
+
+        new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.SCORING));
+        new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
         new Trigger(() -> (drivetrain.poseZero() && DriverStation.isDisabled() && !vision.hasTarget()))
                 .whileTrue(leds.strip.enableState(LEDStates.POSE_BAD));
         new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled() && vision.hasTarget()))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
+        /* PDH LED TRIGGERSS */
         if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
             // Allow the Rio userbutton to toggle the pdh leds
             new Trigger(RobotController::getUserButton).onTrue(leds.togglePdh(pdh));

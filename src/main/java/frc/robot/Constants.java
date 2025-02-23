@@ -546,11 +546,11 @@ public class Constants {
             Translation2d robotToReef = robotPose.getTranslation().minus(new Translation2d(4.5, 4));
             double theta = MathUtil.inputModulus(robotToReef.getAngle().getRadians(), 0, Math.PI * 2);
             double r = Math.hypot(robotToReef.getX(), robotToReef.getY());
-        
+
             if (r > 2){
                 return null;
             }
-    
+
 
             if (theta >= 0 && theta <= Math.PI/6){
                 return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 21));

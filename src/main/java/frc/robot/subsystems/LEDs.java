@@ -12,7 +12,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.thunder.leds.ThunderStrip;
 import frc.thunder.leds.Thunderbolt;
@@ -21,7 +23,7 @@ import frc.robot.Constants.RobotMap;
 import frc.thunder.leds.LightningColors;
 
 public class LEDs extends Thunderbolt {
-	
+
 	public boolean pdhEnabled = true;
 	private boolean pdhSim = false;
 
@@ -67,6 +69,10 @@ public class LEDs extends Thunderbolt {
 	 * @param tps ticks per second
 	 */
 	public void pdhLedsBlink(PowerDistribution pdh, double tps) {
+		if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+			return;
+		}
+
 		// 2 decimals of precision when checking time in seconds
 		if ((int)(Timer.getFPGATimestamp() * 100) % (100 * tps) <= 1 && pdhEnabled) {
 			pdh.setSwitchableChannel(!pdh.getSwitchableChannel());
@@ -80,6 +86,10 @@ public class LEDs extends Thunderbolt {
 	 * @param pdh
 	 */
 	public void pdhLedsSolid(PowerDistribution pdh) {
+		if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+			return;
+		}
+
 		pdh.setSwitchableChannel(true);
 		// pdhSim = pdhEnabled;
 		// LightningShuffleboard.setBool("PDH", "on", pdhSim);
@@ -91,6 +101,10 @@ public class LEDs extends Thunderbolt {
 	 * @return command to use
 	 */
 	public Command togglePdh(PowerDistribution pdh) {
+		if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+			return new InstantCommand();
+		}
+
 		return new InstantCommand(() -> {
 			pdhEnabled = !pdhEnabled;
 			pdh.setSwitchableChannel(pdhEnabled);

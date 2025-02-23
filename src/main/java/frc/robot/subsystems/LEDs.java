@@ -7,25 +7,20 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.thunder.leds.ThunderStrip;
 import frc.thunder.leds.Thunderbolt;
-import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Constants.RobotMap;
 import frc.thunder.leds.LightningColors;
 
 public class LEDs extends Thunderbolt {
 
 	public boolean pdhEnabled = true;
-	private boolean pdhSim = false;
+	// private boolean pdhSim = false;
 
 	public final ThunderStrip strip = new ThunderStrip(LEDConstants.LENGTH, 0, leds) {
 		@Override

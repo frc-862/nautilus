@@ -22,6 +22,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.ClosedLoopOutputType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.config.ModuleConfig;
@@ -374,14 +375,18 @@ public class Constants {
 
             }
 
-            public static SwerveRequest getDrive(double x, double y, double rot) {
+            public static SwerveRequest getDrive(double x, double y, double rot, ForwardPerspectiveValue perspectiveValue) {
                 return DRIVE
                         .withVelocityX(x * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
                         .withVelocityY(y * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
                         .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
-                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
-                                                                                 // X
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+                        .withForwardPerspective(perspectiveValue); // Drive counterclockwise with negative
+                        // X
                                                                                  // (left)
+            }
+            public static SwerveRequest getDrive(double x, double y, double rot) {
+                return getDrive(x, y, rot, ForwardPerspectiveValue.OperatorPerspective);
             }
 
             // public static Supplier<SwerveRequest> getSlow(DoubleSupplier x,

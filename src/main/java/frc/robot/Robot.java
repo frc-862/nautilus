@@ -11,6 +11,8 @@ import frc.thunder.LightningRobot;
 
 public class Robot extends LightningRobot {
 
+    private RobotContainer container;
+
     public Robot() {
         super(new RobotContainer());
     }
@@ -25,24 +27,34 @@ public class Robot extends LightningRobot {
     @Override
     public void autonomousInit() {
         super.autonomousInit();
+
+        container = (RobotContainer) getContainer();
+    }
+
+    @Override
+    public void autonomousPeriodic() {
+        container.leds.pdhLedsBlink(container.pdh, 0.25d);
     }
 
     @Override
     public void teleopInit() {
         super.teleopInit();
+
+        container = (RobotContainer) getContainer();
     }
 
     @Override
-    public void simulationPeriodic() {
-        super.simulationPeriodic();
+    public void teleopPeriodic() {
+        container.leds.pdhLedsBlink(container.pdh, 0.75d);
     }
 
     @Override
     public void disabledInit() {
         super.disabledInit();
 
-        RobotContainer container = (RobotContainer) getContainer();
+        container = (RobotContainer) getContainer();
 
         container.drivetrain.setControl(DriveRequests.getBrake().get());
+        container.leds.pdhLedsSolid(container.pdh);
     }
 }

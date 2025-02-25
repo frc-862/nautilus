@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 5.4948113979574025,
-        "y": 2.670757681564245
+        "x": 5.326328997905027,
+        "y": 2.8156863761347757
       },
       "prevControl": {
-        "x": 5.743890651040322,
-        "y": 2.6493211313834157
+        "x": 5.575408250987946,
+        "y": 2.7942498259539463
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,14 +45,7 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "RodL4",
-      "waypointRelativePos": 0.7426296359890115,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

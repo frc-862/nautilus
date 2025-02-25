@@ -51,6 +51,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.Swerve;
 
@@ -590,9 +591,17 @@ public class Constants {
         };
 
         public static int getScorePose(Pose2d robotPose){
-            Translation2d robotToReef = robotPose.getTranslation().minus(new Translation2d(4.5, 4));
+
+            
+            final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
+            final DriverStation.Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : blue;
+        
+                
+            Translation2d robotToReef = alliance == blue ? robotPose.getTranslation().minus(new Translation2d(4.5, 4.031))
+                : robotPose.getTranslation().minus(new Translation2d(13.055, 4.031));
+
             double theta = MathUtil.inputModulus(robotToReef.getAngle().getRadians(), 0, Math.PI * 2);
-            double r = Math.hypot(robotToReef.getX(), robotToReef.getY());
+            double r = robotToReef.getDistance(new Translation2d());
         
             if (r > 3){
                 return 0;
@@ -600,19 +609,19 @@ public class Constants {
     
 
             if (theta >= 0 && theta <= Math.PI/6){
-                return 21;
+                return alliance == blue ? 21 : 7;
             } else if (theta > Math.PI/6 && theta <= 3 * Math.PI/6){
-                return 20;
+                return alliance == blue ? 20 : 8;
             } else if (theta > 3 * Math.PI/6 && theta <= 5 * Math.PI/6){
-                return 19;
+                return alliance == blue ? 19 : 9;
             } else if (theta > 5 * Math.PI/6 && theta <= 7 * Math.PI/6){
-                return 18;
+                return alliance == blue ? 18 : 10;
             } else if (theta > 7 * Math.PI/6 && theta <= 9 * Math.PI/6){
-                return 17;
+                return alliance == blue ? 17 : 11;
             } else if (theta > 9 * Math.PI/6 && theta <= 11 * Math.PI/6){
-                return 22;
+                return alliance == blue ? 22 : 6;
             } else if (theta > 11 * Math.PI/6 && theta <= 12 * Math.PI/6){
-                return 21;
+                return alliance == blue ? 21 : 7;
             } else {
                 return 0;
             }

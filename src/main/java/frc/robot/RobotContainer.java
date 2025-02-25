@@ -61,6 +61,7 @@ import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.SimGamePeices;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
+import frc.robot.subsystems.ReefDisplay;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.filter.XboxControllerFilter;
@@ -102,7 +103,6 @@ public class RobotContainer extends LightningContainer {
         logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
         leds = new LEDs();
-        reefDisplay = new ReefDisplay(coralCollector, rod, drivetrain);
 
         elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
         wrist = new Wrist(RobotMotors.wristMotor);
@@ -110,6 +110,8 @@ public class RobotContainer extends LightningContainer {
         coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
 
         climber = new Climber(RobotMotors.climberMotor);
+
+        reefDisplay = new ReefDisplay(coralCollector, rod, drivetrain);
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
@@ -294,10 +296,10 @@ public class RobotContainer extends LightningContainer {
         // TODO: Get actual offsets
 
         NamedCommands.registerCommand("ReefAlignLeft",
-                new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22)
+                new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22, reefDisplay)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("ReefAlignRight",
-                new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22)
+                new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22, reefDisplay)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignLeft",
                 new TagAutoAlign(vision, drivetrain).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
@@ -307,10 +309,10 @@ public class RobotContainer extends LightningContainer {
         for (Integer i = 1; i < 23; i++) {
             NamedCommands.registerCommand("AlignTo" + i + "Left",
                     new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT,
-                            i).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                            i, reefDisplay).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
             NamedCommands.registerCommand("AlignTo" + i + "Right",
                     new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT,
-                            i).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                            i, reefDisplay).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         }
 
         NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, () -> 1));

@@ -4,7 +4,14 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.BooleanArrayPublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.VisionConstants.Camera;
+import frc.thunder.util.Tuple;
 
 public class ReefDisplay extends SubsystemBase {
 
@@ -14,21 +21,27 @@ public class ReefDisplay extends SubsystemBase {
     Pose2d robotPose;
 
     Tuple<Camera, Integer> targetReefArm;
-    int tagNum;
+    int tagNum = 0;
     int arrayIndex;
 
-    Boolean[][] reef = new Boolean[][] {new Booean[] {false, false, false, false, false, false, false, false, false, false, false, false},
-        new Booean[] {false, false, false, false, false, false, false, false, false, false, false, false},
-        new Booean[] {false, false, false, false, false, false, false, false, false, false, false, false}}; // iner = level; outer = tag
+    // StructPublisher<Boolean[]> reefPublisher = new StructPublisher<Boolean[]>("ReefDisplay", Boolean[]);
+
+    BooleanArrayPublisher L2Pubil;
+    BooleanArrayPublisher L3Pubil;
+    BooleanArrayPublisher L4Pubil;
+
+    boolean[][] reef = new boolean[][] {new boolean[] {false, false, false, false, false, false, false, false, false, false, false, false},
+        new boolean[] {false, false, false, false, false, false, false, false, false, false, false, false},
+        new boolean[] {false, false, false, false, false, false, false, false, false, false, false, false}}; // iner = level; outer = tag
 
     public ReefDisplay(CoralCollector coralCollector, FishingRod rod, Swerve drivetrain) {
         this.collector = coralCollector;
         this.rod = rod;
         this.drivetrain = drivetrain;
 
-        NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").add("L1", reef[0]);
-        NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").add("L2", reef[1]);
-        NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").add("L3", reef[2]);
+        L2Pubil = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getBooleanArrayTopic("L2").publish();
+        L3Pubil = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getBooleanArrayTopic("L3").publish();
+        L4Pubil = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getBooleanArrayTopic("L4").publish();
     }
 
     @Override
@@ -38,7 +51,7 @@ public class ReefDisplay extends SubsystemBase {
 
     public void updateReef(){
 
-        if (targetReefArm == null || tagNum == null){
+        if (targetReefArm == null || tagNum == 0){
             return;
         }
 
@@ -64,18 +77,18 @@ public class ReefDisplay extends SubsystemBase {
 
     public void updateScorePose(Tuple<Camera, Integer> targetReefArm){
         this.targetReefArm = targetReefArm;
-        tagNum = targetReefArm.getSecond();
-        setArrayIndex(tagNum, targetReefArm.getFirst());
+        tagNum = targetReefArm.v;
+        setArrayIndex(tagNum, targetReefArm.k);
     }
 
     public void publish(){
-        NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getEntry("L2").setBooleanArray(reef[0]);
-        NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getEntry("L3").setBooleanArray(reef[1]);
-        NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getEntry("L4").setBooleanArray(reef[2]);
+        L2Pubil.accept(reef[0]);
+        L3Pubil.accept(reef[1]);
+        L4Pubil.accept(reef[2]);
     }
 
     public void setArrayIndex(int tagNum, Camera camera){
-        int sideNum;
+        int sideNum = 0;
 
         switch(tagNum){
             case 7:
@@ -127,7 +140,11 @@ public class ReefDisplay extends SubsystemBase {
                 break;
         }
 
+        System.out.println("SideNum: " + sideNum);
+
         arrayIndex = sideNum * 2 + (camera == Camera.LEFT ? 1 : 0);
+
+        System.out.println("ArrayIndex: " + arrayIndex);
     }
 
 }

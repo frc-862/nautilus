@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.6156835872715682,
-        "y": 0.5654699524093587
+        "x": 1.9025840716655025,
+        "y": 0.8491434619413405
       },
       "prevControl": {
-        "x": 2.510054168189865,
-        "y": 1.0423846150315654
+        "x": 2.7969546525837985,
+        "y": 1.3260581245635472
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,14 +29,44 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
-  "pointTowardsZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.5650369162087913,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 300.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.5,
+        "y": 4.0
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 0.6343664148351652,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
       "name": "RodSource",
       "waypointRelativePos": 0.7668655563186813,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodSource"
+        }
+      }
     }
   ],
   "globalConstraints": {

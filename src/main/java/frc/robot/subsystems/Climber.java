@@ -56,10 +56,10 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
-        LightningShuffleboard.setDouble("Climber", "Position", getPostion());
-        LightningShuffleboard.setBool("Climber", "On Target", getOnTarget());
-        LightningShuffleboard.setDouble("Climber", "targetPosition", targetPostion);
-        LightningShuffleboard.setDouble("Diagnostics", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setDouble("Climber", "Position", getPostion());
+        // LightningShuffleboard.setBool("Climber", "On Target", getOnTarget());
+        // LightningShuffleboard.setDouble("Climber", "targetPosition", targetPostion);
+        // LightningShuffleboard.setDouble("Diagnostics", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
     }
 
     @Override

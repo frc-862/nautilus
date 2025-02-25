@@ -28,21 +28,23 @@ public class LEDs extends Thunderbolt {
 
 				case ERROR -> blink(LightningColors.RED);
 				
-				case COLLECTED -> pulse(LightningColors.GREEN);
+				case COLLECTED -> blink(LightningColors.GREEN);
 
-				case ALIGNING -> blink(LightningColors.BLUE);
+				case ALIGNED -> blink(LightningColors.GREEN);
 
-				case COLLECTING -> blink(LightningColors.YELLOW);
+				case ALIGNING -> pulse(LightningColors.BLUE);
 
-				case SCORING -> pulse(LightningColors.YELLOW);
+				case COLLECTING -> pulse(LightningColors.PURPLE);
 
-				case READY_TO_ALIGN -> solid(LightningColors.BLUE);
+				case SCORING -> pulse(LightningColors.PURPLE);
 
-				case ROD_MOVING -> pulse(LightningColors.PINK);
+				case READY_TO_ALIGN -> pulse(LightningColors.ORANGE);
 
-				case UPDATING_POSE -> pulse(LightningColors.GREEN);
+				case ROD_MOVING -> solid(LightningColors.PINK);
 
-				case POSE_BAD -> solid(LightningColors.YELLOW);
+				case UPDATING_POSE -> blink(LightningColors.YELLOW);
+
+				case POSE_BAD -> solid(LightningColors.RED);
 
 				default -> System.err.println("Unexpected State Found: " + state);
 			}
@@ -64,6 +66,7 @@ public class LEDs extends Thunderbolt {
 					addOption(state.name(), state);
 				}
 			}
+			setDefaultOption("None", null);
 		}};
 		LightningShuffleboard.send("LEDs", "Test State", ledChooser);
 

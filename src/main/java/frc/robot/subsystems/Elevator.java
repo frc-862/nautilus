@@ -172,7 +172,8 @@ public class Elevator extends SubsystemBase {
     @Logged(importance = Importance.DEBUG)
     public boolean isOverheating() {
         return leftMotor.getDeviceTemp().getValueAsDouble() > ElevatorConstants.OVERHEAT_TEMP
-                || rightMotor.getDeviceTemp().getValueAsDouble() > ElevatorConstants.OVERHEAT_TEMP;
+                || rightMotor.getDeviceTemp().getValueAsDouble() > ElevatorConstants.OVERHEAT_TEMP
+                || (Math.abs(rightMotor.getDeviceTemp().getValueAsDouble() - leftMotor.getDeviceTemp().getValueAsDouble()) > ElevatorConstants.OVERHEAT_TEMP_DIFFERENCE);
     }
 
     /**

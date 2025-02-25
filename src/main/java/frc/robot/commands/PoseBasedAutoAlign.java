@@ -11,10 +11,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
@@ -25,6 +29,7 @@ public class PoseBasedAutoAlign extends Command {
     private PhotonVision vision;
     private Swerve drivetrain;
     private Camera camera;
+    private LEDs leds;
 
     private PIDController controllerX = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI,
         AutoAlignConstants.THREE_DEE_xD);
@@ -47,11 +52,13 @@ public class PoseBasedAutoAlign extends Command {
      * @param drivetrain
      * @param camera
      * @param tag
+     * @param leds
      */
-    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tag) {
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds, int tag) {
         this.vision = vision;
         this.drivetrain = drivetrain;
         this.camera = camera;
+        this.leds = leds;
         targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tag));
 
         addRequirements(drivetrain);
@@ -119,6 +126,9 @@ public class PoseBasedAutoAlign extends Command {
     @Override
     public void end(boolean interrupted) {
         publisher.close();
+        if (!interrupted) {
+            leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
+        }
     }
 
     @Override

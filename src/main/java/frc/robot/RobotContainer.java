@@ -186,12 +186,12 @@ public class RobotContainer extends LightningContainer {
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, 22));
         new Trigger(driver::getRightBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds, 22));
 
         new Trigger(() -> driver.getPOV() == 90)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 12));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, 12));
 
         /* COPILOT BINDINGS */
         /*
@@ -267,10 +267,10 @@ public class RobotContainer extends LightningContainer {
         // TODO: Get actual offsets
 
         NamedCommands.registerCommand("ReefAlignLeft",
-                new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22)
+                new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds, 22)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("ReefAlignRight",
-                new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22)
+                new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, 22)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("SourceAlignLeft",
                 new TagAutoAlign(vision, drivetrain).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
@@ -279,11 +279,11 @@ public class RobotContainer extends LightningContainer {
 
         for (Integer i = 1; i < 23; i++) {
             NamedCommands.registerCommand("AlignTo" + i + "Left",
-                    new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT,
-                            i).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds, i)
+                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
             NamedCommands.registerCommand("AlignTo" + i + "Right",
-                    new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT,
-                            i).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, i)
+                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         }
 
         switch (Constants.ROBOT_IDENTIFIER) {

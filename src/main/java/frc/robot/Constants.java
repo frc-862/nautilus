@@ -236,6 +236,7 @@ public class Constants {
 
     public static class ElevatorConstants {
         public static final double OVERHEAT_TEMP = 95;
+        public static final double OVERHEAT_TEMP_DIFFERENCE = 20;
 
         public static final boolean BRAKE_MODE = true;
         // both motors are - to go up
@@ -997,6 +998,7 @@ public class Constants {
             MIXER(),
             ERROR(),
             COLLECTED(),
+            ALIGNED(),
             ALIGNING(),
             COLLECTING(),
             SCORING(),

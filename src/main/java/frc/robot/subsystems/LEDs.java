@@ -32,7 +32,9 @@ public class LEDs extends Thunderbolt {
 			switch (state) {
 				case MIXER -> {
 					LEDStates testState = getTestState();
-					if (testState != null) {updateLEDs(testState);}
+					if (testState != null) {
+						updateLEDs(testState);
+					}
 				}
 
 				case ERROR -> blink(LightningColors.RED);

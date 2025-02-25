@@ -594,7 +594,7 @@ public class Constants {
 
             
             final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
-            final DriverStation.Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : blue;
+            final DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(blue);
         
                 
             Translation2d robotToReef = alliance == blue ? robotPose.getTranslation().minus(new Translation2d(4.5, 4.031))

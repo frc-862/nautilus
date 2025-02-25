@@ -84,6 +84,7 @@ public class RobotContainer extends LightningContainer {
     private AlgaeCollector algaeCollector;
     private Climber climber;
 
+    private ReefDisplay reefDisplay;
     private SimGamePeices simGamePeices;
 
     private static XboxController driver;
@@ -101,6 +102,7 @@ public class RobotContainer extends LightningContainer {
         logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
         leds = new LEDs();
+        reefDisplay = new ReefDisplay(coralCollector, rod, drivetrain);
 
         elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
         wrist = new Wrist(RobotMotors.wristMotor);
@@ -148,6 +150,8 @@ public class RobotContainer extends LightningContainer {
 
         // This should not be here, but is commented just to be safe if ever needed again
         // rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));
+
+        reefDisplay.setDefaultCommand(new RunCommand(reefDisplay::updateReef, reefDisplay));
 
         /* LED TRIGGERS */
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
@@ -210,12 +214,12 @@ public class RobotContainer extends LightningContainer {
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22, reefDisplay));
         new Trigger(driver::getRightBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22, reefDisplay));
 
         new Trigger(() -> driver.getPOV() == 90)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 12));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 12, reefDisplay));
 
         /* COPILOT BINDINGS */
         /*

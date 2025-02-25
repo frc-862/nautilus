@@ -48,11 +48,12 @@ public class PoseBasedAutoAlign extends Command {
      * @param camera
      * @param tag
      */
-    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tag) {
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tag, ReefDisplay reefDisplay) {
         this.vision = vision;
         this.drivetrain = drivetrain;
         this.camera = camera;
         targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tag));
+        reefDisplay.updateScorePose(new Tuple<Camera, Integer>(camera, tag));
 
         addRequirements(drivetrain);
     }

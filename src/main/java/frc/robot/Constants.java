@@ -32,6 +32,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -50,6 +51,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.Swerve;
 
@@ -78,7 +80,7 @@ public class Constants {
 
     public static class EncoderConstants {
         // Nautilus values
-        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.25732421875);
+        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(-0.39501953125);
         private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(0.412353515625);
         private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(0.0693359375);
         private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.30517578125);
@@ -90,7 +92,7 @@ public class Constants {
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
         public static final double tritonWristOffset = -0.227;
-        public static final double nautilusWristOffset = 0.318;
+        public static final double nautilusWristOffset = 0.135498046875;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
@@ -141,6 +143,10 @@ public class Constants {
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
+        
+        public static final int PDH = 2; // RIO LOOP
+        public static final ModuleType PDH_MODULE_TYPE = ModuleType.kRev;
+
         // 20ms default loop time
         public static final double UPDATE_FREQ = 0.020;
     }
@@ -202,7 +208,7 @@ public class Constants {
                 // put(ROD_STATES.L94, -80d);
                 // put(ROD_STATES.SOURCE, 0d);
 
-                put(RodStates.STOW, 80d);
+                put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
                 put(RodStates.L1, 0d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -35d);
@@ -307,7 +313,7 @@ public class Constants {
     }
 
     public static class CoralCollectorConstants {
-        // public static final boolean INVERTED = false;
+        public static final boolean INVERTED = false;
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final double CORAL_ROLLER_SPEED = 1;
@@ -326,7 +332,7 @@ public class Constants {
         public static final double COLLECTOR_DEADBAND = 0.1;
 
         //2.5 constants
-        public static final boolean INVERTED = true;
+        // public static final boolean INVERTED = true;
         public static final double COLLECTED_CURRENT = 13d;
         public static final double HOLD_POWER = 0.05d;
 
@@ -535,15 +541,53 @@ public class Constants {
         // POPULATE WITH REAL VALUES
         public static HashMap<Rectangle2d, Integer> aprilTagRegions = new HashMap<Rectangle2d, Integer>() {
             {
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 17);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 18);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 19);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 20);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 21);
-                put(new Rectangle2d(FIELD_LIMIT, FIELD_LIMIT), 22);
+                put(new Rectangle2d(new Translation2d(3.321, 3.324), new Translation2d(3.512, 1.885)), 17);
+                put(new Rectangle2d(new Translation2d(3.297, 4.642), new Translation2d(2.206, 3.360)), 18);
+                put(new Rectangle2d(new Translation2d(4.495, 5.362), new Translation2d(2.997, 5.949)), 19);
+                put(new Rectangle2d(new Translation2d(5.658, 4.678), new Translation2d(5.370, 6.429)), 20);
+                put(new Rectangle2d(new Translation2d(5.658, 3.372), new Translation2d(6.773, 4.798)), 21);
+                put(new Rectangle2d(new Translation2d(4.483, 2.676), new Translation2d(6.365, 2.449)), 22);
             }
         };
 
+        public static Pose2d getScorePose(Pose2d robotPose){
+            Translation2d robotToReef = robotPose.getTranslation().minus(new Translation2d(4.5, 4));
+            double theta = MathUtil.inputModulus(robotToReef.getAngle().getRadians(), 0, Math.PI * 2);
+            double r = Math.hypot(robotToReef.getX(), robotToReef.getY());
+
+            if (r > 2){
+                return null;
+            }
+
+
+            if (theta >= 0 && theta <= Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 21));
+            } else if (theta > Math.PI/6 && theta <= 2 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 20));
+            } else if (theta > 2 * Math.PI/6 && theta <= 3 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 20));
+            } else if (theta > 3 * Math.PI/6 && theta <= 4 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 19));
+            } else if (theta > 4 * Math.PI/3 && theta <= 5 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 19));
+            } else if (theta > 5 * Math.PI/6 && theta <= 6 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 18));
+            } else if (theta > 6 * Math.PI/6 && theta <= 7 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 18));
+            } else if (theta > 7 * Math.PI/6 && theta <= 8 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 17));
+            } else if (theta > 8 * Math.PI/6 && theta <= 9 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 17));
+            } else if (theta > 9 * Math.PI/6 && theta <= 10 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 22));
+            } else if (theta > 10 * Math.PI/6 && theta <= 11 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 22));
+            } else if (theta > 11 * Math.PI/6 && theta <= 12 * Math.PI/6){
+                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 21));
+            } else {
+                return null;
+            }
+        }
     }
 
     public class TunerConstants {
@@ -993,6 +1037,8 @@ public class Constants {
         public static final int PULSE_TIME = 3;
 
         public static final int SWRIL_SEGMENT_SIZE = 5;
+
+        public static final double PDH_LED_POWEROFF_VOLTAGE = 9d;
 
         public enum LEDStates {
             MIXER(),

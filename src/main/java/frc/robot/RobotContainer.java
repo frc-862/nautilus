@@ -216,7 +216,7 @@ public class RobotContainer extends LightningContainer {
 
 
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, LightningTagID.Three));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
         new Trigger(driver::getRightBumperButton)
                 .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT));
 

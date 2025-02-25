@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.LightningRobot;
@@ -22,6 +23,7 @@ import frc.thunder.LightningRobot;
 public class Robot extends LightningRobot {
 
     private RobotContainer container;
+
     private Command ledCmd;
 
     public Robot() {
@@ -40,29 +42,26 @@ public class Robot extends LightningRobot {
         super.autonomousInit();
 
         container = (RobotContainer) getContainer();
-        ledCmd = new RepeatCommand(new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel())).alongWith(new WaitCommand(0.25)));
-        // container.drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees.of(180)));
-    }
+        container.drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees.of(DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0)));
 
-    // @Override
-    // public void autonomousPeriodic() {
-    //     container.leds.pdhLedsBlink(container.pdh, 0.25d);
-    // }
+        if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
+            ledCmd = new RepeatCommand(new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel())).alongWith(new WaitCommand(0.25)));
+            ledCmd.schedule();
+        }
+    }
 
     @Override
     public void teleopInit() {
         super.teleopInit();
 
         container = (RobotContainer) getContainer();
-        container.drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees.of(180)));
-        ledCmd = new RepeatCommand(new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel())).alongWith(new WaitCommand(0.75)));
-        ledCmd.schedule();
-    }
+        container.drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees.of(DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0)));
 
-    // @Override
-    // public void teleopPeriodic() {
-    //     container.leds.pdhLedsBlink(container.pdh, 0.75d);
-    // }
+        if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
+            ledCmd = new RepeatCommand(new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel())).alongWith(new WaitCommand(0.75)));
+            ledCmd.schedule();
+        }
+    }
 
     @Override
     public void disabledInit() {
@@ -71,12 +70,15 @@ public class Robot extends LightningRobot {
         container = (RobotContainer) getContainer();
 
         container.drivetrain.setControl(DriveRequests.getBrake().get());
-        container.leds.pdhLedsSolid(container.pdh);
 
-        if (ledCmd != null) {
-            if (ledCmd.isScheduled()) {
-                ledCmd.cancel();
+        if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
+            if (ledCmd != null) {
+                if (ledCmd.isScheduled()) {
+                    ledCmd.cancel();
+                }
+
             }
+            container.pdh.setSwitchableChannel(true);
         }
     }
 

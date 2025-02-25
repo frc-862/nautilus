@@ -74,11 +74,12 @@ import frc.thunder.leds.LightningColors;
 public class RobotContainer extends LightningContainer {
 
     public PowerDistribution pdh;
+    public boolean allowPDHLeds = true;
 
     public Swerve drivetrain;
     public PhotonVision vision;
     private Telemetry logger;
-    public LEDs leds;
+    private LEDs leds;
 
     private SendableChooser<Command> autoChooser;
 
@@ -151,8 +152,10 @@ public class RobotContainer extends LightningContainer {
                         MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
                 climber));
 
-        // This should not be here, but is commented just to be safe if ever needed again
-        // rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));
+        // This should not be here, but is commented just to be safe if ever needed
+        // again
+        // rod.setDefaultCommand(new SetRodState(rod,
+        // RodStates.STOW).onlyIf(DriverStation::isTeleop));
 
         /* LED TRIGGERS */
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
@@ -170,11 +173,17 @@ public class RobotContainer extends LightningContainer {
         /* PDH LED TRIGGERSS */
         if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
             // Allow the Rio userbutton to toggle the pdh leds
-            new Trigger(RobotController::getUserButton).onTrue(leds.togglePdh(pdh));
+            new Trigger(RobotController::getUserButton).onTrue(new InstantCommand(() -> {
+                allowPDHLeds = !allowPDHLeds;
+                pdh.setSwitchableChannel(allowPDHLeds);
+            }));
 
             // Turn off the PDH leds if the voltage ever dips below a certain value
-            new Trigger(() -> pdh.getVoltage() < LEDConstants.PDH_LED_POWEROFF_VOLTAGE && leds.pdhEnabled)
-                    .onTrue(leds.togglePdh(pdh));
+            new Trigger(() -> pdh.getVoltage() < LEDConstants.PDH_LED_POWEROFF_VOLTAGE)
+                    .onTrue(new InstantCommand(() -> {
+                        allowPDHLeds = false;
+                        pdh.setSwitchableChannel(false);
+                    }));
         }
     }
 
@@ -212,11 +221,12 @@ public class RobotContainer extends LightningContainer {
 
         // reset forward
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
-                new InstantCommand(drivetrain::seedFieldCentric));//(new Rotation2d(Degrees.of(180)))));
+                new InstantCommand(drivetrain::seedFieldCentric));// (new
+                                                                  // Rotation2d(Degrees.of(DriverStation.getAlliance().get()
+                                                                  // == Alliance.Red ? 180 : 0)))));
 
         // new Trigger(driver::getLeftBumperButton)
-        //         .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
-
+        // .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
 
         new Trigger(driver::getLeftBumperButton)
                 .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
@@ -226,16 +236,9 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getPOV() == 90)
                 .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, LightningTagID.LeftSource));
 
-        /* COPILOT BINDINGS */
-        /*
-         * now that these are tap instead of hold buttons
-         * there is a problem where changing a state while
-         * in another transition state gets it "stuck" until
-         * you change it to a different state
-         *
-         * stuck means current = target in the wrong position
-         */
 
+
+        /* COPILOT BINDINGS */
         new Trigger(copilot::getRightBumperButton)
                 .onTrue(new SetRodState(rod, RodStates.SOURCE));
         new Trigger(copilot::getLeftBumperButton)
@@ -298,26 +301,31 @@ public class RobotContainer extends LightningContainer {
         // StandinCommands.scoreCoral().deadlineFor(leds.elevatorStrip.enableState(LEDStates.CORAL_SCORE)));
 
         /**
-         * 1 is the target facing the driver station, 2 is to the right of 1...6 is to left of 1 (CCW+)
+         * 1 is the target facing the driver station, 2 is to the right of 1...6 is to
+         * left of 1 (CCW+)
          * 7 is blue-barge source, 8 is red-barge source
          */
         for (LightningTagID ID : LightningTagID.values()) {
             switch (ID) {
                 case LeftSource, RightSource:
-                    NamedCommands.registerCommand("AlignTo" + ID.name(), new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT,
-                        ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name(),
+                            new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT,
+                                    ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
-            
+
                 default:
-                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT,
-                            ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT,
-                            ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Left",
+                            new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT,
+                                    ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Right",
+                            new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT,
+                                    ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
             }
         }
 
-        NamedCommands.registerCommand("IntakeCoral", new IntakeCoral(coralCollector, 1).withDeadline(new WaitCommand(3)));
+        NamedCommands.registerCommand("IntakeCoral",
+                new IntakeCoral(coralCollector, 1).withDeadline(new WaitCommand(3)));
 
         NamedCommands.registerCommand("RodStow",
                 new SetRodState(rod, RodStates.STOW)

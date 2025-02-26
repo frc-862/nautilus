@@ -64,6 +64,7 @@ import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.SimGamePeices;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
+import frc.robot.subsystems.ReefDisplay;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.filter.XboxControllerFilter;
@@ -87,6 +88,7 @@ public class RobotContainer extends LightningContainer {
     private AlgaeCollector algaeCollector;
     private Climber climber;
 
+    private ReefDisplay reefDisplay;
     private SimGamePeices simGamePeices;
 
     private static XboxController driver;
@@ -113,6 +115,8 @@ public class RobotContainer extends LightningContainer {
         coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
 
         climber = new Climber(RobotMotors.climberMotor);
+
+        reefDisplay = new ReefDisplay(coralCollector, rod, drivetrain);
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
             algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
@@ -150,6 +154,8 @@ public class RobotContainer extends LightningContainer {
                 () -> climber.setPower(
                         MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
                 climber));
+        
+        reefDisplay.setDefaultCommand(new RunCommand(reefDisplay::updateTargetReef,  reefDisplay));
 
         // This should not be here, but is commented just to be safe if ever needed again
         // rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));

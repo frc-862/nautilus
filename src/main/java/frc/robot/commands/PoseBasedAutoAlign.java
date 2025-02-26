@@ -26,6 +26,7 @@ import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
+import frc.robot.subsystems.ReefDisplay;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;

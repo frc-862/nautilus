@@ -130,11 +130,10 @@ public class PoseBasedAutoAlign extends Command {
         double yVeloc = controllerY.calculate(currentPose.getY(), targetPose.getY());// + Math.signum(controllerY.getError()) * xKs;
         double rotationVeloc = controllerR.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
-        drivetrain.setControl(DriveRequests.getDrive(
+        drivetrain.setControl(DriveRequests.getAutoAlign(
             xVeloc,
             yVeloc,
-            rotationVeloc,
-            ForwardPerspectiveValue.BlueAlliance));
+            rotationVeloc));
 
         // setXGains();
         // setYGains();

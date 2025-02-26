@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.util.Units;
@@ -38,6 +40,8 @@ public class FishingRod extends SubsystemBase {
     private MechanismLigament2d stage2;
     private MechanismLigament2d stage3;
     private MechanismLigament2d wristSim;
+
+    private boolean coralMode = true;
 
     public FishingRod(Wrist wrist, Elevator elevator) {
         this.wrist = wrist;
@@ -101,6 +105,14 @@ public class FishingRod extends SubsystemBase {
         LightningShuffleboard.setString("Rod", "transitionState", transitionState.toString());
     }
 
+    public boolean isCoralMode() {
+        return coralMode;
+    }
+
+    public void setCoralMode(boolean mode) {
+        coralMode = mode;
+    }
+
     /**
      * Sets the state of the fishing rod
      *
@@ -124,6 +136,8 @@ public class FishingRod extends SubsystemBase {
         elevatorBias = 0;
         wristBias = 0;
     }
+
+
 
     // biases will only work if no other position is actively being set.
     public Command addWristBias(double bias) {

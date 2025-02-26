@@ -214,10 +214,11 @@ public class Constants {
                 put(RodStates.L1, 0d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -35d);
-                put(RodStates.L4, -39d);
+                put(RodStates.L4, -39.5d);
                 put(RodStates.LOW, -30d);
                 put(RodStates.HIGH, -30d);
                 put(RodStates.SOURCE, 39.5d);
+                put(RodStates.ALGAE_SCORE, -39.5d);
             }
         };
 
@@ -238,6 +239,7 @@ public class Constants {
                 put(RodStates.LOW, 15d);
                 put(RodStates.HIGH, 28d);
                 put(RodStates.SOURCE, 9.5d);
+                put(RodStates.ALGAE_SCORE, 47d);
             }
         };
     }
@@ -360,6 +362,7 @@ public class Constants {
 
         public class DriveRequests {
             private static final SwerveRequest.FieldCentric DRIVE = new SwerveRequest.FieldCentric();
+            private static final SwerveRequest.FieldCentric AUTO_ALIGN = new SwerveRequest.FieldCentric();
             private static final SwerveRequest.FieldCentric SLOW = new SwerveRequest.FieldCentric();
             private static final SwerveRequest.RobotCentric ROBO_CENTRIC = new SwerveRequest.RobotCentric();
             private static final SwerveRequest.SwerveDriveBrake BRAKE = new SwerveRequest.SwerveDriveBrake();
@@ -371,23 +374,21 @@ public class Constants {
                         .withVelocityY(y.getAsDouble() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X
                                                                                         // (left)
                         .withRotationalRate(rot.getAsDouble() * DrivetrainConstants.MAX_ANGULAR_RATE)
-                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Drive counterclockwise with negative
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+                        .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective); // Drive counterclockwise with negative
                                                                                  // X (left)
 
             }
 
-            public static SwerveRequest getDrive(double x, double y, double rot, ForwardPerspectiveValue perspectiveValue) {
-                return DRIVE
+            public static SwerveRequest getAutoAlign(double x, double y, double rot) {
+                return AUTO_ALIGN
                         .withVelocityX(x * DrivetrainConstants.MAX_SPEED) // Drive forward with negative Y (forward)
                         .withVelocityY(y * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
                         .withRotationalRate(rot * DrivetrainConstants.MAX_ANGULAR_RATE)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-                        .withForwardPerspective(perspectiveValue); // Drive counterclockwise with negative
+                        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance); // Drive counterclockwise with negative
                         // X
                                                                                  // (left)
-            }
-            public static SwerveRequest getDrive(double x, double y, double rot) {
-                return getDrive(x, y, rot, ForwardPerspectiveValue.OperatorPerspective);
             }
 
             // public static Supplier<SwerveRequest> getSlow(DoubleSupplier x,
@@ -544,7 +545,7 @@ public class Constants {
 
                 //red
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6),
-                        new Pose2d(5.286 + blueRedTransform, 2.973, new Rotation2d(Degrees.of(-60))));
+                        new Pose2d(13.861, 2.973, new Rotation2d(Degrees.of(-60))));
 
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
                         new Pose2d(1.575 + blueRedTransform, 0.697, new Rotation2d(Degrees.of(54))));
@@ -574,7 +575,7 @@ public class Constants {
                         new Pose2d(5.795 + blueRedTransform, 3.855, new Rotation2d(Degrees.of(0))));
 
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 6),
-                        new Pose2d(4.962 + blueRedTransform, 2.813, new Rotation2d(Degrees.of(-60))));
+                        new Pose2d(13.573, 2.813, new Rotation2d(Degrees.of(-60))));
 
 
                 //source
@@ -602,7 +603,7 @@ public class Constants {
 
             
             final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
-            final DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(blue);
+            DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(blue);
         
                 
             Translation2d robotToReef = alliance == blue ? robotPose.getTranslation().minus(new Translation2d(4.5, 4.031))

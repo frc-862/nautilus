@@ -8,6 +8,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -221,7 +223,7 @@ public class RobotContainer extends LightningContainer {
 
         // reset forward
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
-                new InstantCommand(drivetrain::seedFieldCentric));// (new
+                new InstantCommand(drivetrain::seedFieldCentric).alongWith(new InstantCommand(() -> drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees.of(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0))))));// (new
                                                                   // Rotation2d(Degrees.of(DriverStation.getAlliance().get()
                                                                   // == Alliance.Red ? 180 : 0)))));
 
@@ -244,16 +246,24 @@ public class RobotContainer extends LightningContainer {
         new Trigger(copilot::getLeftBumperButton)
                 .onTrue(new SetRodState(rod, RodStates.STOW));
 
+
         new Trigger(copilot::getBackButton)
-                .onTrue(new SetRodState(rod, RodStates.LOW));
+                .onTrue(new InstantCommand(() -> rod.setCoralMode(false)));
         new Trigger(copilot::getStartButton)
-                .onTrue(new SetRodState(rod, RodStates.HIGH));
+                .onTrue(new InstantCommand(() -> rod.setCoralMode(true)));
+        
 
         // default
-        (new Trigger(copilot::getAButton)).onTrue(new SetRodState(rod, RodStates.L1));
-        (new Trigger(copilot::getBButton)).onTrue(new SetRodState(rod, RodStates.L2));
-        (new Trigger(copilot::getXButton)).onTrue(new SetRodState(rod, RodStates.L3));
-        (new Trigger(copilot::getYButton)).onTrue(new SetRodState(rod, RodStates.L4));
+        (new Trigger(copilot::getAButton).and(rod::isCoralMode)).onTrue(new SetRodState(rod, RodStates.L1));
+        (new Trigger(copilot::getBButton).and(rod::isCoralMode)).onTrue(new SetRodState(rod, RodStates.L2));
+        (new Trigger(copilot::getXButton).and(rod::isCoralMode)).onTrue(new SetRodState(rod, RodStates.L3));
+        (new Trigger(copilot::getYButton).and(rod::isCoralMode)).onTrue(new SetRodState(rod, RodStates.L4));
+
+        //algae mode
+        new Trigger(rod::isCoralMode).negate().and(copilot::getAButton).onTrue(new SetRodState(rod, RodStates.L1));
+        new Trigger(rod::isCoralMode).negate().and(copilot::getBButton).onTrue(new SetRodState(rod, RodStates.LOW));
+        new Trigger(rod::isCoralMode).negate().and(copilot::getXButton).onTrue(new SetRodState(rod, RodStates.HIGH));
+        new Trigger(rod::isCoralMode).negate().and(copilot::getYButton).onTrue(new SetRodState(rod, RodStates.ALGAE_SCORE));
 
         // biases
         new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d));
@@ -288,10 +298,10 @@ public class RobotContainer extends LightningContainer {
         // }
 
         // SYSID
-        new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
-        new Trigger(driver::getYButton)
-                .whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.DRIVE));
-        new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() -> SignalLogger.stop()));
+        // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
+        // new Trigger(driver::getYButton)
+        //         .whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.DRIVE));
+        // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() -> SignalLogger.stop()));
 
     }
 

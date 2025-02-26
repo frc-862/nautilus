@@ -81,13 +81,7 @@ public class LEDs extends Thunderbolt {
 			}
 			setDefaultOption("None", null);
 		}};
-		
-		LEDStates state = strip.getState();
-		if (state != null) {
-			LightningShuffleboard.set("LEDs", "Current State", state);
-		} else {
-			LightningShuffleboard.set("LEDs", "Current State", "None");
-		}
+		LightningShuffleboard.send("LEDs", "Test State", ledChooser);
 
 		// pdh = new PowerDistribution(1, ModuleType.kRev);
 
@@ -121,7 +115,12 @@ public class LEDs extends Thunderbolt {
 		// if (pdh.getSwitchableChannel()) {
 		// 	pdh.setSwitchableChannel(true);	
 		// }
-		LightningShuffleboard.set("LEDs", "Current State", strip.getState());
+		LEDStates state = getTestState();
+		if (state != null) {
+			LightningShuffleboard.setString("LEDs", "Current State", state.toString());
+		} else {
+			LightningShuffleboard.setString("LEDs", "Current State", "DEFAULT");
+		}
 	} 
 	/**
 	 * sets the PDH leds to on

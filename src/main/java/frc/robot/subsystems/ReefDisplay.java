@@ -24,7 +24,6 @@ public class ReefDisplay extends SubsystemBase {
     Pose2d robotPose;
 
     Tuple<Integer, Boolean> targetReefSide;
-    int arrayIndex = 0;
 
     // StructPublisher<Boolean[]> reefPublisher = new StructPublisher<Boolean[]>("ReefDisplay", Boolean[]);
 
@@ -54,29 +53,29 @@ public class ReefDisplay extends SubsystemBase {
             switch(rod.getState()){
 
                 case L2:
-                    reef[0][arrayIndex] = true;
+                    reef[0][getArrayIndex()] = true;
                     break;
 
                 case L3:
-                    reef[1][arrayIndex] = true;
+                    reef[1][getArrayIndex()] = true;
                     break;
 
                 case L4:
-                    reef[2][arrayIndex] = true;
+                    reef[2][getArrayIndex()] = true;
                     break;
             }
-
-            publish();
         }
 
+        publish();
         LightningShuffleboard.setDouble("ReefDisplay", "arrayIndex", arrayIndex);
         LightningShuffleboard.setDouble("ReefDisplay", "tagNum", targetReefSide.k);
         LightningShuffleboard.setBool("ReefDisplay", "isRight", targetReefSide.v);
+
     }
 
     public void updateTargetReef(){
         int tagNum = drivetrain.reefTagToRobot(drivetrain.getPose());
-        
+
         Pose2d rightPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.RIGHT, tagNum));
         Pose2d leftPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.LEFT, tagNum));
 
@@ -97,7 +96,7 @@ public class ReefDisplay extends SubsystemBase {
         L4Pubil.accept(reef[2]);
     }
 
-    public void setArrayIndex(){
+    public int getArrayIndex(){
         int sideNum = 0;
 
         switch(targetReefSide.k){
@@ -151,7 +150,7 @@ public class ReefDisplay extends SubsystemBase {
         }
 
 
-        arrayIndex = sideNum * 2 + (targetReefSide.v ? 1 : 0);
+        return sideNum * 2 + (targetReefSide.v ? 1 : 0);
     }
 
 }

@@ -10,8 +10,10 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.thunder.util.Tuple;
+import java.util.ArrayList;
 
 public class ReefDisplay extends SubsystemBase {
 
@@ -20,9 +22,8 @@ public class ReefDisplay extends SubsystemBase {
     Swerve drivetrain;
     Pose2d robotPose;
 
-    Tuple<Camera, Integer> targetReefArm;
-    int tagNum = 0;
-    int arrayIndex;
+    Tuple<Integer, Boolean> targetReefSide;
+    int arrayIndex = 0;
 
     // StructPublisher<Boolean[]> reefPublisher = new StructPublisher<Boolean[]>("ReefDisplay", Boolean[]);
 
@@ -38,6 +39,7 @@ public class ReefDisplay extends SubsystemBase {
         this.collector = coralCollector;
         this.rod = rod;
         this.drivetrain = drivetrain;
+        targetReefSide = new Tuple<Integer, Boolean>(drivetrain.reefTagToRobot(drivetrain.getPose()), false);
 
         L2Pubil = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getBooleanArrayTopic("L2").publish();
         L3Pubil = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getBooleanArrayTopic("L3").publish();
@@ -46,16 +48,7 @@ public class ReefDisplay extends SubsystemBase {
 
     @Override
     public void periodic() {
-      // This method will be called once per scheduler run
-    }
-
-    public void updateReef(){
-
-        if (targetReefArm == null || tagNum == 0){
-            return;
-        }
-
-        if (collector.getVelocity() > 0){
+        if (collector.getVelocity() > 0 && targetReefSide.k != 0){
             switch(rod.getState()){
 
                 case L2:
@@ -75,11 +68,23 @@ public class ReefDisplay extends SubsystemBase {
         }
     }
 
-    public void updateScorePose(Tuple<Camera, Integer> targetReefArm){
-        this.targetReefArm = targetReefArm;
-        tagNum = targetReefArm.v;
-        setArrayIndex(tagNum, targetReefArm.k);
+    public void updateTargetReef(){
+        Pose2d rightPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.LEFT, targetReefSide.k));
+        Pose2d leftPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.RIGHT, targetReefSide.k));
+
+        ArrayList<Pose2d> poseList = new ArrayList<Pose2d>();
+        poseList.add(rightPose);
+        poseList.add(leftPose);
+
+        if(drivetrain.getPose().nearest(poseList) == rightPose){
+            targetReefSide = new Tuple<Integer, Boolean>(drivetrain.reefTagToRobot(drivetrain.getPose()), true);
+        }
+        else{
+            targetReefSide = new Tuple<Integer, Boolean>(drivetrain.reefTagToRobot(drivetrain.getPose()), false);
+        }
     }
+
+
 
     public void publish(){
         L2Pubil.accept(reef[0]);
@@ -87,10 +92,10 @@ public class ReefDisplay extends SubsystemBase {
         L4Pubil.accept(reef[2]);
     }
 
-    public void setArrayIndex(int tagNum, Camera camera){
+    public void setArrayIndex(){
         int sideNum = 0;
 
-        switch(tagNum){
+        switch(targetReefSide.k){
             case 7:
                 sideNum = 0;
                 break;
@@ -142,7 +147,7 @@ public class ReefDisplay extends SubsystemBase {
 
         System.out.println("SideNum: " + sideNum);
 
-        arrayIndex = sideNum * 2 + (camera == Camera.LEFT ? 1 : 0);
+        arrayIndex = sideNum * 2 + (targetReefSide.v ? 1 : 0);
 
         System.out.println("ArrayIndex: " + arrayIndex);
     }

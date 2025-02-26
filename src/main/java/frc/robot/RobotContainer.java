@@ -153,7 +153,7 @@ public class RobotContainer extends LightningContainer {
         // This should not be here, but is commented just to be safe if ever needed again
         // rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));
 
-        reefDisplay.setDefaultCommand(new RunCommand(reefDisplay::updateReef, reefDisplay));
+        reefDisplay.setDefaultCommand(new RunCommand(reefDisplay::updateTargetReef,  reefDisplay));
 
         /* LED TRIGGERS */
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {

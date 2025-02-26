@@ -53,8 +53,6 @@ public class PoseBasedAutoAlign extends Command {
         this.vision = vision;
         this.drivetrain = drivetrain;
         this.camera = camera;
-        targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tag));
-        reefDisplay.updateScorePose(new Tuple<Camera, Integer>(camera, tag));
 
         addRequirements(drivetrain);
     }

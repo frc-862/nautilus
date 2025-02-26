@@ -81,7 +81,13 @@ public class LEDs extends Thunderbolt {
 			}
 			setDefaultOption("None", null);
 		}};
-		LightningShuffleboard.send("LEDs", "Test State", ledChooser);
+		
+		LEDStates state = strip.getState();
+		if (state != null) {
+			LightningShuffleboard.set("LEDs", "Current State", state);
+		} else {
+			LightningShuffleboard.set("LEDs", "Current State", "None");
+		}
 
 		// pdh = new PowerDistribution(1, ModuleType.kRev);
 

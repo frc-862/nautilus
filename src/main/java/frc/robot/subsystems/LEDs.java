@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,8 +17,11 @@ import frc.thunder.leds.ThunderStrip;
 import frc.thunder.leds.Thunderbolt;
 import frc.robot.Constants.RobotMap;
 import frc.thunder.leds.LightningColors;
+import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class LEDs extends Thunderbolt {
+	// LED testing
+	SendableChooser<LEDStates> ledChooser;
 
 	public boolean pdhEnabled = true;
 	// private boolean pdhSim = false;
@@ -26,19 +30,32 @@ public class LEDs extends Thunderbolt {
 		@Override
 		public void updateLEDs(LEDStates state) {
 			switch (state) {
-				case COLLECTED -> pulse(LightningColors.GREEN);
+				case MIXER -> {
+					LEDStates testState = getTestState();
+					if (testState != null) {
+						updateLEDs(testState);
+					}
+				}
 
-				case SCORED -> pulse(LightningColors.GREEN);
+				case ERROR -> blink(LightningColors.RED);
+				
+				case COLLECTED -> blink(LightningColors.GREEN);
 
-				case ALIGNING -> blink(LightningColors.BLUE);
+				case ALIGNED -> blink(LightningColors.GREEN);
 
-				case COLLECTING -> blink(LightningColors.YELLOW);
+				case ALGAE_MODE -> solid(LightningColors.LIGHT_BLUE);
 
-				case SCORING -> pulse(LightningColors.YELLOW);
+				case ALIGNING -> pulse(LightningColors.BLUE);
 
-				case ROD_MOVING -> pulse(LightningColors.PINK);
+				case COLLECTING -> pulse(LightningColors.PURPLE);
 
-				case UPDATING_POSE -> pulse(LightningColors.YELLOW);
+				case SCORING -> pulse(LightningColors.PURPLE);
+
+				case READY_TO_ALIGN -> pulse(LightningColors.ORANGE);
+
+				case ROD_MOVING -> solid(LightningColors.PINK);
+
+				case UPDATING_POSE -> blink(LightningColors.YELLOW);
 
 				case POSE_BAD -> solid(LightningColors.RED);
 
@@ -54,6 +71,19 @@ public class LEDs extends Thunderbolt {
 
 	public LEDs() {
 		super(LEDConstants.PWM_PORT, LEDConstants.LENGTH, RobotMap.UPDATE_FREQ);
+
+		ledChooser = new SendableChooser<LEDStates>() {{
+			addOption("None", null);
+			for (LEDStates state : LEDStates.values()) {
+				if (state != LEDStates.MIXER) {
+					addOption(state.name(), state);
+				}
+			}
+			setDefaultOption("None", null);
+		}};
+		LightningShuffleboard.send("LEDs", "Test State", ledChooser);
+
+		// pdh = new PowerDistribution(1, ModuleType.kRev);
 
 		addStrip(strip);
 	}
@@ -76,6 +106,22 @@ public class LEDs extends Thunderbolt {
 		}
 	}
 
+	public LEDStates getTestState() {
+		return ledChooser.getSelected();
+	}
+	
+	@Override
+	public void periodic() {
+		// if (pdh.getSwitchableChannel()) {
+		// 	pdh.setSwitchableChannel(true);	
+		// }
+		LEDStates state = getTestState();
+		if (state != null) {
+			LightningShuffleboard.setString("LEDs", "Current State", state.toString());
+		} else {
+			LightningShuffleboard.setString("LEDs", "Current State", "DEFAULT");
+		}
+	} 
 	/**
 	 * sets the PDH leds to on
 	 * @param pdh

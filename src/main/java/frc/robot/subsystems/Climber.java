@@ -8,9 +8,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,10 +30,14 @@ public class Climber extends SubsystemBase {
 
     private final PositionVoltage positionPID = new PositionVoltage(0);
     private double targetPostion = 0;
-    
+
+    private DigitalInput limitSwitch;
+
     public Climber(ThunderBird motor) {
 
         TalonFXConfiguration config = motor.getConfig();
+
+        limitSwitch = new DigitalInput(RobotMap.CLIMBER_LIMIT_SWITCH_DIO);
 
         this.motor = motor;
 
@@ -43,14 +47,13 @@ public class Climber extends SubsystemBase {
 
             gearbox = DCMotor.getFalcon500(1);
 
-            climbSim = new ElevatorSim(gearbox, ClimberConstants.GEAR_RATIO, ClimberConstants.CARRIAGE_MASS, ClimberConstants.DRUM_RADIUS, 
+            climbSim = new ElevatorSim(gearbox, ClimberConstants.GEAR_RATIO, ClimberConstants.CARRIAGE_MASS, ClimberConstants.DRUM_RADIUS,
                 ClimberConstants.MIN_EXTENSION, ClimberConstants.MAX_EXTENSION, false, 0, 0, 1);
         }
 
         config.Slot0.kP = ClimberConstants.KP;
         config.Slot0.kI = ClimberConstants.KI;
-        config.Slot0.kD = ClimberConstants.KD;  
-
+        config.Slot0.kD = ClimberConstants.KD;
         motor.applyConfig(config);
     }
 
@@ -60,6 +63,10 @@ public class Climber extends SubsystemBase {
         // LightningShuffleboard.setBool("Climber", "On Target", getOnTarget());
         // LightningShuffleboard.setDouble("Climber", "targetPosition", targetPostion);
         // LightningShuffleboard.setDouble("Diagnostics", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
+
+        if (getLimitSwitch()) {
+            motor.stopMotor();
+        }
     }
 
     @Override
@@ -76,6 +83,9 @@ public class Climber extends SubsystemBase {
     }
 
     public void setPower(double speed) {
+        if (getLimitSwitch()) {
+            return;
+        }
         motor.setControl(new DutyCycleOut(speed));
     }
 
@@ -101,5 +111,11 @@ public class Climber extends SubsystemBase {
         return Math.abs(getPostion() - targetPostion) < ClimberConstants.TOLERANCE;
     }
 
-
+    /**
+     * assuming that true means triggered and false means not triggered
+     * @return if the limit switch is triggered
+     */
+    public boolean getLimitSwitch() {
+        return !limitSwitch.get();
+    }
 }

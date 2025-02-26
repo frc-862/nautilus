@@ -647,8 +647,9 @@ public class Constants {
             RightSource(1, 12),
             LeftSource(2, 13);
 
-            public final int redID, blueID;
-            private LightningTagID(int redID, int blueID) {
+            public final int redID;
+            public final int blueID;
+            LightningTagID(int redID, int blueID) {
                 this.redID = redID;
                 this.blueID = blueID;
             }

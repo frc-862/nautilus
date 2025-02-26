@@ -63,12 +63,13 @@ public class ReefDisplay extends SubsystemBase {
                     reef[2][getArrayIndex()] = true;
                     break;
             }
+
+            publish();
         }
 
-        publish();
-        LightningShuffleboard.setDouble("ReefDisplay", "arrayIndex", getArrayIndex());
-        LightningShuffleboard.setDouble("ReefDisplay", "tagNum", targetReefSide.k);
-        LightningShuffleboard.setBool("ReefDisplay", "isRight", targetReefSide.v);
+        // LightningShuffleboard.setDouble("ReefDisplay", "arrayIndex", getArrayIndex());
+        // LightningShuffleboard.setDouble("ReefDisplay", "tagNum", targetReefSide.k);
+        // LightningShuffleboard.setBool("ReefDisplay", "isRight", targetReefSide.v);
 
     }
 

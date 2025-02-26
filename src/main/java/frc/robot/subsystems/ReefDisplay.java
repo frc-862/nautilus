@@ -79,7 +79,7 @@ public class ReefDisplay extends SubsystemBase {
         Pose2d rightPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.RIGHT, tagNum));
         Pose2d leftPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.LEFT, tagNum));
 
-
+        
         if (rightPose != null && leftPose != null && drivetrain.getPose().nearest(List.of(rightPose, leftPose)) == rightPose) {
             targetReefSide = new Tuple<Integer, Boolean>(tagNum, false);
         }
@@ -147,6 +147,9 @@ public class ReefDisplay extends SubsystemBase {
             case 19:
                 sideNum = 5;
                 break;
+
+            default:
+                return 0;
         }
 
 

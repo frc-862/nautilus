@@ -49,7 +49,7 @@ public class PoseBasedAutoAlign extends Command {
      * @param camera
      * @param tag
      */
-    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tag, ReefDisplay reefDisplay) {
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tag) {
         this.vision = vision;
         this.drivetrain = drivetrain;
         this.camera = camera;

@@ -14,12 +14,19 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.AutoAlignConstants;
+import frc.robot.Constants.PoseConstants;
+import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.LEDConstants.LEDStates;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
@@ -30,6 +37,7 @@ public class PoseBasedAutoAlign extends Command {
     private PhotonVision vision;
     private Swerve drivetrain;
     private Camera camera;
+    private LEDs leds;
 
     private PIDController controllerX = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI,
         AutoAlignConstants.THREE_DEE_xD);
@@ -57,18 +65,19 @@ public class PoseBasedAutoAlign extends Command {
      * @param camera
      * @param IDCode the Lightning-specific ID code for the tag
      */
-    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LightningTagID IDCode) {
-        this(vision, drivetrain, camera);
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds, LightningTagID IDCode) {
+        this(vision, drivetrain, camera, leds);
 
         customTagSet = true;
 
         tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? IDCode.redID : IDCode.blueID;
     }
 
-    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera) {
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds) {
         this.vision = vision;
         this.drivetrain = drivetrain;
         this.camera = camera;
+        this.leds = leds;
 
         tagID = 0;
         customTagSet = false;
@@ -76,8 +85,8 @@ public class PoseBasedAutoAlign extends Command {
         addRequirements(drivetrain);
     }
 
-    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tagID) {
-        this(vision, drivetrain, camera);
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds, int tagID) {
+        this(vision, drivetrain, camera, leds);
 
         customTagSet = true;
 
@@ -157,6 +166,9 @@ public class PoseBasedAutoAlign extends Command {
     @Override
     public void end(boolean interrupted) {
         publisher.close();
+        if (!interrupted) {
+            leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
+        }
     }
 
     @Override

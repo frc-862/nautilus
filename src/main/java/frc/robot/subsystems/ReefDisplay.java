@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.thunder.util.Tuple;
+import frc.thunder.LightningShuffleboard;
 import java.util.List;
 
 public class ReefDisplay extends SubsystemBase {
@@ -48,6 +49,7 @@ public class ReefDisplay extends SubsystemBase {
 
     @Override
     public void periodic() {
+        setArrayIndex();
         if (collector.getVelocity() > 0 && targetReefSide.k != 0){
             switch(rod.getState()){
 
@@ -142,11 +144,12 @@ public class ReefDisplay extends SubsystemBase {
                 break;
         }
 
-        System.out.println("SideNum: " + sideNum);
 
         arrayIndex = sideNum * 2 + (targetReefSide.v ? 1 : 0);
 
-        System.out.println("ArrayIndex: " + arrayIndex);
+        LightningShuffleboard.setDouble("ReefDisplay", arrayIndex, arrayIndex);
+        LightningShuffleboard.setDouble("ReefDisplay", tagNum, targetReefSide.k);
+        LightningShuffleboard.setDouble("ReefDisplay", isRight, targetReefSide.v);
     }
 
 }

@@ -32,10 +32,12 @@ public class Climber extends SubsystemBase {
     private double targetPostion = 0;
 
     private DigitalInput limitSwitch;
-    
+
     public Climber(ThunderBird motor) {
 
         TalonFXConfiguration config = motor.getConfig();
+
+        limitSwitch = new DigitalInput(RobotMap.CLIMBER_LIMIT_SWITCH_DIO);
 
         this.motor = motor;
 
@@ -45,16 +47,14 @@ public class Climber extends SubsystemBase {
 
             gearbox = DCMotor.getFalcon500(1);
 
-            climbSim = new ElevatorSim(gearbox, ClimberConstants.GEAR_RATIO, ClimberConstants.CARRIAGE_MASS, ClimberConstants.DRUM_RADIUS, 
+            climbSim = new ElevatorSim(gearbox, ClimberConstants.GEAR_RATIO, ClimberConstants.CARRIAGE_MASS, ClimberConstants.DRUM_RADIUS,
                 ClimberConstants.MIN_EXTENSION, ClimberConstants.MAX_EXTENSION, false, 0, 0, 1);
         }
 
         config.Slot0.kP = ClimberConstants.KP;
         config.Slot0.kI = ClimberConstants.KI;
-        config.Slot0.kD = ClimberConstants.KD;  
+        config.Slot0.kD = ClimberConstants.KD;
         motor.applyConfig(config);
-
-        limitSwitch = new DigitalInput(RobotMap.CLIMBER_LIMIT_SWITCH_DIO);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class Climber extends SubsystemBase {
         // LightningShuffleboard.setDouble("Climber", "targetPosition", targetPostion);
         // LightningShuffleboard.setDouble("Diagnostics", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
 
-        if(getLimitSwitch()) {
+        if (getLimitSwitch()) {
             motor.stopMotor();
         }
     }
@@ -83,6 +83,9 @@ public class Climber extends SubsystemBase {
     }
 
     public void setPower(double speed) {
+        if (getLimitSwitch()) {
+            return;
+        }
         motor.setControl(new DutyCycleOut(speed));
     }
 
@@ -113,8 +116,6 @@ public class Climber extends SubsystemBase {
      * @return if the limit switch is triggered
      */
     public boolean getLimitSwitch() {
-        return limitSwitch.get();
+        return !limitSwitch.get();
     }
-
-
 }

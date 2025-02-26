@@ -43,6 +43,8 @@ public class LEDs extends Thunderbolt {
 
 				case ALIGNED -> blink(LightningColors.GREEN);
 
+				case ALGAE_MODE -> solid(LightningColors.LIGHT_BLUE);
+
 				case ALIGNING -> pulse(LightningColors.BLUE);
 
 				case COLLECTING -> pulse(LightningColors.PURPLE);
@@ -113,6 +115,7 @@ public class LEDs extends Thunderbolt {
 		// if (pdh.getSwitchableChannel()) {
 		// 	pdh.setSwitchableChannel(true);	
 		// }
+		LightningShuffleboard.set("LEDs", "Current State", strip.getState());
 	} 
 	/**
 	 * sets the PDH leds to on

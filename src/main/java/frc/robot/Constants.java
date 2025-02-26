@@ -1045,6 +1045,7 @@ public class Constants {
             ERROR(),
             COLLECTED(),
             ALIGNED(),
+            ALGAE_MODE(),
             ALIGNING(),
             COLLECTING(),
             SCORING(),

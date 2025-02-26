@@ -51,6 +51,8 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.Swerve;
 
@@ -79,7 +81,7 @@ public class Constants {
 
     public static class EncoderConstants {
         // Nautilus values
-        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.25732421875);
+        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(-0.39501953125);
         private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(0.412353515625);
         private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(0.0693359375);
         private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.30517578125);
@@ -91,7 +93,7 @@ public class Constants {
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
         public static final double tritonWristOffset = -0.227;
-        public static final double nautilusWristOffset = 0.318;
+        public static final double nautilusWristOffset = 0.135498046875;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
@@ -143,6 +145,10 @@ public class Constants {
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
+        
+        public static final int PDH = 2; // RIO LOOP
+        public static final ModuleType PDH_MODULE_TYPE = ModuleType.kRev;
+
         // 20ms default loop time
         public static final double UPDATE_FREQ = 0.020;
     }
@@ -204,7 +210,7 @@ public class Constants {
                 // put(ROD_STATES.L94, -80d);
                 // put(ROD_STATES.SOURCE, 0d);
 
-                put(RodStates.STOW, 80d);
+                put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
                 put(RodStates.L1, 0d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -35d);
@@ -237,6 +243,9 @@ public class Constants {
     }
 
     public static class ElevatorConstants {
+        public static final double OVERHEAT_TEMP = 95;
+        public static final double OVERHEAT_TEMP_DIFFERENCE = 20;
+
         public static final boolean BRAKE_MODE = true;
         // both motors are - to go up
         public static final boolean L_INVERTED = false;
@@ -306,7 +315,7 @@ public class Constants {
     }
 
     public static class CoralCollectorConstants {
-        // public static final boolean INVERTED = false;
+        public static final boolean INVERTED = false;
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final double CORAL_ROLLER_SPEED = 1;
@@ -325,7 +334,7 @@ public class Constants {
         public static final double COLLECTOR_DEADBAND = 0.1;
 
         //2.5 constants
-        public static final boolean INVERTED = true;
+        // public static final boolean INVERTED = true;
         public static final double COLLECTED_CURRENT = 13d;
         public static final double HOLD_POWER = 0.05d;
 
@@ -483,6 +492,9 @@ public class Constants {
     }
 
     public static class PoseConstants {
+        //temporary variable until red poses are properly tuned
+        static final double blueRedTransform = 8.575;
+
         public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
                 Units.feetToMeters(26.0));
 
@@ -492,7 +504,6 @@ public class Constants {
                 // Rotation2d(Degrees.of(54))));
 
                 //DONE
-
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22),
                         new Pose2d(5.286, 2.973, new Rotation2d(Degrees.of(-60))));
 
@@ -502,29 +513,72 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
                         new Pose2d(1.575, 0.697, new Rotation2d(Degrees.of(54))));
 
-                //OTHER
+                //UNTUNED
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17),
-                        new Pose2d(3.657, 2.936, new Rotation2d(Degrees.of(-120))));
+                        new Pose2d(3.689, 2.973, new Rotation2d(Degrees.of(-120))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18),
-                        new Pose2d(3.072, 3.875, new Rotation2d(Degrees.of(180))));
+                        new Pose2d(3.172, 3.869, new Rotation2d(Degrees.of(180))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 18),
-                        new Pose2d(3.101, 4.175, new Rotation2d(Degrees.of(180))));
+                        new Pose2d(3.172, 4.199, new Rotation2d(Degrees.of(180))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 19),
-                        new Pose2d(3.656, 5.122, new Rotation2d(Degrees.of(120))));
+                        new Pose2d(3.685, 5.089, new Rotation2d(Degrees.of(120))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 19),
-                        new Pose2d(3.949, 5.282, new Rotation2d(Degrees.of(120)))); // FIX
+                        new Pose2d(3.965, 5.231, new Rotation2d(Degrees.of(120)))); // FIX
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 20),
-                        new Pose2d(4.864, 5.235, new Rotation2d(Degrees.of(60)))); // SUS POSE
+                        new Pose2d(4.971, 5.257, new Rotation2d(Degrees.of(60)))); // SUS POSE
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 20),
                         new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(60))));
 
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 21),
-                        new Pose2d(5.837, 4.203, new Rotation2d(Degrees.of(0))));
+                        new Pose2d(5.789, 4.186, new Rotation2d(Degrees.of(0))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21),
-                        new Pose2d(5.89, 3.876, new Rotation2d(Degrees.of(0))));
+                        new Pose2d(5.795, 3.855, new Rotation2d(Degrees.of(0))));
 
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22),
                         new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
+
+
+
+                        
+
+                //red
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6),
+                        new Pose2d(5.286 + blueRedTransform, 2.973, new Rotation2d(Degrees.of(-60))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
+                        new Pose2d(1.575 + blueRedTransform, 0.697, new Rotation2d(Degrees.of(54))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 11),
+                        new Pose2d(3.689 + blueRedTransform, 2.973, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 11),
+                    new Pose2d(3.961 + blueRedTransform, 2.788, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 10),
+                        new Pose2d(3.172 + blueRedTransform, 3.869, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 10),
+                        new Pose2d(3.172 + blueRedTransform, 4.199, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 9),
+                        new Pose2d(12.285, 5.053, new Rotation2d(Degrees.of(120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 9),
+                        new Pose2d(3.965 + blueRedTransform, 5.231, new Rotation2d(Degrees.of(120)))); // FIX
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 8),
+                        new Pose2d(4.971 + blueRedTransform, 5.257, new Rotation2d(Degrees.of(60)))); // SUS POSE
+
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 8),
+                        new Pose2d(13.843, 5.039, new Rotation2d(Degrees.of(60))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 7),
+                        new Pose2d(5.789 + blueRedTransform, 4.186, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 7),
+                        new Pose2d(5.795 + blueRedTransform, 3.855, new Rotation2d(Degrees.of(0))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 6),
+                        new Pose2d(4.962 + blueRedTransform, 2.813, new Rotation2d(Degrees.of(-60))));
+
+
+                //source
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 1),
+                    new Pose2d(15.953, 7.312, new Rotation2d(Degrees.of(-126))));
 
             }
         };
@@ -543,42 +597,60 @@ public class Constants {
             }
         };
 
-        public static Pose2d getScorePose(Pose2d robotPose){
-            Translation2d robotToReef = robotPose.getTranslation().minus(new Translation2d(4.5, 4));
-            double theta = MathUtil.inputModulus(robotToReef.getAngle().getRadians(), 0, Math.PI * 2);
-            double r = Math.hypot(robotToReef.getX(), robotToReef.getY());
+        public static int getScorePose(Pose2d robotPose){
+
+            
+            final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
+            final DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(blue);
         
-            if (r > 2){
-                return null;
+                
+            Translation2d robotToReef = alliance == blue ? robotPose.getTranslation().minus(new Translation2d(4.5, 4.031))
+                : robotPose.getTranslation().minus(new Translation2d(13.055, 4.031));
+
+            double theta = MathUtil.inputModulus(robotToReef.getAngle().getRadians(), 0, Math.PI * 2);
+            double r = robotToReef.getDistance(new Translation2d());
+        
+            if (r > 3){
+                return 0;
             }
-    
+
 
             if (theta >= 0 && theta <= Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 21));
-            } else if (theta > Math.PI/6 && theta <= 2 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 20));
-            } else if (theta > 2 * Math.PI/6 && theta <= 3 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 20));
-            } else if (theta > 3 * Math.PI/6 && theta <= 4 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 19));
-            } else if (theta > 4 * Math.PI/3 && theta <= 5 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 19));
-            } else if (theta > 5 * Math.PI/6 && theta <= 6 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 18));
-            } else if (theta > 6 * Math.PI/6 && theta <= 7 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 18));
-            } else if (theta > 7 * Math.PI/6 && theta <= 8 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 17));
-            } else if (theta > 8 * Math.PI/6 && theta <= 9 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 17));
-            } else if (theta > 9 * Math.PI/6 && theta <= 10 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 22));
-            } else if (theta > 10 * Math.PI/6 && theta <= 11 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.LEFT, 22));
+                return alliance == blue ? 21 : 7;
+            } else if (theta > Math.PI/6 && theta <= 3 * Math.PI/6){
+                return alliance == blue ? 20 : 8;
+            } else if (theta > 3 * Math.PI/6 && theta <= 5 * Math.PI/6){
+                return alliance == blue ? 19 : 9;
+            } else if (theta > 5 * Math.PI/6 && theta <= 7 * Math.PI/6){
+                return alliance == blue ? 18 : 10;
+            } else if (theta > 7 * Math.PI/6 && theta <= 9 * Math.PI/6){
+                return alliance == blue ? 17 : 11;
+            } else if (theta > 9 * Math.PI/6 && theta <= 11 * Math.PI/6){
+                return alliance == blue ? 22 : 6;
             } else if (theta > 11 * Math.PI/6 && theta <= 12 * Math.PI/6){
-                return poseHashMap.get(new Tuple<>(VisionConstants.Camera.RIGHT, 21));
+                return alliance == blue ? 21 : 7;
             } else {
-                return null;
+                return 0;
+            }
+        }
+
+
+        public enum LightningTagID {
+            // reef poses
+            One(7, 18),
+            Two(8, 17),
+            Three(9, 22),
+            Four(10, 21),
+            Five(11, 20),
+            Six(6, 19),
+
+            RightSource(1, 12),
+            LeftSource(2, 13);
+
+            public final int redID, blueID;
+            private LightningTagID(int redID, int blueID) {
+                this.redID = redID;
+                this.blueID = blueID;
             }
         }
     }
@@ -1027,16 +1099,22 @@ public class Constants {
         public static final int PWM_PORT = 0;
         public static final int LENGTH = 60;
 
-        public static final int PULSE_TIME = 5;
+        public static final int PULSE_TIME = 3;
 
         public static final int SWRIL_SEGMENT_SIZE = 5;
 
+        public static final double PDH_LED_POWEROFF_VOLTAGE = 9d;
+
         public enum LEDStates {
+            MIXER(),
+            ERROR(),
             COLLECTED(),
-            SCORED(),
+            ALIGNED(),
+            ALGAE_MODE(),
             ALIGNING(),
             COLLECTING(),
             SCORING(),
+            READY_TO_ALIGN(),
             ROD_MOVING(),
             UPDATING_POSE(),
             POSE_BAD(),

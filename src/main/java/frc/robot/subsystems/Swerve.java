@@ -168,6 +168,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
 
         // LightningShuffleboard.setPose2d("Drivetrain", "pose", getState().Pose);
+
+        LightningShuffleboard.setDouble("Drivetrain", "tag id", PoseConstants.getScorePose(pose));
     }
 
     private void configurePathPlanner() {
@@ -321,6 +323,15 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     public int reefTagToRobot(Pose2d pos){
         for (Entry<Rectangle2d, Integer> entry : PoseConstants.aprilTagRegions.entrySet()){
             if(entry.getKey().contains(pos.getTranslation())){
+                return entry.getValue().intValue();
+            }
+        }
+        return 0;
+    }
+
+    public int reefTagToRobot(){
+        for (Entry<Rectangle2d, Integer> entry : PoseConstants.aprilTagRegions.entrySet()) {
+            if(entry.getKey().contains(getPose().getTranslation())) {
                 return entry.getValue().intValue();
             }
         }

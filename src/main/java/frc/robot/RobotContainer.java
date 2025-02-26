@@ -15,6 +15,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,20 +26,25 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.RobotIdentifiers;
+import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.LEDConstants.LEDStates;
+import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
+import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.PoseBasedAutoAlign;
@@ -43,6 +52,7 @@ import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.TagAutoAlign;
 import frc.robot.commands.ThreeDeeAutoAlign;
+import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Climber;
@@ -61,10 +71,13 @@ import frc.thunder.leds.LightningColors;
 
 public class RobotContainer extends LightningContainer {
 
+    public PowerDistribution pdh;
+
     public Swerve drivetrain;
     public PhotonVision vision;
     private Telemetry logger;
-    private LEDs leds;
+    public LEDs leds;
+
     private SendableChooser<Command> autoChooser;
 
     private Elevator elevator;
@@ -79,8 +92,12 @@ public class RobotContainer extends LightningContainer {
     private static XboxController driver;
     private static XboxController copilot;
 
+    private boolean erroring = false;
+
     @Override
     protected void initializeSubsystems() {
+        pdh = new PowerDistribution(RobotMap.PDH, RobotMap.PDH_MODULE_TYPE);
+
         driver = new XboxController(ControllerConstants.DRIVER_CONTROLLER);
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
 
@@ -94,17 +111,18 @@ public class RobotContainer extends LightningContainer {
         wrist = new Wrist(RobotMotors.wristMotor);
         rod = new FishingRod(wrist, elevator);
         coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
-        
+
+        climber = new Climber(RobotMotors.climberMotor);
 
         if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
-            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor, RobotMotors.algaeCollectorPivotMotor);
-            climber = new Climber(RobotMotors.climberMotor);
+            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
+                    RobotMotors.algaeCollectorPivotMotor);
         }
 
         if (Robot.isSimulation()) {
             // algae collector and climber are temp because not initialized above
-            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor, RobotMotors.algaeCollectorPivotMotor);
-            climber = new Climber(RobotMotors.climberMotor);
+            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
+                    RobotMotors.algaeCollectorPivotMotor);
 
             simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector, climber);
         }
@@ -112,6 +130,7 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void configureDefaultCommands() {
+        // FIELD CENTRIC DRIVE
         drivetrain.setDefaultCommand(drivetrain.applyRequest(
                 DriveRequests.getDrive(
                         () -> MathUtil.applyDeadband(-(driver.getLeftY() * drivetrain.getSpeedMult()),
@@ -122,29 +141,43 @@ public class RobotContainer extends LightningContainer {
                                 ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        coralCollector.setDefaultCommand(new CollectCoral(coralCollector,
+        // CORAL INTAKE
+        coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
                         CoralCollectorConstants.COLLECTOR_DEADBAND)));
 
+        climber.setDefaultCommand(new RunCommand(
+                () -> climber.setPower(
+                        MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
+                climber));
+
+        // This should not be here, but is commented just to be safe if ever needed again
+        // rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));
+
+        // LED TRIGGERS
+        new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
+
+        new Trigger(() -> elevator.isOverheating()).onTrue(new InstantCommand(() -> erroring = true));
+
+        new Trigger(() -> erroring && DriverStation.isDisabled()).whileTrue(leds.strip.enableState(LEDStates.ERROR));
+
         new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.SCORING));
         new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
-
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
-            climber.setDefaultCommand(new RunCommand(
-                    () -> climber.setPower(
-                            MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
-                    climber));
-
-            rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));
-
-            new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
-        }
 
         new Trigger(() -> (drivetrain.poseZero() && DriverStation.isDisabled() && !vision.hasTarget()))
                 .whileTrue(leds.strip.enableState(LEDStates.POSE_BAD));
         new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled() && vision.hasTarget()))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
+        /* PDH LED TRIGGERSS */
+        if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
+            // Allow the Rio userbutton to toggle the pdh leds
+            new Trigger(RobotController::getUserButton).onTrue(leds.togglePdh(pdh));
+
+            // Turn off the PDH leds if the voltage ever dips below a certain value
+            new Trigger(() -> pdh.getVoltage() < LEDConstants.PDH_LED_POWEROFF_VOLTAGE && leds.pdhEnabled)
+                    .onTrue(leds.togglePdh(pdh));
+        }
     }
 
     @Override
@@ -166,12 +199,15 @@ public class RobotContainer extends LightningContainer {
                 .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
         // // sets slow mode if the elevator is above L3 (around 29 inches)
-        // new Trigger(() -> (elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && (DriverStation.isTeleop()))
-        //     .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
+        // new Trigger(() -> (elevator.getPosition() >
+        // ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && (DriverStation.isTeleop()))
+        // .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
 
         // // stops slow mode if below L3 (around 29 inches)
-        // new Trigger(() -> (!(elevator.getPosition() > ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() > 0.25) && (DriverStation.isTeleop())))
-        //     .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
+        // new Trigger(() -> (!(elevator.getPosition() >
+        // ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() >
+        // 0.25) && (DriverStation.isTeleop())))
+        // .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
         // drivetrain brake
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
@@ -180,13 +216,17 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
+        // new Trigger(driver::getLeftBumperButton)
+        //         .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
+
+
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds));
         new Trigger(driver::getRightBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds));
 
         new Trigger(() -> driver.getPOV() == 90)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 12));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, LightningTagID.LeftSource));
 
         /* COPILOT BINDINGS */
         /*
@@ -221,10 +261,9 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5));
         new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5));
 
-        //  algae control
+        // algae control
         // new Trigger(() -> copilot.getRightTriggerAxis() > -1)
         //     .whileTrue(new CollectAlgae(algaeCollector, copilot::getRightTriggerAxis).deadlineFor(leds.strip.enableState(LEDStates.COLLECTING))); 
-
 
         // sim stuff
         // if (Robot.isSimulation()) {
@@ -246,10 +285,14 @@ public class RobotContainer extends LightningContainer {
         // .onFalse(new InstantCommand(coralCollector::stop));
         // }
 
+        // LED testing
+        new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
+        
         // SYSID
-        // SignalLogger.start();
-        // new Trigger(driver::getYButton).whileTrue(new SysIdSequence(drivetrain,
-        // DrivetrainConstants.SysIdTestType.STEER));
+        new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
+        new Trigger(driver::getYButton)
+                .whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.DRIVE));
+        new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() -> SignalLogger.stop()));
 
     }
 
@@ -257,29 +300,28 @@ public class RobotContainer extends LightningContainer {
     protected void initializeNamedCommands() {
         // NamedCommands.registerCommand("ScoreCoral",
         // StandinCommands.scoreCoral().deadlineFor(leds.elevatorStrip.enableState(LEDStates.CORAL_SCORE)));
-        // TODO: Get actual offsets
 
-        NamedCommands.registerCommand("ReefAlignLeft",
-                new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, 22)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        NamedCommands.registerCommand("ReefAlignRight",
-                new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, 22)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        NamedCommands.registerCommand("SourceAlignLeft",
-                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        NamedCommands.registerCommand("SourceAlignRight",
-                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-
-        for (Integer i = 1; i < 23; i++) {
-            NamedCommands.registerCommand("AlignTo" + i + "Left",
-                    new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT,
-                            i).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            NamedCommands.registerCommand("AlignTo" + i + "Right",
-                    new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT,
-                            i).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        /**
+         * 1 is the target facing the driver station, 2 is to the right of 1...6 is to left of 1 (CCW+)
+         * 7 is blue-barge source, 8 is red-barge source
+         */
+        for (LightningTagID ID : LightningTagID.values()) {
+            switch (ID) {
+                case LeftSource, RightSource:
+                    NamedCommands.registerCommand("AlignTo" + ID.name(), new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
+                        ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    break;
+            
+                default:
+                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds,
+                            ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
+                            ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    break;
+            }
         }
 
-        NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, () -> 1));
+        NamedCommands.registerCommand("IntakeCoral", new IntakeCoral(coralCollector, 1).withDeadline(new WaitCommand(3)));
 
         NamedCommands.registerCommand("RodStow",
                 new SetRodState(rod, RodStates.STOW)

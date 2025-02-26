@@ -10,11 +10,21 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.LEDConstants.LEDStates;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.AutoAlignConstants;
+import frc.robot.Constants.PoseConstants;
+import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
@@ -25,6 +35,7 @@ public class PoseBasedAutoAlign extends Command {
     private PhotonVision vision;
     private Swerve drivetrain;
     private Camera camera;
+    private LEDs leds;
 
     private PIDController controllerX = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI,
         AutoAlignConstants.THREE_DEE_xD);
@@ -36,9 +47,13 @@ public class PoseBasedAutoAlign extends Command {
         AutoAlignConstants.THREE_DEE_rD);
 
     private Transform3d currentTransform = new Transform3d();
-    private Pose2d targetPose;
+    private Pose2d targetPose = new Pose2d();
 
     private StructPublisher<Pose2d> publisher;
+
+    private int tagID = 0;
+    private boolean customTagSet = false;
+    private boolean invokeCancel = false;
 
     /**
      * Used to align to Tag
@@ -46,21 +61,51 @@ public class PoseBasedAutoAlign extends Command {
      * @param vision
      * @param drivetrain
      * @param camera
-     * @param tag
+     * @param IDCode the Lightning-specific ID code for the tag
      */
-    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, int tag) {
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds, LightningTagID IDCode) {
+        this(vision, drivetrain, camera, leds);
+
+        customTagSet = true;
+
+        tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? IDCode.redID : IDCode.blueID;
+    }
+
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds) {
         this.vision = vision;
         this.drivetrain = drivetrain;
         this.camera = camera;
-        targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tag));
+        this.leds = leds;
 
+        tagID = 0;
+        customTagSet = false;
+        
         addRequirements(drivetrain);
+    }
+
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds, int tagID) {
+        this(vision, drivetrain, camera, leds);
+
+        customTagSet = true;
+
+        this.tagID = tagID;
     }
 
     @Override
     public void initialize() {
         publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("TestAutoAlign").getStructTopic("TARGET POSE", Pose2d.struct).publish();
         publisher.accept(targetPose);
+
+        if (!customTagSet) {
+            tagID = PoseConstants.getScorePose(drivetrain.getPose());
+        }
+
+        if (tagID == 0) {
+            invokeCancel = true;
+            CommandScheduler.getInstance().cancel(this);
+        } else {
+            targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tagID));
+        }
 
         controllerX.setTolerance(0.02);
 
@@ -119,11 +164,14 @@ public class PoseBasedAutoAlign extends Command {
     @Override
     public void end(boolean interrupted) {
         publisher.close();
+        if (!interrupted) {
+            leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return controllerX.atSetpoint() && controllerY.atSetpoint() && controllerR.atSetpoint();
+        return (controllerX.atSetpoint() && controllerY.atSetpoint() && controllerR.atSetpoint()) || invokeCancel;
     }
 
     private void setXGains() {

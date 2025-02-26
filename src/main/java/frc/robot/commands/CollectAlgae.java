@@ -7,18 +7,24 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
 import frc.robot.subsystems.AlgaeCollector;
+import frc.robot.subsystems.LEDs;
 import frc.robot.Constants.AlgaeCollectorConstants;
+import frc.robot.Constants.LEDConstants.LEDStates;
+import frc.robot.Constants.LEDConstants;
 
 public class CollectAlgae extends Command {
 
     private AlgaeCollector collector;
+    private LEDs leds;
 
     private DoubleSupplier triggerPower;
 
-    public CollectAlgae(AlgaeCollector collector, DoubleSupplier triggerPower) {
+    public CollectAlgae(AlgaeCollector collector, LEDs leds, DoubleSupplier triggerPower) {
         this.collector = collector;
+        this.leds = leds;
         this.triggerPower = triggerPower;
 
         addRequirements(collector);
@@ -38,6 +44,9 @@ public class CollectAlgae extends Command {
     public void end(boolean interrupted) {
         collector.setPivotState(AlgaePivotStates.STOWED);
         collector.stop();
+        if (!interrupted) {
+            leds.strip.enableState(LEDStates.COLLECTED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
+        }
     }
 
     @Override

@@ -59,6 +59,8 @@ public class Elevator extends SubsystemBase {
 
     private MotionMagicVoltage positionPID;
 
+    private boolean isInStow = false;
+
     // sim stuff
     private DCMotor gearbox;
     private ElevatorSim elevatorSim;
@@ -146,10 +148,10 @@ public class Elevator extends SubsystemBase {
         // LightningShuffleboard.setDouble("Diagnostics", "right elevator motor temp", rightMotor.getDeviceTemp().getValueAsDouble());
 
         // checks if the elevator is in sync with the CANRange sensor every 2 seconds
-            // if (shouldSyncCANRange() && (Timer.getFPGATimestamp() > syncTime)) {
-            //     leftMotor.setPosition(rangeSensorDistance);
-            //     syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
-            // }
+        if (shouldSyncCANRange() && (Timer.getFPGATimestamp() > syncTime)) {
+            leftMotor.setPosition(rangeSensorDistance);
+            syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
+        }
     }
 
     /**
@@ -170,6 +172,7 @@ public class Elevator extends SubsystemBase {
      * @param state State of the rod
      */
     public void setState(RodStates state) {
+        isInStow = state == RodStates.STOW;
         setPosition(FishingRodConstants.ELEVATOR_MAP.get(state));
     }
 
@@ -206,10 +209,11 @@ public class Elevator extends SubsystemBase {
      */
     public boolean shouldSyncCANRange() {
         return Math.abs(rangeSensorDistance - currentPosition) >= ElevatorConstants.CANRANGE_TOLERANCE // checks if within tolerance
-        && Math.abs(rangeSensorDistance - currentPosition) <= ElevatorConstants.OK_TO_SYNC_TOLERANCE // AND checks if too desynced (CANRange could be blocked or something)
+        // && Math.abs(rangeSensorDistance - currentPosition) <= ElevatorConstants.OK_TO_SYNC_TOLERANCE // AND checks if too desynced (CANRange could be blocked or something)
         && Math.abs(leftMotor.getVelocity().getValueAsDouble()) < 0.1 // AND checks if the elevator isn't moving
-        && rangeSensorDistance <= 11d // AND checks if the CANRange is below 11 inches
-        && rangeSensorDistance >= 0d; // AND checks if the CANRange is above 0 inches
+        && rangeSensorDistance <= 5d // AND checks if the CANRange is below 11 inches
+        && rangeSensorDistance >= 0d // AND checks if the CANRange is above 0 inches
+        && isInStow; // AND checks if the elevator isn't in stow
     }
 
     /**
@@ -232,7 +236,7 @@ public class Elevator extends SubsystemBase {
             return ElevatorConstants.TRITON_INTERPOLATION_SLOPE * Units.metersToInches(rangeSensor.getDistance().getValueAsDouble())
              + ElevatorConstants.TRITON_INTERPOLATION_INTERCEPT;
         } else {
-            return ElevatorConstants.NATUILUS_INTERPOLATION_SLOPE * Units.metersToInches(rangeSensor.getDistance().getValueAsDouble())
+            return ElevatorConstants.NATUILUS_INTERPOLATION_SLOPE * rangeSensor.getDistance().getValueAsDouble()
              + ElevatorConstants.NAUTILUS_INTERPOLATION_INTERCEPT;
         }
     }

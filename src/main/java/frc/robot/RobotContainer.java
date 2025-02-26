@@ -39,6 +39,7 @@ import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.LEDConstants.LEDStates;
+import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
@@ -51,6 +52,7 @@ import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.TagAutoAlign;
 import frc.robot.commands.ThreeDeeAutoAlign;
+import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
 import frc.robot.subsystems.Climber;
@@ -214,13 +216,17 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(() -> drivetrain.seedFieldCentric()));
 
+        // new Trigger(driver::getLeftBumperButton)
+        //         .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
+
+
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, 22));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds));
         new Trigger(driver::getRightBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds, 22));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds));
 
         new Trigger(() -> driver.getPOV() == 90)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, 12));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, LightningTagID.LeftSource));
 
         /* COPILOT BINDINGS */
         /*
@@ -294,29 +300,28 @@ public class RobotContainer extends LightningContainer {
     protected void initializeNamedCommands() {
         // NamedCommands.registerCommand("ScoreCoral",
         // StandinCommands.scoreCoral().deadlineFor(leds.elevatorStrip.enableState(LEDStates.CORAL_SCORE)));
-        // TODO: Get actual offsets
 
-        NamedCommands.registerCommand("ReefAlignLeft",
-                new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds, 22)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        NamedCommands.registerCommand("ReefAlignRight",
-                new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, 22)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        NamedCommands.registerCommand("SourceAlignLeft",
-                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        NamedCommands.registerCommand("SourceAlignRight",
-                new TagAutoAlign(vision, drivetrain).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-
-        for (Integer i = 1; i < 23; i++) {
-            NamedCommands.registerCommand("AlignTo" + i + "Left",
-                    new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds, i)
-                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-            NamedCommands.registerCommand("AlignTo" + i + "Right",
-                    new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, i)
-                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        /**
+         * 1 is the target facing the driver station, 2 is to the right of 1...6 is to left of 1 (CCW+)
+         * 7 is blue-barge source, 8 is red-barge source
+         */
+        for (LightningTagID ID : LightningTagID.values()) {
+            switch (ID) {
+                case LeftSource, RightSource:
+                    NamedCommands.registerCommand("AlignTo" + ID.name(), new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
+                        ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    break;
+            
+                default:
+                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds,
+                            ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
+                            ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    break;
+            }
         }
 
-        NamedCommands.registerCommand("IntakeCoral", new CollectCoral(coralCollector, leds, () -> 1));
+        NamedCommands.registerCommand("IntakeCoral", new IntakeCoral(coralCollector, 1).withDeadline(new WaitCommand(3)));
 
         NamedCommands.registerCommand("RodStow",
                 new SetRodState(rod, RodStates.STOW)

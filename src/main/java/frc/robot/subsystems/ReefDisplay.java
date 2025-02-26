@@ -67,7 +67,7 @@ public class ReefDisplay extends SubsystemBase {
         }
 
         publish();
-        LightningShuffleboard.setDouble("ReefDisplay", "arrayIndex", arrayIndex);
+        LightningShuffleboard.setDouble("ReefDisplay", "arrayIndex", getArrayIndex());
         LightningShuffleboard.setDouble("ReefDisplay", "tagNum", targetReefSide.k);
         LightningShuffleboard.setBool("ReefDisplay", "isRight", targetReefSide.v);
 

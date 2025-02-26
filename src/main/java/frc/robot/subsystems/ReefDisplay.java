@@ -75,15 +75,17 @@ public class ReefDisplay extends SubsystemBase {
     }
 
     public void updateTargetReef(){
-        Pose2d rightPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.LEFT, targetReefSide.k));
-        Pose2d leftPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.RIGHT, targetReefSide.k));
+        int tagNum = drivetrain.reefTagToRobot(drivetrain.getPose());
+        
+        Pose2d rightPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.RIGHT, tagNum));
+        Pose2d leftPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.LEFT, tagNum));
 
 
         if (rightPose != null && leftPose != null && drivetrain.getPose().nearest(List.of(rightPose, leftPose)) == rightPose) {
-            targetReefSide = new Tuple<Integer, Boolean>(drivetrain.reefTagToRobot(drivetrain.getPose()), true);
+            targetReefSide = new Tuple<Integer, Boolean>(tagNum, false);
         }
         else{
-            targetReefSide = new Tuple<Integer, Boolean>(drivetrain.reefTagToRobot(drivetrain.getPose()), false);
+            targetReefSide = new Tuple<Integer, Boolean>(tagNum, true);
         }
     }
 

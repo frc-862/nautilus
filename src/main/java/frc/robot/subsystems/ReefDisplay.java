@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.thunder.util.Tuple;
-import frc.thunder.LightningShuffleboard;
+import frc.thunder.shuffleboard.LightningShuffleboard;
 import java.util.List;
 
 public class ReefDisplay extends SubsystemBase {
@@ -68,6 +68,10 @@ public class ReefDisplay extends SubsystemBase {
 
             publish();
         }
+
+        LightningShuffleboard.setDouble("ReefDisplay", "arrayIndex", arrayIndex);
+        LightningShuffleboard.setDouble("ReefDisplay", "tagNum", targetReefSide.k);
+        LightningShuffleboard.setBool("ReefDisplay", "isRight", targetReefSide.v);
     }
 
     public void updateTargetReef(){
@@ -75,7 +79,7 @@ public class ReefDisplay extends SubsystemBase {
         Pose2d leftPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.RIGHT, targetReefSide.k));
 
 
-        if(drivetrain.getPose().nearest(List.of(rightPose, leftPose)) == rightPose){
+        if (rightPose != null && leftPose != null && drivetrain.getPose().nearest(List.of(rightPose, leftPose)) == rightPose) {
             targetReefSide = new Tuple<Integer, Boolean>(drivetrain.reefTagToRobot(drivetrain.getPose()), true);
         }
         else{
@@ -146,10 +150,6 @@ public class ReefDisplay extends SubsystemBase {
 
 
         arrayIndex = sideNum * 2 + (targetReefSide.v ? 1 : 0);
-
-        LightningShuffleboard.setDouble("ReefDisplay", arrayIndex, arrayIndex);
-        LightningShuffleboard.setDouble("ReefDisplay", tagNum, targetReefSide.k);
-        LightningShuffleboard.setDouble("ReefDisplay", isRight, targetReefSide.v);
     }
 
 }

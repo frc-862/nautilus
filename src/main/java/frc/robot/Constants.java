@@ -242,6 +242,9 @@ public class Constants {
     }
 
     public static class ElevatorConstants {
+        public static final double OVERHEAT_TEMP = 95;
+        public static final double OVERHEAT_TEMP_DIFFERENCE = 20;
+
         public static final boolean BRAKE_MODE = true;
         // both motors are - to go up
         public static final boolean L_INVERTED = false;
@@ -1095,18 +1098,22 @@ public class Constants {
         public static final int PWM_PORT = 0;
         public static final int LENGTH = 60;
 
-        public static final int PULSE_TIME = 5;
+        public static final int PULSE_TIME = 3;
 
         public static final int SWRIL_SEGMENT_SIZE = 5;
 
         public static final double PDH_LED_POWEROFF_VOLTAGE = 9d;
 
         public enum LEDStates {
+            MIXER(),
+            ERROR(),
             COLLECTED(),
-            SCORED(),
+            ALIGNED(),
+            ALGAE_MODE(),
             ALIGNING(),
             COLLECTING(),
             SCORING(),
+            READY_TO_ALIGN(),
             ROD_MOVING(),
             UPDATING_POSE(),
             POSE_BAD(),

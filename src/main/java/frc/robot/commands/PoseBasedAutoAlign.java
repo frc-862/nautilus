@@ -98,6 +98,8 @@ public class PoseBasedAutoAlign extends Command {
         publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("TestAutoAlign").getStructTopic("TARGET POSE", Pose2d.struct).publish();
         publisher.accept(targetPose);
 
+        invokeCancel = false;
+
         if (!customTagSet) {
             tagID = PoseConstants.getScorePose(drivetrain.getPose());
         }

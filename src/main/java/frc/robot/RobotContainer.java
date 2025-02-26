@@ -265,7 +265,7 @@ public class RobotContainer extends LightningContainer {
         (new Trigger(copilot::getYButton).and(rod::isCoralMode)).onTrue(new SetRodState(rod, RodStates.L4));
 
         //algae mode
-        new Trigger(rod::isCoralMode).negate().and(copilot::getAButton).onTrue(new SetRodState(rod, RodStates.L1));
+        new Trigger(rod::isCoralMode).negate().and(copilot::getAButton).onTrue(new SetRodState(rod, RodStates.PROCESSOR));
         new Trigger(rod::isCoralMode).negate().and(copilot::getBButton).onTrue(new SetRodState(rod, RodStates.LOW));
         new Trigger(rod::isCoralMode).negate().and(copilot::getXButton).onTrue(new SetRodState(rod, RodStates.HIGH));
         new Trigger(rod::isCoralMode).negate().and(copilot::getYButton).onTrue(new SetRodState(rod, RodStates.ALGAE_SCORE));

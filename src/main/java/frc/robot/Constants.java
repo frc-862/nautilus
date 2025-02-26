@@ -180,7 +180,7 @@ public class Constants {
     public static class FishingRodConstants {
         public enum RodStates {
             STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
-            ALGAE_SCORE(true), DEFAULT(false);
+            ALGAE_SCORE(true), PROCESSOR(false), DEFAULT(false);
 
             private boolean scoring;
 
@@ -212,13 +212,14 @@ public class Constants {
 
                 put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
                 put(RodStates.L1, 0d);
-                put(RodStates.L2, -30d);
-                put(RodStates.L3, -35d);
-                put(RodStates.L4, -39.5d);
+                put(RodStates.L2, -28.5d);
+                put(RodStates.L3, -36d);
+                put(RodStates.L4, -40d);
                 put(RodStates.LOW, -30d);
                 put(RodStates.HIGH, -30d);
-                put(RodStates.SOURCE, 39.5d);
+                put(RodStates.SOURCE, 42d);
                 put(RodStates.ALGAE_SCORE, -39.5d);
+                put(RodStates.PROCESSOR, 60d);
             }
         };
 
@@ -232,14 +233,15 @@ public class Constants {
                 // put(ROD_STATES.SOURCE, 36.5d);
 
                 put(RodStates.STOW, 3d);
-                put(RodStates.L1, 10d);
-                put(RodStates.L2, 13d);
+                put(RodStates.L1, 5d);
+                put(RodStates.L2, 11.5d);
                 put(RodStates.L3, 26d);
                 put(RodStates.L4, 47d);
                 put(RodStates.LOW, 15d);
                 put(RodStates.HIGH, 28d);
                 put(RodStates.SOURCE, 9.5d);
                 put(RodStates.ALGAE_SCORE, 47d);
+                put(RodStates.PROCESSOR, 1d);
             }
         };
     }
@@ -562,7 +564,7 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 10),
                         new Pose2d(3.172 + blueRedTransform, 4.199, new Rotation2d(Degrees.of(180))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 9),
-                        new Pose2d(12.285, 5.053, new Rotation2d(Degrees.of(120))));
+                        new Pose2d(12.260, 5.084, new Rotation2d(Degrees.of(120))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 9),
                         new Pose2d(3.965 + blueRedTransform, 5.231, new Rotation2d(Degrees.of(120)))); // FIX
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 8),

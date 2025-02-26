@@ -35,6 +35,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FishingRodConstants;
 import frc.robot.Constants.FishingRodConstants.RodStates;
+import frc.robot.Constants.RobotIdentifiers;
+import frc.robot.Constants;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
@@ -132,21 +134,22 @@ public class Elevator extends SubsystemBase {
         currentPosition = getPosition();
         rangeSensorDistance = getCANRangeDist();
 
-        // LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", rangeSensorDistance);
+        LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", rangeSensorDistance);
         // LightningShuffleboard.setBool("Diagnostic", "Elevator Pos and CANRange in Sync", !shouldSyncCANRange());
+        LightningShuffleboard.setDouble("Diagnostic", "Elevator Raw CANRange", getCANRangeRaw());
 
         // LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
-        // LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
+        LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
         // LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
 
         // LightningShuffleboard.setDouble("Diagnostics", "left elevator motor temp", leftMotor.getDeviceTemp().getValueAsDouble());
         // LightningShuffleboard.setDouble("Diagnostics", "right elevator motor temp", rightMotor.getDeviceTemp().getValueAsDouble());
 
         // checks if the elevator is in sync with the CANRange sensor every 2 seconds
-        if (shouldSyncCANRange() && (Timer.getFPGATimestamp() > syncTime)) {
-            leftMotor.setPosition(rangeSensorDistance);
-            syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
-        }
+            // if (shouldSyncCANRange() && (Timer.getFPGATimestamp() > syncTime)) {
+            //     leftMotor.setPosition(rangeSensorDistance);
+            //     syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
+            // }
     }
 
     /**
@@ -205,7 +208,7 @@ public class Elevator extends SubsystemBase {
         return Math.abs(rangeSensorDistance - currentPosition) >= ElevatorConstants.CANRANGE_TOLERANCE // checks if within tolerance
         && Math.abs(rangeSensorDistance - currentPosition) <= ElevatorConstants.OK_TO_SYNC_TOLERANCE // AND checks if too desynced (CANRange could be blocked or something)
         && Math.abs(leftMotor.getVelocity().getValueAsDouble()) < 0.1 // AND checks if the elevator isn't moving
-        && rangeSensorDistance <= 25d // AND checks if the CANRange is below 25 inches
+        && rangeSensorDistance <= 11d // AND checks if the CANRange is below 11 inches
         && rangeSensorDistance >= 0d; // AND checks if the CANRange is above 0 inches
     }
 
@@ -225,8 +228,17 @@ public class Elevator extends SubsystemBase {
      * @return CANRange distance
      */
     public double getCANRangeDist() {
-        return ElevatorConstants.TRITON_INTERPOLATION_SLOPE * Units.metersToInches(rangeSensor.getDistance().getValueAsDouble())
-         + ElevatorConstants.TRITON_INTERPOLATION_INTERCEPT;
+        if(Constants.ROBOT_IDENTIFIER == RobotIdentifiers.TRITON) {
+            return ElevatorConstants.TRITON_INTERPOLATION_SLOPE * Units.metersToInches(rangeSensor.getDistance().getValueAsDouble())
+             + ElevatorConstants.TRITON_INTERPOLATION_INTERCEPT;
+        } else {
+            return ElevatorConstants.NATUILUS_INTERPOLATION_SLOPE * Units.metersToInches(rangeSensor.getDistance().getValueAsDouble())
+             + ElevatorConstants.NAUTILUS_INTERPOLATION_INTERCEPT;
+        }
+    }
+
+    public double getCANRangeRaw() {
+        return rangeSensor.getDistance().getValueAsDouble();
     }
 
     /**

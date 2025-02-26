@@ -287,6 +287,9 @@ public class Constants {
 
         public static final double TRITON_INTERPOLATION_SLOPE = 0.692679;
         public static final double TRITON_INTERPOLATION_INTERCEPT = -2.53443;
+
+        public static final double NATUILUS_INTERPOLATION_SLOPE = 22.54096;
+        public static final double NAUTILUS_INTERPOLATION_INTERCEPT = -0.834493;
     }
 
     public static class WristConstants {

@@ -50,7 +50,7 @@ public class ReefDisplay extends SubsystemBase {
     @Override
     public void periodic() {
         setArrayIndex();
-        if (collector.getVelocity() > 0 && targetReefSide.k != 0){
+        if (collector.getVelocity() < 0 && targetReefSide.k != 0){
             switch(rod.getState()){
 
                 case L2:

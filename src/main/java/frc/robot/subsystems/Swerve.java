@@ -206,7 +206,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return (
             Math.abs(xFilter.calculate(pose.getX()) - pose.getX()) < 0.01 &&
             Math.abs(yFilter.calculate(pose.getY()) - pose.getY()) < 0.01 &&
-            Math.abs(rotFilter.calculate(pose.getRotation().getRadians()) - pose.getRotation().getRadians()) < 0.01);
+            Math.abs(rotFilter.calculate(pose.getRotation().getRadians()) - pose.getRotation().getRadians()) < 0.1);
     }
 
     /**

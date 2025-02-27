@@ -85,7 +85,7 @@ public class RobotContainer extends LightningContainer {
     private static XboxController driver;
     private static XboxController copilot;
 
-    private boolean erroring = false;
+    private boolean erroring = false; // side note: nate wtf
 
     @Override
     protected void initializeSubsystems() {

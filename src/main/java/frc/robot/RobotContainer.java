@@ -274,7 +274,8 @@ public class RobotContainer extends LightningContainer {
         // }
 
         // LED testing
-        // new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
+        // new Trigger(() -> leds.getTestState() !=
+        // null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
 
         // SYSID
         // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() ->
@@ -289,33 +290,36 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeNamedCommands() {
-        /**
+        /*
          * 1 is the target facing the driver station, 2 is to the right of 1...6 is to
          * left of 1 (CCW+)
          * 7 is blue-barge source, 8 is red-barge source
          */
-        for (LightningTagID ID : LightningTagID.values()) {
-            switch (ID) {
+        for (LightningTagID tagID : LightningTagID.values()) {
+            switch (tagID) {
                 case LeftSource, RightSource:
-                    NamedCommands.registerCommand("AlignTo" + ID.name(),
+                    NamedCommands.registerCommand("AlignTo" + tagID.name(),
                             new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
-                                    ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                                    tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
 
                 default:
-                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Left",
+                    NamedCommands.registerCommand("AlignTo" + tagID.name() + "Left",
                             new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds,
-                                    ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Right",
+                                    tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + tagID.name() + "Right",
                             new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
-                                    ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                                    tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
             }
         }
 
         NamedCommands.registerCommand("IntakeCoral",
-                new IntakeCoral(coralCollector, 1).withDeadline(new WaitCommand(3)));
+                new IntakeCoral(coralCollector, 1).withDeadline(new WaitCommand(3d)));
+        NamedCommands.registerCommand("ScoreCoral",
+                new ScoreCoral(coralCollector));
 
+        // psst! we should use a for loop like we did with LightningTagID!
         NamedCommands.registerCommand("RodStow",
                 new SetRodState(rod, RodStates.STOW)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
@@ -334,7 +338,6 @@ public class RobotContainer extends LightningContainer {
         NamedCommands.registerCommand("RodSource",
                 new SetRodState(rod, RodStates.SOURCE)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
-        NamedCommands.registerCommand("ScoreCoral", new ScoreCoral(coralCollector));
 
         autoChooser = AutoBuilder.buildAutoChooser();
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);

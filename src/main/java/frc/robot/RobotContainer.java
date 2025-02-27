@@ -120,10 +120,10 @@ public class RobotContainer extends LightningContainer {
 
         climber = new Climber(RobotMotors.climberMotor);
 
-        if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
-            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
-                    RobotMotors.algaeCollectorPivotMotor);
-        }
+        // if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
+        // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
+        // RobotMotors.algaeCollectorPivotMotor);
+        // }
 
         if (Robot.isSimulation()) {
             // algae collector and climber are temp because not initialized above
@@ -150,7 +150,8 @@ public class RobotContainer extends LightningContainer {
         // CORAL INTAKE
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
-                        CoralCollectorConstants.COLLECTOR_DEADBAND)));
+                        CoralCollectorConstants.COLLECTOR_DEADBAND),
+                rod::isCoralMode));
 
         climber.setDefaultCommand(new RunCommand(
                 () -> climber.setPower(
@@ -178,20 +179,20 @@ public class RobotContainer extends LightningContainer {
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
         /* PDH LED TRIGGERSS */
-        if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
-            // Allow the Rio userbutton to toggle the pdh leds
-            new Trigger(RobotController::getUserButton).onTrue(new InstantCommand(() -> {
-                allowPDHLeds = !allowPDHLeds;
-                pdh.setSwitchableChannel(allowPDHLeds);
-            }));
+        // if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
+        //     // Allow the Rio userbutton to toggle the pdh leds
+        //     new Trigger(RobotController::getUserButton).onTrue(new InstantCommand(() -> {
+        //         allowPDHLeds = !allowPDHLeds;
+        //         pdh.setSwitchableChannel(allowPDHLeds);
+        //     }));
 
-            // Turn off the PDH leds if the voltage ever dips below a certain value
-            new Trigger(() -> pdh.getVoltage() < LEDConstants.PDH_LED_POWEROFF_VOLTAGE)
-                    .onTrue(new InstantCommand(() -> {
-                        allowPDHLeds = false;
-                        pdh.setSwitchableChannel(false);
-                    }));
-        }
+        //     // Turn off the PDH leds if the voltage ever dips below a certain value
+        //     new Trigger(() -> pdh.getVoltage() < LEDConstants.PDH_LED_POWEROFF_VOLTAGE)
+        //             .onTrue(new InstantCommand(() -> {
+        //                 allowPDHLeds = false;
+        //                 pdh.setSwitchableChannel(false);
+        //             }));
+        // }
     }
 
     @Override
@@ -228,9 +229,11 @@ public class RobotContainer extends LightningContainer {
 
         // reset forward
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
-                new InstantCommand(drivetrain::seedFieldCentric).alongWith(new InstantCommand(() -> drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees.of(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0))))));// (new
-                                                                  // Rotation2d(Degrees.of(DriverStation.getAlliance().get()
-                                                                  // == Alliance.Red ? 180 : 0)))));
+                new InstantCommand(drivetrain::seedFieldCentric).alongWith(
+                        new InstantCommand(() -> drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees
+                                .of(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0))))));// (new
+        // Rotation2d(Degrees.of(DriverStation.getAlliance().get()
+        // == Alliance.Red ? 180 : 0)))));
 
         // new Trigger(driver::getLeftBumperButton)
         // .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
@@ -243,20 +246,16 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getPOV() == 90)
                 .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, LightningTagID.LeftSource));
 
-
-
         /* COPILOT BINDINGS */
         new Trigger(copilot::getRightBumperButton)
                 .onTrue(new SetRodState(rod, RodStates.SOURCE));
         new Trigger(copilot::getLeftBumperButton)
                 .onTrue(new SetRodState(rod, RodStates.STOW));
 
-
         new Trigger(copilot::getBackButton)
                 .onTrue(new InstantCommand(() -> rod.setCoralMode(false)));
         new Trigger(copilot::getStartButton)
                 .onTrue(new InstantCommand(() -> rod.setCoralMode(true)));
-        
 
         // default
         (new Trigger(() -> rod.isCoralMode() && copilot.getAButton())).onTrue(new SetRodState(rod, RodStates.L1));
@@ -264,7 +263,7 @@ public class RobotContainer extends LightningContainer {
         (new Trigger(() -> rod.isCoralMode() && copilot.getXButton())).onTrue(new SetRodState(rod, RodStates.L3));
         (new Trigger(() -> rod.isCoralMode() && copilot.getYButton())).onTrue(new SetRodState(rod, RodStates.L4));
 
-        //algae mode
+        // algae mode
         new Trigger(() -> !rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.PROCESSOR));
         new Trigger(() -> !rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.LOW));
         new Trigger(() -> !rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.HIGH));
@@ -279,7 +278,8 @@ public class RobotContainer extends LightningContainer {
 
         // algae control
         // new Trigger(() -> copilot.getRightTriggerAxis() > -1)
-        //     .whileTrue(new CollectAlgae(algaeCollector, copilot::getRightTriggerAxis).deadlineFor(leds.strip.enableState(LEDStates.COLLECTING))); 
+        // .whileTrue(new CollectAlgae(algaeCollector,
+        // copilot::getRightTriggerAxis).deadlineFor(leds.strip.enableState(LEDStates.COLLECTING)));
 
         // sim stuff
         // if (Robot.isSimulation()) {
@@ -303,12 +303,15 @@ public class RobotContainer extends LightningContainer {
 
         // LED testing
         new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
-        
+
         // SYSID
-        // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
+        // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() ->
+        // SignalLogger.start()));
         // new Trigger(driver::getYButton)
-        //         .whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.DRIVE));
-        // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() -> SignalLogger.stop()));
+        // .whileTrue(new SysIdSequence(drivetrain,
+        // DrivetrainConstants.SysIdTestType.DRIVE));
+        // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() ->
+        // SignalLogger.stop()));
 
     }
 
@@ -325,15 +328,18 @@ public class RobotContainer extends LightningContainer {
         for (LightningTagID ID : LightningTagID.values()) {
             switch (ID) {
                 case LeftSource, RightSource:
-                    NamedCommands.registerCommand("AlignTo" + ID.name(), new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
-                        ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name(),
+                            new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
+                                    ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
 
                 default:
-                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds,
-                            ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
-                            ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Left",
+                            new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds,
+                                    ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Right",
+                            new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
+                                    ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
             }
         }

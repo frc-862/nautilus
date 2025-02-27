@@ -16,6 +16,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -388,8 +389,8 @@ public class PhotonVision extends SubsystemBase {
             try {
                 camera = new PhotonCamera(camName == Camera.LEFT ? VisionConstants.leftCamName : VisionConstants.rightCamName);
                 cameraInitialized = true;
-            } catch(Exception e) {
-                System.out.println("warning: camera not initialized");
+            } catch (Exception e) {
+                DataLogManager.log("warning: camera not initialized");
             }
         }
     }

@@ -217,11 +217,11 @@ public class Constants {
                 put(RodStates.L2, -28.5d);
                 put(RodStates.L3, -36d);
                 put(RodStates.L4, -40d);
-                put(RodStates.LOW, -30d);
-                put(RodStates.HIGH, -30d);
+                put(RodStates.LOW, -29d);
+                put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
                 put(RodStates.PROCESSOR, -39.5d);
-                put(RodStates.BARGE, 60d);
+                put(RodStates.BARGE, 57d);
             }
         };
 
@@ -342,7 +342,8 @@ public class Constants {
         // 2.5 constants
         public static final boolean INVERTED = true;
         public static final double COLLECTED_CURRENT = 13d;
-        public static final double HOLD_POWER = 0.05d;
+        public static final double CORAL_HOLD_POWER = 0.05d;
+        public static final double ALGAE_HOLD_POWER = 0.15d;
 
     }
 

@@ -34,7 +34,8 @@ public class Robot extends LightningRobot {
     public void robotInit() {
         super.robotInit();
 
-        // WebServer.start(5800, Filesystem.getDeployDirectory().getPath() + "/elastic");
+        // WebServer.start(5800, Filesystem.getDeployDirectory().getPath() +
+        // "/elastic");
     }
 
     @Override
@@ -42,10 +43,13 @@ public class Robot extends LightningRobot {
         super.autonomousInit();
 
         container = (RobotContainer) getContainer();
-        container.drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees.of(DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0)));
+        container.drivetrain.setOperatorPerspectiveForward(
+                new Rotation2d(Degrees.of(DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0)));
 
         if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
-            ledCmd = new RepeatCommand(new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel())).alongWith(new WaitCommand(0.25)));
+            ledCmd = new RepeatCommand(
+                    new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel()))
+                            .alongWith(new WaitCommand(0.15)));
             ledCmd.schedule();
         }
     }
@@ -55,10 +59,13 @@ public class Robot extends LightningRobot {
         super.teleopInit();
 
         container = (RobotContainer) getContainer();
-        container.drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees.of(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0)));
+        container.drivetrain.setOperatorPerspectiveForward(new Rotation2d(
+                Degrees.of(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0)));
 
         if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
-            ledCmd = new RepeatCommand(new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel())).alongWith(new WaitCommand(0.75)));
+            ledCmd = new RepeatCommand(
+                    new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel()))
+                            .alongWith(new WaitCommand(0.5)));
             ledCmd.schedule();
         }
     }

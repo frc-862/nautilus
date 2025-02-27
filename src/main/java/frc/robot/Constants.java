@@ -134,12 +134,13 @@ public class Constants {
 
         public static final int CORAL_COLLECTOR = 12;
         public static final int CORAL_COLLECTOR_ENCODER = 36;
-        public static final int CORAL_COLLECTOR_BEAM_BREAK_DIO = 0; // temp
+        public static final int CORAL_COLLECTOR_BEAM_BREAK_DIO = 1; // temp
 
         public static final int ALGAE_COLLECTOR_ROLLER = 13; // temp
         public static final int ALGAE_COLLECTOR_PIVOT = 14; // temp
 
         public static final int CLIMBER = 15;
+        public static final int CLIMBER_LIMIT_SWITCH_DIO = 0;
 
         public static final int PIGEON = 23;
 

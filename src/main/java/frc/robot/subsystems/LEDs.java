@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,6 +18,7 @@ import frc.thunder.leds.ThunderStrip;
 import frc.thunder.leds.Thunderbolt;
 import frc.robot.Constants.RobotMap;
 import frc.thunder.leds.LightningColors;
+import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class LEDs extends Thunderbolt {
@@ -77,6 +79,19 @@ public class LEDs extends Thunderbolt {
 
 	public LEDs() {
 		super(LEDConstants.PWM_PORT, LEDConstants.LENGTH, RobotMap.UPDATE_FREQ);
+
+		ledChooser = new SendableChooser<LEDStates>() {{
+			addOption("None", null);
+			for (LEDStates state : LEDStates.values()) {
+				if (state != LEDStates.MIXER) {
+					addOption(state.name(), state);
+				}
+			}
+			setDefaultOption("None", null);
+		}};
+		LightningShuffleboard.send("LEDs", "Test State", ledChooser);
+
+		// pdh = new PowerDistribution(1, ModuleType.kRev);
 
 		ledChooser = new SendableChooser<LEDStates>() {{
 			addOption("None", null);

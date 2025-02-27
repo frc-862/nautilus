@@ -61,6 +61,7 @@ public class PoseBasedAutoAlign extends Command {
      * @param vision
      * @param drivetrain
      * @param camera
+     * @param leds
      * @param IDCode the Lightning-specific ID code for the tag
      */
     public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds, LightningTagID IDCode) {

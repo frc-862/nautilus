@@ -647,8 +647,10 @@ public class Constants {
             RightSource(1, 12),
             LeftSource(2, 13);
 
-            public final int redID, blueID;
-            private LightningTagID(int redID, int blueID) {
+            public final int redID;
+            public final int blueID;
+
+            LightningTagID(int redID, int blueID) {
                 this.redID = redID;
                 this.blueID = blueID;
             }
@@ -1106,18 +1108,21 @@ public class Constants {
         public static final double PDH_LED_POWEROFF_VOLTAGE = 9d;
 
         public enum LEDStates {
-            MIXER(),
-            ERROR(),
-            COLLECTED(),
-            ALIGNED(),
-            ALGAE_MODE(),
-            ALIGNING(),
-            COLLECTING(),
-            SCORING(),
-            READY_TO_ALIGN(),
-            ROD_MOVING(),
-            UPDATING_POSE(),
-            POSE_BAD(),
+            MIXER,
+            ERROR,
+            COLLECTED,
+            ALIGNED,
+            ALGAE_MODE,
+            CLIMBED,
+            ALIGNING,
+            COLLECTING,
+            SCORING,
+            READY_TO_ALIGN,
+            ROD_MOVING,
+            UPDATING_POSE,
+            POSE_BAD, 
+            RAINBOW, 
+            SWIRL,
         }
     }
 

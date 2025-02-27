@@ -5,7 +5,7 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -21,12 +21,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignToFiveLeft"
           }
         },
         {

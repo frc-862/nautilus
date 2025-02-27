@@ -273,7 +273,7 @@ public class PhotonVision extends SubsystemBase {
             //         case Blue:
             //             tags.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
             //             break;
-                
+
             //         case Red:
             //             tags.setOrigin(OriginPosition.kRedAllianceWallRightSide);
             //             break;
@@ -296,7 +296,7 @@ public class PhotonVision extends SubsystemBase {
                 DataLogManager.log(camName.toString() + " sleep inital failed");
             }
             while (true) {
-                if(!cameraInitialized) {
+                if (!cameraInitialized) {
                     initializeCamera();
                 } else {
                     try {
@@ -312,7 +312,7 @@ public class PhotonVision extends SubsystemBase {
                                 // the local hasTarget variable will turn true if ANY PipelineResult within this loop has a target
                                 hasTarget = true;
 
-                                if(!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {                                
+                                if(!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
                                     poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose,
                                             () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed"));
                                 } else {

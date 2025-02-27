@@ -259,16 +259,16 @@ public class RobotContainer extends LightningContainer {
         
 
         // default
-        (new Trigger(copilot::getAButton).and(rod::isCoralMode)).onTrue(new SetRodState(rod, RodStates.L1));
-        (new Trigger(copilot::getBButton).and(rod::isCoralMode)).onTrue(new SetRodState(rod, RodStates.L2));
-        (new Trigger(copilot::getXButton).and(rod::isCoralMode)).onTrue(new SetRodState(rod, RodStates.L3));
-        (new Trigger(copilot::getYButton).and(rod::isCoralMode)).onTrue(new SetRodState(rod, RodStates.L4));
+        (new Trigger(() -> rod.isCoralMode() && copilot.getAButton())).onTrue(new SetRodState(rod, RodStates.L1));
+        (new Trigger(() -> rod.isCoralMode() && copilot.getBButton())).onTrue(new SetRodState(rod, RodStates.L2));
+        (new Trigger(() -> rod.isCoralMode() && copilot.getXButton())).onTrue(new SetRodState(rod, RodStates.L3));
+        (new Trigger(() -> rod.isCoralMode() && copilot.getYButton())).onTrue(new SetRodState(rod, RodStates.L4));
 
         //algae mode
-        new Trigger(rod::isCoralMode).negate().and(copilot::getAButton).onTrue(new SetRodState(rod, RodStates.PROCESSOR));
-        new Trigger(rod::isCoralMode).negate().and(copilot::getBButton).onTrue(new SetRodState(rod, RodStates.LOW));
-        new Trigger(rod::isCoralMode).negate().and(copilot::getXButton).onTrue(new SetRodState(rod, RodStates.HIGH));
-        new Trigger(rod::isCoralMode).negate().and(copilot::getYButton).onTrue(new SetRodState(rod, RodStates.ALGAE_SCORE));
+        new Trigger(() -> !rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.PROCESSOR));
+        new Trigger(() -> !rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.LOW));
+        new Trigger(() -> !rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.HIGH));
+        new Trigger(() -> !rod.isCoralMode() && copilot.getYButton()).onTrue(new SetRodState(rod, RodStates.ALGAE_SCORE));
 
         // biases
         new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d));

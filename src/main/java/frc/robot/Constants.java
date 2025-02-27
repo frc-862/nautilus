@@ -218,8 +218,8 @@ public class Constants {
                 put(RodStates.LOW, -30d);
                 put(RodStates.HIGH, -30d);
                 put(RodStates.SOURCE, 42d);
-                put(RodStates.ALGAE_SCORE, -39.5d);
-                put(RodStates.PROCESSOR, 60d);
+                put(RodStates.PROCESSOR, -39.5d);
+                put(RodStates.ALGAE_SCORE, 60d);
             }
         };
 

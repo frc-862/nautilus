@@ -45,6 +45,8 @@ public class LEDs extends Thunderbolt {
 
 				case ALGAE_MODE -> solid(LightningColors.LIGHT_BLUE);
 
+				case CLIMBED -> rainbow();
+
 				case ALIGNING -> pulse(LightningColors.BLUE);
 
 				case COLLECTING -> pulse(LightningColors.PURPLE);
@@ -58,6 +60,10 @@ public class LEDs extends Thunderbolt {
 				case UPDATING_POSE -> blink(LightningColors.YELLOW);
 
 				case POSE_BAD -> solid(LightningColors.RED);
+
+				case SWIRL -> swirl(LightningColors.BLUE, LightningColors.ORANGE, LEDConstants.SWRIL_SEGMENT_SIZE);
+
+				case RAINBOW -> rainbow();
 
 				default -> System.err.println("Unexpected State Found: " + state);
 			}
@@ -115,7 +121,7 @@ public class LEDs extends Thunderbolt {
 		// if (pdh.getSwitchableChannel()) {
 		// 	pdh.setSwitchableChannel(true);	
 		// }
-		LEDStates state = getTestState();
+		LEDStates state = strip.getState();
 		if (state != null) {
 			LightningShuffleboard.setString("LEDs", "Current State", state.toString());
 		} else {

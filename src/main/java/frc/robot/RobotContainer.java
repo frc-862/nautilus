@@ -161,8 +161,10 @@ public class RobotContainer extends LightningContainer {
 
         new Trigger(() -> erroring && DriverStation.isDisabled()).whileTrue(leds.strip.enableState(LEDStates.ERROR));
 
-        new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.SCORING));
-        new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
+        new Trigger(() -> climber.getPostion() > 0).whileTrue(leds.strip.enableState(LEDStates.CLIMBED));
+
+        new Trigger(() -> (coralCollector.getVelocity() > CoralCollectorConstants.HOLD_POWER)).whileTrue(leds.strip.enableState(LEDStates.SCORING));
+        new Trigger(() -> (coralCollector.getVelocity() < -CoralCollectorConstants.HOLD_POWER)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
         new Trigger(() -> (drivetrain.poseZero() && DriverStation.isDisabled() && !vision.hasTarget()))
                 .whileTrue(leds.strip.enableState(LEDStates.POSE_BAD));

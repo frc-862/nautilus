@@ -1105,18 +1105,21 @@ public class Constants {
         public static final double PDH_LED_POWEROFF_VOLTAGE = 9d;
 
         public enum LEDStates {
-            MIXER(),
-            ERROR(),
-            COLLECTED(),
-            ALIGNED(),
-            ALGAE_MODE(),
-            ALIGNING(),
-            COLLECTING(),
-            SCORING(),
-            READY_TO_ALIGN(),
-            ROD_MOVING(),
-            UPDATING_POSE(),
-            POSE_BAD(),
+            MIXER,
+            ERROR,
+            COLLECTED,
+            ALIGNED,
+            ALGAE_MODE,
+            CLIMBED,
+            ALIGNING,
+            COLLECTING,
+            SCORING,
+            READY_TO_ALIGN,
+            ROD_MOVING,
+            UPDATING_POSE,
+            POSE_BAD, 
+            RAINBOW, 
+            SWIRL,
         }
     }
 

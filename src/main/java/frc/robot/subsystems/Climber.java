@@ -100,6 +100,4 @@ public class Climber extends SubsystemBase {
     public boolean getOnTarget() {
         return Math.abs(getPostion() - targetPostion) < ClimberConstants.TOLERANCE;
     }
-
-
 }

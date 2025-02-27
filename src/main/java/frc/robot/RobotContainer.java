@@ -147,12 +147,13 @@ public class RobotContainer extends LightningContainer {
                                 ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        // CORAL INTAKE
+        // COPILOT INTAKE
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
                         CoralCollectorConstants.COLLECTOR_DEADBAND),
                 rod::isCoralMode));
 
+        // COPILOT CLIMB
         climber.setDefaultCommand(new RunCommand(
                 () -> climber.setPower(
                         MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
@@ -163,7 +164,7 @@ public class RobotContainer extends LightningContainer {
         // rod.setDefaultCommand(new SetRodState(rod,
         // RodStates.STOW).onlyIf(DriverStation::isTeleop));
 
-        // LED TRIGGERS
+        /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
 
         new Trigger(() -> elevator.isOverheating()).onTrue(new InstantCommand(() -> erroring = true));
@@ -180,18 +181,18 @@ public class RobotContainer extends LightningContainer {
 
         /* PDH LED TRIGGERSS */
         // if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
-        //     // Allow the Rio userbutton to toggle the pdh leds
-        //     new Trigger(RobotController::getUserButton).onTrue(new InstantCommand(() -> {
-        //         allowPDHLeds = !allowPDHLeds;
-        //         pdh.setSwitchableChannel(allowPDHLeds);
-        //     }));
+        // // Allow the Rio userbutton to toggle the pdh leds
+        // new Trigger(RobotController::getUserButton).onTrue(new InstantCommand(() -> {
+        // allowPDHLeds = !allowPDHLeds;
+        // pdh.setSwitchableChannel(allowPDHLeds);
+        // }));
 
-        //     // Turn off the PDH leds if the voltage ever dips below a certain value
-        //     new Trigger(() -> pdh.getVoltage() < LEDConstants.PDH_LED_POWEROFF_VOLTAGE)
-        //             .onTrue(new InstantCommand(() -> {
-        //                 allowPDHLeds = false;
-        //                 pdh.setSwitchableChannel(false);
-        //             }));
+        // // Turn off the PDH leds if the voltage ever dips below a certain value
+        // new Trigger(() -> pdh.getVoltage() < LEDConstants.PDH_LED_POWEROFF_VOLTAGE)
+        // .onTrue(new InstantCommand(() -> {
+        // allowPDHLeds = false;
+        // pdh.setSwitchableChannel(false);
+        // }));
         // }
     }
 
@@ -213,17 +214,6 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)))
                 .onFalse(new InstantCommand(() -> drivetrain.setSlowMode(false)));
 
-        // // sets slow mode if the elevator is above L3 (around 29 inches)
-        // new Trigger(() -> (elevator.getPosition() >
-        // ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && (DriverStation.isTeleop()))
-        // .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(true)));
-
-        // // stops slow mode if below L3 (around 29 inches)
-        // new Trigger(() -> (!(elevator.getPosition() >
-        // ElevatorConstants.SLOW_MODE_HEIGHT_LIMIT) && !(driver.getRightTriggerAxis() >
-        // 0.25) && (DriverStation.isTeleop())))
-        // .onTrue(new InstantCommand(() -> drivetrain.setSlowMode(false)));
-
         // drivetrain brake
         new Trigger(driver::getXButton).whileTrue(drivetrain.applyRequest(DriveRequests.getBrake()));
 
@@ -231,20 +221,13 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getStartButton() && driver.getBackButton()).onTrue(
                 new InstantCommand(drivetrain::seedFieldCentric).alongWith(
                         new InstantCommand(() -> drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees
-                                .of(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0))))));// (new
-        // Rotation2d(Degrees.of(DriverStation.getAlliance().get()
-        // == Alliance.Red ? 180 : 0)))));
+                                .of(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0))))));
 
-        // new Trigger(driver::getLeftBumperButton)
-        // .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT));
-
+        // AUTOALIGN
         new Trigger(driver::getLeftBumperButton)
                 .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds));
         new Trigger(driver::getRightBumperButton)
                 .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds));
-
-        new Trigger(() -> driver.getPOV() == 90)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, LightningTagID.LeftSource));
 
         /* COPILOT BINDINGS */
         new Trigger(copilot::getRightBumperButton)
@@ -257,11 +240,11 @@ public class RobotContainer extends LightningContainer {
         new Trigger(copilot::getStartButton)
                 .onTrue(new InstantCommand(() -> rod.setCoralMode(true)));
 
-        // default
-        (new Trigger(() -> rod.isCoralMode() && copilot.getAButton())).onTrue(new SetRodState(rod, RodStates.L1));
-        (new Trigger(() -> rod.isCoralMode() && copilot.getBButton())).onTrue(new SetRodState(rod, RodStates.L2));
-        (new Trigger(() -> rod.isCoralMode() && copilot.getXButton())).onTrue(new SetRodState(rod, RodStates.L3));
-        (new Trigger(() -> rod.isCoralMode() && copilot.getYButton())).onTrue(new SetRodState(rod, RodStates.L4));
+        // coral mode
+        new Trigger(() -> rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.L1));
+        new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
+        new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));
+        new Trigger(() -> rod.isCoralMode() && copilot.getYButton()).onTrue(new SetRodState(rod, RodStates.L4));
 
         // algae mode
         new Trigger(() -> !rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.PROCESSOR));
@@ -270,11 +253,10 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> !rod.isCoralMode() && copilot.getYButton()).onTrue(new SetRodState(rod, RodStates.BARGE));
 
         // biases
-        new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d));
-        new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-0.5d));
-
-        new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5));
-        new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5));
+        new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d)); // ELE UP 
+        new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-0.5d)); // ELE DOWN
+        new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5)); // WRIST DOWN
+        new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5)); // WRIST UP
 
         // algae control
         // new Trigger(() -> copilot.getRightTriggerAxis() > -1)
@@ -302,7 +284,7 @@ public class RobotContainer extends LightningContainer {
         // }
 
         // LED testing
-        new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
+        // new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
 
         // SYSID
         // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() ->

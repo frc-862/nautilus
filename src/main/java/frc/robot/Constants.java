@@ -321,11 +321,11 @@ public class Constants {
     }
 
     public static class CoralCollectorConstants {
-        // public static final boolean INVERTED = false;
+        // public static final boolean INVERTED = false; // OLD - check below for proper invert
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final double CORAL_ROLLER_SPEED = 1;
-        public static final double DEBOUNCE_TIME = 0.1;
+        public static final double DEBOUNCE_TIME = 0.1; // unused
 
         public static final double GEAR_RATIO = 1d / 2d; // output shaft gear reduction / Motor gear reduction
         public static final double ROTOR_TO_ENCODER_RATIO = GEAR_RATIO * 360; // temp
@@ -334,7 +334,7 @@ public class Constants {
         public static final double KV = 0.24; // temp
         public static final double KA = 0.8; // temp
 
-        public static final double BEAMBREAK_DEBOUNCE = 0.1;
+        public static final double BEAMBREAK_DEBOUNCE = 0.1; // unused
 
         // public static final double COLLECTED_CURRENT = 35d;
         public static final double COLLECTOR_DEADBAND = 0.1;

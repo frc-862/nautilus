@@ -301,22 +301,22 @@ public class RobotContainer extends LightningContainer {
         // NamedCommands.registerCommand("ScoreCoral",
         // StandinCommands.scoreCoral().deadlineFor(leds.elevatorStrip.enableState(LEDStates.CORAL_SCORE)));
 
-        /*
+        /**
          * 1 is the target facing the driver station, 2 is to the right of 1...6 is to left of 1 (CCW+)
          * 7 is blue-barge source, 8 is red-barge source
          */
-        for (LightningTagID id : LightningTagID.values()) {
-            switch (id) {
+        for (LightningTagID ID : LightningTagID.values()) {
+            switch (ID) {
                 case LeftSource, RightSource:
-                    NamedCommands.registerCommand("AlignTo" + id.name(), new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
-                        id).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name(), new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
+                        ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
             
                 default:
-                    NamedCommands.registerCommand("AlignTo" + id.name() + "Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds,
-                            id).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-                    NamedCommands.registerCommand("AlignTo" + id.name() + "Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
-                            id).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Left", new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds,
+                            ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AlignTo" + ID.name() + "Right", new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
+                            ID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
             }
         }

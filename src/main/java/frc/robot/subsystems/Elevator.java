@@ -225,7 +225,7 @@ public class Elevator extends SubsystemBase {
         && Math.abs(leftMotor.getVelocity().getValueAsDouble()) < 0.1 // AND checks if the elevator isn't moving
         && rangeSensorDistance <= 5d // AND checks if the CANRange is below 11 inches
         && rangeSensorDistance >= 0d // AND checks if the CANRange is above 0 inches
-        && isInStow; // AND checks if the elevator isn't in stow
+        && isInStow && isOnTarget(); // AND checks if the elevator isn't in stow
     }
 
     /**

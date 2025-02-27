@@ -294,20 +294,22 @@ public class Constants {
 
     public static class WristConstants {
         public static final boolean BRAKE_MODE = true;
-        public static final double STATOR_CURRENT_LIMIT = 100d; // temp
-        public static final boolean INVERTED = false; // temp
+        public static final double STATOR_CURRENT_LIMIT = 100d;
+        public static final boolean INVERTED = false;
 
-        public static final double ROTOR_TO_ENCODER_RATIO = 74; // temp
+        public static final double ROTOR_TO_ENCODER_RATIO = 74;
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double MOTORS_KP = 60; // temp
-        public static final double MOTORS_KI = 0; // temp
-        public static final double MOTORS_KD = 0; // temp
-        public static final double MOTORS_KF = 0; // temp
-        public static final double MOTORS_KS = 0; // temp
-        public static final double MOTORS_KV = 0; // temp
-        public static final double MOTORS_KA = 0; // temp
-        public static final double MOTORS_KG = 0.1; // temp
+        public static final double MOTORS_KP = 60;
+        public static final double MOTORS_KI = 0;
+        public static final double MOTORS_KD = 0;
+        public static final double MOTORS_KF = 0;
+        public static final double MOTORS_KS = 0;
+        public static final double MOTORS_KV = 0;
+        public static final double MOTORS_KA = 0;
+        public static final double MOTORS_KG = 0.1;
+
+        public static final double MOTORS_KP_SLOW = 33;
 
         public static final Angle MIN_ANGLE = Degrees.of(-85);
         public static final Angle MAX_ANGLE = Degrees.of(85);

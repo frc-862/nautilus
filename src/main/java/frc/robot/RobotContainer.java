@@ -8,21 +8,16 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -31,13 +26,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.RobotMap;
@@ -48,15 +40,12 @@ import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
-import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
-import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.TagAutoAlign;
-import frc.robot.commands.ThreeDeeAutoAlign;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
@@ -71,13 +60,11 @@ import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
-import frc.thunder.filter.XboxControllerFilter;
-import frc.thunder.leds.LightningColors;
 
 public class RobotContainer extends LightningContainer {
 
     public PowerDistribution pdh;
-    public boolean allowPDHLeds = true;
+    // public boolean allowPDHLeds = true;
 
     public Swerve drivetrain;
     public PhotonVision vision;
@@ -230,11 +217,14 @@ public class RobotContainer extends LightningContainer {
                 .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds));
 
         /* COPILOT BINDINGS */
-        new Trigger(copilot::getRightBumperButton)
-                .onTrue(new SetRodState(rod, RodStates.SOURCE));
+
+        // Source/Stow
         new Trigger(copilot::getLeftBumperButton)
                 .onTrue(new SetRodState(rod, RodStates.STOW));
+        new Trigger(copilot::getRightBumperButton)
+                .onTrue(new SetRodState(rod, RodStates.SOURCE));
 
+        // Swap modes (TODO: add LED state notif)
         new Trigger(copilot::getBackButton)
                 .onTrue(new InstantCommand(() -> rod.setCoralMode(false)));
         new Trigger(copilot::getStartButton)
@@ -253,7 +243,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> !rod.isCoralMode() && copilot.getYButton()).onTrue(new SetRodState(rod, RodStates.BARGE));
 
         // biases
-        new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d)); // ELE UP 
+        new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d)); // ELE UP
         new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-0.5d)); // ELE DOWN
         new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5)); // WRIST DOWN
         new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5)); // WRIST UP
@@ -299,9 +289,6 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void initializeNamedCommands() {
-        // NamedCommands.registerCommand("ScoreCoral",
-        // StandinCommands.scoreCoral().deadlineFor(leds.elevatorStrip.enableState(LEDStates.CORAL_SCORE)));
-
         /**
          * 1 is the target facing the driver station, 2 is to the right of 1...6 is to
          * left of 1 (CCW+)

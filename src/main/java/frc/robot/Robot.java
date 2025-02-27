@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
-import frc.robot.subsystems.Swerve;
 import frc.thunder.LightningRobot;
 
 public class Robot extends LightningRobot {

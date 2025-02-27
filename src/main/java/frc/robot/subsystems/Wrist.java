@@ -71,9 +71,9 @@ public class Wrist extends SubsystemBase {
         motorConfig.Slot0.kV = WristConstants.MOTORS_KV;
         motorConfig.Slot0.kA = WristConstants.MOTORS_KA;
         motorConfig.Slot0.kG = WristConstants.MOTORS_KG;
-    
+
         motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        motorConfig.Slot1.kP = 33;//WristConstants.MOTORS_KP / 2d;
+        motorConfig.Slot1.kP = WristConstants.MOTORS_KP_SLOW;
         motorConfig.Slot1.kI = WristConstants.MOTORS_KI;
         motorConfig.Slot1.kD = WristConstants.MOTORS_KD;
         motorConfig.Slot1.kS = WristConstants.MOTORS_KF;
@@ -107,11 +107,12 @@ public class Wrist extends SubsystemBase {
     public void periodic() {
         currentPosition = getAngle();
 
-        LightningShuffleboard.setDouble("Wrist", "Current Position", currentPosition);
+        LightningShuffleboard.setDouble("Wrist", "currentPosition", currentPosition);
         LightningShuffleboard.setBool("Wrist", "onTarget", isOnTarget());
 
-        LightningShuffleboard.setDouble("Diagnostics", "wrist motor temp", motor.getDeviceTemp().getValueAsDouble());
-        LightningShuffleboard.setDouble("Diagnostics", "wrist encoder raw", encoder.getAbsolutePosition().getValue().in(Rotations) - EncoderConstants.wristOffset);
+        LightningShuffleboard.setDouble("Diagnostic", "WRIST Temperature", motor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.setDouble("Diagnostic", "WRIST Cancoder",
+                encoder.getAbsolutePosition().getValue().in(Rotations) - EncoderConstants.wristOffset);
 
     }
 
@@ -119,13 +120,18 @@ public class Wrist extends SubsystemBase {
      * Set the wrist position in degrees
      *
      * @param position in degrees
-     * @param slow use slot 1 when slow
+     * @param slow     use slot 1 when slow
      */
     public void setPosition(double position, boolean slow) {
         targetPosition = MathUtil.clamp(position, WristConstants.MIN_ANGLE.in(Degrees),
                 WristConstants.MAX_ANGLE.in(Degrees));
         motor.setControl(positionPID.withPosition(Units.degreesToRotations(position)).withSlot(slow ? 1 : 0));
     }
+
+    /**
+     * Set the wrist position in degrees
+     * @param position in degrees
+     */
     public void setPosition(double position) {
         setPosition(position, false);
     }

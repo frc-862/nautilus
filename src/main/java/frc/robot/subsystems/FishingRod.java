@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.util.Units;
@@ -121,17 +119,16 @@ public class FishingRod extends SubsystemBase {
     public void setState(RodStates state) {
         targetState = state;
 
-        // logic for transition states goes here
-        if (targetState == RodStates.BARGE) {
+        if (targetState == RodStates.BARGE) { // slow wrist so we do not flick the algae
             transitionState = RodTransitionStates.WITH_WRIST_SLOW;
         }
-        else if (currState.isScoring() || targetState.isScoring()) {
+        else if (currState.isScoring() || targetState.isScoring()) { // any scoring state wrist up first to not skewer
             transitionState = RodTransitionStates.WRIST_UP_THEN_ELE;
         } 
         // else if (targetState == RodStates.L4 || targetState == RodStates.L3 || targetState == RodStates.L2) {
         //     transitionState = RodTransitionStates.WRIST_DOWN_THEN_ELE;
         // } 
-        else {
+        else { // default state (i hate triton)
             transitionState = Constants.IS_TRITON ? RodTransitionStates.TRITON : RodTransitionStates.DEFAULT;
         }
 

@@ -6,7 +6,6 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
 import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
@@ -42,12 +41,17 @@ public class CollectCoral extends Command {
             power = useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER;
         }
         collector.setPower(power * CoralCollectorConstants.CORAL_ROLLER_SPEED);
+
+        if (collector.getCollectCurrentHit() && power >= 0) {
+            RobotContainer.hapticCopilotCommand().schedule();
+        }
     }
 
     @Override
     public void end(boolean interrupted) {
-        collector.setPower(CoralCollectorConstants.CORAL_HOLD_POWER);
-        RobotContainer.hapticCopilotCommand().schedule();
+        // this likely almost never gets called
+
+        collector.setPower(useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER);
         if (!interrupted) {
             leds.strip.enableState(LEDStates.COLLECTED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
         }

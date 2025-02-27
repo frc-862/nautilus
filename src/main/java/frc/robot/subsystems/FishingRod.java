@@ -86,8 +86,8 @@ public class FishingRod extends SubsystemBase {
                         transitionState = RodTransitionStates.DEFAULT; // finalize transition
                     }
                     break;
-                case DEFAULT, TRITON: // all states should end here
-                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
+                case DEFAULT, TRITON, WITH_WRIST_SLOW: // all states should end here
+                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState), transitionState == RodTransitionStates.WITH_WRIST_SLOW);
                     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
                     if (wrist.isOnTarget() && elevator.isOnTarget()) {
                         currState = targetState;
@@ -122,7 +122,10 @@ public class FishingRod extends SubsystemBase {
         targetState = state;
 
         // logic for transition states goes here
-        if (currState.isScoring() || targetState.isScoring()) {
+        if (targetState == RodStates.BARGE) {
+            transitionState = RodTransitionStates.WITH_WRIST_SLOW;
+        }
+        else if (currState.isScoring() || targetState.isScoring()) {
             transitionState = RodTransitionStates.WRIST_UP_THEN_ELE;
         } 
         // else if (targetState == RodStates.L4 || targetState == RodStates.L3 || targetState == RodStates.L2) {

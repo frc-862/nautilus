@@ -71,6 +71,15 @@ public class Wrist extends SubsystemBase {
         motorConfig.Slot0.kV = WristConstants.MOTORS_KV;
         motorConfig.Slot0.kA = WristConstants.MOTORS_KA;
         motorConfig.Slot0.kG = WristConstants.MOTORS_KG;
+    
+        motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+        motorConfig.Slot1.kP = 33;//WristConstants.MOTORS_KP / 2d;
+        motorConfig.Slot1.kI = WristConstants.MOTORS_KI;
+        motorConfig.Slot1.kD = WristConstants.MOTORS_KD;
+        motorConfig.Slot1.kS = WristConstants.MOTORS_KF;
+        motorConfig.Slot1.kV = WristConstants.MOTORS_KV;
+        motorConfig.Slot1.kA = WristConstants.MOTORS_KA;
+        motorConfig.Slot1.kG = WristConstants.MOTORS_KG;
 
         motorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
         motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
@@ -110,11 +119,15 @@ public class Wrist extends SubsystemBase {
      * Set the wrist position in degrees
      *
      * @param position in degrees
+     * @param slow use slot 1 when slow
      */
-    public void setPosition(double position) {
+    public void setPosition(double position, boolean slow) {
         targetPosition = MathUtil.clamp(position, WristConstants.MIN_ANGLE.in(Degrees),
                 WristConstants.MAX_ANGLE.in(Degrees));
-        motor.setControl(positionPID.withPosition(Units.degreesToRotations(position)));
+        motor.setControl(positionPID.withPosition(Units.degreesToRotations(position)).withSlot(slow ? 1 : 0));
+    }
+    public void setPosition(double position) {
+        setPosition(position, false);
     }
 
     /**

@@ -181,7 +181,7 @@ public class Constants {
     public static class FishingRodConstants {
         public enum RodStates {
             STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
-            ALGAE_SCORE(true), PROCESSOR(false), DEFAULT(false);
+            BARGE(true), PROCESSOR(false), DEFAULT(false);
 
             private boolean scoring;
 
@@ -198,6 +198,7 @@ public class Constants {
             DEFAULT, // default travel state
             WRIST_DOWN_THEN_ELE, // any state to L4
             WRIST_UP_THEN_ELE, // L4 to any state
+            WITH_WRIST_SLOW,
             TRITON, // specific state to deal with triton's loose belt,
             TRANSITIONING
         }
@@ -220,7 +221,7 @@ public class Constants {
                 put(RodStates.HIGH, -30d);
                 put(RodStates.SOURCE, 42d);
                 put(RodStates.PROCESSOR, -39.5d);
-                put(RodStates.ALGAE_SCORE, 60d);
+                put(RodStates.BARGE, 60d);
             }
         };
 
@@ -241,7 +242,7 @@ public class Constants {
                 put(RodStates.LOW, 15d);
                 put(RodStates.HIGH, 28d);
                 put(RodStates.SOURCE, 9.5d);
-                put(RodStates.ALGAE_SCORE, 47d);
+                put(RodStates.BARGE, 47d);
                 put(RodStates.PROCESSOR, 1d);
             }
         };
@@ -320,7 +321,7 @@ public class Constants {
     }
 
     public static class CoralCollectorConstants {
-        public static final boolean INVERTED = false;
+        // public static final boolean INVERTED = false;
         public static final boolean BRAKE_MODE = false;
         public static final double STATOR_CURRENT_LIMIT = 0d; // temp
         public static final double CORAL_ROLLER_SPEED = 1;
@@ -338,8 +339,8 @@ public class Constants {
         // public static final double COLLECTED_CURRENT = 35d;
         public static final double COLLECTOR_DEADBAND = 0.1;
 
-        //2.5 constants
-        // public static final boolean INVERTED = true;
+        // 2.5 constants
+        public static final boolean INVERTED = true;
         public static final double COLLECTED_CURRENT = 13d;
         public static final double HOLD_POWER = 0.05d;
 

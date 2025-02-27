@@ -91,10 +91,7 @@ public class LEDs extends Thunderbolt {
 	
 	@Override
 	public void periodic() {
-		// if (pdh.getSwitchableChannel()) {
-		// 	pdh.setSwitchableChannel(true);	
-		// }
-		LEDStates state = getTestState();
+		LEDStates state = strip.getState();
 		if (state != null) {
 			LightningShuffleboard.setString("LEDs", "Current State", state.toString());
 		} else {

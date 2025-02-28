@@ -156,6 +156,7 @@ public class RobotContainer extends LightningContainer {
                 climber));
         
         reefDisplay.setDefaultCommand(new RunCommand(reefDisplay::updateTargetReef,  reefDisplay));
+        new Trigger(() -> (rod.getTargetState().isScoring() && coralCollector.getVelocity() < 0)).whileTrue(reefDisplay.new ReefDisplayUpdate(reefDisplay));
 
         // This should not be here, but is commented just to be safe if ever needed again
         // rod.setDefaultCommand(new SetRodState(rod, RodStates.STOW).onlyIf(DriverStation::isTeleop));

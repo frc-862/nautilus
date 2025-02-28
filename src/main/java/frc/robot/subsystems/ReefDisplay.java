@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.BooleanArrayPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.VisionConstants.Camera;
@@ -18,20 +19,20 @@ import java.util.List;
 
 public class ReefDisplay extends SubsystemBase {
 
-    CoralCollector collector;
-    FishingRod rod;
-    Swerve drivetrain;
-    Pose2d robotPose;
+    private CoralCollector collector;
+    private FishingRod rod;
+    private Swerve drivetrain;
+    private Pose2d robotPose;
 
-    Tuple<Integer, Boolean> targetReefSide;
+    private Tuple<Integer, Boolean> targetReefSide;
 
     // StructPublisher<Boolean[]> reefPublisher = new StructPublisher<Boolean[]>("ReefDisplay", Boolean[]);
 
-    BooleanArrayPublisher L2Pubil;
-    BooleanArrayPublisher L3Pubil;
-    BooleanArrayPublisher L4Pubil;
+    private BooleanArrayPublisher L2Pubil;
+    private BooleanArrayPublisher L3Pubil;
+    private BooleanArrayPublisher L4Pubil;
 
-    boolean[][] reef = new boolean[][] {new boolean[] {false, false, false, false, false, false, false, false, false, false, false, false},
+    private boolean[][] reef = new boolean[][] {new boolean[] {false, false, false, false, false, false, false, false, false, false, false, false},
         new boolean[] {false, false, false, false, false, false, false, false, false, false, false, false},
         new boolean[] {false, false, false, false, false, false, false, false, false, false, false, false}}; // iner = level; outer = tag
 
@@ -41,36 +42,63 @@ public class ReefDisplay extends SubsystemBase {
         this.drivetrain = drivetrain;
         targetReefSide = new Tuple<Integer, Boolean>(drivetrain.reefTagToRobot(drivetrain.getPose()), false);
 
-        L2Pubil = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getBooleanArrayTopic("L2").publish();
-        L3Pubil = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getBooleanArrayTopic("L3").publish();
-        L4Pubil = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ReefDisplay").getBooleanArrayTopic("L4").publish();
     }
+
+    public class ReefDisplayUpdate extends Command {
+
+        ReefDisplay reefDisplay;
+
+        public ReefDisplayUpdate(ReefDisplay reefDisplay){
+            this.reefDisplay = reefDisplay;
+
+            addRequirements(reefDisplay);
+        }
+        
+        @Override
+        public void initialize(){
+    
+        }
+
+        @Override
+        public void execute(){
+            reefDisplay.updateTargetReef();
+
+            if (reefDisplay.collector.getVelocity() < 0 && reefDisplay.targetReefSide.k != 0){
+                switch(reefDisplay.rod.getState()){
+    
+                    case L2:
+                        reefDisplay.reef[0][reefDisplay.getArrayIndex()] = true;
+                        break;
+    
+                    case L3:
+                        reefDisplay.reef[1][reefDisplay.getArrayIndex()] = true;
+                        break;
+    
+                    case L4:
+                        reefDisplay.reef[2][reefDisplay.getArrayIndex()] = true;
+                        break;
+
+                    default:
+                        break;
+
+                }
+                reefDisplay.publish();
+            }
+        }   
+
+        @Override
+        public boolean isFinished(){
+            return false;
+        }
+    }
+
 
     @Override
     public void periodic() {
-        if (collector.getVelocity() < 0 && targetReefSide.k != 0){
-            switch(rod.getState()){
-
-                case L2:
-                    reef[0][getArrayIndex()] = true;
-                    break;
-
-                case L3:
-                    reef[1][getArrayIndex()] = true;
-                    break;
-
-                case L4:
-                    reef[2][getArrayIndex()] = true;
-                    break;
-            }
-
-            publish();
-        }
 
         // LightningShuffleboard.setDouble("ReefDisplay", "arrayIndex", getArrayIndex());
         // LightningShuffleboard.setDouble("ReefDisplay", "tagNum", targetReefSide.k);
         // LightningShuffleboard.setBool("ReefDisplay", "isRight", targetReefSide.v);
-
     }
 
     public void updateTargetReef(){
@@ -79,12 +107,15 @@ public class ReefDisplay extends SubsystemBase {
         Pose2d rightPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.RIGHT, tagNum));
         Pose2d leftPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.LEFT, tagNum));
 
-        
-        if (rightPose != null && leftPose != null && drivetrain.getPose().nearest(List.of(rightPose, leftPose)) == rightPose) {
-            targetReefSide = new Tuple<Integer, Boolean>(tagNum, false);
-        }
-        else{
-            targetReefSide = new Tuple<Integer, Boolean>(tagNum, true);
+        try{
+            if ((rightPose != null && leftPose != null) && drivetrain.getPose().nearest(List.of(rightPose, leftPose)) == rightPose) {
+                targetReefSide = new Tuple<Integer, Boolean>(tagNum, false);
+            }
+            else{
+                targetReefSide = new Tuple<Integer, Boolean>(tagNum, true);
+            }
+        } catch (Exception e){
+            
         }
     }
 

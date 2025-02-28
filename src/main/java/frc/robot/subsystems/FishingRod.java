@@ -39,6 +39,8 @@ public class FishingRod extends SubsystemBase {
     private MechanismLigament2d stage3;
     private MechanismLigament2d wristSim;
 
+    private boolean coralMode = true;
+
     public FishingRod(Wrist wrist, Elevator elevator) {
         this.wrist = wrist;
         this.elevator = elevator;
@@ -82,8 +84,8 @@ public class FishingRod extends SubsystemBase {
                         transitionState = RodTransitionStates.DEFAULT; // finalize transition
                     }
                     break;
-                case DEFAULT, TRITON: // all states should end here
-                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState));
+                case DEFAULT, TRITON, WITH_WRIST_SLOW: // all states should end here
+                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState), transitionState == RodTransitionStates.WITH_WRIST_SLOW);
                     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
                     if (wrist.isOnTarget() && elevator.isOnTarget()) {
                         currState = targetState;
@@ -101,6 +103,14 @@ public class FishingRod extends SubsystemBase {
         LightningShuffleboard.setString("Rod", "transitionState", transitionState.toString());
     }
 
+    public boolean isCoralMode() {
+        return coralMode;
+    }
+
+    public void setCoralMode(boolean mode) {
+        coralMode = mode;
+    }
+
     /**
      * Sets the state of the fishing rod
      *
@@ -109,14 +119,16 @@ public class FishingRod extends SubsystemBase {
     public void setState(RodStates state) {
         targetState = state;
 
-        // logic for transition states goes here
-        if (currState.isScoring() || targetState.isScoring()) {
+        if (targetState == RodStates.BARGE) { // slow wrist so we do not flick the algae
+            transitionState = RodTransitionStates.WITH_WRIST_SLOW;
+        }
+        else if (currState.isScoring() || targetState.isScoring()) { // any scoring state wrist up first to not skewer
             transitionState = RodTransitionStates.WRIST_UP_THEN_ELE;
         } 
         // else if (targetState == RodStates.L4 || targetState == RodStates.L3 || targetState == RodStates.L2) {
         //     transitionState = RodTransitionStates.WRIST_DOWN_THEN_ELE;
         // } 
-        else {
+        else { // default state (i hate triton)
             transitionState = Constants.IS_TRITON ? RodTransitionStates.TRITON : RodTransitionStates.DEFAULT;
         }
 
@@ -124,6 +136,8 @@ public class FishingRod extends SubsystemBase {
         elevatorBias = 0;
         wristBias = 0;
     }
+
+
 
     // biases will only work if no other position is actively being set.
     public Command addWristBias(double bias) {

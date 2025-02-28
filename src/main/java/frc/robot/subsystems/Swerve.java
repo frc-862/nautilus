@@ -30,6 +30,8 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -207,6 +209,11 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             Math.abs(xFilter.calculate(pose.getX()) - pose.getX()) < 0.01 &&
             Math.abs(yFilter.calculate(pose.getY()) - pose.getY()) < 0.01 &&
             Math.abs(rotFilter.calculate(pose.getRotation().getRadians()) - pose.getRotation().getRadians()) < 0.01);
+    }
+
+    public void resetForwardWithOpPerspective(Rotation2d rotation) {
+        seedFieldCentric();
+        setOperatorPerspectiveForward(rotation);
     }
 
     /**

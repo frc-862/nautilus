@@ -16,6 +16,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -273,7 +274,7 @@ public class PhotonVision extends SubsystemBase {
             //         case Blue:
             //             tags.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
             //             break;
-                
+
             //         case Red:
             //             tags.setOrigin(OriginPosition.kRedAllianceWallRightSide);
             //             break;
@@ -290,8 +291,13 @@ public class PhotonVision extends SubsystemBase {
 
         @Override
         public void run() {
+            try {
+                sleep(500);
+            } catch (InterruptedException e) {
+                DataLogManager.log(camName.toString() + " sleep inital failed");
+            }
             while (true) {
-                if(!cameraInitialized) {
+                if (!cameraInitialized) {
                     initializeCamera();
                 } else {
                     try {
@@ -307,7 +313,7 @@ public class PhotonVision extends SubsystemBase {
                                 // the local hasTarget variable will turn true if ANY PipelineResult within this loop has a target
                                 hasTarget = true;
 
-                                if(!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {                                
+                                if(!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
                                     poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose,
                                             () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed"));
                                 } else {
@@ -341,7 +347,7 @@ public class PhotonVision extends SubsystemBase {
                         this.hasTarget = false;
                     }
                     try {
-                        sleep(0);
+                        sleep(5);
                     } catch (InterruptedException e) {
                         DataLogManager.log(camName.toString() + " sleep failed");
                     }
@@ -383,8 +389,8 @@ public class PhotonVision extends SubsystemBase {
             try {
                 camera = new PhotonCamera(camName == Camera.LEFT ? VisionConstants.leftCamName : VisionConstants.rightCamName);
                 cameraInitialized = true;
-            } catch(Exception e) {
-                System.out.println("warning: camera not initialized");
+            } catch (Exception e) {
+                DataLogManager.log("warning: camera not initialized");
             }
         }
     }

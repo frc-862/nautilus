@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import java.util.function.IntSupplier;
 
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -97,6 +99,8 @@ public class PoseBasedAutoAlign extends Command {
         publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("TestAutoAlign").getStructTopic("TARGET POSE", Pose2d.struct).publish();
         publisher.accept(targetPose);
 
+        invokeCancel = false;
+
         if (!customTagSet) {
             tagID = PoseConstants.getScorePose(drivetrain.getPose());
         }
@@ -138,7 +142,7 @@ public class PoseBasedAutoAlign extends Command {
         double yVeloc = controllerY.calculate(currentPose.getY(), targetPose.getY());// + Math.signum(controllerY.getError()) * xKs;
         double rotationVeloc = controllerR.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
-        drivetrain.setControl(DriveRequests.getDrive(
+        drivetrain.setControl(DriveRequests.getAutoAlign(
             xVeloc,
             yVeloc,
             rotationVeloc));

@@ -144,14 +144,14 @@ public class Elevator extends SubsystemBase {
         LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
         // LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
 
-        // LightningShuffleboard.setDouble("Diagnostics", "left elevator motor temp", leftMotor.getDeviceTemp().getValueAsDouble());
-        // LightningShuffleboard.setDouble("Diagnostics", "right elevator motor temp", rightMotor.getDeviceTemp().getValueAsDouble());
-
         // checks if the elevator is in sync with the CANRange sensor every 2 seconds
         if (shouldSyncCANRange() && (Timer.getFPGATimestamp() > syncTime)) {
             leftMotor.setPosition(rangeSensorDistance);
             syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
         }
+        // LightningShuffleboard.setDouble("Diagnostic", "ELE Left Temperature", leftMotor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setDouble("Diagnostic", "ELE Right Temperature", rightMotor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
     }
 
     /**

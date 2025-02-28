@@ -58,6 +58,7 @@ import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.SimGamePeices;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
+import frc.robot.subsystems.ReefDisplay;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
@@ -80,6 +81,7 @@ public class RobotContainer extends LightningContainer {
     private AlgaeCollector algaeCollector;
     private Climber climber;
 
+    private ReefDisplay reefDisplay;
     private SimGamePeices simGamePeices;
 
     private static XboxController driver;
@@ -107,10 +109,13 @@ public class RobotContainer extends LightningContainer {
 
         climber = new Climber(RobotMotors.climberMotor);
 
+        reefDisplay = new ReefDisplay(coralCollector, rod, drivetrain);
+      
         // if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
         // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
         // RobotMotors.algaeCollectorPivotMotor);
         // }
+
 
         if (Robot.isSimulation()) {
             // algae collector and climber are temp because not initialized above
@@ -145,6 +150,9 @@ public class RobotContainer extends LightningContainer {
                 () -> climber.setPower(
                         MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
                 climber));
+        
+        reefDisplay.setDefaultCommand(new RunCommand(reefDisplay::updateTargetReef,  reefDisplay));
+        new Trigger(() -> (rod.getTargetState().isScoring() && coralCollector.getVelocity() < 0)).whileTrue(reefDisplay.new ReefDisplayUpdate(reefDisplay));
 
         // This should not be here, but is commented just to be safe if ever needed
         // again
@@ -301,9 +309,11 @@ public class RobotContainer extends LightningContainer {
                     NamedCommands.registerCommand("AlignTo" + tagID.name(),
                             new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
                     break;
 
                 default:
+
                     NamedCommands.registerCommand("AlignTo" + tagID.name() + "Left",
                             new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));

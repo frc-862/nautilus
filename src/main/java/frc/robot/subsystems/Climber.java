@@ -41,14 +41,15 @@ public class Climber extends SubsystemBase {
 
         this.motor = motor;
 
-        if(Robot.isSimulation()){
+        if (Robot.isSimulation()) {
 
             motorSim = new TalonFXSimState(motor);
 
             gearbox = DCMotor.getFalcon500(1);
 
-            climbSim = new ElevatorSim(gearbox, ClimberConstants.GEAR_RATIO, ClimberConstants.CARRIAGE_MASS, ClimberConstants.DRUM_RADIUS,
-                ClimberConstants.MIN_EXTENSION, ClimberConstants.MAX_EXTENSION, false, 0, 0, 1);
+            climbSim = new ElevatorSim(gearbox, ClimberConstants.GEAR_RATIO, ClimberConstants.CARRIAGE_MASS,
+                    ClimberConstants.DRUM_RADIUS,
+                    ClimberConstants.MIN_EXTENSION, ClimberConstants.MAX_EXTENSION, false, 0, 0, 1);
         }
 
         config.Slot0.kP = ClimberConstants.KP;
@@ -62,9 +63,10 @@ public class Climber extends SubsystemBase {
         // LightningShuffleboard.setDouble("Climber", "Position", getPostion());
         // LightningShuffleboard.setBool("Climber", "On Target", getOnTarget());
         // LightningShuffleboard.setDouble("Climber", "targetPosition", targetPostion);
-        // LightningShuffleboard.setDouble("Diagnostics", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setBool("Climber", "limit switch", getLimitSwitch());
+        // LightningShuffleboard.setDouble("Diagnostic", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
 
-        if (getLimitSwitch()) {
+        if (motor.getVelocity().getValueAsDouble() > 0 && getLimitSwitch()) {
             motor.stopMotor();
         }
     }
@@ -79,11 +81,12 @@ public class Climber extends SubsystemBase {
         climbSim.update(RobotMap.UPDATE_FREQ);
 
         // Update the state of the motor
-        motorSim.setRawRotorPosition(Units.metersToInches(climbSim.getPositionMeters()) * ClimberConstants.ROTOR_TO_MECHANISM_RATIO);
+        motorSim.setRawRotorPosition(
+                Units.metersToInches(climbSim.getPositionMeters()) * ClimberConstants.ROTOR_TO_MECHANISM_RATIO);
     }
 
     public void setPower(double speed) {
-        if (getLimitSwitch()) {
+        if (speed > 0 && getLimitSwitch()) {
             return;
         }
         motor.setControl(new DutyCycleOut(speed));
@@ -113,9 +116,10 @@ public class Climber extends SubsystemBase {
 
     /**
      * assuming that true means triggered and false means not triggered
+     *
      * @return if the limit switch is triggered
      */
     public boolean getLimitSwitch() {
-        return !limitSwitch.get();
+        return limitSwitch.get();
     }
 }

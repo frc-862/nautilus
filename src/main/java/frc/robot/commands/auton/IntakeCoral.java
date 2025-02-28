@@ -28,7 +28,7 @@ public class IntakeCoral extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        collector.setPower(CoralCollectorConstants.HOLD_POWER);
+        collector.setPower(CoralCollectorConstants.CORAL_HOLD_POWER);
     }
 
     @Override

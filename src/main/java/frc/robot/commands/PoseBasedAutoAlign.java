@@ -51,11 +51,13 @@ public class PoseBasedAutoAlign extends Command {
     private Transform3d currentTransform = new Transform3d();
     private Pose2d targetPose = new Pose2d();
 
-    private StructPublisher<Pose2d> publisher;
+    // private StructPublisher<Pose2d> publisher;
 
     private int tagID = 0;
     private boolean customTagSet = false;
     private boolean invokeCancel = false;
+
+    private LightningTagID cID = LightningTagID.One;
 
     /**
      * Used to align to Tag
@@ -70,8 +72,7 @@ public class PoseBasedAutoAlign extends Command {
         this(vision, drivetrain, camera, leds);
 
         customTagSet = true;
-
-        tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? IDCode.redID : IDCode.blueID;
+        cID = IDCode;
     }
 
     public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds) {
@@ -96,20 +97,35 @@ public class PoseBasedAutoAlign extends Command {
 
     @Override
     public void initialize() {
-        publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("TestAutoAlign").getStructTopic("TARGET POSE", Pose2d.struct).publish();
-        publisher.accept(targetPose);
+        // TODO: broken
+        // publisher = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("TestAutoAlign").getStructTopic("TARGET POSE", Pose2d.struct).publish();
+        // publisher.accept(targetPose);
 
         invokeCancel = false;
 
+        // Get tagID from IDCode
+        if(cID != null) {
+            tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? cID.redID : cID.blueID;
+        }
+
+        // Get the tag in front of the robot
         if (!customTagSet) {
+
             tagID = PoseConstants.getScorePose(drivetrain.getPose());
         }
 
+        // If we have a target tag, set target pose
         if (tagID == 0) {
             invokeCancel = true;
             CommandScheduler.getInstance().cancel(this);
         } else {
             targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tagID));
+
+            LightningShuffleboard.setDouble("TestAutoAlign", "Tag", tagID);
+
+            if(targetPose != null) {
+                LightningShuffleboard.setString("TestAutoAlign", "Target Pose", targetPose.toString());
+            }
         }
 
         controllerX.setTolerance(0.02);
@@ -168,7 +184,7 @@ public class PoseBasedAutoAlign extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        publisher.close();
+        // publisher.close();
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
         }

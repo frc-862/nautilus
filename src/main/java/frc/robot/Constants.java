@@ -216,7 +216,7 @@ public class Constants {
                 put(RodStates.L1, 0d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -36d);
-                put(RodStates.L4, -47.5d);
+                put(RodStates.L4, -48d);
                 put(RodStates.LOW, -29d);
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
@@ -236,9 +236,9 @@ public class Constants {
 
                 put(RodStates.STOW, 3d);
                 put(RodStates.L1, 2d);
-                put(RodStates.L2, 12.5d);
+                put(RodStates.L2, 13.5d);
                 put(RodStates.L3, 26d);
-                put(RodStates.L4, 47d);
+                put(RodStates.L4, 46.25d);
                 put(RodStates.LOW, 15d);
                 put(RodStates.HIGH, 28d);
                 put(RodStates.SOURCE, 9.5d);
@@ -548,10 +548,6 @@ public class Constants {
 
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22),
                         new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
-
-
-
-                        
 
                 //red
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6),
@@ -1120,16 +1116,17 @@ public class Constants {
         public enum LEDStates {
             MIXER(),
             ERROR(),
+            CLIMBED(),
             COLLECTED(),
             ALIGNED(),
             ALGAE_MODE(),
             ALIGNING(),
+            READY_TO_ALIGN(),
             COLLECTING(),
             SCORING(),
-            READY_TO_ALIGN(),
             ROD_MOVING(),
             UPDATING_POSE(),
-            POSE_BAD(),
+            POSE_BAD()
         }
     }
 

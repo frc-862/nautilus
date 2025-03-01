@@ -103,6 +103,10 @@ public class CoralCollector extends SubsystemBase {
         return motor.getRotorVelocity().getValueAsDouble();
     }
 
+    public double getPower() {
+        return motor.getMotorVoltage().getValueAsDouble();
+    }
+
     /**
      * @return if bream break sensor is triggered
      */

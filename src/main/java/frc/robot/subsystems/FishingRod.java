@@ -119,7 +119,7 @@ public class FishingRod extends SubsystemBase {
     public void setState(RodStates state) {
         targetState = state;
 
-        if (targetState == RodStates.BARGE) { // slow wrist so we do not flick the algae
+        if (targetState == RodStates.BARGE || targetState == RodStates.PROCESSOR) { // slow wrist so we do not flick the algae
             transitionState = RodTransitionStates.WITH_WRIST_SLOW;
         }
         else if (currState.isScoring() || targetState.isScoring()) { // any scoring state wrist up first to not skewer

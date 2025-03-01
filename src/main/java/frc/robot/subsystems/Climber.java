@@ -66,9 +66,9 @@ public class Climber extends SubsystemBase {
         LightningShuffleboard.setBool("Climber", "limit switch", getLimitSwitch());
         // LightningShuffleboard.setDouble("Diagnostic", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
 
-        if (motor.getVelocity().getValueAsDouble() < 0 && getLimitSwitch()) {
-            motor.stopMotor();
-        }
+        // if (motor.getVelocity().getValueAsDouble() < 0 && getLimitSwitch()) {
+        //     motor.stopMotor();
+        // }
     }
 
     @Override
@@ -86,10 +86,12 @@ public class Climber extends SubsystemBase {
     }
 
     public void setPower(double speed) {
-        if (speed > 0 && getLimitSwitch()) {
+        if (speed < 0 && getLimitSwitch()) {
+            motor.setControl(new DutyCycleOut(0));
             return;
+        } else {
+            motor.setControl(new DutyCycleOut(speed));
         }
-        motor.setControl(new DutyCycleOut(speed));
     }
 
     /**
@@ -120,6 +122,6 @@ public class Climber extends SubsystemBase {
      * @return if the limit switch is triggered
      */
     public boolean getLimitSwitch() {
-        return !limitSwitch.get();
+        return limitSwitch.get();
     }
 }

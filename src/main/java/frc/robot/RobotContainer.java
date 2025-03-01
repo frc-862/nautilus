@@ -31,6 +31,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -158,18 +159,22 @@ public class RobotContainer extends LightningContainer {
 
         new Trigger(() -> erroring && DriverStation.isDisabled()).whileTrue(leds.strip.enableState(LEDStates.ERROR));
 
-        new Trigger(() -> rod.isCoralMode()).whileFalse(leds.strip.enableState(LEDStates.ALGAE_MODE));
+        new Trigger(() -> !rod.isCoralMode()).whileTrue(leds.strip.enableState(LEDStates.ALGAE_MODE));
 
-        new Trigger(() -> (coralCollector.getVelocity() > CoralCollectorConstants.CORAL_HOLD_POWER && rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
-        new Trigger(() -> (coralCollector.getVelocity() < -CoralCollectorConstants.CORAL_HOLD_POWER && rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
+        // new Trigger(() -> (coralCollector.getPower() > CoralCollectorConstants.CORAL_HOLD_POWER && rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
+        // new Trigger(() -> (coralCollector.getPower() < -CoralCollectorConstants.CORAL_HOLD_POWER && rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
-        new Trigger(() -> (coralCollector.getVelocity() > CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
-        new Trigger(() -> (coralCollector.getVelocity() < -CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
+        // new Trigger(() -> (coralCollector.getPower() > CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
+        // new Trigger(() -> (coralCollector.getPower() < -CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
-        new Trigger(() -> (drivetrain.poseZero() && DriverStation.isDisabled() && !vision.hasTarget()))
-                .whileTrue(leds.strip.enableState(LEDStates.POSE_BAD));
-        new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled() && vision.hasTarget()))
+        leds.strip.setState(LEDStates.POSE_BAD, true);
+        new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled()))
+                .onTrue(leds.strip.setState(LEDStates.POSE_BAD, false))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
+
+        new Trigger(() -> (PoseConstants.getScorePose(drivetrain.getPose()) == 0)).whileFalse(leds.strip.enableState(LEDStates.READY_TO_ALIGN));
+
+        new Trigger(() -> climber.getLimitSwitch()).whileTrue(leds.strip.enableState(LEDStates.CLIMBED));
 
         /* PDH LED TRIGGERSS */
         // if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {

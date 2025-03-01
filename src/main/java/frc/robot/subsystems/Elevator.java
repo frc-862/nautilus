@@ -74,7 +74,7 @@ public class Elevator extends SubsystemBase {
         config.Feedback.RotorToSensorRatio = ElevatorConstants.ROTOR_TO_SENSOR_RATIO;
         config.Feedback.SensorToMechanismRatio = ElevatorConstants.ENCODER_TO_MECHANISM_RATIO;
 
-        rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE);
+        rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE, RobotMap.CANIVORE_CAN_NAME);
 
         CANrangeConfiguration rangeConfig = new CANrangeConfiguration();
         rangeConfig.ToFParams.UpdateFrequency = 50;
@@ -117,7 +117,7 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         currentPosition = getPosition();
 
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", rangeSensor.getDistance().getValueAsDouble());
+        // LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", rangeSensor.getDistance().getValueAsDouble());
 
         LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
         LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);

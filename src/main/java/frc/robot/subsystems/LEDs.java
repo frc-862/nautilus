@@ -34,7 +34,7 @@ public class LEDs extends Thunderbolt {
 
 				case ALIGNED -> blink(LightningColors.GREEN);
 
-				case ALGAE_MODE -> solid(LightningColors.LIGHT_BLUE);
+				case ALGAE_MODE -> rainbow();
 
 				case ALIGNING -> pulse(LightningColors.BLUE);
 

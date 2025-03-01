@@ -158,8 +158,13 @@ public class RobotContainer extends LightningContainer {
 
         new Trigger(() -> erroring && DriverStation.isDisabled()).whileTrue(leds.strip.enableState(LEDStates.ERROR));
 
-        new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.SCORING));
-        new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
+        new Trigger(() -> rod.isCoralMode()).whileFalse(leds.strip.enableState(LEDStates.ALGAE_MODE));
+
+        new Trigger(() -> (coralCollector.getVelocity() > CoralCollectorConstants.CORAL_HOLD_POWER && rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
+        new Trigger(() -> (coralCollector.getVelocity() < -CoralCollectorConstants.CORAL_HOLD_POWER && rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
+
+        new Trigger(() -> (coralCollector.getVelocity() > CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
+        new Trigger(() -> (coralCollector.getVelocity() < -CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
         new Trigger(() -> (drivetrain.poseZero() && DriverStation.isDisabled() && !vision.hasTarget()))
                 .whileTrue(leds.strip.enableState(LEDStates.POSE_BAD));

@@ -117,7 +117,7 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         currentPosition = getPosition();
 
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", currentPosition);
+        LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", rangeSensor.getDistance().getValueAsDouble());
 
         LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
         LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);

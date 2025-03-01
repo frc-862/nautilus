@@ -47,6 +47,7 @@ import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.TagAutoAlign;
+import frc.robot.commands.meow;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
@@ -167,7 +168,8 @@ public class RobotContainer extends LightningContainer {
         // new Trigger(() -> (coralCollector.getPower() > CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
         // new Trigger(() -> (coralCollector.getPower() < -CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
-        leds.strip.setState(LEDStates.POSE_BAD, true);
+        leds.strip.setState(LEDStates.POSE_BAD, true).schedule();
+
         new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled()))
                 .onTrue(leds.strip.setState(LEDStates.POSE_BAD, false))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
@@ -349,7 +351,9 @@ public class RobotContainer extends LightningContainer {
                 new SetRodState(rod, RodStates.SOURCE)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
 
+                        
         autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser.addOption("MEOW", new meow(drivetrain).withTimeout(3));
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
     }
 
@@ -357,6 +361,11 @@ public class RobotContainer extends LightningContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
+
+//     public Command deadReconDrive() {
+//         return new StartEndCommand(drivetrain.applyRequest(DriveRequests.getDrive(() -> 0.5, () -> 0, () -> 0)), 
+//         drivetrain.applyRequest(DriveRequests.getDrive(() -> 0, () -> 0, () -> 0)), drivetrain);
+//     }
 
     public static Command hapticDriverCommand() {
         if (!DriverStation.isAutonomous()) {

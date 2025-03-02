@@ -588,6 +588,15 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 1),
                     new Pose2d(15.953, 7.312, new Rotation2d(Degrees.of(-126))));
 
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 2),
+                    new Pose2d(15.935, 0.749, new Rotation2d(Degrees.of(125))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 13),
+                    new Pose2d(1.687, 7.317, new Rotation2d(Degrees.of(-54))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
+                    new Pose2d(1.648, 0.763, new Rotation2d(Degrees.of(54))));
+
             }
         };
 

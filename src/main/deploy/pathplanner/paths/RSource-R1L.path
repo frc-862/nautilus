@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7124311063624933,
-        "y": 1.0008337883185197
+        "x": 1.6678343421528985,
+        "y": 0.8813194371547968
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6702315453626477,
-        "y": 1.7554644372277344
+        "x": 2.625634781153053,
+        "y": 1.6359500860640115
       },
       "isLocked": false,
       "linkedName": "RightSRC"
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "RodStow",
-      "waypointRelativePos": 0.11267170329670316,
+      "waypointRelativePos": 0.2751158997252748,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

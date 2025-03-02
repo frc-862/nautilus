@@ -16,19 +16,24 @@
     },
     {
       "anchor": {
-        "x": 1.7124311063624933,
-        "y": 1.0008337883185197
+        "x": 1.6678343421528985,
+        "y": 0.8813194371547968
       },
       "prevControl": {
-        "x": 2.505760762908076,
-        "y": 1.6200179105004384
+        "x": 2.4611639986984812,
+        "y": 1.5005035593367158
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "RightSRC"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 54.0
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
@@ -52,7 +57,7 @@
       },
       "rotationOffset": 180.0,
       "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.49211023351648325,
+      "maxWaypointRelativePos": 0.40460594093406593,
       "name": "Point Towards Zone"
     }
   ],
@@ -62,9 +67,22 @@
       "waypointRelativePos": 0.7668655563186813,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "parallel",
         "data": {
-          "name": "RodSource"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "RodSource"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeCoral"
+              }
+            }
+          ]
         }
       }
     }
@@ -78,7 +96,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.25,
     "rotation": 54.0
   },
   "reversed": false,

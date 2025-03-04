@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5037668579783519,
-        "y": 0.7636096805167597
+        "x": 1.4794790939245808,
+        "y": 0.7549605556040501
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4615672969785063,
-        "y": 1.5182403294259745
+        "x": 2.4372795329247348,
+        "y": 1.509591204513265
       },
       "isLocked": false,
       "linkedName": "RightSRC"
@@ -54,7 +54,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -119.99999999999999
+    "rotation": -126.0
   },
   "reversed": false,
   "folder": "RSource-Reef",

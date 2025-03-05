@@ -1238,10 +1238,6 @@ public class Constants {
         public static final double TOLERANCE = 1; // temp
         public static final double ROTOR_TO_MECHANISM_RATIO = 1d;
 
-        public static final double KP = 0.05d; // temp
-        public static final double KI = 0.0; // temp
-        public static final double KD = 0; // temp
-
         public static final boolean INVERTED = false; // temp
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean BREAK_MODE = true;

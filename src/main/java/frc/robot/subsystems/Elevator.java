@@ -121,11 +121,11 @@ public class Elevator extends SubsystemBase {
 
         LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
         LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
-        LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
+        // LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
 
-        LightningShuffleboard.setDouble("Diagnostic", "ELE Left Temperature", leftMotor.getDeviceTemp().getValueAsDouble());
-        LightningShuffleboard.setDouble("Diagnostic", "ELE Right Temperature", rightMotor.getDeviceTemp().getValueAsDouble());
-        LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
+        // LightningShuffleboard.setDouble("Diagnostic", "ELE Left Temperature", leftMotor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setDouble("Diagnostic", "ELE Right Temperature", rightMotor.getDeviceTemp().getValueAsDouble());
+        // LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
     }
 
     /**
@@ -154,7 +154,7 @@ public class Elevator extends SubsystemBase {
      *
      * @param power
      */
-    public void setRawPower(double power) {
+    public void setPower(double power) {
         leftMotor.setControl(new DutyCycleOut(power));
     }
 
@@ -162,7 +162,7 @@ public class Elevator extends SubsystemBase {
      * stops the elevator motors
      */
     public void stop() {
-        setRawPower(0d);
+        leftMotor.stopMotor();
     }
 
     /**

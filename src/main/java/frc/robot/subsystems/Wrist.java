@@ -42,7 +42,6 @@ public class Wrist extends SubsystemBase {
     private CANcoder encoder;
 
     private double targetPosition = 0;
-    private double currentPosition = 0;
 
     public final PositionVoltage positionPID = new PositionVoltage(0);
 
@@ -105,26 +104,21 @@ public class Wrist extends SubsystemBase {
 
     @Override
     public void periodic() {
-        currentPosition = getAngle();
-
-        LightningShuffleboard.setDouble("Wrist", "currentPosition", currentPosition);
+        LightningShuffleboard.setDouble("Wrist", "currentPosition", getAngle());
         LightningShuffleboard.setBool("Wrist", "onTarget", isOnTarget());
 
         LightningShuffleboard.setDouble("Diagnostic", "WRIST Temperature", motor.getDeviceTemp().getValueAsDouble());
-        LightningShuffleboard.setDouble("Diagnostic", "WRIST Cancoder",
-                encoder.getAbsolutePosition().getValue().in(Rotations) - EncoderConstants.wristOffset);
-
+        LightningShuffleboard.setDouble("Diagnostic", "WRIST Cancoder", encoder.getAbsolutePosition().getValue().in(Rotations) - EncoderConstants.wristOffset);
     }
 
     /**
      * Set the wrist position in degrees
      *
      * @param position in degrees
-     * @param slow     use slot 1 when slow
+     * @param slow use slot 1 when slow
      */
     public void setPosition(double position, boolean slow) {
-        targetPosition = MathUtil.clamp(position, WristConstants.MIN_ANGLE.in(Degrees),
-                WristConstants.MAX_ANGLE.in(Degrees));
+        targetPosition = MathUtil.clamp(position, WristConstants.MIN_ANGLE.in(Degrees), WristConstants.MAX_ANGLE.in(Degrees));
         motor.setControl(positionPID.withPosition(Units.degreesToRotations(position)).withSlot(slow ? 1 : 0));
     }
 
@@ -170,7 +164,7 @@ public class Wrist extends SubsystemBase {
      * @return True if the wrist is on target
      */
     public boolean isOnTarget() {
-        return Math.abs(targetPosition - currentPosition) < WristConstants.TOLERANCE;
+        return Math.abs(targetPosition - getAngle()) < WristConstants.TOLERANCE;
     }
 
     /**
@@ -178,7 +172,7 @@ public class Wrist extends SubsystemBase {
      *
      * @param power Wrist motor power
      */
-    public void setRawPower(double power) {
+    public void setPower(double power) {
         motor.setControl(new DutyCycleOut(power));
     }
 
@@ -186,7 +180,7 @@ public class Wrist extends SubsystemBase {
      * Stops the wrist motors
      */
     public void stop() {
-        setRawPower(0d);
+        motor.stopMotor();
     }
 
     @Override
@@ -202,8 +196,7 @@ public class Wrist extends SubsystemBase {
         encoderSim.setRawPosition(simAngle);
         encoderSim.setVelocity(simVeloc);
 
-        LightningShuffleboard.setDouble("Wrist", "CANCoder angle",
-                encoder.getAbsolutePosition().getValue().in(Degrees));
+        LightningShuffleboard.setDouble("Wrist", "CANCoder angle", encoder.getAbsolutePosition().getValue().in(Degrees));
         LightningShuffleboard.setDouble("Wrist", "sim angle", simAngle);
         LightningShuffleboard.setDouble("Wrist", "getPose", getAngle());
         // setPower(LightningShuffleboard.getDouble("Wrist", "setPower", 0));

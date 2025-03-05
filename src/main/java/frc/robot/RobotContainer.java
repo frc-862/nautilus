@@ -47,7 +47,6 @@ import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.TagAutoAlign;
-import frc.robot.commands.meow;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
@@ -353,7 +352,6 @@ public class RobotContainer extends LightningContainer {
 
                         
         autoChooser = AutoBuilder.buildAutoChooser();
-        autoChooser.addOption("MEOW", new meow(drivetrain).withTimeout(3));
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
     }
 

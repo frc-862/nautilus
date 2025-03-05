@@ -121,14 +121,9 @@ public class FishingRod extends SubsystemBase {
 
         if (targetState == RodStates.BARGE || targetState == RodStates.PROCESSOR) { // slow wrist so we do not flick the algae
             transitionState = RodTransitionStates.WITH_WRIST_SLOW;
-        }
-        else if (currState.isScoring() || targetState.isScoring()) { // any scoring state wrist up first to not skewer
+        } else if (currState.isScoring() || targetState.isScoring()) { // any scoring state wrist up first to not skewer
             transitionState = RodTransitionStates.WRIST_UP_THEN_ELE;
-        } 
-        // else if (targetState == RodStates.L4 || targetState == RodStates.L3 || targetState == RodStates.L2) {
-        //     transitionState = RodTransitionStates.WRIST_DOWN_THEN_ELE;
-        // } 
-        else { // default state (i hate triton)
+        } else { // default state (i hate triton)
             transitionState = Constants.IS_TRITON ? RodTransitionStates.TRITON : RodTransitionStates.DEFAULT;
         }
 
@@ -139,7 +134,12 @@ public class FishingRod extends SubsystemBase {
 
 
 
-    // biases will only work if no other position is actively being set.
+    
+    /**
+     * biases will only work if no other position is actively being set.
+     * @param bias the amount to add to the wrist position
+     * @return a command that will add the bias to the wrist position
+     */
     public Command addWristBias(double bias) {
         return new InstantCommand(() -> {
             if (Math.signum(bias) != Math.signum(wristBias)) {
@@ -150,6 +150,11 @@ public class FishingRod extends SubsystemBase {
         });
     }
 
+    /**
+     * biases will only work if no other position is actively being set.
+     * @param bias the amount to add to the elevastor position
+     * @return a command that will add the bias to the elevator position
+     */
     public Command addElevatorBias(double bias) {
         return new InstantCommand(() -> {
             if (Math.signum(bias) != Math.signum(elevatorBias)) {
@@ -162,10 +167,8 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * Gets the state of the fishing rod
-     *
      * @return the current state of the fishing rod
      */
-
     @Logged(importance = Importance.CRITICAL)
     public RodStates getState() {
         return currState;
@@ -182,7 +185,6 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * Checks if the whole fishing rod system is on target
-     *
      * @return true if the wrist and elevator are on target false otherwise
      */
     @Logged(importance = Importance.DEBUG)

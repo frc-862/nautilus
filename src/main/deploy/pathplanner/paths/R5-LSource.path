@@ -8,40 +8,54 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.005347308817409,
-        "y": 6.418694857410307
+        "x": 3.0878350136921497,
+        "y": 6.18191981281511
       },
       "isLocked": false,
       "linkedName": "Reef5Left"
     },
     {
       "anchor": {
-        "x": 1.7046030405405406,
-        "y": 7.25633445945946
+        "x": 1.8059436648917597,
+        "y": 6.6315462421438545
       },
       "prevControl": {
-        "x": 2.554134522453538,
-        "y": 6.544466632228509
+        "x": 2.593057982637057,
+        "y": 6.335045729702337
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "LeftSource"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1,
-      "rotationDegrees": 21.318641535577104
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "SourceAndCollect",
+      "waypointRelativePos": 0.7166852678571433,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeCoral"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 1.0,
     "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAngularVelocity": 200.0,
+    "maxAngularAcceleration": 300.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -55,5 +69,5 @@
     "velocity": 0,
     "rotation": 59.99999999999999
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

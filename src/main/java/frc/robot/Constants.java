@@ -537,7 +537,7 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 19),
                         new Pose2d(3.965, 5.231, new Rotation2d(Degrees.of(120)))); // FIX
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 20),
-                        new Pose2d(4.971, 5.257, new Rotation2d(Degrees.of(60)))); // SUS POSE
+                        new Pose2d(5.035, 5.308, new Rotation2d(Degrees.of(60))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 20),
                         new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(60))));
 
@@ -589,8 +589,22 @@ public class Constants {
 
 
                 //source
+
+                //red right source
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 1),
                     new Pose2d(15.953, 7.312, new Rotation2d(Degrees.of(-126))));
+
+                //red left source
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 2),
+                    new Pose2d(15.935, 0.749, new Rotation2d(Degrees.of(125))));
+
+                //blue left source
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 13),
+                    new Pose2d(1.239, 6.962, new Rotation2d(Degrees.of(-54))));
+
+                //blue right source
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
+                    new Pose2d(1.648, 0.763, new Rotation2d(Degrees.of(54))));
 
             }
         };

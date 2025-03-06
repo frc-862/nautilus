@@ -27,11 +27,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.EncoderConstants;
 import frc.robot.Constants.FishingRodConstants;
+import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.WristConstants;
-import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
@@ -171,6 +172,15 @@ public class Wrist extends SubsystemBase {
      */
     public boolean isOnTarget() {
         return Math.abs(targetPosition - currentPosition) < WristConstants.TOLERANCE;
+    }
+   
+    /** 
+     * Checks if the wrist is within the safe zone
+     * 
+     * @return True if the wrist is within the safe zone
+     */
+     public boolean isWithinSafeZone() {
+        return Math.abs(targetPosition - currentPosition) < WristConstants.SAFE_ZONE;
     }
 
     /**

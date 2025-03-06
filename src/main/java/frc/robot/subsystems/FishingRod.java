@@ -11,13 +11,14 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FishingRodConstants;
-import frc.robot.Constants.FishingRodConstants.*;
+import frc.robot.Constants.FishingRodConstants.RodStates;
+import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.Constants.WristConstants;
-import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class FishingRod extends SubsystemBase {
 
@@ -71,7 +72,7 @@ public class FishingRod extends SubsystemBase {
             switch (transitionState) {
                 case WRIST_UP_THEN_ELE: // wrist up, move ele, move wrist
                     wrist.setState(RodStates.STOW);
-                    if (wrist.isOnTarget()) {
+                    if (wrist.isWithinSafeZone()) {
                         elevator.setState(targetState);
                         if(elevator.isOnTarget()) {
                             transitionState = RodTransitionStates.DEFAULT; // finalize transition
@@ -80,7 +81,7 @@ public class FishingRod extends SubsystemBase {
                     break;
                 case WRIST_DOWN_THEN_ELE: // wrist down, move ele
                     wrist.setState(targetState);
-                    if (wrist.isOnTarget()) {
+                    if (wrist.isWithinSafeZone()) {
                         transitionState = RodTransitionStates.DEFAULT; // finalize transition
                     }
                     break;

@@ -315,6 +315,8 @@ public class Constants {
         public static final Angle MAX_ANGLE = Degrees.of(85);
 
         public static final double TOLERANCE = 5d;
+        
+        public static final double SAFE_ZONE = 30d;
 
         // sim stuff
         public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.086); // 5lb, 2.5in rad, 9in height

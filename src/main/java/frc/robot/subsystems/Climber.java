@@ -29,7 +29,6 @@ public class Climber extends SubsystemBase {
     private DigitalInput limitSwitch;
 
     public Climber(ThunderBird motor) {
-
         this.motor = motor;
 
         limitSwitch = new DigitalInput(RobotMap.CLIMBER_LIMIT_SWITCH_DIO);
@@ -65,8 +64,7 @@ public class Climber extends SubsystemBase {
         climbSim.update(RobotMap.UPDATE_FREQ);
 
         // Update the state of the motor
-        motorSim.setRawRotorPosition(
-                Units.metersToInches(climbSim.getPositionMeters()) * ClimberConstants.ROTOR_TO_MECHANISM_RATIO);
+        motorSim.setRawRotorPosition(Units.metersToInches(climbSim.getPositionMeters()) * ClimberConstants.ROTOR_TO_MECHANISM_RATIO);
     }
 
     /**

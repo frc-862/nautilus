@@ -220,6 +220,5 @@ public class Wrist extends SubsystemBase {
         LightningShuffleboard.setDouble("Wrist", "current angle", getAngle());
         LightningShuffleboard.setDouble("Wrist", "target angle", getTargetAngle());
         LightningShuffleboard.setBool("Wrist", "on target", isOnTarget());
-
     }
 }

@@ -97,9 +97,9 @@ public class Elevator extends SubsystemBase {
 
             gearbox = DCMotor.getKrakenX60(2);
             elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.GEAR_RATIO,
-                    ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters),
-                    ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 0, 0d,
-                    1d);
+                ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters),
+                ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 0, 0d,
+                1d);
 
             leftSim = new TalonFXSimState(leftMotor);
             rightSim = new TalonFXSimState(rightMotor);
@@ -107,9 +107,9 @@ public class Elevator extends SubsystemBase {
 
             // TalonFX sim states do not retain inverts.
             leftSim.Orientation = ElevatorConstants.L_INVERTED ? ChassisReference.Clockwise_Positive
-                    : ChassisReference.CounterClockwise_Positive;
+                : ChassisReference.CounterClockwise_Positive;
             rightSim.Orientation = ElevatorConstants.R_INVERTED ? ChassisReference.Clockwise_Positive
-                    : ChassisReference.CounterClockwise_Positive;
+                : ChassisReference.CounterClockwise_Positive;
         }
     }
 
@@ -173,8 +173,8 @@ public class Elevator extends SubsystemBase {
     @Logged(importance = Importance.DEBUG)
     public boolean isOverheating() {
         return leftMotor.getDeviceTemp().getValueAsDouble() > ElevatorConstants.OVERHEAT_TEMP
-                || rightMotor.getDeviceTemp().getValueAsDouble() > ElevatorConstants.OVERHEAT_TEMP
-                || (Math.abs(rightMotor.getDeviceTemp().getValueAsDouble() - leftMotor.getDeviceTemp().getValueAsDouble()) > ElevatorConstants.OVERHEAT_TEMP_DIFFERENCE);
+            || rightMotor.getDeviceTemp().getValueAsDouble() > ElevatorConstants.OVERHEAT_TEMP
+            || (Math.abs(rightMotor.getDeviceTemp().getValueAsDouble() - leftMotor.getDeviceTemp().getValueAsDouble()) > ElevatorConstants.OVERHEAT_TEMP_DIFFERENCE);
     }
 
     /**

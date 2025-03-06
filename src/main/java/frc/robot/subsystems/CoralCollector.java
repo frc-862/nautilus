@@ -51,8 +51,8 @@ public class CoralCollector extends SubsystemBase {
 
             // simulate collector
             coralCollectorSim = new LinearSystemSim<N1, N1, N1>(
-                    LinearSystemId.identifyVelocitySystem(CoralCollectorConstants.KV,
-                            CoralCollectorConstants.KA));
+                LinearSystemId.identifyVelocitySystem(CoralCollectorConstants.KV,
+                CoralCollectorConstants.KA));
         }
     }
 
@@ -66,7 +66,6 @@ public class CoralCollector extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-
         final double batteryVoltage = RobotController.getBatteryVoltage();
 
         // set supply voltage to battery voltage (12 v)
@@ -129,5 +128,4 @@ public class CoralCollector extends SubsystemBase {
     public void setSimBeamBreak(boolean value) {
         simBoolean.set(value);
     }
-
 }

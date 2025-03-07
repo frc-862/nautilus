@@ -59,7 +59,7 @@ public class CoralCollector extends SubsystemBase {
     @Override
     public void periodic() {
         // LightningShuffleboard.setBool("Collector", "BeamBreak", getBeamBreakOutput());
-        // LightningShuffleboard.setDouble("Collector", "Velocity", getVelocity());
+        LightningShuffleboard.setDouble("Collector", "current", motor.getStatorCurrent().getValueAsDouble());
         // LightningShuffleboard.setBool("Diagnostic", "Collector Raw BeamBreak", beamBreak.get());
         LightningShuffleboard.setDouble("Diagnostic", "COLLECTOR Temperature", motor.getDeviceTemp().getValueAsDouble());
     }
@@ -101,6 +101,10 @@ public class CoralCollector extends SubsystemBase {
      */
     public double getVelocity() {
         return motor.getRotorVelocity().getValueAsDouble();
+    }
+
+    public double getPower() {
+        return motor.getMotorVoltage().getValueAsDouble();
     }
 
     /**

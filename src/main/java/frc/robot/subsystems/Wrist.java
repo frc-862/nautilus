@@ -107,8 +107,8 @@ public class Wrist extends SubsystemBase {
     public void periodic() {
         currentPosition = getAngle();
 
-        // LightningShuffleboard.setDouble("Wrist", "currentPosition", currentPosition);
-        // LightningShuffleboard.setBool("Wrist", "onTarget", isOnTarget());
+        LightningShuffleboard.setDouble("Wrist", "currentPosition", currentPosition);
+        LightningShuffleboard.setBool("Wrist", "onTarget", isOnTarget());
 
         LightningShuffleboard.setDouble("Diagnostic", "WRIST Temperature", motor.getDeviceTemp().getValueAsDouble());
         LightningShuffleboard.setDouble("Diagnostic", "WRIST Cancoder",

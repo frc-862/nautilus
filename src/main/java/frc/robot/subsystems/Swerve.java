@@ -32,6 +32,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -192,7 +193,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     }
 
     public boolean poseZero() {
-        return getPose().equals(new Pose2d());
+        return Math.abs(getPose().getTranslation().getNorm()) <= 0.1;
     }
 
     public Pose2d getPose() {
@@ -206,9 +207,9 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     public boolean poseStable() {
         Pose2d pose = getPose();
         return (
-            Math.abs(xFilter.calculate(pose.getX()) - pose.getX()) < 0.01 &&
-            Math.abs(yFilter.calculate(pose.getY()) - pose.getY()) < 0.01 &&
-            Math.abs(rotFilter.calculate(pose.getRotation().getRadians()) - pose.getRotation().getRadians()) < 0.01);
+            Math.abs(xFilter.calculate(pose.getX()) - pose.getX()) < 0.1 &&
+            Math.abs(yFilter.calculate(pose.getY()) - pose.getY()) < 0.1 &&
+            Math.abs(rotFilter.calculate(pose.getRotation().getRadians()) - pose.getRotation().getRadians()) < 1);
     }
 
     public void resetForwardWithOpPerspective(Rotation2d rotation) {
@@ -288,7 +289,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     public void addVisionMeasurement(EstimatedRobotPose pose, double distance) {
         if (DriverStation.isDisabled()) {
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
-                    VecBuilder.fill(0.01, 0.01, 0.01));
+                    VecBuilder.fill(0.1, 0.1, 0.1));
         } else {
             // addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
             //         VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV));

@@ -29,12 +29,14 @@ public class LEDs extends Thunderbolt {
 				}
 
 				case ERROR -> blink(LightningColors.RED);
+
+				case CLIMBED -> rainbow();
 				
 				case COLLECTED -> blink(LightningColors.GREEN);
 
 				case ALIGNED -> blink(LightningColors.GREEN);
 
-				case ALGAE_MODE -> solid(LightningColors.LIGHT_BLUE);
+				case ALGAE_MODE -> blink(LightningColors.WHITE);
 
 				case ALIGNING -> pulse(LightningColors.BLUE);
 

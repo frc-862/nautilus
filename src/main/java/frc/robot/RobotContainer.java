@@ -331,6 +331,10 @@ public class RobotContainer extends LightningContainer {
 
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1));
+        
+        NamedCommands.registerCommand("IntuahCoral",
+                new RunCommand(() -> coralCollector.setPower(1), coralCollector));
+        
         NamedCommands.registerCommand("ScoreCoral",
                 new ScoreCoral(coralCollector));
 

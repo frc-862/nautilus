@@ -1,6 +1,21 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Millimeter;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -22,13 +37,12 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.ClosedLoopOutputType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
-import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.path.ConstraintsZone;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -43,7 +57,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.constraint.RectangularRegionConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -56,11 +69,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.Swerve;
-
-import static edu.wpi.first.units.Units.*;
-
-import java.util.HashMap;
-
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.util.Tuple;
 
@@ -343,8 +351,8 @@ public class Constants {
 
         // 2.5 constants
         public static final boolean INVERTED = true;
-        public static final double COLLECTED_CURRENT = 13d;
-        public static final double CORAL_HOLD_POWER = 0.05d;
+        public static final double COLLECTED_CURRENT = 35d;
+        public static final double CORAL_HOLD_POWER = 0.02d;
         public static final double ALGAE_HOLD_POWER = 0.15d;
 
     }
@@ -513,71 +521,71 @@ public class Constants {
         public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
             {                
                 //UNTUNED
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17),
-                //         new Pose2d(3.689, 2.973, new Rotation2d(Degrees.of(-120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18),
-                //         new Pose2d(3.172, 3.869, new Rotation2d(Degrees.of(180))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 18),
-                //         new Pose2d(3.172, 4.199, new Rotation2d(Degrees.of(180))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 19),
-                //         new Pose2d(3.685, 5.089, new Rotation2d(Degrees.of(120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 19),
-                //         new Pose2d(3.965, 5.231, new Rotation2d(Degrees.of(120)))); // FIX
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 20),
-                //         new Pose2d(5.009, 5.268, new Rotation2d(Degrees.of(-120)))); // SUS POSE
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 20),
-                //         new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(60))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17),
+                        new Pose2d(3.689, 2.973, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 17), new Pose2d(3.961, 2.788, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18),
+                        new Pose2d(3.172, 3.869, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 18),
+                        new Pose2d(3.172, 4.199, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 19),
+                        new Pose2d(3.685, 5.089, new Rotation2d(Degrees.of(120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 19),
+                        new Pose2d(3.965, 5.231, new Rotation2d(Degrees.of(120)))); // FIX
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 20),
+                        new Pose2d(5.009, 5.268, new Rotation2d(Degrees.of(60)))); // SUS POSE
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 20),
+                        new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(60))));
 
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 21),
-                //         new Pose2d(5.789, 4.186, new Rotation2d(Degrees.of(0))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21),
-                //         new Pose2d(5.795, 3.855, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 21),
+                        new Pose2d(5.789, 4.186, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21),
+                        new Pose2d(5.795, 3.855, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22), new Pose2d(5.296, 2.952, new Rotation2d(Degrees.of(-60))));
 
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22),
-                //         new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22),
+                        new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
 
-                // //red
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6),
-                //         new Pose2d(13.861, 2.973, new Rotation2d(Degrees.of(-60))));
+                //red
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6),
+                        new Pose2d(13.861, 2.973, new Rotation2d(Degrees.of(-60))));
 
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 7), new Pose2d(5.789 + blueRedTransform, 4.186, new Rotation2d(Degrees.of(0))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 7), new Pose2d(5.795 + blueRedTransform, 3.855, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 7), new Pose2d(5.789 + blueRedTransform, 4.186, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 7), new Pose2d(5.795 + blueRedTransform, 3.855, new Rotation2d(Degrees.of(0))));
 
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 8), new Pose2d(13.843, 5.039, new Rotation2d(Degrees.of(60))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 8), new Pose2d(4.971 + blueRedTransform, 5.257, new Rotation2d(Degrees.of(60)))); // SUS POSE
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 9), new Pose2d(12.260, 5.084, new Rotation2d(Degrees.of(120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 9), new Pose2d(3.965 + blueRedTransform, 5.231, new Rotation2d(Degrees.of(120)))); // FIX
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 10), new Pose2d(3.172 + blueRedTransform, 3.869, new Rotation2d(Degrees.of(180))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 10), new Pose2d(3.172 + blueRedTransform, 4.199, new Rotation2d(Degrees.of(180))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 11), new Pose2d(3.689 + blueRedTransform, 2.973, new Rotation2d(Degrees.of(-120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 11), new Pose2d(3.961 + blueRedTransform, 2.788, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 8), new Pose2d(13.843, 5.039, new Rotation2d(Degrees.of(60))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 8), new Pose2d(4.971 + blueRedTransform, 5.257, new Rotation2d(Degrees.of(60)))); // SUS POSE
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 9), new Pose2d(12.260, 5.084, new Rotation2d(Degrees.of(120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 9), new Pose2d(3.965 + blueRedTransform, 5.231, new Rotation2d(Degrees.of(120)))); // FIX
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 10), new Pose2d(3.172 + blueRedTransform, 3.869, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 10), new Pose2d(3.172 + blueRedTransform, 4.199, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 11), new Pose2d(3.689 + blueRedTransform, 2.973, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 11), new Pose2d(3.961 + blueRedTransform, 2.788, new Rotation2d(Degrees.of(-120))));
 
-
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 6), new Pose2d(13.5735436668043, 2.80927580618346, new Rotation2d(Degrees.of(-60))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6), new Pose2d(13.8553483331957, 2.97197580618346, new Rotation2d(Degrees.of(-60))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 7), new Pose2d(14.370498, 3.8632, new Rotation2d(Degrees.of(0))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 7), new Pose2d(14.370498, 4.1886, new Rotation2d(Degrees.of(0))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 8), new Pose2d(13.8553483331957, 5.07982419381653, new Rotation2d(Degrees.of(60))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 8), new Pose2d(13.5735436668043, 5.24252419381653, new Rotation2d(Degrees.of(60))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 9), new Pose2d(12.5442603331957, 5.24252419381653, new Rotation2d(Degrees.of(120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 9), new Pose2d(12.2624556668043, 5.07982419381653, new Rotation2d(Degrees.of(120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 10), new Pose2d(11.7473059999999, 4.1886, new Rotation2d(Degrees.of(180))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 10), new Pose2d(11.7473059999999, 3.8632, new Rotation2d(Degrees.of(180))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 11), new Pose2d(12.2624556668043, 2.97197580618346, new Rotation2d(Degrees.of(-120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 11), new Pose2d(12.5442603331957, 2.80927580618346, new Rotation2d(Degrees.of(-120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.97480833319572, 2.80927580618346, new Rotation2d(Degrees.of(-120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 17), new Pose2d(3.69300366680426, 2.97197580618346, new Rotation2d(Degrees.of(-120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 18), new Pose2d(3.1776, 3.8632, new Rotation2d(Degrees.of(180))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18), new Pose2d(3.1776, 4.1886, new Rotation2d(Degrees.of(180))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 19), new Pose2d(3.69300366680426, 5.07982419381653, new Rotation2d(Degrees.of(120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 19), new Pose2d(3.97480833319572, 5.24252419381653, new Rotation2d(Degrees.of(120))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 20), new Pose2d(5.00383766680426, 5.24252419381653, new Rotation2d(Degrees.of(60))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 20), new Pose2d(5.28564233319572, 5.07982419381653, new Rotation2d(Degrees.of(60))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.801046, 4.1886, new Rotation2d(Degrees.of(0))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 21), new Pose2d(5.801046, 3.8632, new Rotation2d(Degrees.of(0))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22), new Pose2d(5.28564233319572, 2.97197580618346, new Rotation2d(Degrees.of(-60))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22), new Pose2d(5.00383766680426, 2.80927580618346, new Rotation2d(Degrees.of(-60))));
-
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 6), new Pose2d(13.5635436668043, 2.82659631425915, new Rotation2d(Degrees.of(-60))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6), new Pose2d(13.8453483331957, 2.98929631425915, new Rotation2d(Degrees.of(-60))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 7), new Pose2d(14.350498, 3.8632, new Rotation2d(Degrees.of(0))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 7), new Pose2d(14.350498, 4.1886, new Rotation2d(Degrees.of(0))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 8), new Pose2d(13.8453483331957, 5.06250368574084, new Rotation2d(Degrees.of(60))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 8), new Pose2d(13.5635436668043, 5.22520368574084, new Rotation2d(Degrees.of(60))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 9), new Pose2d(12.5542603331957, 5.22520368574084, new Rotation2d(Degrees.of(120))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 9), new Pose2d(12.2724556668043, 5.06250368574084, new Rotation2d(Degrees.of(120))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 10), new Pose2d(11.7673059999999, 4.1886, new Rotation2d(Degrees.of(180))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 10), new Pose2d(11.7673059999999, 3.8632, new Rotation2d(Degrees.of(180))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 11), new Pose2d(12.2724556668043, 2.98929631425915, new Rotation2d(Degrees.of(-120))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 11), new Pose2d(12.5542603331957, 2.82659631425915, new Rotation2d(Degrees.of(-120))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.98480833319572, 2.82659631425915, new Rotation2d(Degrees.of(-120))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 17), new Pose2d(3.70300366680426, 2.98929631425915, new Rotation2d(Degrees.of(-120))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 18), new Pose2d(3.1976, 3.8632, new Rotation2d(Degrees.of(180))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18), new Pose2d(3.1976, 4.1886, new Rotation2d(Degrees.of(180))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 19), new Pose2d(3.70300366680426, 5.06250368574084, new Rotation2d(Degrees.of(120))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 19), new Pose2d(3.98480833319572, 5.22520368574084, new Rotation2d(Degrees.of(120))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 20), new Pose2d(4.99383766680426, 5.22520368574084, new Rotation2d(Degrees.of(60))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 20), new Pose2d(5.27564233319572, 5.06250368574084, new Rotation2d(Degrees.of(60))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.781046, 4.1886, new Rotation2d(Degrees.of(0))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 21), new Pose2d(5.781046, 3.8632, new Rotation2d(Degrees.of(0))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22), new Pose2d(5.27564233319572, 2.98929631425915, new Rotation2d(Degrees.of(-60))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22), new Pose2d(4.99383766680426, 2.82659631425915, new Rotation2d(Degrees.of(-60))));
 
 
                 //source
@@ -596,7 +604,7 @@ public class Constants {
 
                 //blue right source
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
-                    new Pose2d(1.648, 0.763, new Rotation2d(Degrees.of(54))));
+                    new Pose2d(1.394, 0.937, new Rotation2d(Degrees.of(54))));
 
             }
         };
@@ -877,8 +885,8 @@ public class Constants {
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                    .withKP(0.34807).withKI(0).withKD(0)
-                    .withKS(0.23986).withKV(0.12318).withKA(0.0059707);
+                .withKP(0.6507).withKI(0).withKD(0)
+                .withKS(0.33986).withKV(0.12318).withKA(0.0059707);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors

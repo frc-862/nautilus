@@ -39,6 +39,8 @@ public class PoseBasedAutoAlign extends Command {
     private Camera camera;
     private LEDs leds;
 
+    double tolerance = 0.03;
+
     private PIDController controllerX = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI,
         AutoAlignConstants.THREE_DEE_xD);
 
@@ -73,6 +75,14 @@ public class PoseBasedAutoAlign extends Command {
 
         customTagSet = true;
         cID = IDCode;
+    }
+
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds, LightningTagID IDCode, double tolerance) {
+        this(vision, drivetrain, camera, leds);
+
+        customTagSet = true;
+        cID = IDCode;
+        this.tolerance = tolerance;
     }
 
     public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds) {
@@ -128,13 +138,13 @@ public class PoseBasedAutoAlign extends Command {
             }
         }
 
-        controllerX.setTolerance(0.02);
+        controllerX.setTolerance(0.03);
 
-        controllerY.setTolerance(0.02);
+        controllerY.setTolerance(0.04);
 
 
         // controllerR.setSetpoint(0);
-        controllerR.setTolerance(2);
+        controllerR.setTolerance(4);
         controllerR.enableContinuousInput(0, 360);
 
         // try {

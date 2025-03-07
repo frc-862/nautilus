@@ -54,13 +54,45 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IntakeCoral"
+                  "name": "AlignToRightSource"
                 }
               },
               {
                 "type": "wait",
                 "data": {
                   "waitTime": 3.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeCoral"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 4.0
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToRightSource"
                 }
               }
             ]
@@ -79,7 +111,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToTwoRight"
+                  "name": "AlignToTwoLeft"
                 }
               },
               {
@@ -112,7 +144,7 @@
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }

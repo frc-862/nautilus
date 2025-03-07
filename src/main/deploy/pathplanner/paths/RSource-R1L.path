@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7124311063624933,
-        "y": 1.0008337883185197
+        "x": 1.4794790939245808,
+        "y": 0.7549605556040501
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6702315453626477,
-        "y": 1.7554644372277344
+        "x": 2.4372795329247348,
+        "y": 1.509591204513265
       },
       "isLocked": false,
       "linkedName": "RightSRC"
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "RodStow",
-      "waypointRelativePos": 0.11267170329670316,
+      "waypointRelativePos": 0.2751158997252748,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -54,7 +54,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -119.99999999999999
+    "rotation": -126.0
   },
   "reversed": false,
   "folder": "RSource-Reef",

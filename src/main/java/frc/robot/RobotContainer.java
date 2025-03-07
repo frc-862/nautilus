@@ -31,6 +31,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -46,6 +47,7 @@ import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.TagAutoAlign;
+import frc.robot.commands.meow;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
@@ -158,13 +160,23 @@ public class RobotContainer extends LightningContainer {
 
         new Trigger(() -> erroring && DriverStation.isDisabled()).whileTrue(leds.strip.enableState(LEDStates.ERROR));
 
-        new Trigger(() -> (coralCollector.getVelocity() > 0)).whileTrue(leds.strip.enableState(LEDStates.SCORING));
-        new Trigger(() -> (coralCollector.getVelocity() < 0)).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
+        new Trigger(() -> !rod.isCoralMode()).whileTrue(leds.strip.enableState(LEDStates.ALGAE_MODE));
 
-        new Trigger(() -> (drivetrain.poseZero() && DriverStation.isDisabled() && !vision.hasTarget()))
-                .whileTrue(leds.strip.enableState(LEDStates.POSE_BAD));
-        new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled() && vision.hasTarget()))
+        // new Trigger(() -> (coralCollector.getPower() > CoralCollectorConstants.CORAL_HOLD_POWER && rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
+        // new Trigger(() -> (coralCollector.getPower() < -CoralCollectorConstants.CORAL_HOLD_POWER && rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
+
+        // new Trigger(() -> (coralCollector.getPower() > CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
+        // new Trigger(() -> (coralCollector.getPower() < -CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
+
+        leds.strip.setState(LEDStates.POSE_BAD, true).schedule();
+
+        new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled()))
+                .onTrue(leds.strip.setState(LEDStates.POSE_BAD, false))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
+
+        new Trigger(() -> (PoseConstants.getScorePose(drivetrain.getPose()) == 0)).whileFalse(leds.strip.enableState(LEDStates.READY_TO_ALIGN));
+
+        new Trigger(() -> climber.getLimitSwitch()).whileTrue(leds.strip.enableState(LEDStates.CLIMBED));
 
         /* PDH LED TRIGGERSS */
         // if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
@@ -315,7 +327,7 @@ public class RobotContainer extends LightningContainer {
         }
 
         NamedCommands.registerCommand("IntakeCoral",
-                new IntakeCoral(coralCollector, 1).withDeadline(new WaitCommand(3d)));
+                new IntakeCoral(coralCollector, 1));
         NamedCommands.registerCommand("ScoreCoral",
                 new ScoreCoral(coralCollector));
 
@@ -339,7 +351,9 @@ public class RobotContainer extends LightningContainer {
                 new SetRodState(rod, RodStates.SOURCE)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
 
+                        
         autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser.addOption("MEOW", new meow(drivetrain).withTimeout(3));
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
     }
 
@@ -347,6 +361,11 @@ public class RobotContainer extends LightningContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
+
+//     public Command deadReconDrive() {
+//         return new StartEndCommand(drivetrain.applyRequest(DriveRequests.getDrive(() -> 0.5, () -> 0, () -> 0)), 
+//         drivetrain.applyRequest(DriveRequests.getDrive(() -> 0, () -> 0, () -> 0)), drivetrain);
+//     }
 
     public static Command hapticDriverCommand() {
         if (!DriverStation.isAutonomous()) {

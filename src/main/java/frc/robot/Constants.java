@@ -214,9 +214,9 @@ public class Constants {
 
                 put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
                 put(RodStates.L1, 0d);
-                put(RodStates.L2, -28.5d);
+                put(RodStates.L2, -30d);
                 put(RodStates.L3, -36d);
-                put(RodStates.L4, -40d);
+                put(RodStates.L4, -48d);
                 put(RodStates.LOW, -29d);
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
@@ -235,10 +235,10 @@ public class Constants {
                 // put(ROD_STATES.SOURCE, 36.5d);
 
                 put(RodStates.STOW, 3d);
-                put(RodStates.L1, 5d);
-                put(RodStates.L2, 11.5d);
+                put(RodStates.L1, 2d);
+                put(RodStates.L2, 13.5d);
                 put(RodStates.L3, 26d);
-                put(RodStates.L4, 47d);
+                put(RodStates.L4, 46.25d);
                 put(RodStates.LOW, 15d);
                 put(RodStates.HIGH, 28d);
                 put(RodStates.SOURCE, 9.5d);
@@ -537,7 +537,7 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 19),
                         new Pose2d(3.965, 5.231, new Rotation2d(Degrees.of(120)))); // FIX
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 20),
-                        new Pose2d(4.971, 5.257, new Rotation2d(Degrees.of(60)))); // SUS POSE
+                        new Pose2d(5.009, 5.268, new Rotation2d(Degrees.of(-120)))); // SUS POSE
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 20),
                         new Pose2d(5.283, 5.069, new Rotation2d(Degrees.of(60))));
 
@@ -548,10 +548,6 @@ public class Constants {
 
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22),
                         new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
-
-
-
-                        
 
                 //red
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6),
@@ -591,6 +587,15 @@ public class Constants {
                 //source
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 1),
                     new Pose2d(15.953, 7.312, new Rotation2d(Degrees.of(-126))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 2),
+                    new Pose2d(15.935, 0.749, new Rotation2d(Degrees.of(125))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 13),
+                    new Pose2d(1.687, 7.317, new Rotation2d(Degrees.of(-54))));
+
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),
+                    new Pose2d(1.648, 0.763, new Rotation2d(Degrees.of(54))));
 
             }
         };
@@ -1120,16 +1125,17 @@ public class Constants {
         public enum LEDStates {
             MIXER(),
             ERROR(),
+            CLIMBED(),
             COLLECTED(),
             ALIGNED(),
             ALGAE_MODE(),
             ALIGNING(),
+            READY_TO_ALIGN(),
             COLLECTING(),
             SCORING(),
-            READY_TO_ALIGN(),
             ROD_MOVING(),
             UPDATING_POSE(),
-            POSE_BAD(),
+            POSE_BAD()
         }
     }
 

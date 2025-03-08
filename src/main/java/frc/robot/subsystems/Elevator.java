@@ -123,9 +123,9 @@ public class Elevator extends SubsystemBase {
         LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
         LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
 
-        // LightningShuffleboard.setDouble("Diagnostic", "ELE Left Temperature", leftMotor.getDeviceTemp().getValueAsDouble());
-        // LightningShuffleboard.setDouble("Diagnostic", "ELE Right Temperature", rightMotor.getDeviceTemp().getValueAsDouble());
-        // LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
+        LightningShuffleboard.setDouble("Diagnostic", "ELE Left Temperature", leftMotor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.setDouble("Diagnostic", "ELE Right Temperature", rightMotor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
     }
 
     /**

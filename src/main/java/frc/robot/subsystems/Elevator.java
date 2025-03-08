@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -22,6 +24,9 @@ import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
+
+import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.wpilibj.RobotController;
@@ -30,10 +35,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FishingRodConstants;
 import frc.robot.Constants.FishingRodConstants.RodStates;
+import frc.robot.Constants.RobotIdentifiers;
+import frc.robot.Constants;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Elevator extends SubsystemBase {
 
@@ -45,7 +53,13 @@ public class Elevator extends SubsystemBase {
     private double targetPosition = 0;
     private double currentPosition = 0;
 
+    private double rangeSensorDistance = 0;
+
+    private double syncTime = 0d;
+
     private MotionMagicVoltage positionPID;
+
+    private boolean isInStow = false;
 
     // sim stuff
     private DCMotor gearbox;
@@ -76,9 +90,13 @@ public class Elevator extends SubsystemBase {
 
         rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE, RobotMap.CANIVORE_CAN_NAME);
 
+        syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
+
         CANrangeConfiguration rangeConfig = new CANrangeConfiguration();
         rangeConfig.ToFParams.UpdateFrequency = 50;
         rangeConfig.ToFParams.UpdateMode = UpdateModeValue.LongRangeUserFreq;
+        rangeConfig.FovParams.FOVRangeX = 7;
+        rangeConfig.FovParams.FOVRangeY = 7;
         rangeSensor.getConfigurator().apply(rangeConfig);
 
         leftMotor.applyConfig(config);
@@ -116,6 +134,7 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         currentPosition = getPosition();
+        rangeSensorDistance = getCANRangeDist();
 
         // LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", rangeSensor.getDistance().getValueAsDouble());
 
@@ -126,6 +145,12 @@ public class Elevator extends SubsystemBase {
         LightningShuffleboard.setDouble("Diagnostic", "ELE Left Temperature", leftMotor.getDeviceTemp().getValueAsDouble());
         LightningShuffleboard.setDouble("Diagnostic", "ELE Right Temperature", rightMotor.getDeviceTemp().getValueAsDouble());
         LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
+
+        // checks if the elevator is in sync with the CANRange sensor every 2 seconds
+        if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS && shouldSyncCANRange() && (Timer.getFPGATimestamp() > syncTime)) {
+            leftMotor.setPosition(rangeSensorDistance);
+            syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
+        }
     }
 
     /**
@@ -146,6 +171,7 @@ public class Elevator extends SubsystemBase {
      * @param state State of the rod
      */
     public void setState(RodStates state) {
+        isInStow = state == RodStates.STOW;
         setPosition(FishingRodConstants.ELEVATOR_MAP.get(state));
     }
 
@@ -184,7 +210,21 @@ public class Elevator extends SubsystemBase {
      */
     @Logged(importance = Importance.DEBUG)
     public boolean isOnTarget() {
-        return Math.abs(targetPosition - currentPosition) <= ElevatorConstants.TOLERANCE;
+        return Math.abs(targetPosition - currentPosition) <= ElevatorConstants.POSITION_TOLERANCE;
+    }
+
+    /**
+     * checks if elevator position should start syncing with the CANrange sensor
+     *
+     * @return true if the elevator position is outside the tolerance of the CANrange sensor
+     */
+    public boolean shouldSyncCANRange() {
+        return Math.abs(rangeSensorDistance - currentPosition) >= ElevatorConstants.CANRANGE_TOLERANCE // checks if within tolerance
+        // && Math.abs(rangeSensorDistance - currentPosition) <= ElevatorConstants.OK_TO_SYNC_TOLERANCE // AND checks if too desynced (CANRange could be blocked or something)
+        && Math.abs(leftMotor.getVelocity().getValueAsDouble()) < 0.1 // AND checks if the elevator isn't moving
+        && rangeSensorDistance <= 5d // AND checks if the CANRange is below 11 inches
+        && rangeSensorDistance >= 0d // AND checks if the CANRange is above 0 inches
+        && isInStow && isOnTarget(); // AND checks if the elevator isn't in stow
     }
 
     /**
@@ -195,6 +235,25 @@ public class Elevator extends SubsystemBase {
     @Logged(importance = Importance.DEBUG)
     public double getPosition() {
         return leftMotor.getPosition().getValueAsDouble();
+    }
+
+    /**
+     * gets the distance from the CANRange sensor
+     *
+     * @return CANRange distance
+     */
+    public double getCANRangeDist() {
+        if(Constants.ROBOT_IDENTIFIER == RobotIdentifiers.TRITON) {
+            return ElevatorConstants.TRITON_INTERPOLATION_SLOPE * Units.metersToInches(rangeSensor.getDistance().getValueAsDouble())
+             + ElevatorConstants.TRITON_INTERPOLATION_INTERCEPT;
+        } else {
+            return ElevatorConstants.NATUILUS_INTERPOLATION_SLOPE * rangeSensor.getDistance().getValueAsDouble()
+             + ElevatorConstants.NAUTILUS_INTERPOLATION_INTERCEPT;
+        }
+    }
+
+    public double getCANRangeRaw() {
+        return rangeSensor.getDistance().getValueAsDouble();
     }
 
     /**

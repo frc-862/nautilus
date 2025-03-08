@@ -136,22 +136,21 @@ public class Elevator extends SubsystemBase {
         currentPosition = getPosition();
         rangeSensorDistance = getCANRangeDist();
 
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", rangeSensorDistance);
-        // LightningShuffleboard.setBool("Diagnostic", "Elevator Pos and CANRange in Sync", !shouldSyncCANRange());
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator Raw CANRange", getCANRangeRaw());
+        // LightningShuffleboard.setDouble("Diagnostic", "Elevator CANRange Value", rangeSensor.getDistance().getValueAsDouble());
 
-        // LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
+        LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
         LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
-        // LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
+        LightningShuffleboard.setBool("Elevator", "onTarget", isOnTarget());
+
+        LightningShuffleboard.setDouble("Diagnostic", "ELE Left Temperature", leftMotor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.setDouble("Diagnostic", "ELE Right Temperature", rightMotor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
 
         // checks if the elevator is in sync with the CANRange sensor every 2 seconds
         if (shouldSyncCANRange() && (Timer.getFPGATimestamp() > syncTime)) {
             leftMotor.setPosition(rangeSensorDistance);
             syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
         }
-        // LightningShuffleboard.setDouble("Diagnostic", "ELE Left Temperature", leftMotor.getDeviceTemp().getValueAsDouble());
-        // LightningShuffleboard.setDouble("Diagnostic", "ELE Right Temperature", rightMotor.getDeviceTemp().getValueAsDouble());
-        // LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
     }
 
     /**

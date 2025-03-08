@@ -48,12 +48,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "AlignToRightSource"
-          }
-        },
-        {
           "type": "race",
           "data": {
             "commands": [
@@ -66,7 +60,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 8.0
+                  "waitTime": 3.0
                 }
               }
             ]
@@ -85,7 +79,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToTwoLeft"
+                  "name": "AlignToTwoRight"
                 }
               },
               {
@@ -118,7 +112,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

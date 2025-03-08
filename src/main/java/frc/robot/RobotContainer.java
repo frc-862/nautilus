@@ -8,7 +8,10 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import java.util.function.Consumer;
+
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -59,6 +62,7 @@ import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
+import frc.robot.subsystems.Simulations.MapleSim;
 import frc.robot.subsystems.Simulations.SimGamePeices;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
@@ -120,6 +124,8 @@ public class RobotContainer extends LightningContainer {
                     RobotMotors.algaeCollectorPivotMotor);
 
             simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector, climber);
+
+            new MapleSim(drivetrain);
         }
     }
 

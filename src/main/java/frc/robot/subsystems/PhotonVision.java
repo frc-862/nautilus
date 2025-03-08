@@ -214,7 +214,7 @@ public class PhotonVision extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        visionSim.update(drivetrain.getPose());
+        visionSim.update(drivetrain.getExactPose());
         LightningShuffleboard.send("Vision", "Field_SIM", visionSim.getDebugField());
     }
 

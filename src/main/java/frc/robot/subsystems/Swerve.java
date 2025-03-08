@@ -36,6 +36,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -50,10 +51,16 @@ import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.EncoderConstants;
 import frc.robot.Constants.PoseConstants;
+import frc.robot.Constants.RobotMap;
+import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Robot;
+import frc.robot.Constants.TunerConstants.TritonTunerConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+
+import frc.robot.subsystems.Simulations.MapleSimSwerveDrivetrain;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -61,9 +68,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
  */
 public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
 
-    private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
-    private double m_lastSimTime;
 
     private boolean[] reef1Status = { false, false, false, false, false, false, false, false, false, false, false,
             false };
@@ -89,6 +94,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private double speedMult = 1d;
     private double turnMult = 1d;
 
+    public MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain;
+
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
      * <p>
@@ -104,7 +111,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     public Swerve(
             SwerveDrivetrainConstants drivetrainConstants,
             SwerveModuleConstants<?, ?, ?>... modules) {
-        super(TalonFX::new, TalonFX::new, CANcoder::new, drivetrainConstants, modules);
+        super(TalonFX::new, TalonFX::new, CANcoder::new, drivetrainConstants, 
+            MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules));
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -146,7 +154,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             Matrix<N3, N1> visionStandardDeviation,
             SwerveModuleConstants<?, ?, ?>... modules) {
         super(TalonFX::new, TalonFX::new, CANcoder::new, drivetrainConstants, odometryUpdateFrequency,
-                odometryStandardDeviation, visionStandardDeviation, modules);
+                odometryStandardDeviation, visionStandardDeviation, 
+                MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules));
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -170,7 +179,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         SmartDashboard.putBooleanArray("Reef Level Two", reef2Status);
         SmartDashboard.putBooleanArray("Reef Level Three", reef3Status);
 
-        // LightningShuffleboard.setPose2d("Drivetrain", "pose", getState().Pose);
+        // LightningShuffleboard.setPose2d("Drivetrain", "pose", getDrivetrainState().Pose);
 
         LightningShuffleboard.setDouble("Drivetrain", "tag id", PoseConstants.getScorePose(pose));
     }
@@ -228,7 +237,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
-    private ChassisSpeeds getCurrentRobotChassisSpeeds() {
+    public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return getState().Speeds;
     }
 
@@ -307,19 +316,28 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             }
     }
 
+    @SuppressWarnings("unchecked")
     private void startSimThread() {
-        m_lastSimTime = Utils.getCurrentTimeSeconds();
+        mapleSimSwerveDrivetrain = new MapleSimSwerveDrivetrain(
+            Seconds.of(0.002),
+            Pounds.of(115), // temp
+            Inches.of(30), // temp
+            Inches.of(30), // temp
+            DCMotor.getKrakenX60(1),
+            DCMotor.getKrakenX60(1),
+            1.2,
+            getModuleLocations(),
+            getPigeon2(),
+            getModules(),
+            TritonTunerConstants.FrontLeft,
+            TritonTunerConstants.FrontRight,
+            TritonTunerConstants.BackLeft,
+            TritonTunerConstants.BackRight);
+
 
         /* Run simulation at a faster rate so PID gains behave more reasonably */
-        m_simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - m_lastSimTime;
-            m_lastSimTime = currentTime;
-
-            /* use the measured time delta, get battery voltage from WPILib */
-            updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(kSimLoopPeriod);
+        m_simNotifier = new Notifier(mapleSimSwerveDrivetrain::update);
+        m_simNotifier.startPeriodic(0.002);
     }
 
     @Override
@@ -430,5 +448,9 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             default:
                 return new InstantCommand();
         }
+    }
+
+    public Pose2d getExactPose(){
+        return Robot.isReal() ? getState().Pose : mapleSimSwerveDrivetrain.mapleSimDrive.getSimulatedDriveTrainPose();
     }
 }

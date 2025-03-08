@@ -5,7 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
-
+import java.io.IOException;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -35,6 +35,12 @@ public class Robot extends LightningRobot {
 
         // WebServer.start(5800, Filesystem.getDeployDirectory().getPath() +
         // "/elastic");
+
+        try {
+            Process process = Runtime.getRuntime().exec("ssh pi@10.8.62.15 sudo systemctl restart photonvision");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

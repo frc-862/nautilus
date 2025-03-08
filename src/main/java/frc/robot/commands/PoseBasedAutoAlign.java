@@ -98,6 +98,7 @@ public class PoseBasedAutoAlign extends Command {
 
         // Get the tag in front of the robot
         if (!customTagSet) {
+
             tagID = PoseConstants.getScorePose(drivetrain.getPose());
         }
 

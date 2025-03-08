@@ -65,7 +65,6 @@ public class Climber extends SubsystemBase {
 
         // Update the state of the motor
         motorSim.setRawRotorPosition(Units.metersToInches(climbSim.getPositionMeters()) * ClimberConstants.ROTOR_TO_MECHANISM_RATIO);
-    }
 
     /**
      * sets the power to the climber motor

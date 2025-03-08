@@ -344,6 +344,7 @@ public class RobotContainer extends LightningContainer {
 
                         
         autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser.addOption("MEOW", new meow(drivetrain).withTimeout(3));
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
     }
 

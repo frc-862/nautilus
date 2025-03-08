@@ -70,6 +70,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.hardware.ThunderBird;
+import frc.thunder.math.InterpolationMap;
 import frc.thunder.util.Tuple;
 
 public class Constants {
@@ -287,10 +288,10 @@ public class Constants {
         public static final double JERK = 1600d; // temp
 
         public static final double POSITION_TOLERANCE = 0.1; // temp
-        public static final double CANRANGE_TOLERANCE = 0.75; // temp
-        public static final double OK_TO_SYNC_TOLERANCE = 3d; // temp
+        public static final double CANRANGE_TOLERANCE = 0.25; // temp
+        public static final double OK_TO_SYNC_TOLERANCE = 0.75d; // temp
 
-        public static final double SYNC_TIMEOUT = 0.5d;
+        public static final double SYNC_TIMEOUT = 1d;
 
         // kind of guessing the numbers here (didn't do a proper test)
         public static final Distance MIN_EXTENSION = Inches.of(0);
@@ -306,8 +307,21 @@ public class Constants {
         public static final double TRITON_INTERPOLATION_SLOPE = 0.692679;
         public static final double TRITON_INTERPOLATION_INTERCEPT = -2.53443;
 
-        public static final double NATUILUS_INTERPOLATION_SLOPE = 22.54096;
-        public static final double NAUTILUS_INTERPOLATION_INTERCEPT = -0.834493;
+        public static final double NATUILUS_INTERPOLATION_SLOPE = 20.49174;
+        public static final double NAUTILUS_INTERPOLATION_INTERCEPT = -0.689164;
+
+
+        public static InterpolationMap CANRANGE_MAP = new InterpolationMap() {
+            {
+                put(-10000d, 0d);
+                put(0.124, 0d);
+                // put(0.16696, 2.01904);
+                put(0.20684, 2.927);
+                put(0.22491, 3.5959);
+                put(0.24941, 4.48193);
+                put(0.26504, 4.85571);
+            }
+        };
     }
 
     public static class WristConstants {
@@ -361,8 +375,8 @@ public class Constants {
 
         // 2.5 constants
         public static final boolean INVERTED = true;
-        public static final double COLLECTED_CURRENT = 20d;
-        public static final double CORAL_HOLD_POWER = 0.02d;
+        public static final double COLLECTED_CURRENT = 40d;
+        public static final double CORAL_HOLD_POWER = 0.07d;
         public static final double ALGAE_HOLD_POWER = 0.15d;
 
     }

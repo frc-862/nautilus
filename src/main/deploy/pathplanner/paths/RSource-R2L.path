@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7124311063624933,
-        "y": 1.0008337883185197
+        "x": 1.5262354333973462,
+        "y": 0.8709418099685752
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5129697320181563,
-        "y": 2.0688296525837986
+        "x": 2.3267740590530073,
+        "y": 1.9389376742338542
       },
       "isLocked": false,
       "linkedName": "RightSRC"
@@ -29,7 +29,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.7630794986263736,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -40,6 +54,17 @@
         "type": "named",
         "data": {
           "name": "RodStow"
+        }
+      }
+    },
+    {
+      "name": "RodL4",
+      "waypointRelativePos": 0.8679515796703302,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodL4"
         }
       }
     }

@@ -36,34 +36,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "RodStow"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "R3-RSource"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "AlignToRightSource"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 3.0
-                }
-              }
-            ]
           }
         },
         {
@@ -94,6 +69,12 @@
                 "data": {
                   "name": "AlignToRightSource"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RodSource"
+                }
               }
             ]
           }
@@ -101,7 +82,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RSource-R1L"
+            "pathName": "RSource-R2L"
           }
         },
         {
@@ -117,7 +98,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 8.0
                 }
               }
             ]
@@ -139,6 +120,12 @@
           "type": "named",
           "data": {
             "name": "RodStow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": null
           }
         }
       ]

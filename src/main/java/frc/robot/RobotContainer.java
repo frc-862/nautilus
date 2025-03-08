@@ -57,9 +57,9 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
-import frc.robot.subsystems.SimGamePeices;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
+import frc.robot.subsystems.Simulations.SimGamePeices;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 

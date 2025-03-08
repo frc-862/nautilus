@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.subsystems;
 
 import java.util.List;
@@ -13,12 +17,9 @@ import org.photonvision.simulation.VisionTargetSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.Camera;
@@ -27,6 +28,7 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
 
 public class PhotonVision extends SubsystemBase {
+
     private VisionSystemSim visionSim;
 
     private PhotonCameraSim leftCameraSim;
@@ -110,9 +112,16 @@ public class PhotonVision extends SubsystemBase {
      */
     public boolean hasTarget(Camera camera) {
         if(isCameraInitialized(camera)) {
-        return camera == Camera.LEFT
-            ? leftThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false)
-            : rightThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
+            switch(camera) {
+                case LEFT: 
+                    return leftThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
+                    
+                case RIGHT:
+                    return rightThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
+                
+                default:
+                    return false;
+            }
         } else {
             return false;
         }
@@ -134,9 +143,16 @@ public class PhotonVision extends SubsystemBase {
      */
     public double getTY(VisionConstants.Camera camera, double offset) {
         if(isCameraInitialized(camera)) {
-            return camera == Camera.LEFT
-                ? leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset
-                : rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
+            switch(camera) {
+                case LEFT: 
+                    return leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
+                    
+                case RIGHT:
+                    return rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
+                
+                default:
+                    return 0;
+            }
         } else {
             return 0;
         }
@@ -150,9 +166,16 @@ public class PhotonVision extends SubsystemBase {
      */
     public double getTX(Camera camera, double offset) {
         if(isCameraInitialized(camera)) {
-            return camera == Camera.LEFT
-                ? leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset
-                : rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
+            switch(camera) {
+                case LEFT: 
+                    return leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
+                    
+                case RIGHT:
+                    return rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
+                
+                default:
+                    return 0;
+            }
         } else {
             return 0;
         }
@@ -163,7 +186,7 @@ public class PhotonVision extends SubsystemBase {
      * @param camera - the camera to check
      * @return FiducialID of tag with least ambiguity (-1 if no tag found)
      */
-    public int getTagNum(VisionConstants.Camera camera) {
+    public int getTagNum(Camera camera) {
         //this is performed independently of the thread, mainly because its a simple operation and happens regardless of pose
         try {
             if(!hasTarget(camera)){

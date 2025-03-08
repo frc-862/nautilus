@@ -85,7 +85,6 @@ public class SimGamePeices extends SubsystemBase {
     }
 
     private final class Coral extends Peice {
-
         private Coral(Pose3d pose){
             super(NetworkTableInstance.getDefault().getTable("Shuffleboard")
                 .getSubTable("SimGamePeices").getStructTopic("Coral: Peice# " + peices.size(), Pose3d.struct).publish());
@@ -167,7 +166,6 @@ public class SimGamePeices extends SubsystemBase {
      * if a collector is moving fast enough, check if the robot is close enough to a peice to collect it
      */
     private void collect(){
-
         if(hasPeice){
             return;
         }
@@ -218,7 +216,6 @@ public class SimGamePeices extends SubsystemBase {
      * release the held peice if the collector is ejecting it
      */
     private void release(){
-
         // check collector speeds, and distance from applicable collector
 
         if (hasPeice && heldPeiceInCoralCollector && coralCollector.getVelocity() > SimGamePeicesConstants.COLECTOR_SPEED_THRESHHOLD){
@@ -240,7 +237,6 @@ public class SimGamePeices extends SubsystemBase {
      * update collector poses for peice pose estimation
      */
     private void updateRobotPoses(){
-
         Pose3d robotPose = new Pose3d(drivetrain.getPose()).plus(new Transform3d(0, 0, -Units.inchesToMeters(climber.getPostion()),
             new Rotation3d()));
         double robotAngle = robotPose.getRotation().getZ();

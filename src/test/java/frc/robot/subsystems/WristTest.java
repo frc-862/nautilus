@@ -64,7 +64,7 @@ public class WristTest implements AutoCloseable {
         var dutyCycle = motor.getDutyCycle();
 
         // Checking power goes up
-        wrist.setRawPower(0.2);
+        wrist.setPower(0.2);
         Timer.delay(0.1);
 
         dutyCycle.waitForUpdate(0.1);
@@ -72,7 +72,7 @@ public class WristTest implements AutoCloseable {
         assertEquals(0.2, dutyCycle.getValue(), 0.05);
 
         // Checking power goes up
-        wrist.setRawPower(0);
+        wrist.setPower(0);
         Timer.delay(0.1);
 
         dutyCycle.waitForUpdate(0.1);

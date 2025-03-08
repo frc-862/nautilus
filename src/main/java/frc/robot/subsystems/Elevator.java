@@ -147,7 +147,7 @@ public class Elevator extends SubsystemBase {
         LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
 
         // checks if the elevator is in sync with the CANRange sensor every 2 seconds
-        if (shouldSyncCANRange() && (Timer.getFPGATimestamp() > syncTime)) {
+        if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS && shouldSyncCANRange() && (Timer.getFPGATimestamp() > syncTime)) {
             leftMotor.setPosition(rangeSensorDistance);
             syncTime = Timer.getFPGATimestamp() + ElevatorConstants.SYNC_TIMEOUT;
         }

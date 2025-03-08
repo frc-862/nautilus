@@ -249,7 +249,7 @@ public class Constants {
                 put(RodStates.L4, 46.25d);
                 put(RodStates.LOW, 15d);
                 put(RodStates.HIGH, 28d);
-                put(RodStates.SOURCE, 9.5d);
+                put(RodStates.SOURCE, 9d);
                 put(RodStates.BARGE, 47d);
                 put(RodStates.PROCESSOR, 1d);
             }
@@ -351,7 +351,7 @@ public class Constants {
 
         // 2.5 constants
         public static final boolean INVERTED = true;
-        public static final double COLLECTED_CURRENT = 35d;
+        public static final double COLLECTED_CURRENT = 20d;
         public static final double CORAL_HOLD_POWER = 0.02d;
         public static final double ALGAE_HOLD_POWER = 0.15d;
 
@@ -521,9 +521,10 @@ public class Constants {
         public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
             {                
                 //UNTUNED
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17),
-                        new Pose2d(3.689, 2.973, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.677, 2.943, new Rotation2d(Degrees.of(-120))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 17), new Pose2d(3.961, 2.788, new Rotation2d(Degrees.of(-120))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 17), new Pose2d(3.991, 2.838, new Rotation2d(Degrees.of(-120))));
+
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18),
                         new Pose2d(3.172, 3.869, new Rotation2d(Degrees.of(180))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 18),
@@ -542,9 +543,9 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21),
                         new Pose2d(5.795, 3.855, new Rotation2d(Degrees.of(0))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22), new Pose2d(5.296, 2.952, new Rotation2d(Degrees.of(-60))));
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22), new Pose2d(5.266, 2.996, new Rotation2d(Degrees.of(-60))));
 
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22),
-                        new Pose2d(4.962, 2.813, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22), new Pose2d(5.005, 2.800, new Rotation2d(Degrees.of(-60))));
 
                 //red
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6),
@@ -696,8 +697,8 @@ public class Constants {
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                    .withKP(0.34807).withKI(0).withKD(0)
-                    .withKS(0.23986).withKV(0.12318).withKA(0.0059707);
+            .withKP(0.6507).withKI(0).withKD(0)
+            .withKS(0.33986).withKV(0.12318).withKA(0.0059707);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors

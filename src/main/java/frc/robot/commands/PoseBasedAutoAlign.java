@@ -39,7 +39,7 @@ public class PoseBasedAutoAlign extends Command {
     private Camera camera;
     private LEDs leds;
 
-    double tolerance = 0.03;
+    double tolerance = 0.02;
 
     private PIDController controllerX = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI,
         AutoAlignConstants.THREE_DEE_xD);
@@ -138,13 +138,13 @@ public class PoseBasedAutoAlign extends Command {
             }
         }
 
-        controllerX.setTolerance(0.03);
+        controllerX.setTolerance(tolerance);
 
-        controllerY.setTolerance(0.04);
+        controllerY.setTolerance(tolerance);
 
 
         // controllerR.setSetpoint(0);
-        controllerR.setTolerance(4);
+        controllerR.setTolerance(2.5);
         controllerR.enableContinuousInput(0, 360);
 
         // try {

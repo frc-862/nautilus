@@ -8,6 +8,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import org.ejml.simple.SimpleMatrix;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -94,7 +95,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private double speedMult = 1d;
     private double turnMult = 1d;
 
-    public MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain;
+    private MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -318,6 +319,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     @SuppressWarnings("unchecked")
     private void startSimThread() {
+
         mapleSimSwerveDrivetrain = new MapleSimSwerveDrivetrain(
             Seconds.of(0.002),
             Pounds.of(115), // temp
@@ -325,7 +327,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             Inches.of(30), // temp
             DCMotor.getKrakenX60(1),
             DCMotor.getKrakenX60(1),
-            1.2,
+            1.2, // temp
             getModuleLocations(),
             getPigeon2(),
             getModules(),
@@ -333,7 +335,6 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             TritonTunerConstants.FrontRight,
             TritonTunerConstants.BackLeft,
             TritonTunerConstants.BackRight);
-
 
         /* Run simulation at a faster rate so PID gains behave more reasonably */
         m_simNotifier = new Notifier(mapleSimSwerveDrivetrain::update);
@@ -450,7 +451,20 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
     }
 
+    /**
+     * Sim pose sometimes desyncs with odometry in order to simulate odomety desyncs.
+     * This method is for use in vision and for other applications that need the exact sim pose
+     * 
+     * @return the correctly simulated robot pose
+     */
     public Pose2d getExactPose(){
-        return Robot.isReal() ? getState().Pose : mapleSimSwerveDrivetrain.mapleSimDrive.getSimulatedDriveTrainPose();
+        return Robot.isReal() ? getPose() : mapleSimSwerveDrivetrain.mapleSimDrive.getSimulatedDriveTrainPose();
+    }
+
+    @Override
+    public void resetPose(Pose2d pose) {
+        if (this.mapleSimSwerveDrivetrain != null) mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(pose);
+        Timer.delay(0.1); // wait for simulation to update
+        super.resetPose(pose);
     }
 }

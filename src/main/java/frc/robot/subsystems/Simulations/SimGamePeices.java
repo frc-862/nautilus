@@ -25,7 +25,6 @@ import frc.robot.subsystems.CoralCollector;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
-import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class SimGamePeices extends SubsystemBase {
 
@@ -247,7 +246,7 @@ public class SimGamePeices extends SubsystemBase {
      */
     private void updateRobotPoses(){
 
-        Pose3d robotPose = new Pose3d(drivetrain.getPose()).plus(new Transform3d(0, 0, -Units.inchesToMeters(climber.getPostion()),
+        Pose3d robotPose = new Pose3d(drivetrain.getExactPose()).plus(new Transform3d(0, 0, -Units.inchesToMeters(climber.getPostion()),
             new Rotation3d()));
         double robotAngle = robotPose.getRotation().getZ();
 
@@ -255,7 +254,7 @@ public class SimGamePeices extends SubsystemBase {
         double algaeCollectorAngle = Units.degreesToRadians(algaeCollector.getPivotAngle());
         double elevatorHeight = Units.inchesToMeters(elevator.getPosition());
 
-        double wristLength = WristConstants.LENGTH.in(Meters) * 0.5;
+        double wristLength = WristConstants.LENGTH.in(Meters);
         double algaeCollectorLength = AlgaeCollectorConstants.PIVOT_LENGTH * 0.5;
 
         // add offsets to robot pose to get collector poses
@@ -270,7 +269,7 @@ public class SimGamePeices extends SubsystemBase {
             // algae collector root offset + arm length (take angle into account) -> make feild centric -> add robot pose and rotation
             SimGamePeicesConstants.ALGAE_COLLECTOR_OFFSET.plus(new Translation3d(0, Math.cos(algaeCollectorAngle) * algaeCollectorLength,
             Math.sin(algaeCollectorAngle) * algaeCollectorLength)).rotateBy(new Rotation3d(0, 0, robotAngle - Math.PI / 2))
-            .plus(robotPose.getTranslation()), new Rotation3d(drivetrain.getPose().getRotation()));
+            .plus(robotPose.getTranslation()), new Rotation3d(drivetrain.getExactPose().getRotation()));
 
         // publish poses to networktables (mostly useless, but can be used to see poses in advantagescope)
         robotPosePublisher.set(robotPose);

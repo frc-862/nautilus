@@ -22,7 +22,6 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -86,7 +85,7 @@ public class MapleSimSwerveDrivetrain {
             Translation2d[] moduleLocations,
             Pigeon2 pigeon,
             SwerveModule<TalonFX, TalonFX, CANcoder>[] modules,
-            SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>...
+            @SuppressWarnings("unchecked") SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>...
                     moduleConstants) {
                         
         this.pigeonSim = pigeon.getSimState();
@@ -106,7 +105,7 @@ public class MapleSimSwerveDrivetrain {
                         Meters.of(moduleConstants[0].WheelRadius),
                         KilogramSquareMeters.of(moduleConstants[0].SteerInertia),
                         wheelCOF));
-        mapleSimDrive = new SwerveDriveSimulation(simulationConfig, new Pose2d(1, 1, new Rotation2d()));
+        mapleSimDrive = new SwerveDriveSimulation(simulationConfig, new Pose2d());
 
         SwerveModuleSimulation[] moduleSimulations = mapleSimDrive.getModules();
         for (int i = 0; i < this.simModules.length; i++)
@@ -180,7 +179,8 @@ public class MapleSimSwerveDrivetrain {
     }
 
     public static class TalonFXMotorControllerWithRemoteCanCoderSim extends TalonFXMotorControllerSim {
-        private final int encoderId;
+        @SuppressWarnings("unused")
+		private final int encoderId;
         private final CANcoderSimState remoteCancoderSimState;
 
         public TalonFXMotorControllerWithRemoteCanCoderSim(TalonFX talonFX, CANcoder cancoder) {

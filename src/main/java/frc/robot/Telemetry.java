@@ -46,8 +46,8 @@ public class Telemetry {
     private final DoublePublisher driveTimestamp = driveStateTable.getDoubleTopic("Timestamp").publish();
     private final DoublePublisher driveOdometryFrequency = driveStateTable.getDoubleTopic("OdometryFrequency").publish();
 
-    /* Robot pose for field positioning */
-    private final NetworkTable table = Robot.isReal() ? inst.getTable("Pose") : inst.getTable("Shuffleboard").getSubTable("Drivetrain");
+    /* Robot pose for field positioning */ // reroute odometry info in sim because odometry desyncs with actual pose
+    private final NetworkTable table = Robot.isReal() ? inst.getTable("Pose") : inst.getTable("Shuffleboard").getSubTable("Drivetrain").getSubTable("Odometry");
     private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
     private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
 

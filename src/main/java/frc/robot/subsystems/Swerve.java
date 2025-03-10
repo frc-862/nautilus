@@ -57,11 +57,10 @@ import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Robot;
 import frc.robot.Constants.TunerConstants.TritonTunerConstants;
+import frc.robot.subsystems.simulations.MapleSim.MapleSimSwerveDrivetrain;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-
-import frc.robot.subsystems.Simulations.MapleSimSwerveDrivetrain;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements

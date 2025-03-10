@@ -58,8 +58,8 @@ import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
-import frc.robot.subsystems.Simulations.MapleSim;
-import frc.robot.subsystems.Simulations.SimGamePeices;
+import frc.robot.subsystems.simulations.MapleSim;
+import frc.robot.subsystems.simulations.SimGamePeices;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 
@@ -81,8 +81,6 @@ public class RobotContainer extends LightningContainer {
     private CoralCollector coralCollector;
     private AlgaeCollector algaeCollector;
     private Climber climber;
-
-    private SimGamePeices simGamePeices;
 
     private static XboxController driver;
     private static XboxController copilot;
@@ -115,12 +113,11 @@ public class RobotContainer extends LightningContainer {
         // }
 
         if (Robot.isSimulation()) {
-            // algae collector and climber are temp because not initialized above
+            // algae collector is temp because not initialized above
             algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
                     RobotMotors.algaeCollectorPivotMotor);
 
-            simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector, climber);
-
+            new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector, climber);
             new MapleSim(drivetrain);
         }
     }

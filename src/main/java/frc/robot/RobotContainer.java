@@ -43,6 +43,7 @@ import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
+import frc.robot.commands.ElevatorSync;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
@@ -136,6 +137,7 @@ public class RobotContainer extends LightningContainer {
                                 ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
+
         // COPILOT INTAKE
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
@@ -148,10 +150,8 @@ public class RobotContainer extends LightningContainer {
                         MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
                 climber));
 
-        // This should not be here, but is commented just to be safe if ever needed
-        // again
-        // rod.setDefaultCommand(new SetRodState(rod,
-        // RodStates.STOW).onlyIf(DriverStation::isTeleop));
+        // Sync elevator while in stow
+        new Trigger(() -> rod.getState() == RodStates.STOW).whileTrue(new ElevatorSync(elevator));
 
         /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));

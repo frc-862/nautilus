@@ -18,6 +18,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Importance;
@@ -114,7 +115,10 @@ public class Wrist extends SubsystemBase {
         LightningShuffleboard.setDouble("Diagnostic", "WRIST Temperature", motor.getDeviceTemp().getValueAsDouble());
         LightningShuffleboard.setDouble("Diagnostic", "WRIST Cancoder",
                 encoder.getAbsolutePosition().getValue().in(Rotations) - EncoderConstants.wristOffset);
-
+        LightningShuffleboard.getDouble("Wrist", "kP", WristConstants.MOTORS_KP);
+        LightningShuffleboard.getDouble("Wrist", "kI", WristConstants.MOTORS_KI);
+        LightningShuffleboard.getDouble("Wrist", "kD", WristConstants.MOTORS_KD);
+        LightningShuffleboard.getDouble("Wrist", "kS", WristConstants.MOTORS_KS);
     }
 
     /**

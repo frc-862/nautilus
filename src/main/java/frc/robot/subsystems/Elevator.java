@@ -4,8 +4,10 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -22,8 +24,6 @@ import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -70,9 +70,23 @@ public class Elevator extends SubsystemBase {
         config.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.VELOC;
         config.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCEL;
         config.MotionMagic.MotionMagicJerk = ElevatorConstants.JERK;
+        // if going to L4, change the kA and acceleration
+        // if (targetPosition == 47) {
+        //     config.Slot0.kA = ElevatorConstants.MOTORS_KA_L4;
+        //     config.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCEL_L4;
+        // }
+        // else{
+        //     config.Slot0.kA = ElevatorConstants.MOTORS_KA;
+        //     config.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCEL;
+        // }
 
         config.Feedback.RotorToSensorRatio = ElevatorConstants.ROTOR_TO_SENSOR_RATIO;
         config.Feedback.SensorToMechanismRatio = ElevatorConstants.ENCODER_TO_MECHANISM_RATIO;
+
+        if (targetPosition == 47) {
+            config.Slot0.kA = ElevatorConstants.MOTORS_KA_L4;
+            config.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCEL_L4;
+        }
 
         rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE);
 
@@ -136,8 +150,18 @@ public class Elevator extends SubsystemBase {
     public void setPosition(double target) {
         targetPosition = MathUtil.clamp(target, ElevatorConstants.MIN_EXTENSION.magnitude(),
                 ElevatorConstants.MAX_EXTENSION.magnitude());
-
-        leftMotor.setControl(positionPID.withPosition(target));
+    
+        TalonFXConfiguration config = leftMotor.getConfig();
+        if (targetPosition == 47) {
+                    config.Slot0.kA = ElevatorConstants.MOTORS_KA_L4;
+                    config.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCEL_L4;
+                }
+                else{
+                    config.Slot0.kA = ElevatorConstants.MOTORS_KA;
+                    config.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCEL;
+                }
+    
+         leftMotor.setControl(positionPID.withPosition(target));
     }
 
     /**

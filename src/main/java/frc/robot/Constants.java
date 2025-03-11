@@ -61,6 +61,7 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.HashMap;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.util.Tuple;
 
@@ -271,15 +272,19 @@ public class Constants {
         public static final double MOTORS_KF = 0; // temp
         public static final double MOTORS_KS = 1; // temp
         public static final double MOTORS_KV = 0.18;// temp
-        public static final double MOTORS_KA = 0.01; // temp
+        public static final double MOTORS_KA = 0.015; // temp ---- test 0.015
         public static final double MOTORS_KG = 0d; // temp
 
         public static final double VELOC = 80d; // 80
-        public static final double ACCEL = 200d; // 200
+        public static final double ACCEL = 250d; // 200 ------ 250 test
         public static final double JERK = 1600d; // temp
 
         public static final double TOLERANCE = 0.1; // temp
 
+        // L4 Acceleration
+        public static final double MOTORS_KA_L4 = 0.015; // temp
+        public static final double ACCEL_L4 = 200d; // temp
+        
         // kind of guessing the numbers here (didn't do a proper test)
         public static final Distance MIN_EXTENSION = Inches.of(0);
         public static final Distance MAX_EXTENSION = Inches.of(49.7);
@@ -318,6 +323,7 @@ public class Constants {
         
         public static final double SAFE_ZONE = 30d;
 
+        
         // sim stuff
         public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.086); // 5lb, 2.5in rad, 9in height
         public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue

@@ -103,7 +103,7 @@ public class FishingRod extends SubsystemBase {
         LightningShuffleboard.setString("Rod", "targetState", targetState.toString());
         LightningShuffleboard.setString("Rod", "transitionState", transitionState.toString());
     }
-
+    
     public boolean isCoralMode() {
         return coralMode;
     }

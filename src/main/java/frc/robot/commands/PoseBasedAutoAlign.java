@@ -51,7 +51,6 @@ public class PoseBasedAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
-     * @param vision
      * @param drivetrain
      * @param camera
      * @param leds
@@ -71,6 +70,7 @@ public class PoseBasedAutoAlign extends Command {
      * @param camera
      * @param leds
      * @param codeID the Lightning-specific ID code for the tag
+     * @param tolerance the tolerance for the PID controllers
      */
     public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, LightningTagID codeID, double tolerance) {
         this(drivetrain, camera, leds);

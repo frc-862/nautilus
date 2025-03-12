@@ -311,7 +311,7 @@ public class Constants {
         public static final double NAUTILUS_INTERPOLATION_INTERCEPT = -0.689164;
 
 
-        public static InterpolationMap CANRANGE_MAP = new InterpolationMap() {
+        public static final InterpolationMap CANRANGE_MAP = new InterpolationMap() {
             {
                 put(-10000d, 0d);
                 put(0.124, 0d);

@@ -229,6 +229,7 @@ public class Elevator extends SubsystemBase {
     public boolean shouldSyncCANRange() {
         return Math.abs(leftMotor.getVelocity().getValueAsDouble()) < 0.05 // checks elevator not moving
                 && filteredRangeDistance <= 4.8d; // if below 4.8 inches
+        // THE MAP GOES HIGHER THAN 4.8 I KNOW!! The map only updates the filtered value
     }
 
     /**
@@ -247,8 +248,6 @@ public class Elevator extends SubsystemBase {
      * @return CANRange distance
      */
     public double getCANRangeDist() {
-        // filteredRangeValue =
-        // CANRangeFilter.calculate(rangeSensor.getDistance().getValueAsDouble());
         filteredRangeMeters = rangeFilter.filter(rangeSensor.getDistance().getValueAsDouble());
 
         if (rangeSensor.getDistance().getValueAsDouble() <= ElevatorConstants.CANRANGE_MAP.lastEntry().getKey()) {
@@ -262,16 +261,6 @@ public class Elevator extends SubsystemBase {
         } else {
             return ElevatorConstants.CANRANGE_MAP.lastEntry().getValue();
         }
-
-        // if(Constants.ROBOT_IDENTIFIER == RobotIdentifiers.TRITON) {
-        // return ElevatorConstants.TRITON_INTERPOLATION_SLOPE *
-        // Units.metersToInches(filteredRangeValue)
-        // + ElevatorConstants.TRITON_INTERPOLATION_INTERCEPT;
-        // } else {
-        // return ElevatorConstants.NATUILUS_INTERPOLATION_SLOPE * filteredRangeValue
-        // + ElevatorConstants.NAUTILUS_INTERPOLATION_INTERCEPT;
-        // }
-
     }
 
     public double getCANRangeRaw() {

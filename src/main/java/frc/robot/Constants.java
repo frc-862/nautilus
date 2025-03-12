@@ -250,7 +250,7 @@ public class Constants {
                 put(RodStates.L4, 46.25d);
                 put(RodStates.LOW, 15d);
                 put(RodStates.HIGH, 28d);
-                put(RodStates.SOURCE, 9d);
+                put(RodStates.SOURCE, 9.5d);
                 put(RodStates.BARGE, 47d);
                 put(RodStates.PROCESSOR, 1d);
             }
@@ -289,9 +289,9 @@ public class Constants {
 
         public static final double POSITION_TOLERANCE = 0.1; // temp
         public static final double CANRANGE_TOLERANCE = 0.25; // temp
-        public static final double OK_TO_SYNC_TOLERANCE = 0.75d; // temp
 
-        public static final double SYNC_TIMEOUT = 1d;
+        public static final double BOTTOM_CURRENT = 75d; // our current to check when our elevator bottoms out
+        public static final double BOTTOM_RAW_POWER = -0.25d; // raw dutyCycle out to go to the bottom
 
         // kind of guessing the numbers here (didn't do a proper test)
         public static final Distance MIN_EXTENSION = Inches.of(0);

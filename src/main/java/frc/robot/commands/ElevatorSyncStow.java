@@ -4,10 +4,9 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FishingRodConstants.RodStates;
-import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.subsystems.Elevator;
 
 public class ElevatorSyncStow extends Command {
@@ -22,7 +21,7 @@ public class ElevatorSyncStow extends Command {
 
     @Override
     public void initialize() {
-        // set target position to 0 just in case
+        // set target position to 0 just in case and stop to make sure we dont move
         elevator.setPosition(0);
         elevator.stop();
     }
@@ -30,19 +29,19 @@ public class ElevatorSyncStow extends Command {
     @Override
     public void execute() {
         // move down until we hit current limit
-        elevator.setRawPower(-0.25);
+        elevator.setRawPower(ElevatorConstants.BOTTOM_RAW_POWER);
     }
 
     @Override
     public void end(boolean interrupted) {
-        elevator.setEncoder(0);
-        
+        // sync the encoder to zero and go back to stow after
+        elevator.setEncoder(0d);
         elevator.setState(RodStates.STOW);
     }
 
     @Override
     public boolean isFinished() {
         // end on current limit condition
-        return elevator.getMotorCurrent() >= 75d;
+        return elevator.getMotorCurrent() >= ElevatorConstants.BOTTOM_CURRENT;
     }
 }

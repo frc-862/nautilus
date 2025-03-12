@@ -4,10 +4,7 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -22,34 +19,23 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Distance;
 
-import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 
-import java.lang.management.MonitorInfo;
-
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FishingRodConstants;
 import frc.robot.Constants.FishingRodConstants.RodStates;
-import frc.robot.Constants.RobotIdentifiers;
-import frc.robot.Constants;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Robot;
 import frc.thunder.filter.ExpoFilter;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
-import edu.wpi.first.wpilibj.Timer;
 
 public class Elevator extends SubsystemBase {
 
@@ -61,13 +47,13 @@ public class Elevator extends SubsystemBase {
     private double targetPosition = 0;
     private double currentPosition = 0;
 
-    private double translatedRawRangeValue = 0;
-    private double rangeSensorDistance = 0;
-    private double filteredRangeValue = 0;
-
-    private MotionMagicVoltage positionPID;
+    private double rawRangeMeters = 0;
+    private double filteredRangeDistance = 0;
+    private double filteredRangeMeters = 0;
 
     private ExpoFilter rangeFilter = new ExpoFilter(0.1);
+
+    private MotionMagicVoltage positionPID;
 
     // sim stuff
     private DCMotor gearbox;
@@ -140,11 +126,11 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         currentPosition = getPosition();
-        rangeSensorDistance = getCANRangeDist();
+        filteredRangeDistance = getCANRangeDist();
 
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator Filtered Value", filteredRangeValue);
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator Calculated Value", rangeSensorDistance);
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator Translated Raw", translatedRawRangeValue);
+        LightningShuffleboard.setDouble("Diagnostic", "Elevator Filtered Value", filteredRangeMeters);
+        LightningShuffleboard.setDouble("Diagnostic", "Elevator Calculated Value", filteredRangeDistance);
+        LightningShuffleboard.setDouble("Diagnostic", "Elevator Translated Raw", rawRangeMeters);
         LightningShuffleboard.setDouble("Diagnostic", "Elevator raw value",
                 rangeSensor.getDistance().getValueAsDouble());
 
@@ -191,9 +177,9 @@ public class Elevator extends SubsystemBase {
         setPosition(FishingRodConstants.ELEVATOR_MAP.get(state));
     }
 
-    private boolean isLimitHit() {
-        return Math.abs(leftMotor.getStatorCurrent().getValueAsDouble()) > 80d;
-    }
+    // private boolean isLimitHit() {
+    //     return Math.abs(leftMotor.getStatorCurrent().getValueAsDouble()) > ElevatorConstants.BOTTOM_CURRENT;
+    // }
 
     /**
      * sets basic percentage power to the elevator motors
@@ -242,7 +228,7 @@ public class Elevator extends SubsystemBase {
      */
     public boolean shouldSyncCANRange() {
         return Math.abs(leftMotor.getVelocity().getValueAsDouble()) < 0.05 // checks elevator not moving
-                && rangeSensorDistance <= 4.8d; // if below 4.8 inches
+                && filteredRangeDistance <= 4.8d; // if below 4.8 inches
     }
 
     /**
@@ -263,16 +249,16 @@ public class Elevator extends SubsystemBase {
     public double getCANRangeDist() {
         // filteredRangeValue =
         // CANRangeFilter.calculate(rangeSensor.getDistance().getValueAsDouble());
-        filteredRangeValue = rangeFilter.filter(rangeSensor.getDistance().getValueAsDouble());
+        filteredRangeMeters = rangeFilter.filter(rangeSensor.getDistance().getValueAsDouble());
 
         if (rangeSensor.getDistance().getValueAsDouble() <= ElevatorConstants.CANRANGE_MAP.lastEntry().getKey()) {
-            translatedRawRangeValue = ElevatorConstants.CANRANGE_MAP.get(rangeSensor.getDistance().getValueAsDouble());
+            rawRangeMeters = ElevatorConstants.CANRANGE_MAP.get(rangeSensor.getDistance().getValueAsDouble());
         } else {
-            translatedRawRangeValue = ElevatorConstants.CANRANGE_MAP.lastEntry().getValue();
+            rawRangeMeters = ElevatorConstants.CANRANGE_MAP.lastEntry().getValue();
         }
 
-        if (filteredRangeValue <= ElevatorConstants.CANRANGE_MAP.lastEntry().getKey()) {
-            return ElevatorConstants.CANRANGE_MAP.get(filteredRangeValue);
+        if (filteredRangeMeters <= ElevatorConstants.CANRANGE_MAP.lastEntry().getKey()) {
+            return ElevatorConstants.CANRANGE_MAP.get(filteredRangeMeters);
         } else {
             return ElevatorConstants.CANRANGE_MAP.lastEntry().getValue();
         }

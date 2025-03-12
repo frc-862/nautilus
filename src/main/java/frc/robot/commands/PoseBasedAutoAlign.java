@@ -15,6 +15,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -160,12 +161,12 @@ public class PoseBasedAutoAlign extends Command {
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        // double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "Y static", 0d);
-        // double yKs = LightningShuffleboard.getDouble("TestAutoAlign", "X static", 0d);
+        // double kS = 0.025;
+        double kS = 0.0;
         // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
-        double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX());// + Math.signum(controllerY.getError()) * yKs;
-        double yVeloc = controllerY.calculate(currentPose.getY(), targetPose.getY());// + Math.signum(controllerY.getError()) * xKs;
+        double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(controllerY.getError()) * (!controllerX.atSetpoint() ? kS : 0));
+        double yVeloc = controllerY.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(controllerY.getError()) * (!controllerX.atSetpoint() ? kS : 0));
         double rotationVeloc = controllerR.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
         drivetrain.setControl(DriveRequests.getAutoAlign(
@@ -198,11 +199,18 @@ public class PoseBasedAutoAlign extends Command {
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
         }
+        if (!DriverStation.isAutonomous() && onTarget()) {
+            RobotContainer.hapticDriverCommand().schedule();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return (controllerX.atSetpoint() && controllerY.atSetpoint() && controllerR.atSetpoint()) || invokeCancel;
+        return onTarget() || invokeCancel;
+    }
+
+    public boolean onTarget() {
+        return (controllerX.atSetpoint() && controllerY.atSetpoint() && controllerR.atSetpoint());
     }
 
     private void setXGains() {

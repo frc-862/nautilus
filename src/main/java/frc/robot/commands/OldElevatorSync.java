@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.Elevator;
 
-public class ElevatorSync extends Command {
+public class OldElevatorSync extends Command {
 
     private Elevator elevator;
     private double error = ElevatorConstants.CANRANGE_TOLERANCE;
     private double rangeDistance = 0;
 
-    public ElevatorSync(Elevator elevator) {
+    public OldElevatorSync(Elevator elevator) {
         this.elevator = elevator;
 
         addRequirements(elevator);
@@ -29,7 +29,7 @@ public class ElevatorSync extends Command {
         double position = elevator.getPosition();
         rangeDistance = elevator.getCANRangeDist();
         error = rangeDistance - position;
-
+    
         if (elevator.shouldSyncCANRange()) {
             elevator.setPosition(position + error);
         }

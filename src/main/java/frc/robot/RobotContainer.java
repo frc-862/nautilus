@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -43,7 +44,8 @@ import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
-import frc.robot.commands.ElevatorSync;
+import frc.robot.commands.OldElevatorSync;
+import frc.robot.commands.ElevatorSyncStow;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
@@ -76,9 +78,9 @@ public class RobotContainer extends LightningContainer {
 
     private SendableChooser<Command> autoChooser;
 
-    private Elevator elevator;
+    public Elevator elevator;
     private Wrist wrist;
-    private FishingRod rod;
+    public FishingRod rod;
     private CoralCollector coralCollector;
     private AlgaeCollector algaeCollector;
     private Climber climber;
@@ -151,7 +153,7 @@ public class RobotContainer extends LightningContainer {
                 climber));
 
         // Sync elevator while in stow
-        new Trigger(() -> rod.getState() == RodStates.STOW).whileTrue(new ElevatorSync(elevator));
+        new Trigger(() -> rod.getState() == RodStates.STOW).whileTrue(new ElevatorSyncStow(elevator));
 
         /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));

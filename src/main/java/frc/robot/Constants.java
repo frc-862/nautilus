@@ -243,7 +243,7 @@ public class Constants {
                 // put(ROD_STATES.L4, 71.87d);
                 // put(ROD_STATES.SOURCE, 36.5d);
 
-                put(RodStates.STOW, 3d);
+                put(RodStates.STOW, 2d);
                 put(RodStates.L1, 2d);
                 put(RodStates.L2, 13.5d);
                 put(RodStates.L3, 26d);
@@ -315,11 +315,21 @@ public class Constants {
             {
                 put(-10000d, 0d);
                 put(0.124, 0d);
-                // put(0.16696, 2.01904);
                 put(0.20684, 2.927);
                 put(0.22491, 3.5959);
                 put(0.24941, 4.48193);
                 put(0.26504, 4.85571);
+                // added 3/11/25
+                put(0.295, 5.207763);
+                put(0.312, 5.698242);
+                put(0.341, 6.163085);
+                put(0.365, 6.664795);
+                put(0.384, 7.416503);
+                put(0.414, 8.211181);
+                put(0.445, 8.841309);
+                put(0.432, 9.000244);
+                put(0.453, 9.314941);
+                put(0.464, 9.496093);
             }
         };
     }

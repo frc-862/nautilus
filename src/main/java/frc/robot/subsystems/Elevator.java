@@ -168,7 +168,7 @@ public class Elevator extends SubsystemBase {
         targetPosition = MathUtil.clamp(target, ElevatorConstants.MIN_EXTENSION.magnitude(),
                 ElevatorConstants.MAX_EXTENSION.magnitude());
 
-        leftMotor.setControl(positionPID.withPosition(target));
+        leftMotor.setControl(positionPID.withPosition(targetPosition));
     }
 
     /**
@@ -300,6 +300,10 @@ public class Elevator extends SubsystemBase {
     @Logged(importance = Importance.DEBUG)
     public double getCurrentPower() {
         return leftMotor.get();
+    }
+
+    public double getMotorCurrent() {
+        return leftMotor.getStatorCurrent().getValueAsDouble();
     }
 
     /**

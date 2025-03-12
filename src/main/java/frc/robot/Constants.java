@@ -279,7 +279,7 @@ public class Constants {
         public static final double JERK = 1600d; // temp
 
         public static final double POSITION_TOLERANCE = 0.1; // temp
-        public static final double CANRANGE_TOLERANCE = 0.75; // temp
+        public static final double CANRANGE_TOLERANCE = 0.1; // temp
         public static final double OK_TO_SYNC_TOLERANCE = 3d; // temp
 
         public static final double SYNC_TIMEOUT = 0.5d;
@@ -300,6 +300,7 @@ public class Constants {
 
         public static final double NATUILUS_INTERPOLATION_SLOPE = 22.54096;
         public static final double NAUTILUS_INTERPOLATION_INTERCEPT = -0.834493;
+        public static final double MAX_USABLE_CANRANGE_DISTANCE = 5.0;
     }
 
     public static class WristConstants {

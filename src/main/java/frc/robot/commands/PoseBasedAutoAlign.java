@@ -1,29 +1,18 @@
 package frc.robot.commands;
 
-import java.util.function.IntSupplier;
-
-import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.AutoAlignConstants;
-import frc.robot.Constants.PoseConstants;
-import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.LEDs;
@@ -38,6 +27,8 @@ public class PoseBasedAutoAlign extends Command {
     private Swerve drivetrain;
     private Camera camera;
     private LEDs leds;
+
+    private double tolerance = 0.02;
 
     private PIDController controllerX = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI,
         AutoAlignConstants.THREE_DEE_xD);
@@ -73,6 +64,14 @@ public class PoseBasedAutoAlign extends Command {
 
         customTagSet = true;
         cID = IDCode;
+    }
+
+    public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds, LightningTagID IDCode, double tolerance) {
+        this(vision, drivetrain, camera, leds);
+
+        customTagSet = true;
+        cID = IDCode;
+        this.tolerance = tolerance;
     }
 
     public PoseBasedAutoAlign(PhotonVision vision, Swerve drivetrain, Camera camera, LEDs leds) {
@@ -128,13 +127,13 @@ public class PoseBasedAutoAlign extends Command {
             }
         }
 
-        controllerX.setTolerance(0.02);
+        controllerX.setTolerance(tolerance);
 
-        controllerY.setTolerance(0.02);
+        controllerY.setTolerance(tolerance);
 
 
         // controllerR.setSetpoint(0);
-        controllerR.setTolerance(2);
+        controllerR.setTolerance(2.5);
         controllerR.enableContinuousInput(0, 360);
 
         // try {
@@ -150,12 +149,12 @@ public class PoseBasedAutoAlign extends Command {
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        // double xKs = LightningShuffleboard.getDouble("TestAutoAlign", "Y static", 0d);
-        // double yKs = LightningShuffleboard.getDouble("TestAutoAlign", "X static", 0d);
+        // double kS = 0.025;
+        double kS = 0.0;
         // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
-        double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX());// + Math.signum(controllerY.getError()) * yKs;
-        double yVeloc = controllerY.calculate(currentPose.getY(), targetPose.getY());// + Math.signum(controllerY.getError()) * xKs;
+        double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(controllerY.getError()) * (!controllerX.atSetpoint() ? kS : 0));
+        double yVeloc = controllerY.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(controllerY.getError()) * (!controllerX.atSetpoint() ? kS : 0));
         double rotationVeloc = controllerR.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
         drivetrain.setControl(DriveRequests.getAutoAlign(
@@ -188,11 +187,18 @@ public class PoseBasedAutoAlign extends Command {
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
         }
+        if (!DriverStation.isAutonomous() && onTarget()) {
+            RobotContainer.hapticDriverCommand().schedule();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return (controllerX.atSetpoint() && controllerY.atSetpoint() && controllerR.atSetpoint()) || invokeCancel;
+        return onTarget() || invokeCancel;
+    }
+
+    public boolean onTarget() {
+        return (controllerX.atSetpoint() && controllerY.atSetpoint() && controllerR.atSetpoint());
     }
 
     private void setXGains() {

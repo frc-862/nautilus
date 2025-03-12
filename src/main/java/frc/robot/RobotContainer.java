@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -43,6 +44,8 @@ import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
+import frc.robot.commands.OldElevatorSync;
+import frc.robot.commands.ElevatorSyncStow;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
@@ -75,9 +78,9 @@ public class RobotContainer extends LightningContainer {
 
     private SendableChooser<Command> autoChooser;
 
-    private Elevator elevator;
+    public Elevator elevator;
     private Wrist wrist;
-    private FishingRod rod;
+    public FishingRod rod;
     private CoralCollector coralCollector;
     private AlgaeCollector algaeCollector;
     private Climber climber;
@@ -136,6 +139,7 @@ public class RobotContainer extends LightningContainer {
                                 ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
+
         // COPILOT INTAKE
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
@@ -148,10 +152,8 @@ public class RobotContainer extends LightningContainer {
                         MathUtil.applyDeadband(-copilot.getLeftY(), ControllerConstants.JOYSTICK_DEADBAND)),
                 climber));
 
-        // This should not be here, but is commented just to be safe if ever needed
-        // again
-        // rod.setDefaultCommand(new SetRodState(rod,
-        // RodStates.STOW).onlyIf(DriverStation::isTeleop));
+        // Sync elevator while in stow
+        new Trigger(() -> rod.getState() == RodStates.STOW).whileTrue(new ElevatorSyncStow(elevator));
 
         /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
@@ -224,9 +226,11 @@ public class RobotContainer extends LightningContainer {
 
         // AUTOALIGN
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds));
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        new Trigger(() -> driver.getPOV() == 0)
+                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, LightningTagID.RightSource).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         /* COPILOT BINDINGS */
 
@@ -290,13 +294,9 @@ public class RobotContainer extends LightningContainer {
         // null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
 
         // SYSID
-        // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() ->
-        // SignalLogger.start()));
-        // new Trigger(driver::getYButton)
-        // .whileTrue(new SysIdSequence(drivetrain,
-        // DrivetrainConstants.SysIdTestType.DRIVE));
-        // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() ->
-        // SignalLogger.stop()));
+        // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
+        // new Trigger(driver::getYButton).whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.DRIVE));
+        // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() -> SignalLogger.stop()));
 
     }
 
@@ -328,6 +328,10 @@ public class RobotContainer extends LightningContainer {
 
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1));
+        
+        NamedCommands.registerCommand("IntuahCoral",
+                new RunCommand(() -> coralCollector.setPower(1), coralCollector));
+        
         NamedCommands.registerCommand("ScoreCoral",
                 new ScoreCoral(coralCollector));
 

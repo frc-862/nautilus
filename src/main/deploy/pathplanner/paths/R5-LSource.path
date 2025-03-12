@@ -8,35 +8,80 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.005347308817409,
-        "y": 6.418694857410307
+        "x": 3.994874410789106,
+        "y": 6.0272245439071215
       },
       "isLocked": false,
       "linkedName": "Reef5Left"
     },
     {
       "anchor": {
-        "x": 1.7046030405405406,
-        "y": 7.25633445945946
+        "x": 2.4405532581180167,
+        "y": 6.386785581791201
       },
       "prevControl": {
-        "x": 2.554134522453538,
-        "y": 6.544466632228509
+        "x": 3.2618052221543294,
+        "y": 6.076885202077513
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LeftSource"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
+  "rotationTargets": [],
+  "constraintZones": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": 21.318641535577104
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.1761632898351649,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
     }
   ],
-  "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Stow",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodStow"
+        }
+      }
+    },
+    {
+      "name": "SourceAndCollect",
+      "waypointRelativePos": 0.9372123969780225,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "RodSource"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "IntuahCoral"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -46,7 +91,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": -54.0
   },
   "reversed": false,

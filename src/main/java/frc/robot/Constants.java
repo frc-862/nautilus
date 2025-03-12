@@ -643,26 +643,6 @@ public class Constants {
             }
         };
 
-        public enum LightningTagID {
-            // reef poses
-            One(7, 18),
-            Two(8, 17),
-            Three(9, 22),
-            Four(10, 21),
-            Five(11, 20),
-            Six(6, 19),
-
-            RightSource(1, 12),
-            LeftSource(2, 13);
-
-            public final int redID;
-            public final int blueID;
-            LightningTagID(int redID, int blueID) {
-                this.redID = redID;
-                this.blueID = blueID;
-        }
-    }
-
         public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);
 
         // POPULATE WITH REAL VALUES

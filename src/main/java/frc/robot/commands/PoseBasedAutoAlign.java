@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
@@ -32,9 +33,7 @@ public class PoseBasedAutoAlign extends Command {
 
     private double tolerance = 0.02;
 
-    // TODO: change to xPID and get rid of indentation
-    private PIDController controllerX = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI,
-        AutoAlignConstants.THREE_DEE_xD);
+    private PIDController xPID = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI, AutoAlignConstants.THREE_DEE_xD);
 
     private PIDController yPID = new PIDController(AutoAlignConstants.THREE_DEE_yP, AutoAlignConstants.THREE_DEE_yI, AutoAlignConstants.THREE_DEE_yD);
 
@@ -47,6 +46,23 @@ public class PoseBasedAutoAlign extends Command {
     private boolean invokeCancel = false;
 
     private LightningTagID codeID = LightningTagID.One;
+
+
+    /**
+     * Used to align to Tag
+     * will always use PID Controllers
+     * @param vision
+     * @param drivetrain
+     * @param camera
+     * @param leds
+     * @param codeID the Lightning-specific ID code for the tag
+     */
+    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, LightningTagID codeID) {
+        this(drivetrain, camera, leds);
+
+        customTagSet = true;
+        this.codeID = codeID;
+    }
 
     /**
      * Used to align to Tag
@@ -70,21 +86,6 @@ public class PoseBasedAutoAlign extends Command {
      * @param drivetrain
      * @param camera
      * @param leds
-     */
-    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds) {
-        this.drivetrain = drivetrain;
-        this.camera = camera;
-        this.leds = leds;
-        
-        addRequirements(drivetrain);
-    }
-
-    /**
-     * Used to align to Tag
-     * will always use PID Controllers
-     * @param drivetrain
-     * @param camera
-     * @param leds
      * @param tagID the ID of the tag to align to
      */
     public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, int tagID) {
@@ -93,6 +94,21 @@ public class PoseBasedAutoAlign extends Command {
         customTagSet = true;
 
         this.tagID = tagID;
+    }
+
+    /**
+     * Used to align to Tag
+     * will always use PID Controllers
+     * @param drivetrain
+     * @param camera
+     * @param leds
+     */
+    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds) {
+        this.drivetrain = drivetrain;
+        this.camera = camera;
+        this.leds = leds;
+        
+        addRequirements(drivetrain);
     }
 
     @Override
@@ -137,8 +153,8 @@ public class PoseBasedAutoAlign extends Command {
         
         double kS = 0.0;
 
-        double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(yPID.getError()) * (!controllerX.atSetpoint() ? kS : 0));
-        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!controllerX.atSetpoint() ? kS : 0));
+        double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(yPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
+        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
         drivetrain.setControl(DriveRequests.getAutoAlign(xVeloc, yVeloc, rotationVeloc));
@@ -164,37 +180,6 @@ public class PoseBasedAutoAlign extends Command {
     }
 
     public boolean onTarget() {
-        return (controllerX.atSetpoint() && controllerY.atSetpoint() && controllerR.atSetpoint());
-    }
-
-    private void setXGains() {
-        String key = "x";
-        controllerX.setPID(
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.THREE_DEE_xP),
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.THREE_DEE_xI),
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.THREE_DEE_xD));
-
-        controllerX.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", key + " tolerance", 0));
-    }
-
-    private void setYGains() {
-        String key = "y";
-
-        controllerY.setPID(
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.THREE_DEE_yP),
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.THREE_DEE_yI),
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.THREE_DEE_yD));
-
-        controllerY.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", key + " tolerance", 0));
-    }
-    private void setRGains() {
-        String key = "r";
-
-        controllerR.setPID(
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.THREE_DEE_rP),
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.THREE_DEE_rI),
-            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.THREE_DEE_rD));
-
-        controllerR.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", key + " tolerance", 0));
+        return (xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint());
     }
 }

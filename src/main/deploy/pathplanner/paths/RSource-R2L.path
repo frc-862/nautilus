@@ -3,40 +3,40 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.326328997905027,
-        "y": 2.8156863761347757
+        "x": 1.5262354333973462,
+        "y": 0.8709418099685752
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.968212767115207,
-        "y": 2.2753064714736233
+        "x": 2.3267740590530073,
+        "y": 1.9389376742338542
       },
       "isLocked": false,
-      "linkedName": "Reef3Left"
+      "linkedName": "RightSRC"
     },
     {
       "anchor": {
-        "x": 2.418946403631285,
-        "y": 1.6127239546962289
+        "x": 3.841998734287709,
+        "y": 2.57242574851606
       },
       "prevControl": {
-        "x": 3.989356934530125,
-        "y": 2.515459030920843
+        "x": 2.877254277234637,
+        "y": 2.269004233589385
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Reef1Left"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.1761632898351649,
+      "minWaypointRelativePos": 0.7630794986263736,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 3.0,
-        "maxAcceleration": 1.0,
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -47,8 +47,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Stow",
-      "waypointRelativePos": 0.0,
+      "name": "RodStow",
+      "waypointRelativePos": 0.11267170329670316,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -58,26 +58,13 @@
       }
     },
     {
-      "name": "SourceAndCollect",
-      "waypointRelativePos": 0.9372123969780225,
+      "name": "RodL4",
+      "waypointRelativePos": 0.8679515796703302,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "parallel",
+        "type": "named",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "RodSource"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "IntuahCoral"
-              }
-            }
-          ]
+          "name": "RodL4"
         }
       }
     }
@@ -91,14 +78,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": 54.0
+    "velocity": 0.0,
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "RSource-Reef",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 54.0
   },
   "useDefaultConstraints": true
 }

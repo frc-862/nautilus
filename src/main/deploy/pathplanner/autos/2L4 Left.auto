@@ -36,37 +36,44 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "RodStow"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "R5-LSource"
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "AlignToLeftSource"
-          }
-        },
-        {
-          "type": "race",
+          "type": "deadline",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "IntakeCoral"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeCoral"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 4.0
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 8.0
+                  "name": "AlignToLeftSource"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RodSource"
                 }
               }
             ]
@@ -113,6 +120,50 @@
           "type": "named",
           "data": {
             "name": "RodStow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R6-LSource"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeCoral"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 4.5
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToLeftSource"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RodSource"
+                }
+              }
+            ]
           }
         }
       ]

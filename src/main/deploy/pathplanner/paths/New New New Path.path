@@ -3,47 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4794790939245808,
-        "y": 0.7549605556040501
+        "x": 12.272,
+        "y": 2.98929631425915
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4372795329247348,
-        "y": 1.509591204513265
+        "x": 13.272,
+        "y": 2.9892963142591498
       },
       "isLocked": false,
-      "linkedName": "RightSRC"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.8514776645425974,
-        "y": 2.5871069199546084
+        "x": 14.350498,
+        "y": 3.8632
       },
       "prevControl": {
-        "x": 3.370799516055152,
-        "y": 2.2133401602224385
+        "x": 13.350498,
+        "y": 3.8632
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef1Left"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "RodStow",
-      "waypointRelativePos": 0.2751158997252748,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "RodStow"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -53,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -126.0
+    "velocity": 0,
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "RSource-Reef",
+  "folder": "New Folder",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 54.0
+    "rotation": -119.99999999999999
   },
   "useDefaultConstraints": true
 }

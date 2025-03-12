@@ -315,7 +315,7 @@ public class PhotonVision extends SubsystemBase {
         @Override
         public void run() {
             try {
-                sleep(500);
+                sleep(3000);
             } catch (InterruptedException e) {
                 DataLogManager.log(camName.toString() + " sleep inital failed");
             }

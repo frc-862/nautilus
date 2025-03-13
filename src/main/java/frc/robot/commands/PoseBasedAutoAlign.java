@@ -28,7 +28,7 @@ public class PoseBasedAutoAlign extends Command {
     private Camera camera;
     private LEDs leds;
 
-    private double tolerance = 0.02;
+    private double tolerance = 0.025;
 
     private PIDController controllerX = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI,
         AutoAlignConstants.THREE_DEE_xD);
@@ -150,7 +150,7 @@ public class PoseBasedAutoAlign extends Command {
         Pose2d currentPose = drivetrain.getPose();
 
         // double kS = 0.025;
-        double kS = 0.0;
+        double kS = 0.008;
         // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
         double xVeloc = controllerX.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(controllerY.getError()) * (!controllerX.atSetpoint() ? kS : 0));

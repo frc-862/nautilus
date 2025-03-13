@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.CoralCollectorConstants;
@@ -335,6 +336,8 @@ public class RobotContainer extends LightningContainer {
         
         NamedCommands.registerCommand("ScoreCoral",
                 new ScoreCoral(coralCollector));
+
+        NamedCommands.registerCommand("WaitOnTarget", new WaitUntilCommand(rod::onTarget));
 
         // psst! we should use a for loop like we did with LightningTagID!
         NamedCommands.registerCommand("RodStow",

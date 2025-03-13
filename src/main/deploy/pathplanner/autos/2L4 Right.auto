@@ -17,7 +17,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 8.0
+                  "waitTime": 5.0
                 }
               }
             ]
@@ -98,7 +98,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 8.0
+                  "waitTime": 5.0
                 }
               }
             ]
@@ -107,7 +107,7 @@
         {
           "type": "named",
           "data": {
-            "name": "RodL4"
+            "name": "WaitOnTarget"
           }
         },
         {

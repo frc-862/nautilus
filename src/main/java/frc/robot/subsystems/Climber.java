@@ -4,9 +4,7 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -28,18 +26,12 @@ public class Climber extends SubsystemBase {
     private ElevatorSim climbSim;
     private DCMotor gearbox;
 
-    private final PositionVoltage positionPID = new PositionVoltage(0);
-    private double targetPostion = 0;
-
     private DigitalInput limitSwitch;
 
     public Climber(ThunderBird motor) {
-
-        TalonFXConfiguration config = motor.getConfig();
+        this.motor = motor;
 
         limitSwitch = new DigitalInput(RobotMap.CLIMBER_LIMIT_SWITCH_DIO);
-
-        this.motor = motor;
 
         if (Robot.isSimulation()) {
 
@@ -51,11 +43,6 @@ public class Climber extends SubsystemBase {
                     ClimberConstants.DRUM_RADIUS,
                     ClimberConstants.MIN_EXTENSION, ClimberConstants.MAX_EXTENSION, false, 0, 0, 1);
         }
-
-        config.Slot0.kP = ClimberConstants.KP;
-        config.Slot0.kI = ClimberConstants.KI;
-        config.Slot0.kD = ClimberConstants.KD;
-        motor.applyConfig(config);
     }
 
     @Override
@@ -65,10 +52,6 @@ public class Climber extends SubsystemBase {
         // LightningShuffleboard.setDouble("Climber", "targetPosition", targetPostion);
         LightningShuffleboard.setBool("Climber", "limit switch", getLimitSwitch());
         // LightningShuffleboard.setDouble("Diagnostic", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
-
-        // if (motor.getVelocity().getValueAsDouble() < 0 && getLimitSwitch()) {
-        //     motor.stopMotor();
-        // }
     }
 
     @Override
@@ -81,25 +64,20 @@ public class Climber extends SubsystemBase {
         climbSim.update(RobotMap.UPDATE_FREQ);
 
         // Update the state of the motor
-        motorSim.setRawRotorPosition(
-                Units.metersToInches(climbSim.getPositionMeters()) * ClimberConstants.ROTOR_TO_MECHANISM_RATIO);
+        motorSim.setRawRotorPosition(Units.metersToInches(climbSim.getPositionMeters()) * ClimberConstants.ROTOR_TO_MECHANISM_RATIO);
     }
-
-    public void setPower(double speed) {
-        if (speed < 0 && getLimitSwitch()) {
+    
+    /**
+     * sets the power to the climber motor
+     * @param power
+     */
+    public void setPower(double power) {
+        if (power < 0 && getLimitSwitch()) {
             motor.setControl(new DutyCycleOut(0));
             return;
         } else {
-            motor.setControl(new DutyCycleOut(speed));
+            motor.setControl(new DutyCycleOut(power));
         }
-    }
-
-    /**
-     * @param position set target position in device rotations
-     */
-    public void setTargetPosition(double position) {
-        motor.setControl(positionPID.withPosition(position));
-        targetPostion = position;
     }
 
     /**
@@ -107,13 +85,6 @@ public class Climber extends SubsystemBase {
      */
     public double getPostion() {
         return motor.getPosition().getValueAsDouble();
-    }
-
-    /**
-     * @return if the climber is on target
-     */
-    public boolean getOnTarget() {
-        return Math.abs(getPostion() - targetPostion) < ClimberConstants.TOLERANCE;
     }
 
     /**

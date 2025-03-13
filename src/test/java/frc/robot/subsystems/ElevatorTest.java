@@ -71,7 +71,7 @@ public class ElevatorTest implements AutoCloseable {
     public void testSetPower() {
         var dutyCycle = leftMotor.getDutyCycle();
 
-        elevator.setRawPower(0d);
+        elevator.setPower(0d);
         Timer.delay(0.1);
 
         elevator.simulationPeriodic();

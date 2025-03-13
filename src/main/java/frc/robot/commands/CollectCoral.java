@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.commands;
 
 import java.util.function.BooleanSupplier;
@@ -37,7 +41,7 @@ public class CollectCoral extends Command {
     @Override
     public void execute() {
         double power = triggerPower.getAsDouble();
-        if (triggerPower.getAsDouble() == 0) {
+        if (power == 0) {
             power = useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER;
         }
         collector.setPower(power * CoralCollectorConstants.CORAL_ROLLER_SPEED);
@@ -49,13 +53,10 @@ public class CollectCoral extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        // this likely almost never gets called
-
         collector.setPower(useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER);
         if (!interrupted) {
             leds.strip.enableState(LEDStates.COLLECTED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
         }
-
     }
 
     @Override

@@ -50,8 +50,6 @@ import frc.robot.commands.ElevatorSyncStow;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
-import frc.robot.commands.TagAutoAlign;
-import frc.robot.commands.meow;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
@@ -165,12 +163,6 @@ public class RobotContainer extends LightningContainer {
 
         new Trigger(() -> !rod.isCoralMode()).whileTrue(leds.strip.enableState(LEDStates.ALGAE_MODE));
 
-        // new Trigger(() -> (coralCollector.getPower() > CoralCollectorConstants.CORAL_HOLD_POWER && rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
-        // new Trigger(() -> (coralCollector.getPower() < -CoralCollectorConstants.CORAL_HOLD_POWER && rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
-
-        // new Trigger(() -> (coralCollector.getPower() > CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.SCORING));
-        // new Trigger(() -> (coralCollector.getPower() < -CoralCollectorConstants.ALGAE_HOLD_POWER && !rod.isCoralMode())).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
-
         leds.strip.setState(LEDStates.POSE_BAD, true).schedule();
 
         new Trigger(() -> (!drivetrain.poseStable() && DriverStation.isDisabled()))
@@ -202,8 +194,7 @@ public class RobotContainer extends LightningContainer {
     protected void configureButtonBindings() {
         /* DRIVER BINDINGS */
         // robot centric driving
-        new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests
-                .getRobotCentric(
+        new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests.getRobotCentric(
                         () -> MathUtil.applyDeadband(-(driver.getLeftX() * drivetrain.getSpeedMult()),
                                 ControllerConstants.JOYSTICK_DEADBAND),
                         () -> MathUtil.applyDeadband(-(driver.getLeftY() * drivetrain.getSpeedMult()),
@@ -227,12 +218,13 @@ public class RobotContainer extends LightningContainer {
 
         // AUTOALIGN
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        
         // source autoalign
         new Trigger(() -> driver.getPOV() == 0)
-                .whileTrue(new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds, LightningTagID.RightSource).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.RightSource).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         /* COPILOT BINDINGS */
 
@@ -313,16 +305,16 @@ public class RobotContainer extends LightningContainer {
             switch (tagID) {
                 case LeftSource, RightSource:
                     NamedCommands.registerCommand("AlignTo" + tagID.name(),
-                            new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
+                            new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
 
                 default:
                     NamedCommands.registerCommand("AlignTo" + tagID.name() + "Left",
-                            new PoseBasedAutoAlign(vision, drivetrain, Camera.LEFT, leds,
+                            new PoseBasedAutoAlign(drivetrain, Camera.LEFT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     NamedCommands.registerCommand("AlignTo" + tagID.name() + "Right",
-                            new PoseBasedAutoAlign(vision, drivetrain, Camera.RIGHT, leds,
+                            new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
             }
@@ -361,7 +353,6 @@ public class RobotContainer extends LightningContainer {
 
                         
         autoChooser = AutoBuilder.buildAutoChooser();
-        autoChooser.addOption("MEOW", new meow(drivetrain).withTimeout(3));
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
     }
 

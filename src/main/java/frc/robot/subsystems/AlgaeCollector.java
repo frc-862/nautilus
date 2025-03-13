@@ -161,7 +161,7 @@ public class AlgaeCollector extends SubsystemBase {
      * stops the roller
      */
     public void stop() {
-        setRollerPower(0d);
+        rollerMotor.stopMotor();
     }
 
     @Override

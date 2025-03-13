@@ -361,7 +361,6 @@ public class Constants {
         // sim stuff
         public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.086); // 5lb, 2.5in rad, 9in height
         public static final Distance LENGTH = Meters.of(0.18); // TODO: ask mr hurley abt this because i have no clue
-
     }
 
     public static class CoralCollectorConstants {
@@ -388,7 +387,6 @@ public class Constants {
         public static final double COLLECTED_CURRENT = 40d;
         public static final double CORAL_HOLD_POWER = 0.07d;
         public static final double ALGAE_HOLD_POWER = 0.15d;
-
     }
 
     public class DrivetrainConstants {
@@ -495,7 +493,6 @@ public class Constants {
 
             // auto request exists in Swerve.java
         }
-
     }
 
     public static class AutonomousConstants {
@@ -715,10 +712,6 @@ public class Constants {
                 return 0;
             }
         }
-
-
-        
-        
     }
 
     public class TunerConstants {
@@ -773,6 +766,7 @@ public class Constants {
                                     // stator current limit to help avoid brownouts without impacting performance.
                                     .withStatorCurrentLimit(Amps.of(60))
                                     .withStatorCurrentLimitEnable(true));
+
             private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
             // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
             private static final Pigeon2Configuration pigeonConfigs = null;
@@ -1158,7 +1152,6 @@ public class Constants {
             public static final int L3_SL = 9;
             public static final int R3_SL = 10;
         }
-
     }
 
     public static class LEDConstants {
@@ -1221,7 +1214,6 @@ public class Constants {
                 put(9, 0d);
             }
         };
-
     }
 
     public class SimGamePeicesConstants {
@@ -1275,7 +1267,6 @@ public class Constants {
         public enum AlgaePivotStates {
             DEPLOYED, STOWED
         }
-
     }
 
     public class ClimberConstants {
@@ -1287,13 +1278,8 @@ public class Constants {
         public static final double TOLERANCE = 1; // temp
         public static final double ROTOR_TO_MECHANISM_RATIO = 1d;
 
-        public static final double KP = 0.05d; // temp
-        public static final double KI = 0.0; // temp
-        public static final double KD = 0; // temp
-
         public static final boolean INVERTED = false; // temp
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean BREAK_MODE = true;
-
     }
 }

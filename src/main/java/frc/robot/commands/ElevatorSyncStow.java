@@ -29,7 +29,7 @@ public class ElevatorSyncStow extends Command {
     @Override
     public void execute() {
         // move down until we hit current limit
-        elevator.setRawPower(ElevatorConstants.BOTTOM_RAW_POWER);
+        elevator.setPower(ElevatorConstants.BOTTOM_RAW_POWER);
     }
 
     @Override

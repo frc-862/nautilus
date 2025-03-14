@@ -51,6 +51,7 @@ import frc.robot.commands.ElevatorSyncStow;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
+import frc.robot.commands.auton.AutonAutoAlign;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
@@ -320,6 +321,10 @@ public class RobotContainer extends LightningContainer {
                     break;
             }
         }
+
+        // AUTON AUTO ALIGN TEST
+        NamedCommands.registerCommand("AUTONAlignToThreeLeft", new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Three).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        NamedCommands.registerCommand("AUTONAlignToFiveLeft", new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Five).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1));

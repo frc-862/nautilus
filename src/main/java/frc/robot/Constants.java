@@ -229,7 +229,7 @@ public class Constants {
                 put(RodStates.LOW, -29d);
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
-                put(RodStates.PROCESSOR, -39.5d);
+                put(RodStates.PROCESSOR, -33d);
                 put(RodStates.BARGE, 57d);
             }
         };
@@ -252,7 +252,7 @@ public class Constants {
                 put(RodStates.HIGH, 28d);
                 put(RodStates.SOURCE, 9.1d);
                 put(RodStates.BARGE, 47d);
-                put(RodStates.PROCESSOR, 1d);
+                put(RodStates.PROCESSOR, 1.75d);
             }
         };
     }
@@ -366,7 +366,7 @@ public class Constants {
     public static class CoralCollectorConstants {
         // public static final boolean INVERTED = false; // OLD - check below for proper invert
         public static final boolean BRAKE_MODE = false;
-        public static final double STATOR_CURRENT_LIMIT = 0d; // temp
+        public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final double CORAL_ROLLER_SPEED = 1;
         public static final double DEBOUNCE_TIME = 0.1; // unused
 
@@ -1194,11 +1194,11 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double THREE_DEE_xP = 0.6d;
+        public static final double THREE_DEE_xP = 0.65d;
         public static final double THREE_DEE_xI = 0;
         public static final double THREE_DEE_xD = 0;
 
-        public static final double THREE_DEE_yP = 0.6d;
+        public static final double THREE_DEE_yP = 0.65d;
         public static final double THREE_DEE_yI = 0;
         public static final double THREE_DEE_yD = 0;
 

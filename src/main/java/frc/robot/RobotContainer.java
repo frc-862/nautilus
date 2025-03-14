@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -353,6 +354,7 @@ public class RobotContainer extends LightningContainer {
 
                         
         autoChooser = AutoBuilder.buildAutoChooser();
+        // autoChooser.addOption("LEAVE", drivetrain.setControl(DriveRequests.getRobotCentric(0, 1, 0)));
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
     }
 

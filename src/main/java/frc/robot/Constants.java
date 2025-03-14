@@ -229,7 +229,7 @@ public class Constants {
                 put(RodStates.LOW, -29d);
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
-                put(RodStates.PROCESSOR, -33d);
+                put(RodStates.PROCESSOR, -25.5d);
                 put(RodStates.BARGE, 57d);
             }
         };
@@ -633,7 +633,7 @@ public class Constants {
 
                 //blue left source
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 13),
-                    new Pose2d(1.315, 7.124, new Rotation2d(Degrees.of(-54))));
+                    new Pose2d(1.064, 7.299, new Rotation2d(Degrees.of(-54))));
 
                 //blue right source
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 12),

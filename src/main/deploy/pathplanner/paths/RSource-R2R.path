@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.5262354333973462,
+        "y": 0.8709418099685752
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.3993384919080594,
+        "y": 2.2295272807732633
+      },
+      "isLocked": false,
+      "linkedName": "RightSRC"
+    },
+    {
+      "anchor": {
+        "x": 3.560308720999156,
+        "y": 2.742289131955165
+      },
+      "prevControl": {
+        "x": 2.5251102667262613,
+        "y": 2.210177776955079
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Reef2Right"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.7630794986263736,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "RodStow",
+      "waypointRelativePos": 0.11267170329670316,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodStow"
+        }
+      }
+    },
+    {
+      "name": "RodL4",
+      "waypointRelativePos": 0.8679515796703302,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodL4"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -119.99999999999999
+  },
+  "reversed": false,
+  "folder": "RSource-Reef",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 54.0
+  },
+  "useDefaultConstraints": true
+}

@@ -51,6 +51,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.EncoderConstants;
+import frc.robot.Constants.MapleSimConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.TunerConstants;
@@ -320,13 +321,13 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private void startSimThread() {
 
         mapleSimSwerveDrivetrain = new MapleSimSwerveDrivetrain(
-            Seconds.of(0.002),
-            Pounds.of(115), // temp
-            Inches.of(30), // temp
-            Inches.of(30), // temp
+            MapleSimConstants.SIM_PERIOD,
+            Pounds.of(115),
+            Meters.of(0.9),
+            Meters.of(0.9),
             DCMotor.getKrakenX60(1),
             DCMotor.getKrakenX60(1),
-            1.2, // temp
+            1.2,
             getModuleLocations(),
             getPigeon2(),
             getModules(),

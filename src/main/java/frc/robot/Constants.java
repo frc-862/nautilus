@@ -51,6 +51,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -1258,5 +1259,12 @@ public class Constants {
         public static final double STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean BREAK_MODE = true;
 
+    }
+
+    public class MapleSimConstants {
+        public static final Mass ROBOT_MASS = Pounds.of(115);
+        public static final Distance ROBOT_WIDTH = Meters.of(0.9);
+        public static final double WheelCOF = 1.2;
+        public static final Time SIM_PERIOD = Seconds.of(0.002);
     }
 }

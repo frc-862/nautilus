@@ -185,6 +185,6 @@ public class PoseBasedAutoAlign extends Command {
     }
 
     public boolean onTarget() {
-        return (xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint());
+        return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
     }
 }

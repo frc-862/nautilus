@@ -150,7 +150,7 @@ public class AutonAutoAlign extends Command {
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
                 targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
-        if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc) {
+        if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !doEle) {
             doEle = true;
             rod.setState(RodStates.L4);
         }

@@ -109,7 +109,7 @@ public class PoseBasedAutoAlign extends Command {
         this.leds = leds;
         
         tagID = 0;
-        customTagSet = true;
+        customTagSet = false;
         
         addRequirements(drivetrain);
     }

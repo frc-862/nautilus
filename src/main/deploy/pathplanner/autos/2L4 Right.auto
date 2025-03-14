@@ -117,12 +117,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "RodStow"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "R2-RSource"

@@ -23,26 +23,36 @@ public class CollectCoral extends Command {
     private LEDs leds;
     private DoubleSupplier triggerPower;
     private BooleanSupplier useLowHoldPower;
+    private BooleanSupplier useLowSpitPower;
 
-    public CollectCoral(CoralCollector collector, LEDs leds, DoubleSupplier triggerPower, BooleanSupplier useLowHoldPower) {
+    public CollectCoral(CoralCollector collector, LEDs leds, DoubleSupplier triggerPower,
+            BooleanSupplier useLowHoldPower, BooleanSupplier useLowSpitPower) {
         this.collector = collector;
         this.leds = leds;
         this.triggerPower = triggerPower;
         this.useLowHoldPower = useLowHoldPower;
+        this.useLowSpitPower = useLowSpitPower;
 
         addRequirements(collector);
     }
 
+    public CollectCoral(CoralCollector collector, LEDs leds, DoubleSupplier triggerPower,
+            BooleanSupplier useLowHoldPower) {
+        this(collector, leds, triggerPower, useLowHoldPower, () -> false);
+    }
+
     @Override
     public void initialize() {
-        collector.setPower(triggerPower.getAsDouble());
     }
 
     @Override
     public void execute() {
         double power = triggerPower.getAsDouble();
         if (power == 0) {
-            power = useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER;
+            power = useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER
+                    : CoralCollectorConstants.ALGAE_HOLD_POWER;
+        } else if (power < 0) {
+            power *= useLowSpitPower.getAsBoolean() ? 0.75 : 1;
         }
         collector.setPower(power * CoralCollectorConstants.CORAL_ROLLER_SPEED);
 
@@ -53,9 +63,11 @@ public class CollectCoral extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        collector.setPower(useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER);
+        collector.setPower(useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER
+                : CoralCollectorConstants.ALGAE_HOLD_POWER);
         if (!interrupted) {
-            leds.strip.enableState(LEDStates.COLLECTED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
+            leds.strip.enableState(LEDStates.COLLECTED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME))
+                    .schedule();
         }
     }
 

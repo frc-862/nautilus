@@ -108,6 +108,9 @@ public class PoseBasedAutoAlign extends Command {
         this.camera = camera;
         this.leds = leds;
         
+        tagID = 0;
+        customTagSet = true;
+        
         addRequirements(drivetrain);
     }
 
@@ -155,8 +158,8 @@ public class PoseBasedAutoAlign extends Command {
         double kS = 0.01;
         // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
-        double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
-        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
+        double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(yPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
+        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
         drivetrain.setControl(DriveRequests.getAutoAlign(xVeloc, yVeloc, rotationVeloc));

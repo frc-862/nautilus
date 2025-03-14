@@ -144,7 +144,7 @@ public class RobotContainer extends LightningContainer {
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
                         CoralCollectorConstants.COLLECTOR_DEADBAND),
-                rod::isCoralMode));
+                rod::isCoralMode, () -> rod.getState() == RodStates.L1 || rod.getState() == RodStates.L2 || rod.getState() == RodStates.L3));
 
         // COPILOT CLIMB
         climber.setDefaultCommand(new RunCommand(
@@ -354,7 +354,7 @@ public class RobotContainer extends LightningContainer {
 
                         
         autoChooser = AutoBuilder.buildAutoChooser();
-        // autoChooser.addOption("LEAVE", drivetrain.setControl(DriveRequests.getRobotCentric(0, 1, 0)));
+        autoChooser.addOption("LEAVE", drivetrain.leaveAuto());
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
     }
 
@@ -362,11 +362,6 @@ public class RobotContainer extends LightningContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
-
-//     public Command deadReconDrive() {
-//         return new StartEndCommand(drivetrain.applyRequest(DriveRequests.getDrive(() -> 0.5, () -> 0, () -> 0)), 
-//         drivetrain.applyRequest(DriveRequests.getDrive(() -> 0, () -> 0, () -> 0)), drivetrain);
-//     }
 
     public static Command hapticDriverCommand() {
         if (!DriverStation.isAutonomous()) {

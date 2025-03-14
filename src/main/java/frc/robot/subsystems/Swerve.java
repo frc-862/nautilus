@@ -45,9 +45,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.EncoderConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.VisionConstants;
@@ -344,6 +346,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             }
         }
         return 0;
+    }
+
+    public Command leaveAuto() {
+        return (applyRequest((DriveRequests.getRobotCentric(() -> 0d, () -> -0.5, () -> 0d))).withDeadline(new WaitCommand(3))).andThen(applyRequest(DriveRequests.getBrake()));
     }
 
     // SYSID

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3993384919080594,
-        "y": 2.2295272807732633
+        "x": 3.0143421969496034,
+        "y": 2.1675626188129304
       },
       "isLocked": false,
       "linkedName": "RightSRC"
@@ -20,15 +20,20 @@
         "y": 2.742289131955165
       },
       "prevControl": {
-        "x": 2.5251102667262613,
-        "y": 2.210177776955079
+        "x": 3.0011042025600014,
+        "y": 2.6435497076566716
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Reef2Right"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5307345137987517,
+      "rotationDegrees": -119.99999999999999
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",

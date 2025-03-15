@@ -322,12 +322,12 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
         mapleSimSwerveDrivetrain = new MapleSimSwerveDrivetrain(
             MapleSimConstants.SIM_PERIOD,
-            Pounds.of(115),
-            Meters.of(0.9),
-            Meters.of(0.9),
+            MapleSimConstants.ROBOT_MASS,
+            MapleSimConstants.ROBOT_WIDTH,
+            MapleSimConstants.ROBOT_WIDTH,
             DCMotor.getKrakenX60(1),
             DCMotor.getKrakenX60(1),
-            1.2,
+            MapleSimConstants.WHEEL_COF,
             getModuleLocations(),
             getPigeon2(),
             getModules(),

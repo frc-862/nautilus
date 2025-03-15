@@ -55,13 +55,23 @@
       "name": "RodStow",
       "waypointRelativePos": 0.14090597701385352,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodStow"
+        }
+      }
     },
     {
       "name": "RodL4",
       "waypointRelativePos": 0.8581601712881433,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodL4"
+        }
+      }
     }
   ],
   "globalConstraints": {

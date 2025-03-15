@@ -146,7 +146,7 @@ public class PoseBasedAutoAlign extends Command {
 
         yPID.setTolerance(tolerance);
 
-        rPID.setTolerance(2.5);
+        rPID.setTolerance(1.5);
         rPID.enableContinuousInput(0, 360);
     }
 

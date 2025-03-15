@@ -386,7 +386,7 @@ public class Constants {
         public static final boolean INVERTED = true;
         public static final double COLLECTED_CURRENT = 40d;
         public static final double CORAL_HOLD_POWER = 0.07d;
-        public static final double ALGAE_HOLD_POWER = 0.15d;
+        public static final double ALGAE_HOLD_POWER = 0.2d;
     }
 
     public class DrivetrainConstants {
@@ -1194,15 +1194,15 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double THREE_DEE_xP = 0.65d;
+        public static final double THREE_DEE_xP = 0.8d;
         public static final double THREE_DEE_xI = 0;
-        public static final double THREE_DEE_xD = 0;
+        public static final double THREE_DEE_xD = 0.035;
 
-        public static final double THREE_DEE_yP = 0.65d;
+        public static final double THREE_DEE_yP = 0.8d;
         public static final double THREE_DEE_yI = 0;
-        public static final double THREE_DEE_yD = 0;
+        public static final double THREE_DEE_yD = 0.035;
 
-        public static final double THREE_DEE_rP = 0.025; // 0.02
+        public static final double THREE_DEE_rP = 0.03;// 0.025
         public static final double THREE_DEE_rI = 0;
         public static final double THREE_DEE_rD = 0;
 

@@ -35,7 +35,7 @@ public class AutonAutoAlign extends Command {
     private LEDs leds;
     private FishingRod rod;
 
-    private double tolerance = 0.025;
+    private double tolerance = 0.02;
 
     private PIDController xPID = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI,
             AutoAlignConstants.THREE_DEE_xD);
@@ -55,7 +55,7 @@ public class AutonAutoAlign extends Command {
     private LightningTagID codeID = LightningTagID.One;
 
     private boolean doEle = false;
-    private final double deployVeloc = 0.25;
+    private final double deployVeloc = 0.35;
     private boolean reachedDeployVelOnce = false;
 
     /**
@@ -96,6 +96,7 @@ public class AutonAutoAlign extends Command {
         addRequirements(drivetrain, rod);
     }
 
+
     @Override
     public void initialize() {
         doEle = false;
@@ -132,7 +133,7 @@ public class AutonAutoAlign extends Command {
 
         yPID.setTolerance(tolerance);
 
-        rPID.setTolerance(2.5);
+        rPID.setTolerance(1);
         rPID.enableContinuousInput(0, 360);
     }
 
@@ -140,17 +141,15 @@ public class AutonAutoAlign extends Command {
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        // double kS = 0.025;
-        double kS = 0.01;
-        // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static",
-        // 0d);
+        double kS = 0.005;//0.013;
+        double rKs = 0.018;
 
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
                 + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
         double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY())
                 + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
-                targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
+                targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? rKs : 0));
 
                 
         //if speed goes above threshold, start checking if we go back below threshold
@@ -182,6 +181,10 @@ public class AutonAutoAlign extends Command {
     public void end(boolean interrupted) {
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
+
+            if (rod.getState() != RodStates.L4) {
+                rod.setState(RodStates.L4);
+            }
         }
         if (!DriverStation.isAutonomous() && onTarget()) {
             RobotContainer.hapticDriverCommand().schedule();

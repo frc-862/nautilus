@@ -177,6 +177,8 @@ public class PoseBasedAutoAlign extends Command {
         if (!DriverStation.isAutonomous() && onTarget()) {
             RobotContainer.hapticDriverCommand().schedule();
         }
+
+        drivetrain.setControl(DriveRequests.getBrake().get());
     }
 
     @Override

@@ -56,6 +56,7 @@ public class AutonAutoAlign extends Command {
 
     private boolean doEle = false;
     private final double deployVeloc = 0.25;
+    private boolean reachedDeployVelOnce = false;
 
     /**
      * Used to align to Tag
@@ -98,6 +99,7 @@ public class AutonAutoAlign extends Command {
     @Override
     public void initialize() {
         doEle = false;
+        reachedDeployVelOnce = false;
 
         invokeCancel = false;
         // Get tagID from codeID
@@ -150,11 +152,20 @@ public class AutonAutoAlign extends Command {
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
                 targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
-        if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !doEle) {
-            doEle = true;
-            rod.setState(RodStates.L4);
+                
+        //if speed goes above threshold, start checking if we go back below threshold
+        if (Math.abs(xVeloc) > deployVeloc && Math.abs(yVeloc) > deployVeloc) {
+            reachedDeployVelOnce = true;
         }
 
+        //
+        if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !doEle && reachedDeployVelOnce) {
+            doEle = true;
+            rod.setState(RodStates.L4);
+        } 
+        
+
+        //once we've started moving the elvator, make sure we never go faster than threshold (to be safe)
         if (doEle) {
             xVeloc = MathUtil.clamp(xVeloc, -deployVeloc, deployVeloc);
             yVeloc = MathUtil.clamp(yVeloc, -deployVeloc, deployVeloc);

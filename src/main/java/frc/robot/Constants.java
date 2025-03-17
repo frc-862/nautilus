@@ -86,8 +86,8 @@ public class Constants {
     // yeah its a double inline ternary operator fight me
     // if(isTriton); else if(isSim); else, its nautilus
     public static final RobotIdentifiers ROBOT_IDENTIFIER = Paths.get(TRITON_IDENTIFIER).toFile().exists()
-            ? RobotIdentifiers.TRITON
-            : Robot.isSimulation() ? RobotIdentifiers.SIM : RobotIdentifiers.NAUTILUS;
+        ? RobotIdentifiers.TRITON
+        : Robot.isSimulation() ? RobotIdentifiers.SIM : RobotIdentifiers.NAUTILUS;
 
     public static class EncoderConstants {
         // Nautilus values
@@ -107,13 +107,13 @@ public class Constants {
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
-                : nautilusKFrontLeftEncoderOffset.in(Rotations);
+            : nautilusKFrontLeftEncoderOffset.in(Rotations);
         public static final double frontRightOffset = IS_TRITON ? tritonKFrontRightEncoderOffset.in(Rotations)
-                : nautilusKFrontRightEncoderOffset.in(Rotations);
+            : nautilusKFrontRightEncoderOffset.in(Rotations);
         public static final double backLeftOffset = IS_TRITON ? tritonKBackLeftEncoderOffset.in(Rotations)
-                : nautilusKBackLeftEncoderOffset.in(Rotations);
+            : nautilusKBackLeftEncoderOffset.in(Rotations);
         public static final double backRightOffset = IS_TRITON ? tritonKBackRightEncoderOffset.in(Rotations)
-                : nautilusKBackRightEncoderOffset.in(Rotations);
+            : nautilusKBackRightEncoderOffset.in(Rotations);
 
         public static final double wristOffset = IS_TRITON ? tritonWristOffset : nautilusWristOffset;
     }
@@ -166,28 +166,34 @@ public class Constants {
     // TODO: maybe put these in their own subsystem constants?
     public static class RobotMotors {
         public static final ThunderBird wristMotor = new ThunderBird(RobotMap.WRIST, RobotMap.CANIVORE_CAN_NAME,
-                WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
+            WristConstants.INVERTED, WristConstants.STATOR_CURRENT_LIMIT, WristConstants.BRAKE_MODE);
         public static final ThunderBird leftElevatorMotor = new ThunderBird(RobotMap.L_ELEVATOR,
-                RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
-                ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
+            RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.L_INVERTED,
+            ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
         public static final ThunderBird rightElevatorMotor = new ThunderBird(RobotMap.R_ELEVATOR,
-                RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
-                ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
+            RobotMap.CANIVORE_CAN_NAME, ElevatorConstants.R_INVERTED,
+            ElevatorConstants.STATOR_CURRENT_LIMIT, ElevatorConstants.BRAKE_MODE);
         public static final ThunderBird coralCollectorMotor = new ThunderBird(RobotMap.CORAL_COLLECTOR,
-                RobotMap.CANIVORE_CAN_NAME, CoralCollectorConstants.INVERTED,
-                CoralCollectorConstants.STATOR_CURRENT_LIMIT, CoralCollectorConstants.BRAKE_MODE);
+            RobotMap.CANIVORE_CAN_NAME, CoralCollectorConstants.INVERTED,
+            CoralCollectorConstants.STATOR_CURRENT_LIMIT, CoralCollectorConstants.BRAKE_MODE);
         public static final ThunderBird algaeCollectorPivotMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_PIVOT,
-                RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.PIVOT_INVERTED,
-                AlgaeCollectorConstants.PIVOT_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.PIVOT_BRAKE_MODE);
+            RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.PIVOT_INVERTED,
+            AlgaeCollectorConstants.PIVOT_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.PIVOT_BRAKE_MODE);
         public static final ThunderBird algaeCollectorRollerMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_ROLLER,
-                RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.ROLLER_INVERTED,
-                AlgaeCollectorConstants.ROLLER_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.ROLLER_BRAKE_MODE);
+            RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.ROLLER_INVERTED,
+            AlgaeCollectorConstants.ROLLER_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.ROLLER_BRAKE_MODE);
         public static final ThunderBird climberMotor = new ThunderBird(RobotMap.CLIMBER, RobotMap.CANIVORE_CAN_NAME,
-                ClimberConstants.INVERTED,
-                ClimberConstants.STATOR_CURRENT_LIMIT, ClimberConstants.BREAK_MODE);
+            ClimberConstants.INVERTED,
+            ClimberConstants.STATOR_CURRENT_LIMIT, ClimberConstants.BREAK_MODE);
     }
 
     public static class FishingRodConstants {
+
+        //keep in mind that this is when the other mechanism will START moving, not necessarily the angle it will intersect the reef at
+        public static final double L4_SAFE_ZONE = 44d; //elevator height to move wrist
+        public static final double STOW_SAFE_ZONE = 73d; //wrist angle to move elevator
+
+
         public enum RodStates {
             STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
             BARGE(true), PROCESSOR(false), DEFAULT(false);
@@ -204,12 +210,17 @@ public class Constants {
         }
 
         public enum RodTransitionStates {
+
+
             DEFAULT, // default travel state
             WRIST_DOWN_THEN_ELE, // any state to L4
             WRIST_UP_THEN_ELE, // L4 to any state
             WITH_WRIST_SLOW,
             TRITON, // specific state to deal with triton's loose belt,
-            TRANSITIONING
+            TRANSITIONING,
+
+            L4_SAFE_ZONE, // transition to L4, moves wrist earlier than onTarget()
+            STOW_SAFE_ZONE // transition to stow, moves elevator earlier than onTarget()
         }
 
         public static final HashMap<RodStates, Double> WRIST_MAP = new HashMap<RodStates, Double>() {
@@ -357,6 +368,7 @@ public class Constants {
         public static final Angle MAX_ANGLE = Degrees.of(85);
 
         public static final double TOLERANCE = 5d;
+
 
         // sim stuff
         public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.086); // 5lb, 2.5in rad, 9in height

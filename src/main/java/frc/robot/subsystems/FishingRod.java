@@ -84,6 +84,24 @@ public class FishingRod extends SubsystemBase {
                         transitionState = RodTransitionStates.DEFAULT; // finalize transition
                     }
                     break;
+                case L4_SAFE_ZONE: // transition to L4, moves wrist earlier than onTarget()
+                    elevator.setState(targetState);
+                    if (elevator.getPosition() > FishingRodConstants.L4_SAFE_ZONE) {
+                        wrist.setState(targetState);
+                        if(wrist.isOnTarget()) {
+                            transitionState = RodTransitionStates.DEFAULT; // finalize transition
+                        }
+                    }
+                    break;
+                case STOW_SAFE_ZONE:// wrist up, move ele, move wrist
+                    wrist.setState(RodStates.STOW);
+                    if (wrist.getAngle() > FishingRodConstants.STOW_SAFE_ZONE) {
+                        elevator.setState(targetState);
+                        if(elevator.isOnTarget()) {
+                            transitionState = RodTransitionStates.DEFAULT; // finalize transition
+                        }
+                    }
+                    break;
                 case DEFAULT, TRITON, WITH_WRIST_SLOW: // all states should end here
                     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState), transitionState == RodTransitionStates.WITH_WRIST_SLOW);
                     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
@@ -132,7 +150,15 @@ public class FishingRod extends SubsystemBase {
         wristBias = 0;
     }
 
+    
+    public void setState(RodStates state, RodTransitionStates transition) {
+        targetState = state;
+        transitionState = transition;
 
+        // zero biases to ensure no silliness happens cross-state
+        elevatorBias = 0;
+        wristBias = 0;
+    }
 
     
     /**

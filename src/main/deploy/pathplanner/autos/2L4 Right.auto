@@ -17,7 +17,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 6.0
                 }
               }
             ]
@@ -117,12 +117,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "RodStow"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "R2-RSource"
@@ -161,6 +155,31 @@
                 "type": "named",
                 "data": {
                   "name": "RodSource"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RSource-R2L"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToTwoRight"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
                 }
               }
             ]

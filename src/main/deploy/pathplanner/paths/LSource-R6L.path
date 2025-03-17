@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.307184078077429,
-        "y": 6.045450189731106
+        "x": 2.2938505373425646,
+        "y": 5.7411664948879135
       },
       "isLocked": false,
       "linkedName": "LeftSource"
@@ -20,18 +20,46 @@
         "y": 5.199676116864655
       },
       "prevControl": {
-        "x": 2.921775094999053,
-        "y": 6.215525067319365
+        "x": 2.9718017242273174,
+        "y": 5.949858333135191
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Reef6Left"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.752384154195383,
+      "rotationDegrees": 119.99999999999999
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Stow",
+      "waypointRelativePos": 0.18013081576324286,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodStow"
+        }
+      }
+    },
+    {
+      "name": "RodL4",
+      "waypointRelativePos": 0.87,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodL4"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

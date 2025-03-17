@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3050219969608543,
-        "y": 5.94337821943637
+        "x": 2.815352823999035,
+        "y": 5.925282510046591
       },
       "isLocked": false,
       "linkedName": "Reef6Left"
     },
     {
       "anchor": {
-        "x": 2.4405532581180167,
-        "y": 6.386785581791201
+        "x": 1.8672271369079727,
+        "y": 6.525117128410324
       },
       "prevControl": {
-        "x": 3.1306371209633483,
-        "y": 5.787977809966947
+        "x": 2.1743034394253433,
+        "y": 6.1700363276657315
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.1761632898351649,
+      "maxWaypointRelativePos": 0.2623161921904989,
       "constraints": {
         "maxVelocity": 3.0,
         "maxAcceleration": 1.0,

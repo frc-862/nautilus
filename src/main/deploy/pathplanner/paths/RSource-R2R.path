@@ -8,29 +8,29 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4545029485914993,
-        "y": 1.794608416248873
+        "x": 3.0143421969496034,
+        "y": 2.1675626188129304
       },
       "isLocked": false,
       "linkedName": "RightSRC"
     },
     {
       "anchor": {
-        "x": 3.841998734287709,
-        "y": 2.57242574851606
+        "x": 3.560308720999156,
+        "y": 2.742289131955165
       },
       "prevControl": {
-        "x": 3.1779508261959304,
-        "y": 2.1967162197924273
+        "x": 3.0011042025600014,
+        "y": 2.6435497076566716
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef1Left"
+      "linkedName": "Reef2Right"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6511962748838769,
+      "waypointRelativePos": 0.5307345137987517,
       "rotationDegrees": -119.99999999999999
     }
   ],

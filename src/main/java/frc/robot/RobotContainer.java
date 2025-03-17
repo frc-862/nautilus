@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -50,6 +51,7 @@ import frc.robot.commands.ElevatorSyncStow;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SysIdSequence;
+import frc.robot.commands.auton.AutonAutoAlign;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
@@ -143,7 +145,7 @@ public class RobotContainer extends LightningContainer {
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
                         CoralCollectorConstants.COLLECTOR_DEADBAND),
-                rod::isCoralMode));
+                rod::isCoralMode, () -> rod.getState() == RodStates.L1 || rod.getState() == RodStates.L2 || rod.getState() == RodStates.L3));
 
         // COPILOT CLIMB
         climber.setDefaultCommand(new RunCommand(
@@ -320,6 +322,10 @@ public class RobotContainer extends LightningContainer {
             }
         }
 
+        // AUTON AUTO ALIGN TEST
+        NamedCommands.registerCommand("AUTONAlignToThreeLeft", new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Three).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        NamedCommands.registerCommand("AUTONAlignToFiveLeft", new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Five).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1));
         
@@ -353,6 +359,7 @@ public class RobotContainer extends LightningContainer {
 
                         
         autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser.addOption("LEAVE", drivetrain.leaveAuto());
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
     }
 
@@ -360,11 +367,6 @@ public class RobotContainer extends LightningContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
-
-//     public Command deadReconDrive() {
-//         return new StartEndCommand(drivetrain.applyRequest(DriveRequests.getDrive(() -> 0.5, () -> 0, () -> 0)), 
-//         drivetrain.applyRequest(DriveRequests.getDrive(() -> 0, () -> 0, () -> 0)), drivetrain);
-//     }
 
     public static Command hapticDriverCommand() {
         if (!DriverStation.isAutonomous()) {

@@ -36,7 +36,7 @@ public class ElevatorSyncStow extends Command {
     public void end(boolean interrupted) {
         // sync the encoder to zero and go back to stow after
 
-        if(!interrupted) {
+        if (!interrupted) {
             elevator.setEncoder(0d);
             elevator.setState(RodStates.STOW);
         }

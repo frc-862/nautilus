@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5262354333973462,
-        "y": 0.8709418099685752
+        "x": 1.8059436648917597,
+        "y": 6.6315462421438545
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4545029485914993,
-        "y": 1.794608416248873
+        "x": 3.192668148453642,
+        "y": 5.876908750501128
       },
       "isLocked": false,
-      "linkedName": "RightSRC"
+      "linkedName": "LeftSource"
     },
     {
       "anchor": {
-        "x": 3.841998734287709,
-        "y": 2.57242574851606
+        "x": 3.8989250378173925,
+        "y": 5.373821651228319
       },
       "prevControl": {
-        "x": 3.1779508261959304,
-        "y": 2.1967162197924273
+        "x": 2.660556793453555,
+        "y": 6.321947338319381
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef1Left"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6511962748838769,
-      "rotationDegrees": -119.99999999999999
+      "waypointRelativePos": 0.6945625088745214,
+      "rotationDegrees": 119.99999999999999
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.7630794986263736,
+      "minWaypointRelativePos": 0.7498249023613134,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 2.0,
@@ -53,7 +53,7 @@
   "eventMarkers": [
     {
       "name": "RodStow",
-      "waypointRelativePos": 0.11267170329670316,
+      "waypointRelativePos": 0.14090597701385352,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -64,7 +64,7 @@
     },
     {
       "name": "RodL4",
-      "waypointRelativePos": 0.8679515796703302,
+      "waypointRelativePos": 0.8581601712881433,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -83,14 +83,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -119.99999999999999
+    "velocity": 0,
+    "rotation": 119.99999999999999
   },
   "reversed": false,
-  "folder": "RSource-Reef",
+  "folder": "LSource-Reef",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 54.0
+    "rotation": -54.0
   },
   "useDefaultConstraints": true
 }

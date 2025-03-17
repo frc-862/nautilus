@@ -98,7 +98,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 8.0
+                  "waitTime": 5.0
                 }
               }
             ]
@@ -163,7 +163,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LSource-R6L"
+            "pathName": "LSource-R6R"
           }
         },
         {
@@ -179,10 +179,28 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 8.0
+                  "waitTime": 5.0
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitOnTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RodStow"
           }
         }
       ]

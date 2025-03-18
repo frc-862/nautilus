@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FishingRodConstants.RodStates;
+import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.subsystems.FishingRod;
 
 public class SetRodState extends Command {
@@ -29,7 +30,17 @@ public class SetRodState extends Command {
 
     @Override
     public void initialize() {
-        rod.setState(state);
+        switch (state) {
+            case STOW:
+                rod.setState(state, RodTransitionStates.DEFAULT);
+                break;
+            case L4:
+                rod.setState(state, RodTransitionStates.L4_SAFE_ZONE);
+                break;
+            default:
+                rod.setState(state);
+                break;
+        }
     }
 
     @Override

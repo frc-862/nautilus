@@ -73,7 +73,7 @@ public class FishingRod extends SubsystemBase {
                     wrist.setState(RodStates.STOW);
                     if (wrist.isOnTarget()) {
                         elevator.setState(targetState);
-                        if(elevator.isOnTarget()) {
+                        if (elevator.isOnTarget()) {
                             transitionState = RodTransitionStates.DEFAULT; // finalize transition
                         }
                     }
@@ -84,26 +84,28 @@ public class FishingRod extends SubsystemBase {
                         transitionState = RodTransitionStates.DEFAULT; // finalize transition
                     }
                     break;
+
                 case L4_SAFE_ZONE: // transition to L4, moves wrist earlier than onTarget()
                     elevator.setState(targetState);
-                    if (elevator.getPosition() > FishingRodConstants.L4_SAFE_ZONE) {
+                    if (elevator.getPosition() > FishingRodConstants.L4_SAFEZONE_ELE) {
                         wrist.setState(targetState);
-                        if(wrist.isOnTarget()) {
+                        if (wrist.isOnTarget()) {
                             transitionState = RodTransitionStates.DEFAULT; // finalize transition
                         }
                     }
                     break;
                 case STOW_SAFE_ZONE:// wrist up, move ele, move wrist
-                    wrist.setState(RodStates.STOW);
-                    if (wrist.getAngle() > FishingRodConstants.STOW_SAFE_ZONE) {
+                    wrist.setState(targetState);
+                    if (wrist.getAngle() > FishingRodConstants.STOW_SAFEZONE_ANGLE) {
                         elevator.setState(targetState);
-                        if(elevator.isOnTarget()) {
+                        if (elevator.isOnTarget()) {
                             transitionState = RodTransitionStates.DEFAULT; // finalize transition
                         }
                     }
                     break;
                 case DEFAULT, TRITON, WITH_WRIST_SLOW: // all states should end here
-                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState), transitionState == RodTransitionStates.WITH_WRIST_SLOW);
+                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState),
+                            transitionState == RodTransitionStates.WITH_WRIST_SLOW);
                     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
                     if (wrist.isOnTarget() && elevator.isOnTarget()) {
                         currState = targetState;
@@ -137,7 +139,8 @@ public class FishingRod extends SubsystemBase {
     public void setState(RodStates state) {
         targetState = state;
 
-        if (targetState == RodStates.BARGE || targetState == RodStates.PROCESSOR) { // slow wrist so we do not flick the algae
+        if (targetState == RodStates.BARGE || targetState == RodStates.PROCESSOR) { // slow wrist so we do not flick the
+                                                                                    // algae
             transitionState = RodTransitionStates.WITH_WRIST_SLOW;
         } else if (currState.isScoring() || targetState.isScoring()) { // any scoring state wrist up first to not skewer
             transitionState = RodTransitionStates.WRIST_UP_THEN_ELE;
@@ -150,7 +153,6 @@ public class FishingRod extends SubsystemBase {
         wristBias = 0;
     }
 
-    
     public void setState(RodStates state, RodTransitionStates transition) {
         targetState = state;
         transitionState = transition;
@@ -160,9 +162,9 @@ public class FishingRod extends SubsystemBase {
         wristBias = 0;
     }
 
-    
     /**
      * biases will only work if no other position is actively being set.
+     * 
      * @param bias the amount to add to the wrist position
      * @return a command that will add the bias to the wrist position
      */
@@ -178,6 +180,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * biases will only work if no other position is actively being set.
+     * 
      * @param bias the amount to add to the elevastor position
      * @return a command that will add the bias to the elevator position
      */
@@ -193,6 +196,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * Gets the state of the fishing rod
+     * 
      * @return the current state of the fishing rod
      */
     @Logged(importance = Importance.CRITICAL)
@@ -202,6 +206,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * gets the target state of the fishing rod
+     * 
      * @return the target state of the fishing rod
      */
     @Logged(importance = Importance.DEBUG)
@@ -211,6 +216,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * Checks if the whole fishing rod system is on target
+     * 
      * @return true if the wrist and elevator are on target false otherwise
      */
     @Logged(importance = Importance.DEBUG)

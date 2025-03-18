@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FishingRodConstants.RodStates;
@@ -36,7 +37,7 @@ public class ElevatorSyncStow extends Command {
     public void end(boolean interrupted) {
         // sync the encoder to zero and go back to stow after
 
-        if (!interrupted) {
+        if (!interrupted && DriverStation.isEnabled()) {
             elevator.setEncoder(0d);
             elevator.setState(RodStates.STOW);
         }

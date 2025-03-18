@@ -16,6 +16,7 @@ import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
+import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -160,7 +161,7 @@ public class AutonAutoAlign extends Command {
         //
         if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !doEle && reachedDeployVelOnce) {
             doEle = true;
-            rod.setState(RodStates.L4);
+            rod.setState(RodStates.L4, RodTransitionStates.L4_SAFE_ZONE);
         } 
         
 

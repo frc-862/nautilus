@@ -437,4 +437,21 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
                 return new InstantCommand();
         }
     }
+
+    public ChassisSpeeds getFieldVelocity() {
+        var state = getState();
+        return state == null ? new ChassisSpeeds() : state.Speeds; 
+    }
+
+    public void runVelocity(ChassisSpeeds fromFieldRelativeSpeeds) {
+        final var xVeloc = fromFieldRelativeSpeeds.vxMetersPerSecond;
+        final var yVeloc = fromFieldRelativeSpeeds.vyMetersPerSecond;
+        final var rotationVeloc = fromFieldRelativeSpeeds.omegaRadiansPerSecond;
+
+        setControl(DriveRequests.getAutoAlign(xVeloc, yVeloc, rotationVeloc));
+    }
+
+    public void stop() {
+        setControl(DriveRequests.getAutoAlign(0, 0, 0));
+    }
 }

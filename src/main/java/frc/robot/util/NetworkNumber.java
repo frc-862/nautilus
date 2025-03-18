@@ -35,7 +35,7 @@ public class NetworkNumber {
     this.value = defaultValue;
   }
 
-  /** Updates the default value, which is used if no value in NT is found. 
+  /** Updates the default value, which is used if no value in NT is found.
    * @param defaultValue The default value if no value in NT is found.
    */
  public void setDefault(double defaultValue) {
@@ -46,16 +46,16 @@ public class NetworkNumber {
   /**
    * Publishes a new value. Note that the value will not be returned by
    * {@link #get()} until the next cycle.
-   * 
+   *
    * @param value The new value to publish.
    */
   public void set(double value) {
     entry.set(value);
   }
 
-  /** Returns the current value. 
+  /** Returns the current value.
    * @return The current value, or the default value if no value is found in NT.
-  */
+   */
   public double get() {
     return value;
   }

@@ -104,12 +104,12 @@ public class TunableNumber implements DoubleSupplier {
     }
   }
 
-  /** Runs action if any of the tunableNumbers have changed 
-   * * @param id Unique identifier for the caller to avoid conflicts when shared between multiple
+  /** Runs action if any of the tunableNumbers have changed
+   * @param id Unique identifier for the caller to avoid conflicts when shared between multiple
    *    objects. Recommended approach is to pass the result of "hashCode()"
-   * * @param action Callback to run when any of the tunable numbers have changed. Access tunable
+   * @param action Callback to run when any of the tunable numbers have changed. Access tunable
    *    numbers in order inputted in method
-   * * @param tunableNumbers All tunable numbers to check
+   * @param tunableNumbers All tunable numbers to check
   */
   public static void ifChanged(int id, Runnable action, TunableNumber... tunableNumbers) {
     ifChanged(id, values -> action.run(), tunableNumbers);
@@ -118,7 +118,7 @@ public class TunableNumber implements DoubleSupplier {
   /**
    * Returns the current value as a double. This is required to implement the DoubleSupplier
    * interface, which is used by various Java libraries and frameworks that require a double value.
-   * 
+   *
    * @return The current value as a double
    */
   @Override

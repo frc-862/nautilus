@@ -11,8 +11,8 @@ import frc.robot.subsystems.FishingRod;
 
 public class SetRodState extends Command {
 
-    private FishingRod rod;
-    private RodStates state;
+    private final FishingRod rod;
+    private final RodStates state;
 
     /**
      * Creates a new SetRodState.

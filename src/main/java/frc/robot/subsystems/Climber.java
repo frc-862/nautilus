@@ -16,17 +16,15 @@ import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
-import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class Climber extends SubsystemBase {
 
-    private ThunderBird motor;
-    private TalonFXSimState motorSim;
+    private final ThunderBird motor;
+    private final DigitalInput limitSwitch;
 
+    private TalonFXSimState motorSim;
     private ElevatorSim climbSim;
     private DCMotor gearbox;
-
-    private DigitalInput limitSwitch;
 
     public Climber(ThunderBird motor) {
         this.motor = motor;
@@ -39,9 +37,7 @@ public class Climber extends SubsystemBase {
 
             gearbox = DCMotor.getFalcon500(1);
 
-            climbSim = new ElevatorSim(gearbox, ClimberConstants.GEAR_RATIO, ClimberConstants.CARRIAGE_MASS,
-                    ClimberConstants.DRUM_RADIUS,
-                    ClimberConstants.MIN_EXTENSION, ClimberConstants.MAX_EXTENSION, false, 0, 0, 1);
+            climbSim = new ElevatorSim(gearbox, ClimberConstants.GEAR_RATIO, ClimberConstants.CARRIAGE_MASS, ClimberConstants.DRUM_RADIUS, ClimberConstants.MIN_EXTENSION, ClimberConstants.MAX_EXTENSION, false, 0, 0, 1);
         }
     }
 
@@ -50,7 +46,7 @@ public class Climber extends SubsystemBase {
         // LightningShuffleboard.setDouble("Climber", "Position", getPostion());
         // LightningShuffleboard.setBool("Climber", "On Target", getOnTarget());
         // LightningShuffleboard.setDouble("Climber", "targetPosition", targetPostion);
-        LightningShuffleboard.setBool("Climber", "limit switch", getLimitSwitch());
+        // LightningShuffleboard.setBool("Climber", "limit switch", getLimitSwitch());
         // LightningShuffleboard.setDouble("Diagnostic", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
     }
 
@@ -69,18 +65,20 @@ public class Climber extends SubsystemBase {
     
     /**
      * sets the power to the climber motor
+     * 
      * @param power
      */
     public void setPower(double power) {
         if (power < 0 && getLimitSwitch()) {
-            motor.setControl(new DutyCycleOut(0));
-            return;
+            motor.stopMotor();
         } else {
             motor.setControl(new DutyCycleOut(power));
         }
     }
 
     /**
+     * gets the position of the climber motor
+     * 
      * @return position in device rotations
      */
     public double getPostion() {

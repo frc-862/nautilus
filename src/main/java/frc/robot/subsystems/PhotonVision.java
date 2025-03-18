@@ -28,6 +28,11 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
 
 public class PhotonVision extends SubsystemBase {
+    
+    private final Swerve drivetrain;
+
+    private final CameraThread leftThread;
+    private final CameraThread rightThread;
 
     private VisionSystemSim visionSim;
 
@@ -36,11 +41,6 @@ public class PhotonVision extends SubsystemBase {
 
     private SimCameraProperties cameraProp;
     private VisionTargetSim visionTarget;
-
-    private Swerve drivetrain;
-
-    private CameraThread leftThread;
-    private CameraThread rightThread;
 
     public PhotonVision(Swerve drivetrain) {
         this.drivetrain = drivetrain;
@@ -107,21 +107,17 @@ public class PhotonVision extends SubsystemBase {
 
     /**
      * check if the camera has a target using networktables
+     * 
      * @param camera - the camera to check
      * @return boolean - if the camera has a target
      */
     public boolean hasTarget(Camera camera) {
         if(isCameraInitialized(camera)) {
-            switch(camera) {
-                case LEFT: 
-                    return leftThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
-                    
-                case RIGHT:
-                    return rightThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
-                
-                default:
-                    return false;
-            }
+            return switch (camera) {
+                case LEFT -> leftThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
+                case RIGHT -> rightThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
+                default -> false;
+            };
         } else {
             return false;
         }
@@ -129,6 +125,7 @@ public class PhotonVision extends SubsystemBase {
 
      /**
      * check if the vision has a target using networktables
+     * 
      * @return boolean - if the camera has a target
      */
     public boolean hasTarget() {
@@ -137,22 +134,18 @@ public class PhotonVision extends SubsystemBase {
 
     /**
      * get the target's Y position in pixels
+     * 
      * @param camera - the camera to check
      * @param offset - the offset to add to the value
      * @return double - the target's Y position in pixels
      */
     public double getTY(VisionConstants.Camera camera, double offset) {
         if(isCameraInitialized(camera)) {
-            switch(camera) {
-                case LEFT: 
-                    return leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
-                    
-                case RIGHT:
-                    return rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
-                
-                default:
-                    return 0;
-            }
+            return switch (camera) {
+                case LEFT -> leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
+                case RIGHT -> rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
+                default -> 0;
+            };
         } else {
             return 0;
         }
@@ -166,16 +159,11 @@ public class PhotonVision extends SubsystemBase {
      */
     public double getTX(Camera camera, double offset) {
         if(isCameraInitialized(camera)) {
-            switch(camera) {
-                case LEFT: 
-                    return leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
-                    
-                case RIGHT:
-                    return rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
-                
-                default:
-                    return 0;
-            }
+            return switch (camera) {
+                case LEFT -> leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
+                case RIGHT -> rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
+                default -> 0;
+            };
         } else {
             return 0;
         }
@@ -192,15 +180,10 @@ public class PhotonVision extends SubsystemBase {
             if(!hasTarget(camera)){
                 throw new Exception("No target found");
             } else {
-                switch(camera){
-                    case LEFT:
-                        return leftThread.getCameraObject().getLatestResult().getBestTarget().getFiducialId();
-
-                    case RIGHT:
-                        return rightThread.getCameraObject().getLatestResult().getBestTarget().getFiducialId();
-
-                    default:
-                        throw new IllegalArgumentException("Invalid camera");
+                switch (camera) {
+                    case LEFT: return leftThread.getCameraObject().getLatestResult().getBestTarget().getFiducialId();
+                    case RIGHT: return rightThread.getCameraObject().getLatestResult().getBestTarget().getFiducialId();
+                    default: throw new IllegalArgumentException("Invalid camera");
                 }
             }
         } catch (Exception e) {
@@ -219,14 +202,10 @@ public class PhotonVision extends SubsystemBase {
         if(!hasTarget(camera)){
             throw new Exception("No target found");
         } else {
-            switch(camera){
-                case LEFT:
-                    return leftThread.getCameraObject().getLatestResult().getBestTarget().bestCameraToTarget;
-                case RIGHT:
-                    return rightThread.getCameraObject().getLatestResult().getBestTarget().bestCameraToTarget;
-
-                default:
-                    throw new IllegalArgumentException("Invalid camera");
+            switch (camera) {
+                case LEFT: return leftThread.getCameraObject().getLatestResult().getBestTarget().bestCameraToTarget;
+                case RIGHT: return rightThread.getCameraObject().getLatestResult().getBestTarget().bestCameraToTarget;
+                default: throw new IllegalArgumentException("Invalid camera");
             }
         }
     }
@@ -257,37 +236,37 @@ public class PhotonVision extends SubsystemBase {
                 } else {
                     drivetrain.addVisionMeasurement(leftUpdates.k, leftUpdates.v);
                 }
-            break;
+                break;
             case RIGHT:
                 if(leftThread.hasTarget() && leftUpdates.v < rightUpdates.v) {
                     drivetrain.addVisionMeasurement(leftUpdates.k, rightUpdates.v);
                 } else {
                     drivetrain.addVisionMeasurement(rightUpdates.k, rightUpdates.v);
                 }
-            break;
+                break;
         }
     }
 
-
     private class CameraThread extends Thread {
-        private EstimatedRobotPose pose = new EstimatedRobotPose(new Pose3d(), 0, List.of(), PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR);
-        private PhotonPoseEstimator poseEstimator;
+        private final PhotonPoseEstimator poseEstimator;
+        private final AprilTagFieldLayout tags;
+
+        private final Camera camName;
         private PhotonCamera camera;
-        private Double averageDistance = 0d;
-        private Camera camName;
-        private Tuple<EstimatedRobotPose, Double> updates;
-        private boolean hasTarget = false;
-        private AprilTagFieldLayout tags;
 
         public boolean cameraInitialized = false;
+        private boolean hasTarget = false;
+        
+        private Double averageDistance = 0d;
+        private EstimatedRobotPose pose = new EstimatedRobotPose(new Pose3d(), 0, List.of(), PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR);
+        private Tuple<EstimatedRobotPose, Double> updates;
 
         CameraThread(Camera camName) {
             this.camName = camName;
 
             initializeCamera();
 
-            poseEstimator = new PhotonPoseEstimator(VisionConstants.tagLayout,
-                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camName == Camera.LEFT ? VisionConstants.robotLeftToCamera : VisionConstants.robotRightToCamera);
+            poseEstimator = new PhotonPoseEstimator(VisionConstants.tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camName == Camera.LEFT ? VisionConstants.robotLeftToCamera : VisionConstants.robotRightToCamera);
             poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
             tags = poseEstimator.getFieldTags();
@@ -309,7 +288,6 @@ public class PhotonVision extends SubsystemBase {
             // }
 
             poseEstimator.setFieldTags(tags);
-
         }
 
         @Override
@@ -319,6 +297,7 @@ public class PhotonVision extends SubsystemBase {
             } catch (InterruptedException e) {
                 DataLogManager.log(camName.toString() + " sleep inital failed");
             }
+
             while (true) {
                 if (!cameraInitialized) {
                     initializeCamera();
@@ -337,11 +316,11 @@ public class PhotonVision extends SubsystemBase {
                                 hasTarget = true;
 
                                 if(!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
-                                    poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose,
-                                            () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed"));
+                                    poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose, () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed"));
                                 } else {
                                     DataLogManager.log("[PhotonVision] WARNING: " + camName.toString() + " pose ambiguity is high");
                                 }
+                                
                                 // grabs the distance to the best target (for the latest set of result)
                                 totalDistances += result.getBestTarget().getBestCameraToTarget().getTranslation().getNorm();
 
@@ -358,7 +337,7 @@ public class PhotonVision extends SubsystemBase {
 
                         // averages distance over all results
                         averageDistance = totalDistances / numberOfResults;
-                        updates = new Tuple<EstimatedRobotPose, Double>(pose, averageDistance);
+                        updates = new Tuple<>(pose, averageDistance);
                         this.hasTarget = hasTarget;
                         if (hasTarget) {
                             updateVision(camName);
@@ -404,10 +383,18 @@ public class PhotonVision extends SubsystemBase {
             return hasTarget;
         }
 
+        /**
+         * Returns the camera object
+         *
+         * @return PhotonCamera - the camera object
+         */
         public PhotonCamera getCameraObject() {
             return camera;
         }
 
+        /**
+         * Initializes the camera
+         */
         private void initializeCamera() {
             try {
                 camera = new PhotonCamera(camName == Camera.LEFT ? VisionConstants.leftCamName : VisionConstants.rightCamName);
@@ -417,8 +404,6 @@ public class PhotonVision extends SubsystemBase {
             }
         }
     }
-
-
 
     //keeping these here to prevent build errors, don't mind em for now
     //TODO: remove these when the time comes

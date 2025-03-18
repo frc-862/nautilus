@@ -38,12 +38,12 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class Wrist extends SubsystemBase {
 
-    private ThunderBird motor;
-    private CANcoder encoder;
-
-    private double targetPosition = 0;
+    private final ThunderBird motor;
+    private final CANcoder encoder;
 
     public final PositionVoltage positionPID = new PositionVoltage(0);
+    
+    private double targetPosition = 0;
 
     // Sim stuff
     private DCMotor gearbox;
@@ -54,38 +54,39 @@ public class Wrist extends SubsystemBase {
     public Wrist(ThunderBird motor) {
         this.motor = motor;
 
-        TalonFXConfiguration motorConfig = motor.getConfig();
-        CANcoderConfiguration angleConfig = new CANcoderConfiguration();
-
         encoder = new CANcoder(RobotMap.WRIST_ENCODER, RobotMap.CANIVORE_CAN_NAME);
-        angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5d;
-        angleConfig.MagnetSensor.MagnetOffset = Robot.isReal() ? EncoderConstants.wristOffset : 0d;
-        encoder.getConfigurator().apply(angleConfig);
 
-        motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        motorConfig.Slot0.kP = WristConstants.MOTORS_KP;
-        motorConfig.Slot0.kI = WristConstants.MOTORS_KI;
-        motorConfig.Slot0.kD = WristConstants.MOTORS_KD;
-        motorConfig.Slot0.kS = WristConstants.MOTORS_KF;
-        motorConfig.Slot0.kV = WristConstants.MOTORS_KV;
-        motorConfig.Slot0.kA = WristConstants.MOTORS_KA;
-        motorConfig.Slot0.kG = WristConstants.MOTORS_KG;
+        TalonFXConfiguration motorConfig = motor.getConfig();
+            motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+            motorConfig.Slot0.kP = WristConstants.MOTORS_KP;
+            motorConfig.Slot0.kI = WristConstants.MOTORS_KI;
+            motorConfig.Slot0.kD = WristConstants.MOTORS_KD;
+            motorConfig.Slot0.kS = WristConstants.MOTORS_KF;
+            motorConfig.Slot0.kV = WristConstants.MOTORS_KV;
+            motorConfig.Slot0.kA = WristConstants.MOTORS_KA;
+            motorConfig.Slot0.kG = WristConstants.MOTORS_KG;
 
-        motorConfig.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
-        motorConfig.Slot1.kP = WristConstants.MOTORS_KP_SLOW;
-        motorConfig.Slot1.kI = WristConstants.MOTORS_KI;
-        motorConfig.Slot1.kD = WristConstants.MOTORS_KD;
-        motorConfig.Slot1.kS = WristConstants.MOTORS_KF;
-        motorConfig.Slot1.kV = WristConstants.MOTORS_KV;
-        motorConfig.Slot1.kA = WristConstants.MOTORS_KA;
-        motorConfig.Slot1.kG = WristConstants.MOTORS_KG;
+            motorConfig.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
+            motorConfig.Slot1.kP = WristConstants.MOTORS_KP_SLOW;
+            motorConfig.Slot1.kI = WristConstants.MOTORS_KI;
+            motorConfig.Slot1.kD = WristConstants.MOTORS_KD;
+            motorConfig.Slot1.kS = WristConstants.MOTORS_KF;
+            motorConfig.Slot1.kV = WristConstants.MOTORS_KV;
+            motorConfig.Slot1.kA = WristConstants.MOTORS_KA;
+            motorConfig.Slot1.kG = WristConstants.MOTORS_KG;
 
-        motorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
-        motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        motorConfig.Feedback.SensorToMechanismRatio = WristConstants.ENCODER_TO_MECHANISM_RATIO;
-        motorConfig.Feedback.RotorToSensorRatio = WristConstants.ROTOR_TO_ENCODER_RATIO;
+            motorConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
+            motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+            motorConfig.Feedback.SensorToMechanismRatio = WristConstants.ENCODER_TO_MECHANISM_RATIO;
+            motorConfig.Feedback.RotorToSensorRatio = WristConstants.ROTOR_TO_ENCODER_RATIO;
 
         motor.applyConfig(motorConfig);
+
+        CANcoderConfiguration angleConfig = new CANcoderConfiguration();
+            angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5d;
+            angleConfig.MagnetSensor.MagnetOffset = Robot.isReal() ? EncoderConstants.wristOffset : 0d;
+
+        encoder.getConfigurator().apply(angleConfig);
 
         if (Robot.isSimulation()) {
             gearbox = DCMotor.getKrakenX60(1);
@@ -124,6 +125,7 @@ public class Wrist extends SubsystemBase {
 
     /**
      * Set the wrist position in degrees
+     * 
      * @param position in degrees
      */
     public void setPosition(double position) {

@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -20,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
@@ -33,11 +31,11 @@ public class PoseBasedAutoAlign extends Command {
 
     private double tolerance = 0.025;
 
-    private PIDController xPID = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI, AutoAlignConstants.THREE_DEE_xD);
+    private final PIDController xPID = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI, AutoAlignConstants.THREE_DEE_xD);
 
-    private PIDController yPID = new PIDController(AutoAlignConstants.THREE_DEE_yP, AutoAlignConstants.THREE_DEE_yI, AutoAlignConstants.THREE_DEE_yD);
+    private final PIDController yPID = new PIDController(AutoAlignConstants.THREE_DEE_yP, AutoAlignConstants.THREE_DEE_yI, AutoAlignConstants.THREE_DEE_yD);
 
-    private PIDController rPID = new PIDController(AutoAlignConstants.THREE_DEE_rP, AutoAlignConstants.THREE_DEE_rI, AutoAlignConstants.THREE_DEE_rD);
+    private final PIDController rPID = new PIDController(AutoAlignConstants.THREE_DEE_rP, AutoAlignConstants.THREE_DEE_rI, AutoAlignConstants.THREE_DEE_rD);
 
     private Pose2d targetPose = new Pose2d();
 
@@ -51,6 +49,7 @@ public class PoseBasedAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
+     * 
      * @param drivetrain
      * @param camera
      * @param leds
@@ -66,6 +65,7 @@ public class PoseBasedAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
+     * 
      * @param drivetrain
      * @param camera
      * @param leds
@@ -75,14 +75,16 @@ public class PoseBasedAutoAlign extends Command {
     public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, LightningTagID codeID, double tolerance) {
         this(drivetrain, camera, leds);
 
-        customTagSet = true;
         this.codeID = codeID;
         this.tolerance = tolerance;
+
+        customTagSet = true;
     }
 
     /**
      * Used to align to Tag
      * will always use PID Controllers
+     * 
      * @param drivetrain
      * @param camera
      * @param leds
@@ -91,14 +93,15 @@ public class PoseBasedAutoAlign extends Command {
     public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, int tagID) {
         this(drivetrain, camera, leds);
 
-        customTagSet = true;
-
         this.tagID = tagID;
+
+        customTagSet = true;
     }
 
     /**
      * Used to align to Tag
      * will always use PID Controllers
+     * 
      * @param drivetrain
      * @param camera
      * @param leds
@@ -117,6 +120,7 @@ public class PoseBasedAutoAlign extends Command {
     @Override
     public void initialize() {
         invokeCancel = false;
+
         // Get tagID from codeID
         if(codeID != null) {
             tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? codeID.redID : codeID.blueID;
@@ -124,7 +128,6 @@ public class PoseBasedAutoAlign extends Command {
 
         // Get the tag in front of the robot
         if (!customTagSet) {
-
             tagID = PoseConstants.getScorePose(drivetrain.getPose());
         }
 
@@ -133,11 +136,11 @@ public class PoseBasedAutoAlign extends Command {
             invokeCancel = true;
             CommandScheduler.getInstance().cancel(this);
         } else {
-            targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tagID));
+            targetPose = PoseConstants.poseHashMap.get(new Tuple<>(camera, tagID));
 
             LightningShuffleboard.setDouble("TestAutoAlign", "Tag", tagID);
 
-            if(targetPose != null) {
+            if (targetPose != null) {
                 LightningShuffleboard.setString("TestAutoAlign", "Target Pose", targetPose.toString());
             }
         }
@@ -156,8 +159,8 @@ public class PoseBasedAutoAlign extends Command {
 
         // double kS = 0.025;
         double kS = 0.01;
-        // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
+        // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
         double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
@@ -174,6 +177,7 @@ public class PoseBasedAutoAlign extends Command {
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
         }
+
         if (!DriverStation.isAutonomous() && onTarget()) {
             RobotContainer.hapticDriverCommand().schedule();
         }
@@ -181,12 +185,12 @@ public class PoseBasedAutoAlign extends Command {
         drivetrain.setControl(DriveRequests.getBrake().get());
     }
 
+    public boolean onTarget() {
+        return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
+    }
+
     @Override
     public boolean isFinished() {
         return onTarget() || invokeCancel;
-    }
-
-    public boolean onTarget() {
-        return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
     }
 }

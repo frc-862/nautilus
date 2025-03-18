@@ -702,27 +702,35 @@ public class Constants {
             }
         };
 
-
-        public static FishingRodConstants.RodStates getAlgaeScoreState (double tagId){
-
+        /**
+         * Returns the RodState for algae based on the tagID
+         * @param tagId to reference
+         * @return HIGH/LOW depending on tagId
+         */
+        public static FishingRodConstants.RodStates getAlgaeScoreState(double tagId) {
             final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
             DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(blue);
-        
-            if (tagId % 2 == 0){
+
+            if (tagId % 2 == 0) {
                 // even: algae on odd sides are high for blue reef, low for red
                 return alliance == blue ? FishingRodConstants.RodStates.HIGH : FishingRodConstants.RodStates.LOW;
             } else {
-                // odd: algae on 0dd sides are low for blue reef, high for red
+                // odd: algae on odd sides are low for blue reef, high for red
                 return alliance == blue ? FishingRodConstants.RodStates.LOW : FishingRodConstants.RodStates.HIGH;
             }
         }
 
-        public static FishingRodConstants.RodStates getAlgaeScoreState (Swerve drivetrain, FishingRod rod){
-
+        /**
+         * Returns the RodState for algae based on the drivetrain position
+         * @param drivetrain
+         * @param rod
+         * @return HIGH/LOW depending on pos
+         */
+        public static FishingRodConstants.RodStates getAlgaeScoreState(Swerve drivetrain, FishingRod rod) {
             double tagId = getScorePose(drivetrain.getPose());
 
             if (tagId == 0) {
-                return rod.getTargetState();
+                return rod.getState();
             }
 
             return getAlgaeScoreState(tagId);

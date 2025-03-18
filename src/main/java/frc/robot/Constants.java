@@ -396,7 +396,7 @@ public class Constants {
 
         // 2.5 constants
         public static final boolean INVERTED = true;
-        public static final double COLLECTED_CURRENT = 25d; //40
+        public static final double COLLECTED_CURRENT = 40d; //40
         public static final double CORAL_HOLD_POWER = 0.07d;
         public static final double ALGAE_HOLD_POWER = 0.2d;
     }

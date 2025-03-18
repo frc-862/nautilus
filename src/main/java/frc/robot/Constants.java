@@ -103,7 +103,7 @@ public class Constants {
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
         public static final double tritonWristOffset = -0.227;
-        public static final double nautilusWristOffset = 0.135498046875;
+        public static final double nautilusWristOffset = 0.7646484375;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)

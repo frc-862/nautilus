@@ -39,21 +39,22 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class Elevator extends SubsystemBase {
 
-    private ThunderBird leftMotor;
+    private final ThunderBird leftMotor;
     @SuppressWarnings("unused")
-    private ThunderBird rightMotor;
-    private CANrange rangeSensor;
+    private final ThunderBird rightMotor;
+    private final CANrange rangeSensor;
+
+    private final MotionMagicVoltage positionPID;
+
+    private final ExpoFilter rangeFilter;
 
     private double targetPosition = 0;
     private double currentPosition = 0;
 
+    @SuppressWarnings("unused")
     private double rawRangeMeters = 0;
     private double filteredRangeDistance = 0;
     private double filteredRangeMeters = 0;
-
-    private ExpoFilter rangeFilter = new ExpoFilter(0.1);
-
-    private MotionMagicVoltage positionPID;
 
     // sim stuff
     private DCMotor gearbox;
@@ -61,7 +62,8 @@ public class Elevator extends SubsystemBase {
     private TalonFXSimState leftSim;
     private TalonFXSimState rightSim;
     private CANrangeSimState rangeSensorSim;
-
+    
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public Elevator(ThunderBird leftMotor, ThunderBird rightMotor) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
@@ -75,6 +77,7 @@ public class Elevator extends SubsystemBase {
         config.Slot0.kV = ElevatorConstants.MOTORS_KV;
         config.Slot0.kA = ElevatorConstants.MOTORS_KA;
         config.Slot0.kG = ElevatorConstants.MOTORS_KG;
+
         config.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.VELOC;
         config.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCEL;
         config.MotionMagic.MotionMagicJerk = ElevatorConstants.JERK;
@@ -82,18 +85,22 @@ public class Elevator extends SubsystemBase {
         config.Feedback.RotorToSensorRatio = ElevatorConstants.ROTOR_TO_SENSOR_RATIO;
         config.Feedback.SensorToMechanismRatio = ElevatorConstants.ENCODER_TO_MECHANISM_RATIO;
 
+        leftMotor.applyConfig(config);
+
+        rightMotor.setControl(new Follower(RobotMap.L_ELEVATOR, true));
+
         rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE, RobotMap.CANIVORE_CAN_NAME);
 
         CANrangeConfiguration rangeConfig = new CANrangeConfiguration();
         rangeConfig.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
         rangeConfig.FovParams.FOVRangeX = 7;
         rangeConfig.FovParams.FOVRangeY = 7;
+
         rangeSensor.getConfigurator().apply(rangeConfig);
 
-        leftMotor.applyConfig(config);
-        rightMotor.setControl(new Follower(RobotMap.L_ELEVATOR, true));
-
         positionPID = new MotionMagicVoltage(ElevatorConstants.MIN_EXTENSION.magnitude()).withSlot(0);
+
+        rangeFilter = new ExpoFilter(ElevatorConstants.FILTER_EXPO);
 
         // leftMotor.setPosition(0);
         leftMotor.setPosition(getCANRangeDist());
@@ -106,20 +113,15 @@ public class Elevator extends SubsystemBase {
              */
 
             gearbox = DCMotor.getKrakenX60(2);
-            elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.GEAR_RATIO,
-                ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters),
-                ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 0, 0d,
-                1d);
+            elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.GEAR_RATIO, ElevatorConstants.CARRIAGE_WEIGHT.in(Kilograms), ElevatorConstants.DRUM_RADIUS.in(Meters), ElevatorConstants.MIN_EXTENSION.in(Meters), ElevatorConstants.MAX_EXTENSION.in(Meters), true, 0, 0d, 1d);
 
             leftSim = new TalonFXSimState(leftMotor);
             rightSim = new TalonFXSimState(rightMotor);
             rangeSensorSim = new CANrangeSimState(rangeSensor);
 
             // TalonFX sim states do not retain inverts.
-            leftSim.Orientation = ElevatorConstants.L_INVERTED ? ChassisReference.Clockwise_Positive
-                : ChassisReference.CounterClockwise_Positive;
-            rightSim.Orientation = ElevatorConstants.R_INVERTED ? ChassisReference.Clockwise_Positive
-                : ChassisReference.CounterClockwise_Positive;
+            leftSim.Orientation = ElevatorConstants.L_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
+            rightSim.Orientation = ElevatorConstants.R_INVERTED ? ChassisReference.Clockwise_Positive : ChassisReference.CounterClockwise_Positive;
         }
     }
 
@@ -128,9 +130,9 @@ public class Elevator extends SubsystemBase {
         currentPosition = getPosition();
         filteredRangeDistance = getCANRangeDist();
 
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator Filtered Value", filteredRangeMeters);
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator Calculated Value", filteredRangeDistance);
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator Translated Raw", rawRangeMeters);
+        // LightningShuffleboard.setDouble("Diagnostic", "Elevator Filtered Value", filteredRangeMeters);
+        // LightningShuffleboard.setDouble("Diagnostic", "Elevator Calculated Value", filteredRangeDistance);
+        // LightningShuffleboard.setDouble("Diagnostic", "Elevator Translated Raw", rawRangeMeters);
         LightningShuffleboard.setDouble("Diagnostic", "Elevator raw value",
                 rangeSensor.getDistance().getValueAsDouble());
 
@@ -142,7 +144,7 @@ public class Elevator extends SubsystemBase {
                 leftMotor.getDeviceTemp().getValueAsDouble());
         LightningShuffleboard.setDouble("Diagnostic", "ELE Right Temperature",
                 rightMotor.getDeviceTemp().getValueAsDouble());
-        LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
+        // LightningShuffleboard.setBool("Diagnostic", "ELE Overheating", isOverheating());
     }
 
     /**
@@ -159,6 +161,7 @@ public class Elevator extends SubsystemBase {
 
     /**
      * Sets the encoder position with clamp
+     * 
      * @param newValue
      */
     public void setEncoder(double newValue) {
@@ -206,7 +209,8 @@ public class Elevator extends SubsystemBase {
     public boolean isOverheating() {
         return leftMotor.getDeviceTemp().getValueAsDouble() > ElevatorConstants.OVERHEAT_TEMP
                 || rightMotor.getDeviceTemp().getValueAsDouble() > ElevatorConstants.OVERHEAT_TEMP
-                || (Math.abs(rightMotor.getDeviceTemp().getValueAsDouble() - leftMotor.getDeviceTemp().getValueAsDouble()) > ElevatorConstants.OVERHEAT_TEMP_DIFFERENCE);
+                || (Math.abs(rightMotor.getDeviceTemp().getValueAsDouble()
+                        - leftMotor.getDeviceTemp().getValueAsDouble()) > ElevatorConstants.OVERHEAT_TEMP_DIFFERENCE);
     }
 
     /**
@@ -222,13 +226,12 @@ public class Elevator extends SubsystemBase {
     /**
      * checks if elevator position should start syncing with the CANrange sensor
      *
-     * @return true if the elevator position is outside the tolerance of the
-     *         CANrange sensor
+     * @return true if the elevator position is outside the tolerance of the CANrange sensor
      */
     public boolean shouldSyncCANRange() {
+        // THE MAP GOES HIGHER THAN 4.8 I KNOW!! The map only updates the filtered value
         return Math.abs(leftMotor.getVelocity().getValueAsDouble()) < 0.05 // checks elevator not moving
                 && filteredRangeDistance <= 4.8d; // if below 4.8 inches
-        // THE MAP GOES HIGHER THAN 4.8 I KNOW!! The map only updates the filtered value
     }
 
     /**
@@ -262,6 +265,11 @@ public class Elevator extends SubsystemBase {
         }
     }
 
+    /**
+     * gets the raw distance from the CANRange sensor
+     *
+     * @return CANRange distance
+     */
     public double getCANRangeRaw() {
         return rangeSensor.getDistance().getValueAsDouble();
     }
@@ -276,6 +284,11 @@ public class Elevator extends SubsystemBase {
         return leftMotor.get();
     }
 
+    /**
+     * gets the current of the elevator motors
+     *
+     * @return left motor current (which the right is synced to)
+     */
     public double getMotorCurrent() {
         return leftMotor.getStatorCurrent().getValueAsDouble();
     }

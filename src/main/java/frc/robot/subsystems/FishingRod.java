@@ -21,8 +21,10 @@ import frc.robot.Robot;
 
 public class FishingRod extends SubsystemBase {
 
-    private Wrist wrist;
-    private Elevator elevator;
+    private final Wrist wrist;
+    private final Elevator elevator;
+
+    private boolean coralMode = true;
 
     private RodStates currState = RodStates.DEFAULT;
     private RodStates targetState = RodStates.STOW;
@@ -39,23 +41,17 @@ public class FishingRod extends SubsystemBase {
     private MechanismLigament2d stage3;
     private MechanismLigament2d wristSim;
 
-    private boolean coralMode = true;
-
     public FishingRod(Wrist wrist, Elevator elevator) {
         this.wrist = wrist;
         this.elevator = elevator;
 
         // simulation stuff
         if (Robot.isSimulation()) {
-            stage1 = new MechanismLigament2d("STAGE 1", ElevatorConstants.CUSHION_METERS, 90, 20,
-                    new Color8Bit(Color.kSeaGreen));
-            stage2 = new MechanismLigament2d("STAGE 2", ElevatorConstants.CUSHION_METERS, 0, 15,
-                    new Color8Bit(Color.kDarkRed));
-            stage3 = new MechanismLigament2d("STAGE 3", ElevatorConstants.CUSHION_METERS, 0, 10,
-                    new Color8Bit(Color.kDarkBlue));
+            stage1 = new MechanismLigament2d("STAGE 1", ElevatorConstants.CUSHION_METERS, 90, 20, new Color8Bit(Color.kSeaGreen));
+            stage2 = new MechanismLigament2d("STAGE 2", ElevatorConstants.CUSHION_METERS, 0, 15, new Color8Bit(Color.kDarkRed));
+            stage3 = new MechanismLigament2d("STAGE 3", ElevatorConstants.CUSHION_METERS, 0, 10, new Color8Bit(Color.kDarkBlue));
 
-            wristSim = new MechanismLigament2d("WRIST SIM", WristConstants.LENGTH.magnitude(), 90d, 5d,
-                    new Color8Bit(Color.kWhite));
+            wristSim = new MechanismLigament2d("WRIST SIM", WristConstants.LENGTH.magnitude(), 90d, 5d, new Color8Bit(Color.kWhite));
 
             mech2d = new Mechanism2d(0.69, 2.29);
             root = mech2d.getRoot("Rod root", 0.35, 0);
@@ -69,31 +65,34 @@ public class FishingRod extends SubsystemBase {
         // if the rod hasn't reached target state
         if (!onTarget()) {
             switch (transitionState) {
-                case WRIST_UP_THEN_ELE: // wrist up, move ele, move wrist
+                case WRIST_UP_THEN_ELE -> {
+                    // wrist up, move ele, move wrist
                     wrist.setState(RodStates.STOW);
                     if (wrist.isOnTarget()) {
                         elevator.setState(targetState);
-                        if(elevator.isOnTarget()) {
+                        if (elevator.isOnTarget()) {
                             transitionState = RodTransitionStates.DEFAULT; // finalize transition
                         }
                     }
-                    break;
-                case WRIST_DOWN_THEN_ELE: // wrist down, move ele
+                }
+                case WRIST_DOWN_THEN_ELE -> {
+                    // wrist down, move ele
                     wrist.setState(targetState);
                     if (wrist.isOnTarget()) {
                         transitionState = RodTransitionStates.DEFAULT; // finalize transition
                     }
-                    break;
-                case DEFAULT, TRITON, WITH_WRIST_SLOW: // all states should end here
-                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState), transitionState == RodTransitionStates.WITH_WRIST_SLOW);
+                }
+                case DEFAULT, TRITON, WITH_WRIST_SLOW -> {
+                    // all states should end here
+                    wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState),
+                            transitionState == RodTransitionStates.WITH_WRIST_SLOW);
                     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
                     if (wrist.isOnTarget() && elevator.isOnTarget()) {
                         currState = targetState;
                     }
-                    break;
+                }
 
-                default:
-                    throw new IllegalArgumentException("transition state not defined");
+                default -> throw new IllegalArgumentException("transition state not defined");
             }
         }
 
@@ -103,10 +102,20 @@ public class FishingRod extends SubsystemBase {
         LightningShuffleboard.setString("Rod", "transitionState", transitionState.toString());
     }
 
+    /**
+     * Gets the if the robot is in coral mode
+     * 
+     * @return true if the robot is in coral mode false otherwise
+     */
     public boolean isCoralMode() {
         return coralMode;
     }
 
+    /**
+     * Sets the robot to coral mode or not
+     * 
+     * @param mode true to set the robot to coral mode false otherwise
+     */
     public void setCoralMode(boolean mode) {
         coralMode = mode;
     }
@@ -132,11 +141,9 @@ public class FishingRod extends SubsystemBase {
         wristBias = 0;
     }
 
-
-
-    
     /**
      * biases will only work if no other position is actively being set.
+     * 
      * @param bias the amount to add to the wrist position
      * @return a command that will add the bias to the wrist position
      */
@@ -152,6 +159,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * biases will only work if no other position is actively being set.
+     * 
      * @param bias the amount to add to the elevastor position
      * @return a command that will add the bias to the elevator position
      */
@@ -166,7 +174,8 @@ public class FishingRod extends SubsystemBase {
     }
 
     /**
-     * Gets the state of the fishing rod
+     * gets the state of the fishing rod
+     * 
      * @return the current state of the fishing rod
      */
     @Logged(importance = Importance.CRITICAL)
@@ -176,6 +185,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * gets the target state of the fishing rod
+     * 
      * @return the target state of the fishing rod
      */
     @Logged(importance = Importance.DEBUG)
@@ -184,14 +194,15 @@ public class FishingRod extends SubsystemBase {
     }
 
     /**
-     * Checks if the whole fishing rod system is on target
+     * checks if the whole fishing rod system is on target
+     * 
      * @return true if the wrist and elevator are on target false otherwise
      */
     @Logged(importance = Importance.DEBUG)
     public boolean onTarget() {
         return currState == targetState;
     }
-
+    
     @Override
     public void simulationPeriodic() {
         double stageLen = Units.inchesToMeters(elevator.getPosition());

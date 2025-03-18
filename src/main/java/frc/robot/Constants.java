@@ -289,7 +289,8 @@ public class Constants {
 
         public static final double POSITION_TOLERANCE = 0.1; // temp
         public static final double CANRANGE_TOLERANCE = 0.25; // temp
-
+        public static final double FILTER_EXPO = 0.1; // temp
+        
         public static final double BOTTOM_CURRENT = 75d; // our current to check when our elevator bottoms out
         public static final double BOTTOM_RAW_POWER = -0.25d; // raw dutyCycle out to go to the bottom
 

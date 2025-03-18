@@ -24,8 +24,8 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class CoralCollector extends SubsystemBase {
 
-    private ThunderBird motor;
-    private DigitalInput beamBreak;
+    private final ThunderBird motor;
+    private final DigitalInput beamBreak;
 
     // sim stuff
     private TalonFXSimState motorSim;
@@ -43,16 +43,13 @@ public class CoralCollector extends SubsystemBase {
             motorSim = new TalonFXSimState(motor);
 
             // simulate beam break sensor
-
             beamBreakSim = SimDevice.create("BeamBreak");
             simBoolean = beamBreakSim.createBoolean("BeamBreak", Direction.kBidir, false);
 
             beamBreak.setSimDevice(beamBreakSim);
 
             // simulate collector
-            coralCollectorSim = new LinearSystemSim<N1, N1, N1>(
-                LinearSystemId.identifyVelocitySystem(CoralCollectorConstants.KV,
-                CoralCollectorConstants.KA));
+            coralCollectorSim = new LinearSystemSim<>(LinearSystemId.identifyVelocitySystem(CoralCollectorConstants.KV, CoralCollectorConstants.KA));
         }
     }
 
@@ -102,6 +99,9 @@ public class CoralCollector extends SubsystemBase {
         return motor.getRotorVelocity().getValueAsDouble();
     }
 
+    /**
+     * @return current power of collector
+     */
     public double getPower() {
         return motor.getMotorVoltage().getValueAsDouble();
     }

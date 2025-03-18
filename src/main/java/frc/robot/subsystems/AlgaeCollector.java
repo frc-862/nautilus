@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.thunder.hardware.ThunderBird;
-import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Robot;
 import frc.robot.Constants.AlgaeCollectorConstants;
 import frc.robot.Constants.RobotMap;
@@ -27,12 +26,12 @@ import frc.robot.Constants.CoralCollectorConstants;
 
 public class AlgaeCollector extends SubsystemBase {
 
-    private ThunderBird rollerMotor;
-    private ThunderBird pivotMotor;
-
-    private double targetAngle = 0;
+    private final ThunderBird rollerMotor;
+    private final ThunderBird pivotMotor;
 
     private final PositionVoltage pivotPID = new PositionVoltage(0);
+
+    private double targetAngle = 0;
 
     // sim stuff
     private TalonFXSimState rollerMotorSim;
@@ -43,6 +42,12 @@ public class AlgaeCollector extends SubsystemBase {
 
     private DCMotor pivotGearbox;
 
+    /**
+     * Creates a new AlgaeCollector.
+     * 
+     * @param rollerMotor the motor that controls the roller
+     * @param pivotMotor the motor that controls the pivot
+     */
     public AlgaeCollector(ThunderBird rollerMotor, ThunderBird pivotMotor) {
         this.rollerMotor = rollerMotor;
         this.pivotMotor = pivotMotor;
@@ -69,7 +74,7 @@ public class AlgaeCollector extends SubsystemBase {
                     Units.degreesToRadians(AlgaeCollectorConstants.PIVOT_MAX_ANGLE), true,
                     AlgaeCollectorConstants.PIVOT_START_ANGLE, 0, 1);
 
-            rollerSim = new LinearSystemSim<N1, N1, N1>(LinearSystemId.identifyVelocitySystem(AlgaeCollectorConstants.ROLLER_KV,
+            rollerSim = new LinearSystemSim<>(LinearSystemId.identifyVelocitySystem(AlgaeCollectorConstants.ROLLER_KV,
                     AlgaeCollectorConstants.ROLLER_KA));
         }
     }
@@ -97,10 +102,10 @@ public class AlgaeCollector extends SubsystemBase {
     /**
      * Set the power of the pivot motor
      *
-     * @param speed
+     * @param power
      */
-    public void setPivotPower(double speed) {
-        pivotMotor.setControl(new DutyCycleOut(speed));
+    public void setPivotPower(double power) {
+        pivotMotor.setControl(new DutyCycleOut(power));
     }
 
     /**
@@ -109,8 +114,7 @@ public class AlgaeCollector extends SubsystemBase {
      * @param state to set
      */
     public void setPivotState(AlgaePivotStates state) {
-        double angle = (state == AlgaePivotStates.DEPLOYED) ? AlgaeCollectorConstants.DEPLOY_ANGLE
-                : AlgaeCollectorConstants.STOW_ANGLE;
+        double angle = (state == AlgaePivotStates.DEPLOYED) ? AlgaeCollectorConstants.DEPLOY_ANGLE : AlgaeCollectorConstants.STOW_ANGLE;
         pivotMotor.setControl(pivotPID.withPosition(Units.degreesToRotations(angle)));
         targetAngle = angle;
     }

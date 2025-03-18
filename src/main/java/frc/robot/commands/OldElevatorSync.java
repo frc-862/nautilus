@@ -10,7 +10,7 @@ import frc.robot.subsystems.Elevator;
 
 public class OldElevatorSync extends Command {
 
-    private Elevator elevator;
+    private final Elevator elevator;
     private double error = ElevatorConstants.CANRANGE_TOLERANCE;
     private double rangeDistance = 0;
 

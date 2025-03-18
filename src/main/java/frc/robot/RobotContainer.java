@@ -8,8 +8,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -19,12 +17,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -32,10 +28,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.CoralCollectorConstants;
-import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.PoseConstants;
-import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
@@ -44,13 +37,10 @@ import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
-import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
-import frc.robot.commands.OldElevatorSync;
 import frc.robot.commands.ElevatorSyncStow;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
-import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.auton.AutonAutoAlign;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
@@ -286,8 +276,7 @@ public class RobotContainer extends LightningContainer {
         // }
 
         // LED testing
-        // new Trigger(() -> leds.getTestState() !=
-        // null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
+        new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
 
         // SYSID
         // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
@@ -356,8 +345,7 @@ public class RobotContainer extends LightningContainer {
         NamedCommands.registerCommand("RodSource",
                 new SetRodState(rod, RodStates.SOURCE)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
-
-                        
+                                   
         autoChooser = AutoBuilder.buildAutoChooser();
         autoChooser.addOption("LEAVE", drivetrain.leaveAuto());
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);

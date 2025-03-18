@@ -174,7 +174,11 @@ public class DriveToPose extends Command {
     double driveVelocityScalar =
         driveController.getSetpoint().velocity * ffScaler
             + driveController.calculate(driveErrorAbs, 0.0);
-    if (currentDistance < driveController.getPositionTolerance()) driveVelocityScalar = 0.0;
+
+    if (currentDistance < driveController.getPositionTolerance()) { 
+        driveVelocityScalar = 0.0;
+    }
+
     lastSetpointTranslation =
         new Pose2d(
                 targetPose.getTranslation(),
@@ -192,7 +196,10 @@ public class DriveToPose extends Command {
                 currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
     thetaErrorAbs =
         Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getRadians());
-    if (thetaErrorAbs < thetaController.getPositionTolerance()) thetaVelocity = 0.0;
+
+    if (thetaErrorAbs < thetaController.getPositionTolerance()) {
+        thetaVelocity = 0.0;
+    }
 
     Translation2d driveVelocity =
         new Pose2d(
@@ -233,6 +240,10 @@ public class DriveToPose extends Command {
     // Logger.recordOutput("DriveToPose/Goal", new Pose2d[] {targetPose});
   }
 
+  /** Called when the command ends or is interrupted. 
+   * * Stops the drive and clears logs.
+   * @param interrupted true if the command was interrupted, false if it completed normally
+  */
   @Override
   public void end(boolean interrupted) {
     drive.stop();
@@ -242,12 +253,21 @@ public class DriveToPose extends Command {
     // Logger.recordOutput("DriveToPose/Goal", new Pose2d[] {});
   }
 
-  /** Checks if the robot is stopped at the final pose. */
+  /** Checks if the robot is stopped at the final pose. 
+   * @return true if the robot is at the goal pose, false otherwise
+   * * Note: This method checks if the command is running and if both the drive and theta controllers are at their goals.
+   * It does not check if the robot is within tolerance, which can be done using the withinTolerance method.
+  */
   public boolean atGoal() {
     return running && driveController.atGoal() && thetaController.atGoal();
   }
 
-  /** Checks if the robot pose is within the allowed drive and theta tolerances. */
+  /** Checks if the robot pose is within the allowed drive and theta tolerances. 
+   * @param driveTolerance the allowed distance tolerance for the drive controller
+   * @param thetaTolerance the allowed angle tolerance for the theta controller
+   * @return true if the robot is within the specified tolerances, false otherwise
+   * * Note: This method checks if the absolute errors for both the drive and theta controllers are within the specified tolerances.
+  */
   public boolean withinTolerance(double driveTolerance, Rotation2d thetaTolerance) {
     return running
         && Math.abs(driveErrorAbs) < driveTolerance

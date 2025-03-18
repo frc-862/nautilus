@@ -228,6 +228,9 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> driver.getPOV() == 0)
                 .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.RightSource).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
+        new Trigger(() -> driver.getPOV() == 180)
+                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.BargeFront).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
         /* COPILOT BINDINGS */
 
         // Source/Stow

@@ -230,11 +230,9 @@ public class RobotContainer extends LightningContainer {
 
         /* COPILOT BINDINGS */
 
-        // Source/Stow
+        // Stow
         new Trigger(copilot::getLeftBumperButton)
                 .onTrue(new SetRodState(rod, RodStates.STOW));
-        new Trigger(copilot::getRightBumperButton)
-                .onTrue(new SetRodState(rod, RodStates.SOURCE));
 
         // Swap modes (TODO: add LED state notif)
         new Trigger(copilot::getBackButton)
@@ -247,12 +245,15 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
         new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));
         new Trigger(() -> rod.isCoralMode() && copilot.getYButton()).onTrue(new SetRodState(rod, RodStates.L4));
+        new Trigger(() -> rod.isCoralMode() && copilot.getRightBumperButton()).onTrue(new SetRodState(rod, RodStates.SOURCE));
 
         // algae mode
         new Trigger(() -> !rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.PROCESSOR));
         new Trigger(() -> !rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.LOW));
         new Trigger(() -> !rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.HIGH));
         new Trigger(() -> !rod.isCoralMode() && copilot.getYButton()).onTrue(new SetRodState(rod, RodStates.BARGE));
+        new Trigger(() -> !rod.isCoralMode() && copilot.getRightBumperButton()).onTrue(
+                new InstantCommand(() -> rod.setState(PoseConstants.getAlgaeScoreState(drivetrain, rod))));
 
         // biases
         new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d)); // ELE UP

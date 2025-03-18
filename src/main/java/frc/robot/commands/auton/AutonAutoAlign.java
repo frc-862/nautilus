@@ -65,6 +65,7 @@ public class AutonAutoAlign extends Command {
      * @param drivetrain
      * @param camera
      * @param leds
+     * @param rod
      * @param codeID     the Lightning-specific ID code for the tag
      */
     public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, LightningTagID codeID) {
@@ -83,6 +84,7 @@ public class AutonAutoAlign extends Command {
      * @param drivetrain
      * @param camera
      * @param leds
+     * @param rod
      */
     public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod) {
         this.drivetrain = drivetrain;

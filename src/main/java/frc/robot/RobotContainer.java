@@ -13,6 +13,7 @@ import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -46,6 +47,7 @@ import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.OldElevatorSync;
 import frc.robot.commands.ElevatorSyncStow;
 import frc.robot.commands.PoseBasedAutoAlign;
@@ -66,6 +68,7 @@ import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.thunder.util.Tuple;
 
 public class RobotContainer extends LightningContainer {
 
@@ -223,7 +226,11 @@ public class RobotContainer extends LightningContainer {
                 .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton)
                 .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        
+        new Trigger(driver::getAButton)
+                .whileTrue(new DriveToPose(drivetrain, Camera.LEFT, LightningTagID.Three));
+        new Trigger(driver::getBButton)
+                .whileTrue(new DriveToPose(drivetrain, Camera.LEFT, LightningTagID.Four));
+
         // source autoalign
         new Trigger(() -> driver.getPOV() == 0)
                 .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.RightSource).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));

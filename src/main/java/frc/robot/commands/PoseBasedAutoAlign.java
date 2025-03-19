@@ -140,7 +140,6 @@ public class PoseBasedAutoAlign extends Command {
 
         // Get the tag in front of the robot
         if (!customTagSet) {
-
             tagID = PoseConstants.getScorePose(drivetrain.getPose());
         }
 
@@ -157,7 +156,7 @@ public class PoseBasedAutoAlign extends Command {
 
             LightningShuffleboard.setDouble("TestAutoAlign", "Tag", tagID);
 
-            if(targetPose != null) {
+            if (targetPose != null) {
                 LightningShuffleboard.setString("TestAutoAlign", "Target Pose", targetPose.toString());
             }
         }
@@ -204,6 +203,7 @@ public class PoseBasedAutoAlign extends Command {
     @Override
     public boolean isFinished() {
         return onTarget() || invokeCancel;
+        // return false;
     }
 
     public boolean onTarget() {

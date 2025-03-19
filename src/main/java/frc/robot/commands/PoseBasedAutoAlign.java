@@ -150,11 +150,10 @@ public class PoseBasedAutoAlign extends Command {
             CommandScheduler.getInstance().cancel(this);
         } else {
             if (isL1) {
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<>(camera, tagID)).plus(PoseConstants.L1_OFFSET);
+                targetPose = PoseConstants.l1PoseHashMap.get(new Tuple<>(camera, tagID));
             } else {
                 targetPose = PoseConstants.poseHashMap.get(new Tuple<>(camera, tagID));
             }
-            targetPose = PoseConstants.poseHashMap.get(new Tuple<>(camera, tagID));
 
             LightningShuffleboard.setDouble("TestAutoAlign", "Tag", tagID);
 

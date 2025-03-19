@@ -1,0 +1,79 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.079244770726674,
+        "y": 5.3834964031374115
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.994874410789106,
+        "y": 6.0272245439071215
+      },
+      "isLocked": false,
+      "linkedName": "Reef5Left"
+    },
+    {
+      "anchor": {
+        "x": 2.4405532581180167,
+        "y": 6.386785581791201
+      },
+      "prevControl": {
+        "x": 3.2618052221543294,
+        "y": 6.076885202077513
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "SourceAndCollect",
+      "waypointRelativePos": 0.9372123969780225,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "RodSource"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "IntuahCoral"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": -54.0
+  },
+  "reversed": false,
+  "folder": "2 PIECE PATHS",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 59.99999999999999
+  },
+  "useDefaultConstraints": true
+}

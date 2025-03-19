@@ -1,0 +1,82 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.8059436648917597,
+        "y": 6.6315462421438545
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2938505373425646,
+        "y": 5.7411664948879135
+      },
+      "isLocked": false,
+      "linkedName": "LeftSource"
+    },
+    {
+      "anchor": {
+        "x": 3.6183572324537105,
+        "y": 5.199676116864655
+      },
+      "prevControl": {
+        "x": 2.9718017242273174,
+        "y": 5.949858333135191
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Reef6Left"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.752384154195383,
+      "rotationDegrees": 119.99999999999999
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Stow",
+      "waypointRelativePos": 0.18013081576324286,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodStow"
+        }
+      }
+    },
+    {
+      "name": "RodL4",
+      "waypointRelativePos": 0.87,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodL4"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 119.99999999999999
+  },
+  "reversed": false,
+  "folder": "2 PIECE PATHS",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -54.0
+  },
+  "useDefaultConstraints": true
+}

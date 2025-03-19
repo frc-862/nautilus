@@ -4,8 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "LSource-Reef",
-    "Test Paths",
-    "RSource-Reef"
+    "2 PIECE PATHS",
+    "RSource-Reef",
+    "Test Paths"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.0,

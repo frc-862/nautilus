@@ -1186,18 +1186,19 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
-        public static final double THREE_DEE_xP = 2d; // 2
-        public static final double THREE_DEE_xI = 0;
-        public static final double THREE_DEE_xD = 0.06; // 0.06
+        // Posebased gains
+        public static final double POSEBASED_DRIVE_P = 2d; // 2
+        public static final double POSEBASED_DRIVE_I = 0;
+        public static final double POSEBASED_DRIVE_D = 0.06; // 0.06
+        public static final double POSEBASED_DRIVE_TOLERANCE = 0.025; // 0.03
+        public static final double POSEBASED_DRIVE_KS = 0.012; // 0.01
 
-        public static final double THREE_DEE_yP = 2d;
-        public static final double THREE_DEE_yI = 0;
-        public static final double THREE_DEE_yD = 0.06;
-
-        public static final double THREE_DEE_rP = 0.03;
-        public static final double THREE_DEE_rI = 0;
-        public static final double THREE_DEE_rD = 0;
-
+        public static final double POSEBASED_ROT_P = 0.03;
+        public static final double POSEBASED_ROT_I = 0;
+        public static final double POSEBASED_ROT_D = 0;
+        public static final double POSEBASED_ROT_TOLERANCE = 1.5; // 2.5
+        public static final double POSEBASED_ROT_KS = 0; // 0.01 NOT APPIED
+        
         public static final double targetTX = 720d;
 
         public static final HashMap<Integer, Double> tagAngles = new HashMap<Integer, Double>() {

@@ -94,7 +94,7 @@ public class RobotContainer extends LightningContainer {
     private static XboxController driver;
     private static XboxController copilot;
 
-    private boolean erroring = false; // side note: nate wtf
+    private boolean erroring = false; // side note: nate wtf. side note from kyle: nate wtf
 
     @Override
     protected void initializeSubsystems() {
@@ -223,21 +223,19 @@ public class RobotContainer extends LightningContainer {
                         new InstantCommand(() -> drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees
                                 .of(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0))))));
 
-        // AUTOALIGN
+        // AUTO ALIGN
         new Trigger(driver::getLeftBumperButton)
                 .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton)
                 .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, leds)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        // new Trigger(driver::getRightBumperButton)
-        //         .whileTrue(new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Five)
-        //             .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // source autoalign
-        new Trigger(() -> driver.getPOV() == 0)
-                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.RightSource)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        // new Trigger(() -> driver.getPOV() == 0)
+        // .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
+        // LightningTagID.RightSource)
+        // .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         /* COPILOT BINDINGS */
 
@@ -301,10 +299,12 @@ public class RobotContainer extends LightningContainer {
         // null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
 
         // SYSID
-        // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
+        // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() ->
+        // SignalLogger.start()));
         // new Trigger(driver::getYButton).whileTrue(new SysIdSequence(drivetrain,
-        //         DrivetrainConstants.SysIdTestType.DRIVE));
-        // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() -> SignalLogger.stop()));
+        // DrivetrainConstants.SysIdTestType.DRIVE));
+        // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() ->
+        // SignalLogger.stop()));
 
     }
 
@@ -325,11 +325,16 @@ public class RobotContainer extends LightningContainer {
                     // tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)),
                     // new SetRodState(rod, RodStates.SOURCE)
                     // .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING))));
+
+                    // old auto align - no automatic L4
                     NamedCommands.registerCommand("AlignTo" + tagID.name(),
                             new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-                    NamedCommands.registerCommand("AUTONAlignTo" + tagID.name(), new AutonAutoAlign(drivetrain, Camera.RIGHT, leds, rod,
-                        tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+                    // new auton align - deploys l4 automatically
+                    NamedCommands.registerCommand("AUTONAlignTo" + tagID.name(),
+                            new AutonAutoAlign(drivetrain, Camera.RIGHT, leds, rod,
+                                    tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
 
                 default:
@@ -339,34 +344,26 @@ public class RobotContainer extends LightningContainer {
                     NamedCommands.registerCommand("AlignTo" + tagID.name() + "Right",
                             new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-                    
+
                     NamedCommands.registerCommand("AUTONAlignTo" + tagID.name() + "Left",
                             new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     NamedCommands.registerCommand("AUTONAlignTo" + tagID.name() + "Right",
                             new AutonAutoAlign(drivetrain, Camera.RIGHT, leds, rod,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-                    
+
                     break;
             }
         }
-
-        // AUTON AUTO ALIGN TEST
-        // NamedCommands.registerCommand("AUTONAlignToThreeLeft",
-        //         new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Three)
-        //                 .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        // NamedCommands.registerCommand("AUTONAlignToFiveLeft",
-        //         new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Five)
-        //                 .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1));
 
         NamedCommands.registerCommand("IntuahCoral",
                 new RunCommand(() -> coralCollector.setPower(1), coralCollector));
-                
+
         NamedCommands.registerCommand("StowTuah",
-            new InstantCommand(() -> rod.setState(RodStates.STOW, RodTransitionStates.DEFAULT)));
+                new InstantCommand(() -> rod.setState(RodStates.STOW, RodTransitionStates.DEFAULT)));
 
         NamedCommands.registerCommand("ScoreCoral",
                 new ScoreCoral(coralCollector));

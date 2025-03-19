@@ -4,7 +4,6 @@
 
 package frc.robot.commands.auton;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -24,7 +23,6 @@ import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
@@ -36,16 +34,17 @@ public class AutonAutoAlign extends Command {
     private LEDs leds;
     private FishingRod rod;
 
-    private double tolerance = 0.02;
+    private double driveTolerance = AutoAlignConstants.POSEBASED_DRIVE_TOLERANCE;
 
-    private PIDController xPID = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI,
-            AutoAlignConstants.THREE_DEE_xD);
+    private PIDController xPID = new PIDController(AutoAlignConstants.POSEBASED_DRIVE_P,
+            AutoAlignConstants.POSEBASED_DRIVE_I, AutoAlignConstants.POSEBASED_DRIVE_D);
+    private PIDController yPID = new PIDController(AutoAlignConstants.POSEBASED_DRIVE_P,
+            AutoAlignConstants.POSEBASED_DRIVE_I, AutoAlignConstants.POSEBASED_DRIVE_D);
+    private PIDController rPID = new PIDController(AutoAlignConstants.POSEBASED_ROT_P,
+            AutoAlignConstants.POSEBASED_ROT_I, AutoAlignConstants.POSEBASED_ROT_D);
 
-    private PIDController yPID = new PIDController(AutoAlignConstants.THREE_DEE_yP, AutoAlignConstants.THREE_DEE_yI,
-            AutoAlignConstants.THREE_DEE_yD);
-
-    private PIDController rPID = new PIDController(AutoAlignConstants.THREE_DEE_rP, AutoAlignConstants.THREE_DEE_rI,
-            AutoAlignConstants.THREE_DEE_rD);
+    private double driveKS = AutoAlignConstants.POSEBASED_DRIVE_KS;
+    private double rotKS = AutoAlignConstants.POSEBASED_ROT_KS;
 
     private Pose2d targetPose = new Pose2d();
 
@@ -55,7 +54,8 @@ public class AutonAutoAlign extends Command {
 
     private LightningTagID codeID = LightningTagID.One;
 
-    private boolean doEle = false;
+    // AUTON AUTO ALIGN SPECIFIC VARIABLES
+    private boolean hasDeployed = false;
     private final double deployVeloc = 0.45;
     private boolean reachedDeployVelOnce = false;
 
@@ -95,10 +95,9 @@ public class AutonAutoAlign extends Command {
         addRequirements(drivetrain, rod);
     }
 
-
     @Override
     public void initialize() {
-        doEle = false;
+        hasDeployed = false;
         reachedDeployVelOnce = false;
 
         invokeCancel = false;
@@ -130,11 +129,11 @@ public class AutonAutoAlign extends Command {
             }
         }
 
-        xPID.setTolerance(tolerance);
+        xPID.setTolerance(driveTolerance);
 
-        yPID.setTolerance(tolerance);
+        yPID.setTolerance(driveTolerance);
 
-        rPID.setTolerance(1);
+        rPID.setTolerance(AutoAlignConstants.POSEBASED_ROT_TOLERANCE);
         rPID.enableContinuousInput(0, 360);
     }
 
@@ -142,29 +141,29 @@ public class AutonAutoAlign extends Command {
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        // double kS = 0.025;
-        double kS = 0.012;
-        // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
+        double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
+                + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? driveKS : 0));
+        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY())
+                + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? driveKS : 0));
+        double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
+                targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
-        double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
-        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
-        double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
-                
-        //if speed goes above threshold, start checking if we go back below threshold
+        // if speed goes above threshold, start checking if we go back below threshold
         // if (Math.abs(xVeloc) > deployVeloc && Math.abs(yVeloc) > deployVeloc) {
-        //     reachedDeployVelOnce = true;
+        // reachedDeployVelOnce = true;
         // }
 
-        //
-        if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !doEle) {
-            doEle = true;
+        // if we've reached the threshold once, and we're below the threshold, deploy the ele
+        if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !hasDeployed) {
+            hasDeployed = true;
             rod.setState(RodStates.L4, RodTransitionStates.L4_SAFE_ZONE);
-        } 
-        
-        //once we've started moving the elvator, make sure we never go faster than threshold (to be safe)
+        }
+
+        // once we've started moving the elvator, make sure we never go faster than
+        // threshold (to be safe)
         // if (doEle) {
-        //     xVeloc = MathUtil.clamp(xVeloc, -deployVeloc, deployVeloc);
-        //     yVeloc = MathUtil.clamp(yVeloc, -deployVeloc, deployVeloc);
+        // xVeloc = MathUtil.clamp(xVeloc, -deployVeloc, deployVeloc);
+        // yVeloc = MathUtil.clamp(yVeloc, -deployVeloc, deployVeloc);
         // }
 
         drivetrain.setControl(DriveRequests.getAutoAlign(xVeloc, yVeloc, rotationVeloc));
@@ -183,9 +182,13 @@ public class AutonAutoAlign extends Command {
                 rod.setState(RodStates.L4, RodTransitionStates.L4_SAFE_ZONE);
             }
         }
+
         if (!DriverStation.isAutonomous() && onTarget()) {
             RobotContainer.hapticDriverCommand().schedule();
         }
+
+        // Ensure we are not moving after we stop
+        drivetrain.setControl(DriveRequests.getBrake().get());
     }
 
     @Override

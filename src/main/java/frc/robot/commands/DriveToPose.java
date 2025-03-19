@@ -19,6 +19,8 @@ import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.GeomUtil;
+import frc.robot.util.NetworkNumber;
+import frc.robot.util.NetworkPose;
 import frc.robot.util.TunableNumber;
 import frc.thunder.util.Tuple;
 
@@ -39,11 +41,14 @@ public class DriveToPose extends Command {
     private static final TunableNumber thetaTolerance = new TunableNumber("DriveToPose/ThetaTolerance");
     private static final TunableNumber ffMinRadius = new TunableNumber("DriveToPose/FFMinRadius");
     private static final TunableNumber ffMaxRadius = new TunableNumber("DriveToPose/FFMaxRadius");
+    private static final NetworkPose targetPose = new NetworkPose("DriveToPose/TargetPose", new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)));
+    private static final NetworkPose currentPose = new NetworkPose("DriveToPose/CurrentPose", new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)));
+    private static final NetworkNumber distance = new NetworkNumber("DriveToPose/Distance", 0.0);
 
     static {
         drivekP.initDefault(0.8);
         drivekD.initDefault(0.0);
-        thetakP.initDefault(4.0);
+        thetakP.initDefault(3.0);
         thetakD.initDefault(0.0);
         driveMaxVelocity.initDefault(3.8);
         driveMaxAcceleration.initDefault(3.0);
@@ -197,12 +202,13 @@ public class DriveToPose extends Command {
             thetaVelocity = 0.0;
         }
 
+        final var adjust = new Rotation2d(Math.PI / 2 + (22.5 * 0.0174533));
         Translation2d driveVelocity = new Pose2d(
                 Translation2d.kZero,
                 new Rotation2d(
                         Math.atan2(
                                 currentPose.getTranslation().getY() - targetPose.getTranslation().getY(),
-                                currentPose.getTranslation().getX() - targetPose.getTranslation().getX())))
+                                currentPose.getTranslation().getX() - targetPose.getTranslation().getX())).rotateBy(adjust))
                 .transformBy(GeomUtil.toTransform2d(driveVelocityScalar, 0.0))
                 .getTranslation();
 
@@ -219,6 +225,10 @@ public class DriveToPose extends Command {
                         driveVelocity.getX(), driveVelocity.getY(), thetaVelocity, currentPose.getRotation()));
 
         // Log data
+        DriveToPose.currentPose.set(currentPose);
+        DriveToPose.targetPose.set(targetPose);
+        DriveToPose.distance.set(currentDistance);
+
         // Logger.recordOutput("DriveToPose/DistanceMeasured", currentDistance);
         // Logger.recordOutput("DriveToPose/DistanceSetpoint",
         // driveController.getSetpoint().position);

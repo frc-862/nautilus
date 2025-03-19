@@ -84,19 +84,14 @@ public class FishingRod extends SubsystemBase {
                         transitionState = RodTransitionStates.DEFAULT; // finalize transition
                     }
                     break;
-
-                case L2_SAFE_ZONE: // transition to L4, moves wrist earlier than onTarget()
+                case CORAL_SAFE_ZONE: // transition to L4, moves wrist earlier than onTarget()
+                    double targetSafeZone = switch (targetState) {
+                        case L2 -> FishingRodConstants.L2_SAFEZONE_ELE;
+                        case L4 -> FishingRodConstants.L4_SAFEZONE_ELE;
+                        default -> throw new IllegalArgumentException("Target state not defined");
+                    };
                     elevator.setState(targetState);
-                    if (elevator.getPosition() > FishingRodConstants.L2_SAFEZONE_ELE) {
-                        wrist.setState(targetState);
-                        if (wrist.isOnTarget()) {
-                            transitionState = RodTransitionStates.DEFAULT; // finalize transition
-                        }
-                    }
-                    break;
-                case L4_SAFE_ZONE: // transition to L4, moves wrist earlier than onTarget()
-                    elevator.setState(targetState);
-                    if (elevator.getPosition() > FishingRodConstants.L4_SAFEZONE_ELE) {
+                    if (elevator.getPosition() > targetSafeZone) {
                         wrist.setState(targetState);
                         if (wrist.isOnTarget()) {
                             transitionState = RodTransitionStates.DEFAULT; // finalize transition
@@ -114,7 +109,7 @@ public class FishingRod extends SubsystemBase {
                     break;
                 case DEFAULT, TRITON, WITH_WRIST_SLOW: // all states should end here
                     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState),
-                            transitionState == RodTransitionStates.WITH_WRIST_SLOW);
+                            transitionState == RodTransitionStates.WITH_WRIST_SLOW); // Run with slow wrist if WITH_WRIST_SLOW
                     elevator.setPosition(FishingRodConstants.ELEVATOR_MAP.get(targetState));
                     if (wrist.isOnTarget() && elevator.isOnTarget()) {
                         currState = targetState;

@@ -4,6 +4,8 @@
 
 package frc.robot.commands.auton;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -59,6 +61,8 @@ public class AutonAutoAlign extends Command {
     private final double deployVeloc = 0.45;
     private boolean reachedDeployVelOnce = false;
 
+    private Supplier<RodStates> targetRodState;
+
     /**
      * Used to align to Tag
      * will always use PID Controllers
@@ -68,8 +72,8 @@ public class AutonAutoAlign extends Command {
      * @param leds
      * @param codeID     the Lightning-specific ID code for the tag
      */
-    public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, LightningTagID codeID) {
-        this(drivetrain, camera, leds, rod);
+    public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, LightningTagID codeID, Supplier<RodStates> targetRodState) {
+        this(drivetrain, camera, leds, rod, targetRodState);
 
         customTagSet = true;
         this.codeID = codeID;
@@ -83,7 +87,7 @@ public class AutonAutoAlign extends Command {
      * @param camera
      * @param leds
      */
-    public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod) {
+    public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, Supplier<RodStates> targetRodState) {
         this.drivetrain = drivetrain;
         this.camera = camera;
         this.leds = leds;
@@ -91,6 +95,8 @@ public class AutonAutoAlign extends Command {
 
         tagID = 0;
         customTagSet = false;
+
+        this.targetRodState = targetRodState;
 
         addRequirements(drivetrain, rod);
     }
@@ -156,7 +162,7 @@ public class AutonAutoAlign extends Command {
         // if we've reached the threshold once, and we're below the threshold, deploy the ele
         if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !hasDeployed) {
             hasDeployed = true;
-            rod.setState(RodStates.L4, RodTransitionStates.L4_SAFE_ZONE);
+            invokeRod();
         }
 
         // once we've started moving the elvator, make sure we never go faster than
@@ -178,8 +184,8 @@ public class AutonAutoAlign extends Command {
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
 
-            if (rod.getState() != RodStates.L4) {
-                rod.setState(RodStates.L4, RodTransitionStates.L4_SAFE_ZONE);
+            if (rod.getState() != targetRodState.get()) {
+                invokeRod();
             }
         }
 
@@ -198,5 +204,17 @@ public class AutonAutoAlign extends Command {
 
     public boolean onTarget() {
         return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
+    }
+
+    private void invokeRod() {
+        if (targetRodState.get() == RodStates.DEFAULT) {
+            return;
+        }
+
+        if (targetRodState.get() == RodStates.L4) {
+            rod.setState(RodStates.L4, RodTransitionStates.CORAL_SAFE_ZONE);
+        } else {
+            rod.setState(targetRodState.get());
+        }
     }
 }

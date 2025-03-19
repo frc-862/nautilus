@@ -212,8 +212,6 @@ public class Constants {
         }
 
         public enum RodTransitionStates {
-
-
             DEFAULT, // default travel state
             WRIST_DOWN_THEN_ELE, // any state to L4
             WRIST_UP_THEN_ELE, // L4 to any state
@@ -221,8 +219,7 @@ public class Constants {
             TRITON, // specific state to deal with triton's loose belt,
             TRANSITIONING,
 
-            L2_SAFE_ZONE,
-            L4_SAFE_ZONE, // transition to L4, moves wrist earlier than onTarget()
+            CORAL_SAFE_ZONE, // transition to any coral score setpoint, moves wrist earlier than onTarget()
             STOW_SAFE_ZONE // transition to stow, moves elevator earlier than onTarget()
         }
 
@@ -257,7 +254,7 @@ public class Constants {
                 // put(ROD_STATES.L4, 71.87d);
                 // put(ROD_STATES.SOURCE, 36.5d);
 
-                put(RodStates.STOW, 2.75d); // REVER REVRTTT REVERTT REVERTTTT
+                put(RodStates.STOW, 2d);
                 put(RodStates.L1, 2d);
                 put(RodStates.L2, 13.5d);
                 put(RodStates.L3, 26d);

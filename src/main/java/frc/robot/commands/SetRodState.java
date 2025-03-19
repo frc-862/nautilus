@@ -32,6 +32,7 @@ public class SetRodState extends Command {
     public void initialize() {
         switch (state) {
             case STOW:
+                // Use fast stow if in L4 or Barge otherwise use default stow
                 if (rod.getState() == RodStates.L4 || rod.getState() == RodStates.BARGE) {
                     rod.setState(state, RodTransitionStates.DEFAULT);
                 } else {
@@ -42,10 +43,14 @@ public class SetRodState extends Command {
             //     rod.setState(state, RodTransitionStates.L2_SAFE_ZONE);
             //     break;
             case L4:
-                rod.setState(state, RodTransitionStates.L4_SAFE_ZONE);
+                if (rod.getState() != RodStates.L4) {
+                    rod.setState(state, RodTransitionStates.CORAL_SAFE_ZONE);
+                }
                 break;
             default:
-                rod.setState(state);
+                if (rod.getState() != state) {
+                    rod.setState(state);
+                }
                 break;
         }
     }

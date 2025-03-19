@@ -1,0 +1,104 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.841998734287709,
+        "y": 2.57242574851606
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.5361835501047483,
+        "y": 2.426699164193435
+      },
+      "isLocked": false,
+      "linkedName": "Reef1Left"
+    },
+    {
+      "anchor": {
+        "x": 1.9025840716655025,
+        "y": 1.2125982018156423
+      },
+      "prevControl": {
+        "x": 2.912680582227653,
+        "y": 1.9405928116270945
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.6533181662087917,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Stow",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodStow"
+        }
+      }
+    },
+    {
+      "name": "SourceAndCollect",
+      "waypointRelativePos": 0.9372123969780225,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "RodSource"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "IntuahCoral"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": 54.0
+  },
+  "reversed": false,
+  "folder": "2 PIECE PATHS",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "useDefaultConstraints": true
+}

@@ -82,7 +82,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RSource-R2L"
+            "pathName": "2PC-RSource-R2L"
           }
         },
         {
@@ -119,7 +119,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R2-RSource"
+            "pathName": "2PC-R2-RSource"
           }
         },
         {
@@ -163,7 +163,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RSource-R2L"
+            "pathName": "2PC-RSource-R2L"
           }
         },
         {

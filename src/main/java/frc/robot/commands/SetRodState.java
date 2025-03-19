@@ -32,8 +32,15 @@ public class SetRodState extends Command {
     public void initialize() {
         switch (state) {
             case STOW:
-                rod.setState(state, RodTransitionStates.DEFAULT);
+                if (rod.getState() == RodStates.L4 || rod.getState() == RodStates.BARGE) {
+                    rod.setState(state, RodTransitionStates.DEFAULT);
+                } else {
+                    rod.setState(state);
+                }
                 break;
+            // case L2:
+            //     rod.setState(state, RodTransitionStates.L2_SAFE_ZONE);
+            //     break;
             case L4:
                 rod.setState(state, RodTransitionStates.L4_SAFE_ZONE);
                 break;

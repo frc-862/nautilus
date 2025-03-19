@@ -85,6 +85,15 @@ public class FishingRod extends SubsystemBase {
                     }
                     break;
 
+                case L2_SAFE_ZONE: // transition to L4, moves wrist earlier than onTarget()
+                    elevator.setState(targetState);
+                    if (elevator.getPosition() > FishingRodConstants.L2_SAFEZONE_ELE) {
+                        wrist.setState(targetState);
+                        if (wrist.isOnTarget()) {
+                            transitionState = RodTransitionStates.DEFAULT; // finalize transition
+                        }
+                    }
+                    break;
                 case L4_SAFE_ZONE: // transition to L4, moves wrist earlier than onTarget()
                     elevator.setState(targetState);
                     if (elevator.getPosition() > FishingRodConstants.L4_SAFEZONE_ELE) {

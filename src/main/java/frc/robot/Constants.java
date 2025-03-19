@@ -191,6 +191,7 @@ public class Constants {
     public static class FishingRodConstants {
 
         //keep in mind that this is when the other mechanism will START moving, not necessarily the angle it will intersect the reef at
+        public static final double L2_SAFEZONE_ELE = 8d; //elevator height to move wrist
         public static final double L4_SAFEZONE_ELE = 31d; //elevator height to move wrist
         public static final double STOW_SAFEZONE_ANGLE = -30d; //wrist angle to move elevator
 
@@ -220,6 +221,7 @@ public class Constants {
             TRITON, // specific state to deal with triton's loose belt,
             TRANSITIONING,
 
+            L2_SAFE_ZONE,
             L4_SAFE_ZONE, // transition to L4, moves wrist earlier than onTarget()
             STOW_SAFE_ZONE // transition to stow, moves elevator earlier than onTarget()
         }

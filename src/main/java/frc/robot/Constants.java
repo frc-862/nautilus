@@ -191,10 +191,12 @@ public class Constants {
     public static class FishingRodConstants {
 
         //keep in mind that this is when the other mechanism will START moving, not necessarily the angle it will intersect the reef at
+        public static final double L1_SAFEZONE_ELE = 2d; // TUNE THIS!!!!
         public static final double L2_SAFEZONE_ELE = 8d; //elevator height to move wrist
+        public static final double L3_SAFEZONE_ELE = 26d; // TUNE THIS!!!!
         public static final double L4_SAFEZONE_ELE = 31d; //elevator height to move wrist
+        
         public static final double STOW_SAFEZONE_ANGLE = -30d; //wrist angle to move elevator
-
 
         public enum RodStates {
             STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),

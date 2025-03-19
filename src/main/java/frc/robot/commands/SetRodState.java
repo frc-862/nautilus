@@ -4,8 +4,11 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.subsystems.FishingRod;
@@ -30,6 +33,13 @@ public class SetRodState extends Command {
 
     @Override
     public void initialize() {
+
+        // If our current state is the same as the state we want to set, return
+        // Stow regardless in case we get stuck somewhere
+        if (rod.getState() == state && state != RodStates.STOW) {
+            return;
+        }
+
         switch (state) {
             case STOW:
                 // Use fast stow if in L4 or Barge otherwise use default stow
@@ -39,18 +49,11 @@ public class SetRodState extends Command {
                     rod.setState(state);
                 }
                 break;
-            // case L2:
-            //     rod.setState(state, RodTransitionStates.L2_SAFE_ZONE);
-            //     break;
-            case L4:
-                if (rod.getState() != RodStates.L4) {
-                    rod.setState(state, RodTransitionStates.CORAL_SAFE_ZONE);
-                }
+            case L2, L4: // L1 and L3 should go here, but are not tuned yet
+                rod.setState(state, RodTransitionStates.CORAL_SAFE_ZONE);
                 break;
             default:
-                if (rod.getState() != state) {
-                    rod.setState(state);
-                }
+                rod.setState(state);
                 break;
         }
     }

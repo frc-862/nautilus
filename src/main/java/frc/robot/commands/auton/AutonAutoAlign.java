@@ -56,7 +56,7 @@ public class AutonAutoAlign extends Command {
     private LightningTagID codeID = LightningTagID.One;
 
     private boolean doEle = false;
-    private final double deployVeloc = 0.35;
+    private final double deployVeloc = 0.45;
     private boolean reachedDeployVelOnce = false;
 
     /**
@@ -73,8 +73,6 @@ public class AutonAutoAlign extends Command {
 
         customTagSet = true;
         this.codeID = codeID;
-
-        this.rod = rod;
     }
 
     /**
@@ -109,6 +107,8 @@ public class AutonAutoAlign extends Command {
             tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red
                     ? codeID.redID
                     : codeID.blueID;
+        } else {
+            customTagSet = false;
         }
 
         // Get the tag in front of the robot
@@ -142,34 +142,30 @@ public class AutonAutoAlign extends Command {
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        double kS = 0.005;//0.013;
-        double rKs = 0.018;
+        // double kS = 0.025;
+        double kS = 0.012;
+        // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
-        double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
-                + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
-        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY())
-                + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
-        double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
-                targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? rKs : 0));
-
+        double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
+        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
+        double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
                 
         //if speed goes above threshold, start checking if we go back below threshold
-        if (Math.abs(xVeloc) > deployVeloc && Math.abs(yVeloc) > deployVeloc) {
-            reachedDeployVelOnce = true;
-        }
+        // if (Math.abs(xVeloc) > deployVeloc && Math.abs(yVeloc) > deployVeloc) {
+        //     reachedDeployVelOnce = true;
+        // }
 
         //
-        if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !doEle && reachedDeployVelOnce) {
+        if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !doEle) {
             doEle = true;
             rod.setState(RodStates.L4, RodTransitionStates.L4_SAFE_ZONE);
         } 
         
-
         //once we've started moving the elvator, make sure we never go faster than threshold (to be safe)
-        if (doEle) {
-            xVeloc = MathUtil.clamp(xVeloc, -deployVeloc, deployVeloc);
-            yVeloc = MathUtil.clamp(yVeloc, -deployVeloc, deployVeloc);
-        }
+        // if (doEle) {
+        //     xVeloc = MathUtil.clamp(xVeloc, -deployVeloc, deployVeloc);
+        //     yVeloc = MathUtil.clamp(yVeloc, -deployVeloc, deployVeloc);
+        // }
 
         drivetrain.setControl(DriveRequests.getAutoAlign(xVeloc, yVeloc, rotationVeloc));
 
@@ -184,7 +180,7 @@ public class AutonAutoAlign extends Command {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
 
             if (rod.getState() != RodStates.L4) {
-                rod.setState(RodStates.L4);
+                rod.setState(RodStates.L4, RodTransitionStates.L4_SAFE_ZONE);
             }
         }
         if (!DriverStation.isAutonomous() && onTarget()) {

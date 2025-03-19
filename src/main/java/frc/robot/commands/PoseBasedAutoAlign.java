@@ -4,6 +4,9 @@
 
 package frc.robot.commands;
 
+import javax.sql.rowset.spi.XmlReader;
+import javax.xml.xpath.XPathFunction;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -31,7 +34,8 @@ public class PoseBasedAutoAlign extends Command {
     private Camera camera;
     private LEDs leds;
 
-    private double tolerance = 0.025;
+    private double tolerance = 0.025; // 0.03
+    private double rotTolerance = 1.5; // 2.5
 
     private PIDController xPID = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI, AutoAlignConstants.THREE_DEE_xD);
 
@@ -146,7 +150,7 @@ public class PoseBasedAutoAlign extends Command {
 
         yPID.setTolerance(tolerance);
 
-        rPID.setTolerance(1.5);
+        rPID.setTolerance(rotTolerance);
         rPID.enableContinuousInput(0, 360);
     }
 
@@ -155,8 +159,9 @@ public class PoseBasedAutoAlign extends Command {
         Pose2d currentPose = drivetrain.getPose();
 
         // double kS = 0.025;
-        double kS = 0.01;
         // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
+
+        double kS = 0.012;//LightningShuffleboard.getDouble("TestAutoAlign", "Drive static", 0.012d); // 0.01;
 
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
         double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
@@ -167,6 +172,9 @@ public class PoseBasedAutoAlign extends Command {
         LightningShuffleboard.setDouble("TestAutoAlign", "X veloc", xVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "Y veloc", yVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "R veloc", rotationVeloc);
+
+        // setXGains();
+        // setRGains();
     }
 
     @Override
@@ -188,5 +196,28 @@ public class PoseBasedAutoAlign extends Command {
 
     public boolean onTarget() {
         return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
+    }
+
+    private void setXGains() {
+        String key = "x";
+        xPID.setPID(
+            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.THREE_DEE_xP),
+            LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.THREE_DEE_xI),
+            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.THREE_DEE_xD));
+        
+        yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
+
+        xPID.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", key + " tolerance", tolerance));
+    }
+
+    private void setRGains() {
+        String key = "r";
+
+        rPID.setPID(
+            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.THREE_DEE_rP),
+            LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.THREE_DEE_rI),
+            LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.THREE_DEE_rD));
+
+        rPID.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", key + " tolerance", rotTolerance));
     }
 }

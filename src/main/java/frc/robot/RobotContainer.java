@@ -230,6 +230,9 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getRightBumperButton)
                 .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, leds)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        // new Trigger(driver::getRightBumperButton)
+        //         .whileTrue(new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Five)
+        //             .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // source autoalign
         new Trigger(() -> driver.getPOV() == 0)
@@ -325,6 +328,8 @@ public class RobotContainer extends LightningContainer {
                     NamedCommands.registerCommand("AlignTo" + tagID.name(),
                             new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AUTONAlignTo" + tagID.name(), new AutonAutoAlign(drivetrain, Camera.RIGHT, leds, rod,
+                        tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
 
                 default:
@@ -334,17 +339,25 @@ public class RobotContainer extends LightningContainer {
                     NamedCommands.registerCommand("AlignTo" + tagID.name() + "Right",
                             new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    
+                    NamedCommands.registerCommand("AUTONAlignTo" + tagID.name() + "Left",
+                            new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod,
+                                    tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AUTONAlignTo" + tagID.name() + "Right",
+                            new AutonAutoAlign(drivetrain, Camera.RIGHT, leds, rod,
+                                    tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    
                     break;
             }
         }
 
         // AUTON AUTO ALIGN TEST
-        NamedCommands.registerCommand("AUTONAlignToThreeLeft",
-                new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Three)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        NamedCommands.registerCommand("AUTONAlignToFiveLeft",
-                new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Five)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        // NamedCommands.registerCommand("AUTONAlignToThreeLeft",
+        //         new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Three)
+        //                 .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        // NamedCommands.registerCommand("AUTONAlignToFiveLeft",
+        //         new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Five)
+        //                 .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1));

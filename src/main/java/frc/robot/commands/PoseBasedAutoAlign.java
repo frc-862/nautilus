@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import com.fasterxml.jackson.databind.node.BooleanNode;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -44,6 +46,7 @@ public class PoseBasedAutoAlign extends Command {
     private int tagID = 0;
     private boolean customTagSet = false;
     private boolean invokeCancel = false;
+    private boolean isL1 = false;
 
     private LightningTagID codeID = LightningTagID.One;
 
@@ -99,6 +102,19 @@ public class PoseBasedAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
+     * 
+     * @param drivetrain
+     * @param camera
+     * @param leds
+     */
+    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, Boolean isL1, LEDs leds) {
+        this(drivetrain, camera, leds);
+        this.isL1 = isL1;
+    }
+
+    /**
+     * Used to align to Tag
+     * will always use PID Controllers
      * @param drivetrain
      * @param camera
      * @param leds
@@ -107,7 +123,7 @@ public class PoseBasedAutoAlign extends Command {
         this.drivetrain = drivetrain;
         this.camera = camera;
         this.leds = leds;
-        
+
         tagID = 0;
         customTagSet = false;
         
@@ -133,7 +149,12 @@ public class PoseBasedAutoAlign extends Command {
             invokeCancel = true;
             CommandScheduler.getInstance().cancel(this);
         } else {
-            targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tagID));
+            if (isL1) {
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<>(camera, tagID)).plus(PoseConstants.L1_OFFSET);
+            } else {
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<>(camera, tagID));
+            }
+            targetPose = PoseConstants.poseHashMap.get(new Tuple<>(camera, tagID));
 
             LightningShuffleboard.setDouble("TestAutoAlign", "Tag", tagID);
 

@@ -53,6 +53,7 @@ import frc.robot.commands.OldElevatorSync;
 import frc.robot.commands.ElevatorSyncStow;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
+import frc.robot.commands.SetRodStateReefAlgae;
 import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.auton.AutonAutoAlign;
 import frc.robot.commands.auton.IntakeCoral;
@@ -259,8 +260,7 @@ public class RobotContainer extends LightningContainer {
 
         // algae mode
         new Trigger(() -> !rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.PROCESSOR));
-        new Trigger(() -> !rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.LOW));
-        new Trigger(() -> !rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.HIGH));
+        new Trigger(() -> !rod.isCoralMode() && (copilot.getBButton() || copilot.getXButton())).onTrue(new SetRodStateReefAlgae(drivetrain, rod)); // B or X        
         new Trigger(() -> !rod.isCoralMode() && copilot.getYButton()).onTrue(new SetRodState(rod, RodStates.BARGE));
 
         // biases

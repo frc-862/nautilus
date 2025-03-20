@@ -87,10 +87,7 @@ public class AutonAutoAlign extends Command {
      * @param camera
      * @param leds
      * @param rod
-<<<<<<< HEAD
-=======
      * @param targetRodState supplier for the rod state to go to when ready
->>>>>>> main
      */
     public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, Supplier<RodStates> targetRodState) {
         this.drivetrain = drivetrain;

@@ -4,10 +4,11 @@
 
 package frc.robot.commands.auton;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -23,7 +24,6 @@ import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
@@ -57,6 +57,9 @@ public class AutonAutoAlign extends Command {
     private boolean doEle = false;
     private final double deployVeloc = 0.35;
     private boolean reachedDeployVelOnce = false;
+
+    private boolean overrideYPID = false;
+    private DoubleSupplier yDoubleSupplier;
 
     /**
      * Used to align to Tag
@@ -146,8 +149,8 @@ public class AutonAutoAlign extends Command {
 
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
                 + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
-        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY())
-                + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
+        double yVeloc = !overrideYPID ? yPID.calculate(currentPose.getY(), targetPose.getY())
+                + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0))  : yDoubleSupplier.getAsDouble();
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
                 targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? rKs : 0));
 
@@ -197,6 +200,12 @@ public class AutonAutoAlign extends Command {
     }
 
     public boolean onTarget() {
-        return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
+        return xPID.atSetpoint() && (!overrideYPID ? yPID.atSetpoint() : true) && rPID.atSetpoint();
+    }
+
+    public Command withYSpeed(DoubleSupplier yDoubleSupplier){
+        overrideYPID = true;
+        this.yDoubleSupplier = yDoubleSupplier;
+        return this;
     }
 }

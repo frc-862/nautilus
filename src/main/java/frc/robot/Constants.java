@@ -156,7 +156,7 @@ public class Constants {
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";
-        
+
         public static final int PDH = 2; // RIO LOOP
         public static final ModuleType PDH_MODULE_TYPE = ModuleType.kRev;
 
@@ -549,9 +549,9 @@ public class Constants {
                 Units.feetToMeters(26.0));
 
         public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
-            {                
+            {
 
-                
+
                 // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 6), new Pose2d(13.5760436668043, 2.80494567916454, new Rotation2d(Degrees.of(-60))));
                 // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6), new Pose2d(13.8578483331957, 2.96764567916454, new Rotation2d(Degrees.of(-60))));
                 // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 7), new Pose2d(14.375498, 3.8632, new Rotation2d(Degrees.of(0))));
@@ -601,7 +601,7 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.781046, 3.8632, new Rotation2d(Degrees.of(0))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22), new Pose2d(5.27564233319572, 2.98929631425915, new Rotation2d(Degrees.of(-60))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22), new Pose2d(4.99383766680426, 2.82659631425915, new Rotation2d(Degrees.of(-60))));
-                
+
                 //red right source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 2),
                         new Pose2d(16.598, 7.163, new Rotation2d(Degrees.of(-126))));
@@ -621,7 +621,7 @@ public class Constants {
                 // red barge front
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 5),
                     new Pose2d(9.998, 1.621, new Rotation2d(Degrees.of(0))));
-                
+
                 // blue barge front
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 14),
                     new Pose2d(7.612, 6.201, new Rotation2d(Degrees.of(-180))));
@@ -629,14 +629,14 @@ public class Constants {
                 // red barge back
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 15),
                     new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
-                
+
                 // blue barge back
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 4),
                     new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
             }
 
         };
-            
+
         public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> l1PoseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
         {
                 // put(new Tuple<>(VisionConstants.Camera.RIGHT, 6),
@@ -712,7 +712,7 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 21), new Pose2d(5.979046, 3.9259, new Rotation2d(Degrees.of(-30))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.979046, 4.1259, new Rotation2d(Degrees.of(30))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22), new Pose2d(5.14713745962155, 2.68647328430983, new Rotation2d(Degrees.of(-90))));
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22), new Pose2d(5.32034254037843, 2.78647328430983, new Rotation2d(Degrees.of(-30))));    
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22), new Pose2d(5.32034254037843, 2.78647328430983, new Rotation2d(Degrees.of(-30))));
             }
         };
 
@@ -789,17 +789,17 @@ public class Constants {
 
         public static int getScorePose(Pose2d robotPose){
 
-            
+
             final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
             DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(blue);
-        
-                
+
+
             Translation2d robotToReef = alliance == blue ? robotPose.getTranslation().minus(new Translation2d(4.5, 4.031))
                 : robotPose.getTranslation().minus(new Translation2d(13.055, 4.031));
 
             double theta = MathUtil.inputModulus(robotToReef.getAngle().getRadians(), 0, Math.PI * 2);
             double r = robotToReef.getDistance(new Translation2d());
-        
+
             if (r > 3){
                 return 0;
             }
@@ -1320,7 +1320,7 @@ public class Constants {
 
         public static final double DEPLOY_VEL = 0.45;
         public static final double BARGE_DEPLY_VEL = 0.35;
-        
+
         public static final double targetTX = 720d;
 
         public static final HashMap<Integer, Double> tagAngles = new HashMap<Integer, Double>() {

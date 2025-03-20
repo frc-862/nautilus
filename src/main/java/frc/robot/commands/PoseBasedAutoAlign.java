@@ -76,9 +76,8 @@ public class PoseBasedAutoAlign extends Command {
      *
      * @param drivetrain
      * @param camera
-     * @param leds
      * @param isL1       whether to use L1 pose hashmap
-     * @param codeID     the Lightning-specific ID code for the tag
+     * @param leds
      */
     public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, boolean isL1, LEDs leds) {
         this(drivetrain, camera, leds);

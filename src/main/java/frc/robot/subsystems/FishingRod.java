@@ -86,7 +86,6 @@ public class FishingRod extends SubsystemBase {
                     break;
                 case CORAL_SAFE_ZONE: // transition to L4, moves wrist earlier than onTarget()
                     double targetSafeZone = switch (targetState) {
-                        case L1 -> FishingRodConstants.L1_SAFEZONE_ELE;
                         case L2 -> FishingRodConstants.L2_SAFEZONE_ELE;
                         case L3 -> FishingRodConstants.L3_SAFEZONE_ELE;
                         case L4 -> FishingRodConstants.L4_SAFEZONE_ELE;

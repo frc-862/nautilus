@@ -191,16 +191,15 @@ public class Constants {
     public static class FishingRodConstants {
 
         //keep in mind that this is when the other mechanism will START moving, not necessarily the angle it will intersect the reef at
-        public static final double L1_SAFEZONE_ELE = 2d; // TUNE THIS!!!!
         public static final double L2_SAFEZONE_ELE = 8d; //elevator height to move wrist
-        public static final double L3_SAFEZONE_ELE = 26d; // TUNE THIS!!!!
+        public static final double L3_SAFEZONE_ELE = 18d; // TUNE THIS!!!!
         public static final double L4_SAFEZONE_ELE = 31d; //elevator height to move wrist
-        
+
         public static final double STOW_SAFEZONE_ANGLE = -30d; //wrist angle to move elevator
 
         public enum RodStates {
             STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
-            BARGE(true), PROCESSOR(false), DEFAULT(false);
+            BARGE(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false);
 
             private boolean scoring;
 
@@ -227,13 +226,6 @@ public class Constants {
 
         public static final HashMap<RodStates, Double> WRIST_MAP = new HashMap<RodStates, Double>() {
             {
-                // put(ROD_STATES.STOW, 0d);
-                // put(ROD_STATES.L1, 0d);
-                // put(ROD_STATES.L2, -20d);
-                // put(ROD_STATES.L3, -20d);
-                // put(ROD_STATES.L94, -80d);
-                // put(ROD_STATES.SOURCE, 0d);
-
                 put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
                 put(RodStates.L1, 0d);
                 put(RodStates.L2, -30d);
@@ -249,13 +241,6 @@ public class Constants {
 
         public static final HashMap<RodStates, Double> ELEVATOR_MAP = new HashMap<RodStates, Double>() {
             {
-                // put(ROD_STATES.STOW, 1d);
-                // put(ROD_STATES.L1, 17.88d);
-                // put(ROD_STATES.L2, 31.72d);
-                // put(ROD_STATES.L3, 47.59d);
-                // put(ROD_STATES.L4, 71.87d);
-                // put(ROD_STATES.SOURCE, 36.5d);
-
                 put(RodStates.STOW, 2d);
                 put(RodStates.L1, 2d);
                 put(RodStates.L2, 13.5d);
@@ -1223,11 +1208,11 @@ public class Constants {
         public static final double Y_Kd = 0d;
 
         // Posebased gains
-        public static final double POSEBASED_DRIVE_P = 2d; // 2
+        public static final double POSEBASED_DRIVE_P = 1.5d; // 2
         public static final double POSEBASED_DRIVE_I = 0;
-        public static final double POSEBASED_DRIVE_D = 0.06; // 0.06
+        public static final double POSEBASED_DRIVE_D = 0.08; // 0.06
         public static final double POSEBASED_DRIVE_TOLERANCE = 0.025; // 0.03
-        public static final double POSEBASED_DRIVE_KS = 0.012; // 0.01
+        public static final double POSEBASED_DRIVE_KS = 0.08; // 0.01
 
         public static final double POSEBASED_ROT_P = 0.03;
         public static final double POSEBASED_ROT_I = 0;

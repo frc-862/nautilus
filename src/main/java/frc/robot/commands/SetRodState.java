@@ -49,7 +49,7 @@ public class SetRodState extends Command {
                     rod.setState(state);
                 }
                 break;
-            case L2, L4: // L1 and L3 should go here, but are not tuned yet
+            case L2, L3, L4:
                 rod.setState(state, RodTransitionStates.CORAL_SAFE_ZONE);
                 break;
             default:

@@ -234,15 +234,15 @@ public class RobotContainer extends LightningContainer {
 
         // AUTO ALIGN
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        // new Trigger(driver::getRightBumperButton)
-        // .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, leds)
-        // .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                .whileTrue(new AutonAutoAlign(drivetrain, Camera.RIGHT, leds, rod, () -> queuedRodState)
+                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        new Trigger(driver::getRightBumperButton)
+                .whileTrue(new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, () -> queuedRodState)
+                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
-        new Trigger(driver::getBButton)
-                .whileTrue(new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Two,
-                        () -> queuedRodState));
+        // new Trigger(driver::getBButton)
+        //         .whileTrue(new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Two,
+        //                 () -> queuedRodState));
 
         // source autoalign
         // new Trigger(() -> driver.getPOV() == 0)
@@ -265,22 +265,26 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(new InstantCommand(() -> rod.setCoralMode(true)));
 
         // coral mode
-        new Trigger(() -> rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.L1));
-        new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
-        new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));
+        // new Trigger(() -> rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.L1));
+        // new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
+        // new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));
         // new Trigger(() -> rod.isCoralMode() && copilot.getYButton()).onTrue(new
         // SetRodState(rod, RodStates.L4));
 
         // TESTING NEW HOLD LOGIC
         // im losing it
-        // new Trigger(() -> rod.isCoralMode() && copilot.getXButton())
-        // .whileTrue(setRodQueue(RodStates.L3))
-        // .onFalse(
-        // new ConditionalCommand(new SetRodState(rod, RodStates.L3), new
-        // InstantCommand(),
-        // () -> CommandScheduler.getInstance().requiring(rod) != null
-        // ? !rod.getCurrentCommand().getName().equalsIgnoreCase("AutonAutoAlign")
-        // : true));// .andThen(resetRodQueue(RodStates.L3)));
+
+        new Trigger(() -> rod.isCoralMode() && copilot.getAButton())
+                .whileTrue(setRodQueue(RodStates.L1))
+                .onFalse(new SetRodState(rod, RodStates.L1).andThen(resetRodQueue(RodStates.L1)));
+
+        new Trigger(() -> rod.isCoralMode() && copilot.getBButton())
+                .whileTrue(setRodQueue(RodStates.L2))
+                .onFalse(new SetRodState(rod, RodStates.L2).andThen(resetRodQueue(RodStates.L2)));
+
+        new Trigger(() -> rod.isCoralMode() && copilot.getXButton())
+                .whileTrue(setRodQueue(RodStates.L3))
+                .onFalse(new SetRodState(rod, RodStates.L3).andThen(resetRodQueue(RodStates.L3)));
 
         new Trigger(() -> rod.isCoralMode() && copilot.getYButton())
                 .whileTrue(setRodQueue(RodStates.L4))
@@ -289,12 +293,6 @@ public class RobotContainer extends LightningContainer {
         // shh.. shh.. its okay
         new RunCommand(() -> LightningShuffleboard.setString("Rod", "Queued State", queuedRodState.toString()))
                 .ignoringDisable(true).schedule();
-        // new RunCommand(() -> LightningShuffleboard.setString("Rod", "Command
-        // Requiring",
-        // CommandScheduler.getInstance().requiring(rod) != null
-        // ? CommandScheduler.getInstance().requiring(rod).getName()
-        // : "null"))
-        // .ignoringDisable(true).schedule();
         // END TEST BLOCK
 
         new Trigger(() -> rod.isCoralMode() && copilot.getRightBumperButton())

@@ -4,12 +4,13 @@
   "holonomicMode": true,
   "pathFolders": [
     "LSource-Reef",
-    "Test Paths",
-    "RSource-Reef"
+    "2 PIECE PATHS",
+    "RSource-Reef",
+    "Test Paths"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 3.0,
+  "defaultMaxVel": 4.0,
+  "defaultMaxAccel": 4.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,

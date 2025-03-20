@@ -28,11 +28,11 @@ public class SysIdSequence extends SequentialCommandGroup {
         addCommands(
             // new InstantCommand(() -> SignalLogger.start()),
             new InstantCommand(() -> DataLogManager.log("\033[0;35m\033[1mSYSID Start " + testType.toString() + "\033[0m")),
-            swerve.sysId(testType, Direction.kForward, false).withDeadline(new WaitCommand(deadlineSeconds)),
-            swerve.sysId(testType, Direction.kReverse, false).withDeadline(new WaitCommand(deadlineSeconds)),
             swerve.sysId(testType, Direction.kForward, true).withDeadline(new WaitCommand(deadlineSeconds)),
             swerve.sysId(testType, Direction.kReverse, true).withDeadline(new WaitCommand(deadlineSeconds)),
-            new InstantCommand(() -> SignalLogger.stop()),
+            swerve.sysId(testType, Direction.kForward, false).withDeadline(new WaitCommand(deadlineSeconds)),
+            swerve.sysId(testType, Direction.kReverse, false).withDeadline(new WaitCommand(deadlineSeconds)),
+            // new InstantCommand(() -> SignalLogger.stop()),
             new InstantCommand(() -> DataLogManager.log("\033[0;35mSYSID End\033[0m"))
         );
     }

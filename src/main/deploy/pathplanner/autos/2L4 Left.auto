@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R5-LSource"
+            "pathName": "2PC-R5-LSource"
           }
         },
         {
@@ -82,7 +82,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LSource-R6L"
+            "pathName": "2PC-LSource-R6L"
           }
         },
         {
@@ -119,7 +119,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R6-LSource"
+            "pathName": "2PC-R6-LSource"
           }
         },
         {
@@ -163,7 +163,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LSource-R6L"
+            "pathName": "2PC-LSource-R6L"
           }
         },
         {

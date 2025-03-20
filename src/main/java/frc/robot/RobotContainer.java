@@ -8,6 +8,9 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import java.time.Instant;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -23,7 +26,11 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -39,11 +46,13 @@ import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
+import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.commands.BargeAutoAlign;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.OldElevatorSync;
@@ -92,7 +101,10 @@ public class RobotContainer extends LightningContainer {
     private static XboxController driver;
     private static XboxController copilot;
 
-    private boolean erroring = false; // side note: nate wtf
+    private RodStates queuedRodState = RodStates.DEFAULT; // The queued state that the copilot can invoke for
+                                                          // AutonAutoAlign
+
+    private boolean erroring = false; // side note: nate wtf. side note from kyle: nate wtf
 
     @Override
     protected void initializeSubsystems() {
@@ -141,12 +153,12 @@ public class RobotContainer extends LightningContainer {
                                 ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-
         // COPILOT INTAKE
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,
                 () -> MathUtil.applyDeadband(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
                         CoralCollectorConstants.COLLECTOR_DEADBAND),
-                rod::isCoralMode, () -> rod.getState() == RodStates.L1 || rod.getState() == RodStates.L2 || rod.getState() == RodStates.L3));
+                rod::isCoralMode, () -> rod.getState() == RodStates.L1 || rod.getState() == RodStates.L2
+                        || rod.getState() == RodStates.L3));
 
         // COPILOT CLIMB
         climber.setDefaultCommand(new RunCommand(
@@ -172,7 +184,8 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(leds.strip.setState(LEDStates.POSE_BAD, false))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
-        new Trigger(() -> (PoseConstants.getScorePose(drivetrain.getPose()) == 0)).whileFalse(leds.strip.enableState(LEDStates.READY_TO_ALIGN));
+        new Trigger(() -> (PoseConstants.getScorePose(drivetrain.getPose()) == 0))
+                .whileFalse(leds.strip.enableState(LEDStates.READY_TO_ALIGN));
 
         new Trigger(() -> climber.getLimitSwitch()).whileTrue(leds.strip.enableState(LEDStates.CLIMBED));
 
@@ -197,7 +210,8 @@ public class RobotContainer extends LightningContainer {
     protected void configureButtonBindings() {
         /* DRIVER BINDINGS */
         // robot centric driving
-        new Trigger(() -> driver.getLeftTriggerAxis() > 0.25).whileTrue(drivetrain.applyRequest(DriveRequests.getRobotCentric(
+        new Trigger(() -> driver.getLeftTriggerAxis() > 0.25)
+                .whileTrue(drivetrain.applyRequest(DriveRequests.getRobotCentric(
                         () -> MathUtil.applyDeadband(-(driver.getLeftX() * drivetrain.getSpeedMult()),
                                 ControllerConstants.JOYSTICK_DEADBAND),
                         () -> MathUtil.applyDeadband(-(driver.getLeftY() * drivetrain.getSpeedMult()),
@@ -219,23 +233,46 @@ public class RobotContainer extends LightningContainer {
                         new InstantCommand(() -> drivetrain.setOperatorPerspectiveForward(new Rotation2d(Degrees
                                 .of(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0))))));
 
-        // AUTOALIGN
+        // AUTO ALIGN
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                .whileTrue(new AutonAutoAlign(drivetrain, Camera.RIGHT, leds, rod, () -> queuedRodState)
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton)
-                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        
+                .whileTrue(new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, () -> queuedRodState)
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+        // new Trigger(driver::getBButton)
+        // .whileTrue(new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod,
+        // LightningTagID.Two,
+        // () -> queuedRodState));
+
+        // L1 AUTOALIGN
+        new Trigger(() -> (driver.getLeftBumperButton() && driver.getAButton()))
+                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, true, leds)
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        new Trigger(() -> (driver.getRightBumperButton() && driver.getAButton()))
+                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, true, leds)
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+        // BARGE Autoalign
+        new Trigger(driver::getBButton)
+                .whileTrue(new BargeAutoAlign(drivetrain, leds, rod, LightningTagID.BargeFront)
+                        .withYSpeed(() -> -driver.getLeftX())
+                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
         // source autoalign
-        new Trigger(() -> driver.getPOV() == 0)
-                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.RightSource).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        // new Trigger(() -> driver.getPOV() == 0)
+        // .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
+        // LightningTagID.RightSource)
+        // .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         /* COPILOT BINDINGS */
 
-        // Source/Stow
+        // Stow (automaticaly goes to coral mode and reset the rod queue)
         new Trigger(copilot::getLeftBumperButton)
-                .onTrue(new SetRodState(rod, RodStates.STOW));
-        new Trigger(copilot::getRightBumperButton)
-                .onTrue(new SetRodState(rod, RodStates.SOURCE));
+                .onTrue((new InstantCommand(() -> rod.setCoralMode(true))
+                        .alongWith(new InstantCommand(() -> queuedRodState = RodStates.DEFAULT)))
+                        .andThen(new SetRodState(rod, RodStates.STOW)));
 
         // Swap modes (TODO: add LED state notif)
         new Trigger(copilot::getBackButton)
@@ -247,12 +284,37 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.L1));
         new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
         new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));
-        new Trigger(() -> rod.isCoralMode() && copilot.getYButton()).onTrue(new SetRodState(rod, RodStates.L4));
+        // new Trigger(() -> rod.isCoralMode() && copilot.getYButton()).onTrue(new
+        // SetRodState(rod, RodStates.L4));
+
+        // new Trigger(() -> rod.isCoralMode() && copilot.getAButton())
+        // .whileTrue(setRodQueue(RodStates.L1))
+        // .onFalse(new SetRodState(rod,
+        // RodStates.L1).andThen(resetRodQueue(RodStates.L1)));
+
+        // new Trigger(() -> rod.isCoralMode() && copilot.getBButton())
+        // .whileTrue(setRodQueue(RodStates.L2))
+        // .onFalse(new SetRodState(rod,
+        // RodStates.L2).andThen(resetRodQueue(RodStates.L2)));
+
+        // new Trigger(() -> rod.isCoralMode() && copilot.getXButton())
+        // .whileTrue(setRodQueue(RodStates.L3))
+        // .onFalse(new SetRodState(rod,
+        // RodStates.L3).andThen(resetRodQueue(RodStates.L3)));
+
+        new Trigger(() -> rod.isCoralMode() && copilot.getYButton())
+                .whileTrue(setRodQueue(RodStates.L4))
+                .onFalse(new SetRodState(rod, RodStates.L4).andThen(resetRodQueue(RodStates.L4)));
+        new Trigger(() -> rod.isCoralMode() && copilot.getRightBumperButton())
+                .onTrue(new SetRodState(rod, RodStates.SOURCE));
 
         // algae mode
         new Trigger(() -> !rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.PROCESSOR));
-        new Trigger(() -> !rod.isCoralMode() && (copilot.getBButton() || copilot.getXButton())).onTrue(new SetRodStateReefAlgae(drivetrain, rod)); // B or X        
+        new Trigger(() -> !rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.LOW));
+        new Trigger(() -> !rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.HIGH));
         new Trigger(() -> !rod.isCoralMode() && copilot.getYButton()).onTrue(new SetRodState(rod, RodStates.BARGE));
+        new Trigger(() -> !rod.isCoralMode() && copilot.getRightBumperButton())
+                .onTrue(new SetRodStateReefAlgae(drivetrain, rod));
 
         // biases
         new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d)); // ELE UP
@@ -290,9 +352,12 @@ public class RobotContainer extends LightningContainer {
         // null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
 
         // SYSID
-        // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
-        // new Trigger(driver::getYButton).whileTrue(new SysIdSequence(drivetrain, DrivetrainConstants.SysIdTestType.DRIVE));
-        // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() -> SignalLogger.stop()));
+        // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() ->
+        // SignalLogger.start()));
+        // new Trigger(driver::getYButton).whileTrue(new SysIdSequence(drivetrain,
+        // DrivetrainConstants.SysIdTestType.DRIVE));
+        // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() ->
+        // SignalLogger.stop()));
 
     }
 
@@ -306,9 +371,24 @@ public class RobotContainer extends LightningContainer {
         for (LightningTagID tagID : LightningTagID.values()) {
             switch (tagID) {
                 case LeftSource, RightSource:
+                    // NamedCommands.registerCommand("AlignTo" + tagID.name(),
+                    // new ParallelDeadlineGroup(new ParallelRaceGroup(new
+                    // IntakeCoral(coralCollector, 1), new WaitCommand(4d)),
+                    // new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
+                    // tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)),
+                    // new SetRodState(rod, RodStates.SOURCE)
+                    // .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING))));
+
+                    // old auto align - no automatic L4
                     NamedCommands.registerCommand("AlignTo" + tagID.name(),
                             new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+                    // new auton align - deploys l4 automatically
+                    NamedCommands.registerCommand("AUTONAlignTo" + tagID.name(),
+                            new AutonAutoAlign(drivetrain, Camera.RIGHT, leds, rod,
+                                    tagID, () -> RodStates.SOURCE)
+                                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     break;
 
                 default:
@@ -318,20 +398,27 @@ public class RobotContainer extends LightningContainer {
                     NamedCommands.registerCommand("AlignTo" + tagID.name() + "Right",
                             new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
                                     tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+                    NamedCommands.registerCommand("AUTONAlignTo" + tagID.name() + "Left",
+                            new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod,
+                                    tagID, () -> RodStates.L4).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                    NamedCommands.registerCommand("AUTONAlignTo" + tagID.name() + "Right",
+                            new AutonAutoAlign(drivetrain, Camera.RIGHT, leds, rod,
+                                    tagID, () -> RodStates.L4).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
                     break;
             }
         }
 
-        // AUTON AUTO ALIGN TEST
-        NamedCommands.registerCommand("AUTONAlignToThreeLeft", new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Three).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        NamedCommands.registerCommand("AUTONAlignToFiveLeft", new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Five).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1));
-        
+
         NamedCommands.registerCommand("IntuahCoral",
                 new RunCommand(() -> coralCollector.setPower(1), coralCollector));
-        
+
+        NamedCommands.registerCommand("StowTuah",
+                new InstantCommand(() -> rod.setState(RodStates.STOW, RodTransitionStates.DEFAULT)));
+
         NamedCommands.registerCommand("ScoreCoral",
                 new ScoreCoral(coralCollector));
 
@@ -357,7 +444,6 @@ public class RobotContainer extends LightningContainer {
                 new SetRodState(rod, RodStates.SOURCE)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
 
-                        
         autoChooser = AutoBuilder.buildAutoChooser();
         autoChooser.addOption("LEAVE", drivetrain.leaveAuto());
         LightningShuffleboard.send("Auton", "Auto Chooser", autoChooser);
@@ -366,6 +452,33 @@ public class RobotContainer extends LightningContainer {
     @Override
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
+    }
+
+    /**
+     * Sets queuedRodState to the new state
+     *
+     * @param newState
+     * @return command to set the new state
+     */
+    private Command setRodQueue(RodStates newState) {
+        return new InstantCommand(() -> queuedRodState = newState);
+    }
+
+    /**
+     * Sets queuedRodState to default if it is the same as the checkState
+     *
+     * Ex. We are going to L4, and when the button becomes false again
+     * we can stop queuing L4 since it is in the queue already
+     *
+     * @param checkState State to compare to
+     * @return command to reset the queue
+     */
+    private Command resetRodQueue(RodStates checkState) {
+        return new InstantCommand(() -> {
+            if (queuedRodState == checkState) {
+                queuedRodState = RodStates.DEFAULT;
+            }
+        });
     }
 
     public static Command hapticDriverCommand() {

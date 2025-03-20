@@ -26,13 +26,19 @@
         {
           "type": "named",
           "data": {
-            "name": "RodL4"
+            "name": "WaitOnTarget"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "ScoreCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StowTuah"
           }
         },
         {
@@ -80,9 +86,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "RSource-R2L"
+            "name": "StowTuah"
           }
         },
         {
@@ -92,7 +98,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToTwoLeft"
+                  "name": "AUTONAlignToTwoLeft"
                 }
               },
               {
@@ -114,6 +120,12 @@
           "type": "named",
           "data": {
             "name": "ScoreCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StowTuah"
           }
         },
         {
@@ -161,9 +173,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "RSource-R2R"
+            "name": "StowTuah"
           }
         },
         {
@@ -173,7 +185,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToTwoRight"
+                  "name": "AUTONAlignToTwoRight"
                 }
               },
               {

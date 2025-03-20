@@ -11,7 +11,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToFiveLeft"
+                  "name": "AUTONAlignToFiveLeft"
                 }
               },
               {
@@ -26,13 +26,19 @@
         {
           "type": "named",
           "data": {
-            "name": "RodL4"
+            "name": "WaitOnTarget"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "ScoreCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StowTuah"
           }
         },
         {
@@ -80,9 +86,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "LSource-R6L"
+            "name": "StowTuah"
           }
         },
         {
@@ -92,13 +98,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToSixLeft"
+                  "name": "AUTONAlignToSixLeft"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 6.0
                 }
               }
             ]
@@ -114,6 +120,12 @@
           "type": "named",
           "data": {
             "name": "ScoreCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StowTuah"
           }
         },
         {
@@ -161,9 +173,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "LSource-R6R"
+            "name": "StowTuah"
           }
         },
         {
@@ -173,13 +185,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToSixRight"
+                  "name": "AUTONAlignToSixRight"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 6.0
                 }
               }
             ]
@@ -206,7 +218,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

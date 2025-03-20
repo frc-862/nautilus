@@ -4,11 +4,10 @@
 
 package frc.robot.commands;
 
-import com.fasterxml.jackson.databind.node.BooleanNode;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -50,6 +49,9 @@ public class PoseBasedAutoAlign extends Command {
     private boolean customTagSet = false;
     private boolean invokeCancel = false;
     private boolean isL1 = false;
+
+    private boolean overrideYPID = false;
+    private DoubleSupplier yDoubleSupplier;
 
     private LightningTagID codeID = LightningTagID.One;
 
@@ -233,7 +235,7 @@ public class PoseBasedAutoAlign extends Command {
     }
 
     public boolean onTarget() {
-        return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
+        return xPID.atSetpoint() && (!overrideYPID ? yPID.atSetpoint() : true) && rPID.atSetpoint();
     }
 
     private void setXGains() {

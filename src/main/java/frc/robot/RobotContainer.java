@@ -52,6 +52,7 @@ import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.commands.BargeAutoAlign;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.OldElevatorSync;
@@ -251,6 +252,10 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> (driver.getRightBumperButton() && driver.getAButton()))
                 .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, true, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
+        // BARGE Autoalign
+        new Trigger(driver::getBButton)
+                .whileTrue(new BargeAutoAlign(drivetrain, leds, rod, LightningTagID.BargeFront)
+                .withYSpeed(() -> -driver.getLeftX()).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         
         
         // source autoalign
@@ -258,6 +263,7 @@ public class RobotContainer extends LightningContainer {
         // .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
         // LightningTagID.RightSource)
         // .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
 
         /* COPILOT BINDINGS */
 

@@ -618,6 +618,21 @@ public class Constants {
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 12),
                         new Pose2d(1.34, 0.69, new Rotation2d(Degrees.of(54))));
 
+                // red barge front
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 5),
+                    new Pose2d(9.998, 1.621, new Rotation2d(Degrees.of(0))));
+                
+                // blue barge front
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 14),
+                    new Pose2d(7.612, 6.201, new Rotation2d(Degrees.of(-180))));
+
+                // red barge back
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 15),
+                    new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
+                
+                // blue barge back
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 4),
+                    new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
             }
 
         };
@@ -711,15 +726,18 @@ public class Constants {
             Six(6, 19),
 
             RightSource(2, 12),
-            LeftSource(1, 13);
+            LeftSource(1, 13),
+
+            BargeFront(5, 14),
+            BargeBack(15, 4);
 
             public final int redID;
             public final int blueID;
             LightningTagID(int redID, int blueID) {
                 this.redID = redID;
                 this.blueID = blueID;
+            }
         }
-    }
 
         public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);
 

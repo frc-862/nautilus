@@ -61,6 +61,9 @@ public class BargeAutoAlign extends Command {
     private boolean overrideYPID = false;
     private DoubleSupplier yDoubleSupplier;
 
+    private final DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
+    private final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
+
     /**
      * Used to align to Tag
      * will always use PID Controllers
@@ -108,7 +111,7 @@ public class BargeAutoAlign extends Command {
         invokeCancel = false;
         // Get tagID from codeID
         if (codeID != null) {
-            tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red
+            tagID = alliance != blue
                     ? codeID.redID
                     : codeID.blueID;
         }
@@ -149,8 +152,11 @@ public class BargeAutoAlign extends Command {
 
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
                 + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
+
         double yVeloc = !overrideYPID ? yPID.calculate(currentPose.getY(), targetPose.getY())
-                + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0))  : yDoubleSupplier.getAsDouble();
+                + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0))  
+                : yDoubleSupplier.getAsDouble() * (alliance == blue ? 1 : -1);
+
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
                 targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? rKs : 0));
 

@@ -265,26 +265,26 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(new InstantCommand(() -> rod.setCoralMode(true)));
 
         // coral mode
-        // new Trigger(() -> rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.L1));
-        // new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
-        // new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));
+        new Trigger(() -> rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.L1));
+        new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
+        new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));
         // new Trigger(() -> rod.isCoralMode() && copilot.getYButton()).onTrue(new
         // SetRodState(rod, RodStates.L4));
 
         // TESTING NEW HOLD LOGIC
         // im losing it
 
-        new Trigger(() -> rod.isCoralMode() && copilot.getAButton())
-                .whileTrue(setRodQueue(RodStates.L1))
-                .onFalse(new SetRodState(rod, RodStates.L1).andThen(resetRodQueue(RodStates.L1)));
+        // new Trigger(() -> rod.isCoralMode() && copilot.getAButton())
+        //         .whileTrue(setRodQueue(RodStates.L1))
+        //         .onFalse(new SetRodState(rod, RodStates.L1).andThen(resetRodQueue(RodStates.L1)));
 
-        new Trigger(() -> rod.isCoralMode() && copilot.getBButton())
-                .whileTrue(setRodQueue(RodStates.L2))
-                .onFalse(new SetRodState(rod, RodStates.L2).andThen(resetRodQueue(RodStates.L2)));
+        // new Trigger(() -> rod.isCoralMode() && copilot.getBButton())
+        //         .whileTrue(setRodQueue(RodStates.L2))
+        //         .onFalse(new SetRodState(rod, RodStates.L2).andThen(resetRodQueue(RodStates.L2)));
 
-        new Trigger(() -> rod.isCoralMode() && copilot.getXButton())
-                .whileTrue(setRodQueue(RodStates.L3))
-                .onFalse(new SetRodState(rod, RodStates.L3).andThen(resetRodQueue(RodStates.L3)));
+        // new Trigger(() -> rod.isCoralMode() && copilot.getXButton())
+        //         .whileTrue(setRodQueue(RodStates.L3))
+        //         .onFalse(new SetRodState(rod, RodStates.L3).andThen(resetRodQueue(RodStates.L3)));
 
         new Trigger(() -> rod.isCoralMode() && copilot.getYButton())
                 .whileTrue(setRodQueue(RodStates.L4))

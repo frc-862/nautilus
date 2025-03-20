@@ -169,7 +169,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * biases will only work if no other position is actively being set.
-     * 
+     *
      * @param bias the amount to add to the wrist position
      * @return a command that will add the bias to the wrist position
      */
@@ -185,7 +185,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * biases will only work if no other position is actively being set.
-     * 
+     *
      * @param bias the amount to add to the elevastor position
      * @return a command that will add the bias to the elevator position
      */
@@ -201,7 +201,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * Gets the state of the fishing rod
-     * 
+     *
      * @return the current state of the fishing rod
      */
     @Logged(importance = Importance.CRITICAL)
@@ -211,7 +211,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * gets the target state of the fishing rod
-     * 
+     *
      * @return the target state of the fishing rod
      */
     @Logged(importance = Importance.DEBUG)
@@ -221,7 +221,7 @@ public class FishingRod extends SubsystemBase {
 
     /**
      * Checks if the whole fishing rod system is on target
-     * 
+     *
      * @return true if the wrist and elevator are on target false otherwise
      */
     @Logged(importance = Importance.DEBUG)

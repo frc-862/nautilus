@@ -62,7 +62,7 @@ public class BargeAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
-     * 
+     *
      * @param drivetrain
      * @param leds
      * @param rod
@@ -80,7 +80,7 @@ public class BargeAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
-     * 
+     *
      * @param drivetrain
      * @param leds
      * @param rod
@@ -147,7 +147,7 @@ public class BargeAutoAlign extends Command {
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
                 targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? AutoAlignConstants.POSEBASED_ROT_KS : 0));
 
-                
+
         //if speed goes above threshold, start checking if we go back below threshold
         if (Math.abs(xVeloc) > deployVeloc && Math.abs(yVeloc) > deployVeloc) {
             reachedDeployVelOnce = true;
@@ -157,8 +157,8 @@ public class BargeAutoAlign extends Command {
         if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !doEle && reachedDeployVelOnce) {
             doEle = true;
             rod.setState(RodStates.BARGE);
-        } 
-        
+        }
+
 
         // once we've started moving the elvator, make sure we never go faster than threshold (to be safe)
         if (doEle) {

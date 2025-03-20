@@ -57,7 +57,7 @@ public class PoseBasedAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
-     * 
+     *
      * @param drivetrain
      * @param camera
      * @param leds
@@ -73,28 +73,14 @@ public class PoseBasedAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
+     *
      * @param drivetrain
      * @param camera
      * @param leds
-     * @param tagID the ID of the tag to align to
+     * @param isL1       whether to use L1 pose hashmap
+     * @param codeID     the Lightning-specific ID code for the tag
      */
-    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, int tagID) {
-        this(drivetrain, camera, leds);
-
-        customTagSet = true;
-
-        this.tagID = tagID;
-    }
-
-    /**
-     * Used to align to Tag
-     * will always use PID Controllers
-     * 
-     * @param drivetrain
-     * @param camera
-     * @param leds
-     */
-    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, Boolean isL1, LEDs leds) {
+    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, boolean isL1, LEDs leds) {
         this(drivetrain, camera, leds);
         this.isL1 = isL1;
     }
@@ -102,6 +88,7 @@ public class PoseBasedAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
+     *
      * @param drivetrain
      * @param camera
      * @param leds
@@ -116,41 +103,6 @@ public class PoseBasedAutoAlign extends Command {
 
         addRequirements(drivetrain);
     }
-
-    // /**
-    // * Used to align to Tag
-    // * will always use PID Controllers
-    // * @param drivetrain
-    // * @param camera
-    // * @param leds
-    // * @param codeID the Lightning-specific ID code for the tag
-    // * @param tolerance the tolerance for the PID controllers
-    // */
-    // public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds,
-    // LightningTagID codeID, double tolerance) {
-    // this(drivetrain, camera, leds);
-
-    // customTagSet = true;
-    // this.codeID = codeID;
-    // this.tolerance = tolerance;
-    // }
-
-    // /**
-    // * Used to align to Tag
-    // * will always use PID Controllers
-    // * @param drivetrain
-    // * @param camera
-    // * @param leds
-    // * @param tagID the ID of the tag to align to
-    // */
-    // public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, int
-    // tagID) {
-    // this(drivetrain, camera, leds);
-
-    // customTagSet = true;
-
-    // this.tagID = tagID;
-    // }
 
     @Override
     public void initialize() {
@@ -210,8 +162,8 @@ public class PoseBasedAutoAlign extends Command {
         LightningShuffleboard.setDouble("TestAutoAlign", "Y veloc", yVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "R veloc", rotationVeloc);
 
-        // setXGains();
-        // setRGains();
+        // setDriveGains();
+        // setRotGains();
     }
 
     @Override
@@ -236,7 +188,7 @@ public class PoseBasedAutoAlign extends Command {
         return xPID.atSetpoint() && (!overrideYPID ? yPID.atSetpoint() : true) && rPID.atSetpoint();
     }
 
-    private void setXGains() {
+    private void setDriveGains() {
         String key = "DRV";
         xPID.setPID(
                 LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.POSEBASED_DRIVE_P),
@@ -250,7 +202,7 @@ public class PoseBasedAutoAlign extends Command {
         xPID.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", key + " tolerance", driveTolerance));
     }
 
-    private void setRGains() {
+    private void setRotGains() {
         String key = "ROT";
 
         rPID.setPID(

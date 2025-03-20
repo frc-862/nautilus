@@ -62,13 +62,15 @@ public class AutonAutoAlign extends Command {
     private Supplier<RodStates> targetRodState;
 
     /**
-     * Used to align to Tag
+     * Used to align to a given Tag
      * will always use PID Controllers
-     * 
+     *
      * @param drivetrain
      * @param camera
      * @param leds
+     * @param rod
      * @param codeID     the Lightning-specific ID code for the tag
+     * @param targetRodState supplier for the rod state to go to when ready
      */
     public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, LightningTagID codeID, Supplier<RodStates> targetRodState) {
         this(drivetrain, camera, leds, rod, targetRodState);
@@ -78,12 +80,14 @@ public class AutonAutoAlign extends Command {
     }
 
     /**
-     * Used to align to Tag
+     * Used to align to Tag based on current pose
      * will always use PID Controllers
-     * 
+     *
      * @param drivetrain
      * @param camera
      * @param leds
+     * @param rod
+     * @param targetRodState supplier for the rod state to go to when ready
      */
     public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, Supplier<RodStates> targetRodState) {
         this.drivetrain = drivetrain;

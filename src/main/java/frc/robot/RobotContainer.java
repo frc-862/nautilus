@@ -236,38 +236,39 @@ public class RobotContainer extends LightningContainer {
         // AUTO ALIGN
         new Trigger(driver::getLeftBumperButton)
                 .whileTrue(new AutonAutoAlign(drivetrain, Camera.RIGHT, leds, rod, () -> queuedRodState)
-                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton)
                 .whileTrue(new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, () -> queuedRodState)
-                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // new Trigger(driver::getBButton)
-        //         .whileTrue(new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod, LightningTagID.Two,
-        //                 () -> queuedRodState));
-
+        // .whileTrue(new AutonAutoAlign(drivetrain, Camera.LEFT, leds, rod,
+        // LightningTagID.Two,
+        // () -> queuedRodState));
 
         // L1 AUTOALIGN
         new Trigger(() -> (driver.getLeftBumperButton() && driver.getAButton()))
-                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, true, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, true, leds)
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(() -> (driver.getRightBumperButton() && driver.getAButton()))
-                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, true, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, true, leds)
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // BARGE Autoalign
         new Trigger(driver::getBButton)
                 .whileTrue(new BargeAutoAlign(drivetrain, leds, rod, LightningTagID.BargeFront)
-                .withYSpeed(() -> -driver.getLeftX()).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        
-        
+                        .withYSpeed(() -> -driver.getLeftX())
+                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
         // source autoalign
         // new Trigger(() -> driver.getPOV() == 0)
         // .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
         // LightningTagID.RightSource)
         // .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
-
         /* COPILOT BINDINGS */
 
-        // Stow (automaticaly goes to coral mode)
+        // Stow (automaticaly goes to coral mode and reset the rod queue)
         new Trigger(copilot::getLeftBumperButton)
                 .onTrue((new InstantCommand(() -> rod.setCoralMode(true))
                         .alongWith(new InstantCommand(() -> queuedRodState = RodStates.DEFAULT)))
@@ -286,30 +287,24 @@ public class RobotContainer extends LightningContainer {
         // new Trigger(() -> rod.isCoralMode() && copilot.getYButton()).onTrue(new
         // SetRodState(rod, RodStates.L4));
 
-        // TESTING NEW HOLD LOGIC
-        // im losing it
-
         // new Trigger(() -> rod.isCoralMode() && copilot.getAButton())
-        //         .whileTrue(setRodQueue(RodStates.L1))
-        //         .onFalse(new SetRodState(rod, RodStates.L1).andThen(resetRodQueue(RodStates.L1)));
+        // .whileTrue(setRodQueue(RodStates.L1))
+        // .onFalse(new SetRodState(rod,
+        // RodStates.L1).andThen(resetRodQueue(RodStates.L1)));
 
         // new Trigger(() -> rod.isCoralMode() && copilot.getBButton())
-        //         .whileTrue(setRodQueue(RodStates.L2))
-        //         .onFalse(new SetRodState(rod, RodStates.L2).andThen(resetRodQueue(RodStates.L2)));
+        // .whileTrue(setRodQueue(RodStates.L2))
+        // .onFalse(new SetRodState(rod,
+        // RodStates.L2).andThen(resetRodQueue(RodStates.L2)));
 
         // new Trigger(() -> rod.isCoralMode() && copilot.getXButton())
-        //         .whileTrue(setRodQueue(RodStates.L3))
-        //         .onFalse(new SetRodState(rod, RodStates.L3).andThen(resetRodQueue(RodStates.L3)));
+        // .whileTrue(setRodQueue(RodStates.L3))
+        // .onFalse(new SetRodState(rod,
+        // RodStates.L3).andThen(resetRodQueue(RodStates.L3)));
 
         new Trigger(() -> rod.isCoralMode() && copilot.getYButton())
                 .whileTrue(setRodQueue(RodStates.L4))
                 .onFalse(new SetRodState(rod, RodStates.L4).andThen(resetRodQueue(RodStates.L4)));
-
-        // shh.. shh.. its okay
-        new RunCommand(() -> LightningShuffleboard.setString("Rod", "Queued State", queuedRodState.toString()))
-                .ignoringDisable(true).schedule();
-        // END TEST BLOCK
-
         new Trigger(() -> rod.isCoralMode() && copilot.getRightBumperButton())
                 .onTrue(new SetRodState(rod, RodStates.SOURCE));
 
@@ -461,7 +456,7 @@ public class RobotContainer extends LightningContainer {
 
     /**
      * Sets queuedRodState to the new state
-     * 
+     *
      * @param newState
      * @return command to set the new state
      */
@@ -474,7 +469,7 @@ public class RobotContainer extends LightningContainer {
      *
      * Ex. We are going to L4, and when the button becomes false again
      * we can stop queuing L4 since it is in the queue already
-     * 
+     *
      * @param checkState State to compare to
      * @return command to reset the queue
      */

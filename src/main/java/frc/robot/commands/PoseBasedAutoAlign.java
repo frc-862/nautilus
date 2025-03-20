@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import com.fasterxml.jackson.databind.node.BooleanNode;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -47,6 +49,7 @@ public class PoseBasedAutoAlign extends Command {
     private int tagID = 0;
     private boolean customTagSet = false;
     private boolean invokeCancel = false;
+    private boolean isL1 = false;
 
     private LightningTagID codeID = LightningTagID.One;
 
@@ -69,7 +72,35 @@ public class PoseBasedAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
+     * @param drivetrain
+     * @param camera
+     * @param leds
+     * @param tagID the ID of the tag to align to
+     */
+    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, int tagID) {
+        this(drivetrain, camera, leds);
+
+        customTagSet = true;
+
+        this.tagID = tagID;
+    }
+
+    /**
+     * Used to align to Tag
+     * will always use PID Controllers
      * 
+     * @param drivetrain
+     * @param camera
+     * @param leds
+     */
+    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, Boolean isL1, LEDs leds) {
+        this(drivetrain, camera, leds);
+        this.isL1 = isL1;
+    }
+
+    /**
+     * Used to align to Tag
+     * will always use PID Controllers
      * @param drivetrain
      * @param camera
      * @param leds
@@ -132,7 +163,6 @@ public class PoseBasedAutoAlign extends Command {
 
         // Get the tag in front of the robot
         if (!customTagSet) {
-
             tagID = PoseConstants.getScorePose(drivetrain.getPose());
         }
 
@@ -141,7 +171,11 @@ public class PoseBasedAutoAlign extends Command {
             invokeCancel = true;
             CommandScheduler.getInstance().cancel(this);
         } else {
-            targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tagID));
+            if (isL1) {
+                targetPose = PoseConstants.l1PoseHashMap.get(new Tuple<>(camera, tagID));
+            } else {
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<>(camera, tagID));
+            }
 
             LightningShuffleboard.setDouble("TestAutoAlign", "Tag", tagID);
 
@@ -195,6 +229,7 @@ public class PoseBasedAutoAlign extends Command {
     @Override
     public boolean isFinished() {
         return onTarget() || invokeCancel;
+        // return false;
     }
 
     public boolean onTarget() {

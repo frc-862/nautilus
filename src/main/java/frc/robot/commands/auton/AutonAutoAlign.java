@@ -98,7 +98,11 @@ public class AutonAutoAlign extends Command {
 
         this.targetRodState = targetRodState;
 
-        addRequirements(drivetrain, rod);
+        if (targetRodState.get() != RodStates.L4) {
+            addRequirements(drivetrain);
+        } else {
+            addRequirements(drivetrain, rod);
+        }
     }
 
     @Override

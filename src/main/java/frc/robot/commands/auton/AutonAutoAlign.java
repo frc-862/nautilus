@@ -7,6 +7,7 @@ package frc.robot.commands.auton;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -22,6 +23,7 @@ import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
@@ -59,11 +61,10 @@ public class AutonAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
-     *
+     * 
      * @param drivetrain
      * @param camera
      * @param leds
-     * @param rod
      * @param codeID     the Lightning-specific ID code for the tag
      */
     public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, LightningTagID codeID) {
@@ -82,7 +83,6 @@ public class AutonAutoAlign extends Command {
      * @param drivetrain
      * @param camera
      * @param leds
-     * @param rod
      */
     public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod) {
         this.drivetrain = drivetrain;
@@ -151,7 +151,7 @@ public class AutonAutoAlign extends Command {
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
                 targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? rKs : 0));
 
-
+                
         //if speed goes above threshold, start checking if we go back below threshold
         if (Math.abs(xVeloc) > deployVeloc && Math.abs(yVeloc) > deployVeloc) {
             reachedDeployVelOnce = true;
@@ -161,8 +161,8 @@ public class AutonAutoAlign extends Command {
         if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !doEle && reachedDeployVelOnce) {
             doEle = true;
             rod.setState(RodStates.L4);
-        }
-
+        } 
+        
 
         //once we've started moving the elvator, make sure we never go faster than threshold (to be safe)
         if (doEle) {

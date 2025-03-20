@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -44,6 +46,9 @@ public class PoseBasedAutoAlign extends Command {
     private int tagID = 0;
     private boolean customTagSet = false;
     private boolean invokeCancel = false;
+
+    private boolean overrideYPID = false;
+    private DoubleSupplier yDoubleSupplier;
 
     private LightningTagID codeID = LightningTagID.One;
 
@@ -159,7 +164,7 @@ public class PoseBasedAutoAlign extends Command {
         // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
-        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
+        double yVeloc = overrideYPID ? yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0)) : yDoubleSupplier.getAsDouble();
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
         drivetrain.setControl(DriveRequests.getAutoAlign(xVeloc, yVeloc, rotationVeloc));
@@ -188,5 +193,9 @@ public class PoseBasedAutoAlign extends Command {
 
     public boolean onTarget() {
         return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
+    }
+
+    public Command withYSpeed(DoubleSupplier yDoubleSupplier){
+        return this;
     }
 }

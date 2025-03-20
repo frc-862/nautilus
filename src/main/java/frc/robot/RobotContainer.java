@@ -227,9 +227,9 @@ public class RobotContainer extends LightningContainer {
 
         // L1 AUTOALIGN
         new Trigger(() -> (driver.getLeftBumperButton() && driver.getAButton()))
-                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, true, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        new Trigger(() -> (driver.getRightBumperButton() && driver.getAButton()))
                 .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, true, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        new Trigger(() -> (driver.getRightBumperButton() && driver.getAButton()))
+                .whileTrue(new PoseBasedAutoAlign(drivetrain, Camera.LEFT, true, leds).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         
         

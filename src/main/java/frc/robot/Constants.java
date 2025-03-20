@@ -68,6 +68,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.math.InterpolationMap;
@@ -702,6 +703,40 @@ public class Constants {
                 put(new Rectangle2d(new Translation2d(4.483, 2.676), new Translation2d(6.365, 2.449)), 22);
             }
         };
+
+        /**
+         * Returns the RodState for algae based on the tagID
+         * @param tagId to reference
+         * @return HIGH/LOW depending on tagId
+         */
+        public static FishingRodConstants.RodStates getAlgaeScoreState(double tagId) {
+            final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
+            DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(blue);
+
+            if (tagId % 2 == 0) {
+                // even: algae on odd sides are high for blue reef, low for red
+                return alliance == blue ? FishingRodConstants.RodStates.HIGH : FishingRodConstants.RodStates.LOW;
+            } else {
+                // odd: algae on odd sides are low for blue reef, high for red
+                return alliance == blue ? FishingRodConstants.RodStates.LOW : FishingRodConstants.RodStates.HIGH;
+            }
+        }
+
+        /**
+         * Returns the RodState for algae based on the drivetrain position
+         * @param drivetrain
+         * @param rod
+         * @return HIGH/LOW depending on pos
+         */
+        public static FishingRodConstants.RodStates getAlgaeScoreState(Swerve drivetrain, FishingRod rod) {
+            double tagId = getScorePose(drivetrain.getPose());
+
+            if (tagId == 0) {
+                return rod.getState();
+            }
+
+            return getAlgaeScoreState(tagId);
+        }
 
         public static int getScorePose(Pose2d robotPose){
 

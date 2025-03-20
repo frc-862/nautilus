@@ -46,11 +46,11 @@ public class DriveToPose extends Command {
     private static final NetworkNumber distance = new NetworkNumber("DriveToPose/Distance", 0.0);
 
     static {
-        drivekP.initDefault(0.8);
+        drivekP.initDefault(1.8);
         drivekD.initDefault(0.0);
-        thetakP.initDefault(3.0);
+        thetakP.initDefault(0.0);
         thetakD.initDefault(0.0);
-        driveMaxVelocity.initDefault(3.8);
+        driveMaxVelocity.initDefault(DrivetrainConstants.MAX_SPEED);
         driveMaxAcceleration.initDefault(3.0);
         thetaMaxVelocity.initDefault(Units.degreesToRadians(360.0));
         thetaMaxAcceleration.initDefault(8.0);
@@ -202,13 +202,14 @@ public class DriveToPose extends Command {
             thetaVelocity = 0.0;
         }
 
-        final var adjust = new Rotation2d(Math.PI / 2 + (22.5 * 0.0174533));
+        // Why do I need to rotate the drive velocity by -45 degrees? Field centric should just work?
+        final var adjust = new Rotation2d(-45 * 0.0174533);
         Translation2d driveVelocity = new Pose2d(
                 Translation2d.kZero,
                 new Rotation2d(
                         Math.atan2(
-                                currentPose.getTranslation().getY() - targetPose.getTranslation().getY(),
-                                currentPose.getTranslation().getX() - targetPose.getTranslation().getX())).rotateBy(adjust))
+                                currentPose.getY() - targetPose.getY(),
+                                currentPose.getX() - targetPose.getX())).rotateBy(adjust))
                 .transformBy(GeomUtil.toTransform2d(driveVelocityScalar, 0.0))
                 .getTranslation();
 

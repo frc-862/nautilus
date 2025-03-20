@@ -193,7 +193,9 @@ public class DriveToPose extends Command {
     double driveVelocityScalar =
         driveController.calculate(driveErrorAbs, 0.0)
             + driveController.getSetpoint().velocity * ffScaler;
-    if (currentDistance < driveController.getPositionTolerance()) driveVelocityScalar = 0.0;
+    if (currentDistance < driveController.getPositionTolerance()) {
+        driveVelocityScalar = 0.0;
+    }
 
     var angleToTarget = new Rotation2d(
         Math.atan2(
@@ -216,7 +218,9 @@ public class DriveToPose extends Command {
             + thetaController.getSetpoint().velocity * ffScaler;
     thetaErrorAbs =
         Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getRadians());
-    if (thetaErrorAbs < thetaController.getPositionTolerance()) thetaVelocity = 0.0;
+    if (thetaErrorAbs < thetaController.getPositionTolerance()) {
+        thetaVelocity = 0.0;
+    }
     lastSetpointRotation = targetPose.getRotation();
     Translation2d driveVelocity =
         new Pose2d(Translation2d.kZero, angleToTarget)
@@ -246,12 +250,18 @@ public class DriveToPose extends Command {
     // Clear logs
   }
 
-  /** Checks if the robot is stopped at the final pose. */
+  /** Checks if the robot is stopped at the final pose. 
+   * @return true if the robot is at the goal pose, false otherwise
+   */
   public boolean atGoal() {
     return running && driveController.atGoal() && thetaController.atGoal();
   }
 
-  /** Checks if the robot pose is within the allowed drive and theta tolerances. */
+  /** Checks if the robot pose is within the allowed drive and theta tolerances. 
+   * @param driveTolerance the allowed distance from the target pose
+   * @param thetaTolerance the allowed angle from the target pose
+   * @return true if the robot is within tolerances, false otherwise
+   */
   public boolean withinTolerance(double driveTolerance, Rotation2d thetaTolerance) {
     return running
         && Math.abs(driveErrorAbs) < driveTolerance

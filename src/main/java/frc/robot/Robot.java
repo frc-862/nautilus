@@ -99,9 +99,9 @@ public class Robot extends LightningRobot {
     public void disabledPeriodic() {
         super.disabledPeriodic();
 
-        if (container.rod.getState() == RodStates.STOW) {
-            container.elevator.setEncoder(container.elevator.getCANRangeDist());
-        }
+        // if (container.rod.getState() == RodStates.STOW) {
+        //     container.elevator.setEncoder(container.elevator.getCANRangeDist());
+        // }
     }
 
 }

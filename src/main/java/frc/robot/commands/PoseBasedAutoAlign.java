@@ -4,9 +4,10 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -20,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
@@ -31,30 +31,37 @@ public class PoseBasedAutoAlign extends Command {
     private Camera camera;
     private LEDs leds;
 
-    private double tolerance = 0.025;
+    private double driveTolerance = AutoAlignConstants.POSEBASED_DRIVE_TOLERANCE;
 
-    private PIDController xPID = new PIDController(AutoAlignConstants.THREE_DEE_xP, AutoAlignConstants.THREE_DEE_xI, AutoAlignConstants.THREE_DEE_xD);
+    private PIDController xPID = new PIDController(AutoAlignConstants.POSEBASED_DRIVE_P,
+            AutoAlignConstants.POSEBASED_DRIVE_I, AutoAlignConstants.POSEBASED_DRIVE_D);
+    private PIDController yPID = new PIDController(AutoAlignConstants.POSEBASED_DRIVE_P,
+            AutoAlignConstants.POSEBASED_DRIVE_I, AutoAlignConstants.POSEBASED_DRIVE_D);
+    private PIDController rPID = new PIDController(AutoAlignConstants.POSEBASED_ROT_P,
+            AutoAlignConstants.POSEBASED_ROT_I, AutoAlignConstants.POSEBASED_ROT_D);
 
-    private PIDController yPID = new PIDController(AutoAlignConstants.THREE_DEE_yP, AutoAlignConstants.THREE_DEE_yI, AutoAlignConstants.THREE_DEE_yD);
-
-    private PIDController rPID = new PIDController(AutoAlignConstants.THREE_DEE_rP, AutoAlignConstants.THREE_DEE_rI, AutoAlignConstants.THREE_DEE_rD);
+    private double driveKS = AutoAlignConstants.POSEBASED_DRIVE_KS;
+    private double rotKS = AutoAlignConstants.POSEBASED_ROT_KS;
 
     private Pose2d targetPose = new Pose2d();
 
     private int tagID = 0;
     private boolean customTagSet = false;
     private boolean invokeCancel = false;
+    private boolean isL1 = false;
+
+    private boolean overrideYPID = false;
 
     private LightningTagID codeID = LightningTagID.One;
-
 
     /**
      * Used to align to Tag
      * will always use PID Controllers
+     *
      * @param drivetrain
      * @param camera
      * @param leds
-     * @param codeID the Lightning-specific ID code for the tag
+     * @param codeID     the Lightning-specific ID code for the tag
      */
     public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, LightningTagID codeID) {
         this(drivetrain, camera, leds);
@@ -66,39 +73,21 @@ public class PoseBasedAutoAlign extends Command {
     /**
      * Used to align to Tag
      * will always use PID Controllers
+     *
      * @param drivetrain
      * @param camera
+     * @param isL1       whether to use L1 pose hashmap
      * @param leds
-     * @param codeID the Lightning-specific ID code for the tag
-     * @param tolerance the tolerance for the PID controllers
      */
-    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, LightningTagID codeID, double tolerance) {
+    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, boolean isL1, LEDs leds) {
         this(drivetrain, camera, leds);
-
-        customTagSet = true;
-        this.codeID = codeID;
-        this.tolerance = tolerance;
+        this.isL1 = isL1;
     }
 
     /**
      * Used to align to Tag
      * will always use PID Controllers
-     * @param drivetrain
-     * @param camera
-     * @param leds
-     * @param tagID the ID of the tag to align to
-     */
-    public PoseBasedAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, int tagID) {
-        this(drivetrain, camera, leds);
-
-        customTagSet = true;
-
-        this.tagID = tagID;
-    }
-
-    /**
-     * Used to align to Tag
-     * will always use PID Controllers
+     *
      * @param drivetrain
      * @param camera
      * @param leds
@@ -107,10 +96,10 @@ public class PoseBasedAutoAlign extends Command {
         this.drivetrain = drivetrain;
         this.camera = camera;
         this.leds = leds;
-        
+
         tagID = 0;
         customTagSet = false;
-        
+
         addRequirements(drivetrain);
     }
 
@@ -118,13 +107,14 @@ public class PoseBasedAutoAlign extends Command {
     public void initialize() {
         invokeCancel = false;
         // Get tagID from codeID
-        if(codeID != null) {
-            tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? codeID.redID : codeID.blueID;
+        if (codeID != null) {
+            tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red
+                    ? codeID.redID
+                    : codeID.blueID;
         }
 
         // Get the tag in front of the robot
         if (!customTagSet) {
-
             tagID = PoseConstants.getScorePose(drivetrain.getPose());
         }
 
@@ -133,20 +123,24 @@ public class PoseBasedAutoAlign extends Command {
             invokeCancel = true;
             CommandScheduler.getInstance().cancel(this);
         } else {
-            targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tagID));
+            if (isL1) {
+                targetPose = PoseConstants.l1PoseHashMap.get(new Tuple<>(camera, tagID));
+            } else {
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<>(camera, tagID));
+            }
 
             LightningShuffleboard.setDouble("TestAutoAlign", "Tag", tagID);
 
-            if(targetPose != null) {
+            if (targetPose != null) {
                 LightningShuffleboard.setString("TestAutoAlign", "Target Pose", targetPose.toString());
             }
         }
 
-        xPID.setTolerance(tolerance);
+        xPID.setTolerance(driveTolerance);
 
-        yPID.setTolerance(tolerance);
+        yPID.setTolerance(driveTolerance);
 
-        rPID.setTolerance(1.5);
+        rPID.setTolerance(AutoAlignConstants.POSEBASED_ROT_TOLERANCE);
         rPID.enableContinuousInput(0, 360);
     }
 
@@ -154,19 +148,21 @@ public class PoseBasedAutoAlign extends Command {
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        // double kS = 0.025;
-        double kS = 0.01;
-        // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
-
-        double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
-        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
-        double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
+        double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
+                + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? driveKS : 0));
+        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY())
+                + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? driveKS : 0));
+        double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
+                targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
         drivetrain.setControl(DriveRequests.getAutoAlign(xVeloc, yVeloc, rotationVeloc));
-    
+
         LightningShuffleboard.setDouble("TestAutoAlign", "X veloc", xVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "Y veloc", yVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "R veloc", rotationVeloc);
+
+        // setDriveGains();
+        // setRotGains();
     }
 
     @Override
@@ -178,6 +174,7 @@ public class PoseBasedAutoAlign extends Command {
             RobotContainer.hapticDriverCommand().schedule();
         }
 
+        // Ensure we are not moving after we stop
         drivetrain.setControl(DriveRequests.getBrake().get());
     }
 
@@ -187,6 +184,33 @@ public class PoseBasedAutoAlign extends Command {
     }
 
     public boolean onTarget() {
-        return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
+        return xPID.atSetpoint() && (!overrideYPID ? yPID.atSetpoint() : true) && rPID.atSetpoint();
+    }
+
+    private void setDriveGains() {
+        String key = "DRV";
+        xPID.setPID(
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.POSEBASED_DRIVE_P),
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.POSEBASED_DRIVE_I),
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.POSEBASED_DRIVE_D));
+        driveKS = LightningShuffleboard.getDouble("TestAutoAlign", key + " KStatic",
+                AutoAlignConstants.POSEBASED_DRIVE_KS);
+
+        yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
+
+        xPID.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", key + " tolerance", driveTolerance));
+    }
+
+    private void setRotGains() {
+        String key = "ROT";
+
+        rPID.setPID(
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.POSEBASED_ROT_P),
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.POSEBASED_ROT_I),
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.POSEBASED_ROT_D));
+        rotKS = LightningShuffleboard.getDouble("TestAutoAlign", key + "KStatic", AutoAlignConstants.POSEBASED_ROT_KS);
+
+        rPID.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", key + " tolerance",
+                AutoAlignConstants.POSEBASED_ROT_TOLERANCE));
     }
 }

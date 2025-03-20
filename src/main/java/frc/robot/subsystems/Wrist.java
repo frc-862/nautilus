@@ -16,6 +16,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -60,6 +61,7 @@ public class Wrist extends SubsystemBase {
         encoder = new CANcoder(RobotMap.WRIST_ENCODER, RobotMap.CANIVORE_CAN_NAME);
         angleConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5d;
         angleConfig.MagnetSensor.MagnetOffset = Robot.isReal() ? EncoderConstants.wristOffset : 0d;
+        angleConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         encoder.getConfigurator().apply(angleConfig);
 
         motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
@@ -105,6 +107,7 @@ public class Wrist extends SubsystemBase {
     @Override
     public void periodic() {
         LightningShuffleboard.setDouble("Wrist", "currentPosition", getAngle());
+        LightningShuffleboard.setDouble("Wrist", "target", targetPosition);
         LightningShuffleboard.setBool("Wrist", "onTarget", isOnTarget());
 
         LightningShuffleboard.setDouble("Diagnostic", "WRIST Temperature", motor.getDeviceTemp().getValueAsDouble());

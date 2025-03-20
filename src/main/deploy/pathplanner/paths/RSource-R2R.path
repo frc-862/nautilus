@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0143421969496034,
-        "y": 2.1675626188129304
+        "x": 2.2638919651807643,
+        "y": 1.8618867082277495
       },
       "isLocked": false,
       "linkedName": "RightSRC"
@@ -20,8 +20,8 @@
         "y": 2.742289131955165
       },
       "prevControl": {
-        "x": 3.0011042025600014,
-        "y": 2.6435497076566716
+        "x": 3.2507166599081967,
+        "y": 2.007007986864137
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5307345137987517,
+      "waypointRelativePos": 0.6688639998430379,
       "rotationDegrees": -119.99999999999999
     }
   ],
@@ -75,15 +75,15 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 1.0,
     "rotation": -119.99999999999999
   },
   "reversed": false,

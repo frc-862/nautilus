@@ -2,10 +2,11 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.auton;
+package frc.robot.commands;
 
-import java.util.function.Supplier;
+import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -16,7 +17,6 @@ import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
-import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,24 +28,19 @@ import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
 
-public class AutonAutoAlign extends Command {
+public class BargeAutoAlign extends Command {
 
     private Swerve drivetrain;
-    private Camera camera;
     private LEDs leds;
     private FishingRod rod;
 
-    private double driveTolerance = AutoAlignConstants.POSEBASED_DRIVE_TOLERANCE;
+    private double tolerance = AutoAlignConstants.POSEBASED_DRIVE_TOLERANCE;
 
-    private PIDController xPID = new PIDController(AutoAlignConstants.POSEBASED_DRIVE_P,
-            AutoAlignConstants.POSEBASED_DRIVE_I, AutoAlignConstants.POSEBASED_DRIVE_D);
-    private PIDController yPID = new PIDController(AutoAlignConstants.POSEBASED_DRIVE_P,
-            AutoAlignConstants.POSEBASED_DRIVE_I, AutoAlignConstants.POSEBASED_DRIVE_D);
-    private PIDController rPID = new PIDController(AutoAlignConstants.POSEBASED_ROT_P,
-            AutoAlignConstants.POSEBASED_ROT_I, AutoAlignConstants.POSEBASED_ROT_D);
+    private PIDController xPID = new PIDController(AutoAlignConstants.POSEBASED_DRIVE_P, AutoAlignConstants.POSEBASED_DRIVE_I,
+            AutoAlignConstants.POSEBASED_DRIVE_D);
 
-    private double driveKS = AutoAlignConstants.POSEBASED_DRIVE_KS;
-    private double rotKS = AutoAlignConstants.POSEBASED_ROT_KS;
+    private PIDController rPID = new PIDController(AutoAlignConstants.POSEBASED_ROT_D, AutoAlignConstants.POSEBASED_ROT_I,
+            AutoAlignConstants.POSEBASED_ROT_D);
 
     private Pose2d targetPose = new Pose2d();
 
@@ -55,74 +50,64 @@ public class AutonAutoAlign extends Command {
 
     private LightningTagID codeID = LightningTagID.One;
 
-    // AUTON AUTO ALIGN SPECIFIC VARIABLES
-    private boolean hasDeployed = false;
+    private boolean doEle = false;
+    private final double deployVeloc = AutoAlignConstants.BARGE_DEPLY_VEL;
     private boolean reachedDeployVelOnce = false;
 
-    private Supplier<RodStates> targetRodState;
+    private DoubleSupplier yVelSupplier;
+
+    private final DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
+    private final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
 
     /**
-     * Used to align to a given Tag
+     * Used to align to Tag
      * will always use PID Controllers
      *
      * @param drivetrain
-     * @param camera
      * @param leds
      * @param rod
      * @param codeID     the Lightning-specific ID code for the tag
-     * @param targetRodState supplier for the rod state to go to when ready
      */
-    public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, LightningTagID codeID, Supplier<RodStates> targetRodState) {
-        this(drivetrain, camera, leds, rod, targetRodState);
+    public BargeAutoAlign(Swerve drivetrain, LEDs leds, FishingRod rod, LightningTagID codeID) {
+        this(drivetrain, leds, rod);
 
         customTagSet = true;
         this.codeID = codeID;
+
+        this.rod = rod;
     }
 
     /**
-     * Used to align to Tag based on current pose
+     * Used to align to Tag
      * will always use PID Controllers
      *
      * @param drivetrain
-     * @param camera
      * @param leds
      * @param rod
-<<<<<<< HEAD
-=======
-     * @param targetRodState supplier for the rod state to go to when ready
->>>>>>> main
      */
-    public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, Supplier<RodStates> targetRodState) {
+    public BargeAutoAlign(Swerve drivetrain, LEDs leds, FishingRod rod) {
         this.drivetrain = drivetrain;
-        this.camera = camera;
         this.leds = leds;
         this.rod = rod;
 
         tagID = 0;
         customTagSet = false;
 
-        this.targetRodState = targetRodState;
-
-        if (targetRodState.get() != RodStates.L4) {
-            addRequirements(drivetrain);
-        } else {
-            addRequirements(drivetrain, rod);
-        }
+        addRequirements(drivetrain, rod);
     }
+
 
     @Override
     public void initialize() {
-        hasDeployed = false;
+        doEle = false;
         reachedDeployVelOnce = false;
 
         invokeCancel = false;
         // Get tagID from codeID
         if (codeID != null) {
-            tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red
+            tagID = alliance != blue
                     ? codeID.redID
                     : codeID.blueID;
-        } else {
-            customTagSet = false;
         }
 
         // Get the tag in front of the robot
@@ -135,7 +120,7 @@ public class AutonAutoAlign extends Command {
             invokeCancel = true;
             CommandScheduler.getInstance().cancel(this);
         } else {
-            targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tagID));
+            targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.RIGHT, tagID));
 
             LightningShuffleboard.setDouble("TestAutoAlign", "Tag", tagID);
 
@@ -144,9 +129,7 @@ public class AutonAutoAlign extends Command {
             }
         }
 
-        xPID.setTolerance(driveTolerance);
-
-        yPID.setTolerance(driveTolerance);
+        xPID.setTolerance(tolerance);
 
         rPID.setTolerance(AutoAlignConstants.POSEBASED_ROT_TOLERANCE);
         rPID.enableContinuousInput(0, 360);
@@ -157,29 +140,31 @@ public class AutonAutoAlign extends Command {
         Pose2d currentPose = drivetrain.getPose();
 
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
-                + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? driveKS : 0));
-        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY())
-                + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? driveKS : 0));
+                + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? AutoAlignConstants.POSEBASED_DRIVE_KS : 0));
+
+        double yVeloc = yVelSupplier != null ? yVelSupplier.getAsDouble() : 0;
+
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
-                targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
+                targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? AutoAlignConstants.POSEBASED_ROT_KS : 0));
 
-        // if speed goes above threshold, start checking if we go back below threshold
-        // if (Math.abs(xVeloc) > deployVeloc && Math.abs(yVeloc) > deployVeloc) {
-        // reachedDeployVelOnce = true;
-        // }
 
-        // if we've reached the threshold once, and we're below the threshold, deploy the ele
-        if (Math.abs(xVeloc) < AutoAlignConstants.DEPLOY_VEL && Math.abs(yVeloc) < AutoAlignConstants.DEPLOY_VEL && !hasDeployed) {
-            hasDeployed = true;
-            invokeRod();
+        //if speed goes above threshold, start checking if we go back below threshold
+        if (Math.abs(xVeloc) > deployVeloc && Math.abs(yVeloc) > deployVeloc) {
+            reachedDeployVelOnce = true;
         }
 
-        // once we've started moving the elvator, make sure we never go faster than
-        // threshold (to be safe)
-        // if (doEle) {
-        // xVeloc = MathUtil.clamp(xVeloc, -deployVeloc, deployVeloc);
-        // yVeloc = MathUtil.clamp(yVeloc, -deployVeloc, deployVeloc);
-        // }
+        //
+        if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !doEle && reachedDeployVelOnce) {
+            doEle = true;
+            rod.setState(RodStates.BARGE);
+        }
+
+
+        // once we've started moving the elvator, make sure we never go faster than threshold (to be safe)
+        if (doEle) {
+            xVeloc = MathUtil.clamp(xVeloc, -deployVeloc, deployVeloc);
+            yVeloc = MathUtil.clamp(yVeloc, -deployVeloc, deployVeloc);
+        }
 
         drivetrain.setControl(DriveRequests.getAutoAlign(xVeloc, yVeloc, rotationVeloc));
 
@@ -193,17 +178,13 @@ public class AutonAutoAlign extends Command {
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
 
-            if (rod.getState() != targetRodState.get()) {
-                invokeRod();
+            if (rod.getState() != RodStates.BARGE) {
+                rod.setState(RodStates.BARGE);
             }
         }
-
         if (!DriverStation.isAutonomous() && onTarget()) {
             RobotContainer.hapticDriverCommand().schedule();
         }
-
-        // Ensure we are not moving after we stop
-        drivetrain.setControl(DriveRequests.getBrake().get());
     }
 
     @Override
@@ -212,18 +193,11 @@ public class AutonAutoAlign extends Command {
     }
 
     public boolean onTarget() {
-        return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
+        return xPID.atSetpoint() && rPID.atSetpoint();
     }
 
-    private void invokeRod() {
-        if (targetRodState.get() == RodStates.DEFAULT) {
-            return;
-        }
-
-        if (targetRodState.get() == RodStates.L4) {
-            rod.setState(RodStates.L4, RodTransitionStates.CORAL_SAFE_ZONE);
-        } //else {
-        //     rod.setState(targetRodState.get());
-        // }
+    public Command withYSpeed(DoubleSupplier yDoubleSupplier){
+        this.yVelSupplier = yDoubleSupplier;
+        return this;
     }
 }

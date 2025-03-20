@@ -95,8 +95,8 @@ public class Elevator extends SubsystemBase {
 
         positionPID = new MotionMagicVoltage(ElevatorConstants.MIN_EXTENSION.magnitude()).withSlot(0);
 
-        // leftMotor.setPosition(0);
-        leftMotor.setPosition(getCANRangeDist());
+        leftMotor.setPosition(0);
+        // leftMotor.setPosition(getCANRangeDist());
 
         if (Robot.isSimulation()) {
             /*

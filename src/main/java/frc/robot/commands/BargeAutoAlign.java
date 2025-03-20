@@ -2,7 +2,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.auton;
+package frc.robot.commands;
+
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -26,7 +28,7 @@ import frc.robot.subsystems.Swerve;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
 
-public class AutonAutoAlign extends Command {
+public class BargeAutoAlign extends Command {
 
     private Swerve drivetrain;
     private Camera camera;
@@ -56,6 +58,9 @@ public class AutonAutoAlign extends Command {
     private final double deployVeloc = 0.35;
     private boolean reachedDeployVelOnce = false;
 
+    private boolean overrideYPID = false;
+    private DoubleSupplier yDoubleSupplier;
+
     /**
      * Used to align to Tag
      * will always use PID Controllers
@@ -65,7 +70,7 @@ public class AutonAutoAlign extends Command {
      * @param leds
      * @param codeID     the Lightning-specific ID code for the tag
      */
-    public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, LightningTagID codeID) {
+    public BargeAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, LightningTagID codeID) {
         this(drivetrain, camera, leds, rod);
 
         customTagSet = true;
@@ -82,7 +87,7 @@ public class AutonAutoAlign extends Command {
      * @param camera
      * @param leds
      */
-    public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod) {
+    public BargeAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod) {
         this.drivetrain = drivetrain;
         this.camera = camera;
         this.leds = leds;
@@ -144,8 +149,8 @@ public class AutonAutoAlign extends Command {
 
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
                 + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
-        double yVeloc = yPID.calculate(currentPose.getY(), targetPose.getY())
-                + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0));
+        double yVeloc = !overrideYPID ? yPID.calculate(currentPose.getY(), targetPose.getY())
+                + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0))  : yDoubleSupplier.getAsDouble();
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
                 targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? rKs : 0));
 
@@ -195,6 +200,12 @@ public class AutonAutoAlign extends Command {
     }
 
     public boolean onTarget() {
-        return xPID.atSetpoint() && yPID.atSetpoint() && rPID.atSetpoint();
+        return xPID.atSetpoint() && (!overrideYPID ? yPID.atSetpoint() : true) && rPID.atSetpoint();
+    }
+
+    public Command withYSpeed(DoubleSupplier yDoubleSupplier){
+        overrideYPID = true;
+        this.yDoubleSupplier = yDoubleSupplier;
+        return this;
     }
 }

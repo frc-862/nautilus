@@ -164,7 +164,7 @@ public class PoseBasedAutoAlign extends Command {
         // double rKs = LightningShuffleboard.getDouble("TestAutoAlign", "R static", 0d);
 
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX()) + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
-        double yVeloc = overrideYPID ? yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0)) : yDoubleSupplier.getAsDouble();
+        double yVeloc = !overrideYPID ? yPID.calculate(currentPose.getY(), targetPose.getY()) + (Math.signum(yPID.getError()) * (!yPID.atSetpoint() ? kS : 0)) : yDoubleSupplier.getAsDouble();
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());// + Math.signum(controllerY.getError()) * rKs;
 
         drivetrain.setControl(DriveRequests.getAutoAlign(xVeloc, yVeloc, rotationVeloc));
@@ -196,6 +196,8 @@ public class PoseBasedAutoAlign extends Command {
     }
 
     public Command withYSpeed(DoubleSupplier yDoubleSupplier){
+        overrideYPID = true;
+        this.yDoubleSupplier = yDoubleSupplier;
         return this;
     }
 }

@@ -51,7 +51,6 @@ public class PoseBasedAutoAlign extends Command {
     private boolean isL1 = false;
 
     private boolean overrideYPID = false;
-    private DoubleSupplier yDoubleSupplier;
 
     private LightningTagID codeID = LightningTagID.One;
 
@@ -231,7 +230,6 @@ public class PoseBasedAutoAlign extends Command {
     @Override
     public boolean isFinished() {
         return onTarget() || invokeCancel;
-        // return false;
     }
 
     public boolean onTarget() {

@@ -57,7 +57,6 @@ public class AutonAutoAlign extends Command {
 
     // AUTON AUTO ALIGN SPECIFIC VARIABLES
     private boolean hasDeployed = false;
-    private final double deployVeloc = 0.45;
     private boolean reachedDeployVelOnce = false;
 
     private Supplier<RodStates> targetRodState;
@@ -163,7 +162,7 @@ public class AutonAutoAlign extends Command {
         // }
 
         // if we've reached the threshold once, and we're below the threshold, deploy the ele
-        if (Math.abs(xVeloc) < deployVeloc && Math.abs(yVeloc) < deployVeloc && !hasDeployed) {
+        if (Math.abs(xVeloc) < AutoAlignConstants.DEPLOY_VEL && Math.abs(yVeloc) < AutoAlignConstants.DEPLOY_VEL && !hasDeployed) {
             hasDeployed = true;
             invokeRod();
         }

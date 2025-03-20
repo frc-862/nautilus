@@ -51,7 +51,7 @@ public class BargeAutoAlign extends Command {
     private LightningTagID codeID = LightningTagID.One;
 
     private boolean doEle = false;
-    private final double deployVeloc = 0.35;
+    private final double deployVeloc = AutoAlignConstants.BARGE_DEPLY_VEL;
     private boolean reachedDeployVelOnce = false;
 
     private DoubleSupplier yVelSupplier;
@@ -131,7 +131,7 @@ public class BargeAutoAlign extends Command {
 
         xPID.setTolerance(tolerance);
 
-        rPID.setTolerance(1);
+        rPID.setTolerance(AutoAlignConstants.POSEBASED_ROT_TOLERANCE);
         rPID.enableContinuousInput(0, 360);
     }
 
@@ -139,16 +139,13 @@ public class BargeAutoAlign extends Command {
     public void execute() {
         Pose2d currentPose = drivetrain.getPose();
 
-        double kS = 0.005;//0.013;
-        double rKs = 0.018;
-
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
-                + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? kS : 0));
+                + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? AutoAlignConstants.POSEBASED_DRIVE_KS : 0));
 
         double yVeloc = yVelSupplier != null ? yVelSupplier.getAsDouble() : 0;
 
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
-                targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? rKs : 0));
+                targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? AutoAlignConstants.POSEBASED_ROT_KS : 0));
 
                 
         //if speed goes above threshold, start checking if we go back below threshold

@@ -1317,6 +1317,9 @@ public class Constants {
         public static final double POSEBASED_ROT_D = 0;
         public static final double POSEBASED_ROT_TOLERANCE = 1.5; // 2.5
         public static final double POSEBASED_ROT_KS = 0; // 0.01 NOT APPIED
+
+        public static final double DEPLOY_VEL = 0.45;
+        public static final double BARGE_DEPLY_VEL = 0.35;
         
         public static final double targetTX = 720d;
 

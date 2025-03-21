@@ -5,13 +5,19 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "S4-R3L"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToThreeLeft"
+                  "name": "AUTONAlignToThreeLeft"
                 }
               },
               {
@@ -24,6 +30,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "WaitOnTarget"
+          }
+        },
+        {
           "type": "wait",
           "data": {
             "waitTime": 0.25
@@ -32,7 +44,7 @@
         {
           "type": "named",
           "data": {
-            "name": "RodL4"
+            "name": "ScoreCoral"
           }
         },
         {

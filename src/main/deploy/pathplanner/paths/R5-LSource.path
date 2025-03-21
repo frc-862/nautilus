@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.553307614272207,
-        "y": 5.712437968046556
+        "x": 5.069570018817582,
+        "y": 5.499593426046522
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.402012137090203,
-        "y": 6.534791880319417
+        "x": 3.9182745416355784,
+        "y": 6.321947338319382
       },
       "isLocked": false,
-      "linkedName": "Reef5Left"
+      "linkedName": null
     },
     {
       "anchor": {

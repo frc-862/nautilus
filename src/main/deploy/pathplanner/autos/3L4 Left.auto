@@ -5,13 +5,19 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "S1-R5"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToFiveLeft"
+                  "name": "AUTONAlignToFiveLeft"
                 }
               },
               {
@@ -26,7 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "RodL4"
+            "name": "WaitOnTarget"
           }
         },
         {

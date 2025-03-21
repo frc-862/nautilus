@@ -1306,17 +1306,17 @@ public class Constants {
         // public static final double Y_Kd = 0d;
 
         // auton gains for posebased (if needed)
-        public static final double AUTON_DRIVE_P = 0.8d; // 1.5
+        public static final double AUTON_DRIVE_P = 0.8d;
         public static final double AUTON_DRIVE_I = 0;
-        public static final double AUTON_DRIVE_D = 0.035; // 0.08
-        public static final double AUTON_DRIVE_KS = 0.1; // 0.08
+        public static final double AUTON_DRIVE_D = 0.035;
+        public static final double AUTON_DRIVE_KS = 0.1;
 
         // tele gains
-        public static final double TELE_DRIVE_P = 0.8d; // 1.5
+        public static final double TELE_DRIVE_P = 1.5d;
         public static final double TELE_DRIVE_I = 0;
-        public static final double TELE_DRIVE_D = 0.035; // 0.08
+        public static final double TELE_DRIVE_D = 0.08;
         public static final double TELE_DRIVE_TOLERANCE = 0.025;
-        public static final double TELE_DRIVE_KS = 0.1; // 0.08
+        public static final double TELE_DRIVE_KS = 0.08;
 
         public static final double POSEBASED_ROT_P = 0.03;
         public static final double POSEBASED_ROT_I = 0;

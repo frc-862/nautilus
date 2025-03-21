@@ -144,10 +144,12 @@ public class AutonAutoAlign extends Command {
         if (DriverStation.isAutonomous()) {
             xPID.setPID(AutoAlignConstants.AUTON_DRIVE_P, AutoAlignConstants.AUTON_DRIVE_I, AutoAlignConstants.AUTON_DRIVE_D);
             yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
+            driveKS = AutoAlignConstants.AUTON_DRIVE_KS;
         } else {
             xPID.setPID(AutoAlignConstants.TELE_DRIVE_P,
                 AutoAlignConstants.TELE_DRIVE_I, AutoAlignConstants.TELE_DRIVE_D);
             yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
+            driveKS = AutoAlignConstants.TELE_DRIVE_KS;
         }
 
         xPID.setTolerance(driveTolerance);

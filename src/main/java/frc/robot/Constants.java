@@ -92,10 +92,10 @@ public class Constants {
 
     public static class EncoderConstants {
         // Nautilus values
-        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(-0.39501953125);
+        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.2431640625);
         private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(0.412353515625);
         private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(0.0693359375);
-        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.30517578125);
+        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(0.2509765625);
 
         // Triton values
         private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);
@@ -281,8 +281,8 @@ public class Constants {
         public static final double MOTORS_KA = 0.01; // temp
         public static final double MOTORS_KG = 0d; // temp
 
-        public static final double VELOC = 75d; // 80
-        public static final double ACCEL = 450d; // 200
+        public static final double VELOC = 72d; // 80
+        public static final double ACCEL = 250d; // 200
         public static final double JERK = 1600d; // temp
 
         public static final double POSITION_TOLERANCE = 0.1; // temp
@@ -604,19 +604,19 @@ public class Constants {
 
                 //red right source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 2),
-                        new Pose2d(16.598, 7.163, new Rotation2d(Degrees.of(-126))));
+                        new Pose2d(16.379, 7.067, new Rotation2d(Degrees.of(-126))));
 
                 //red left source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 1),
-                        new Pose2d(16.480, 0.549, new Rotation2d(Degrees.of(126))));
+                        new Pose2d(16.408, 0.991, new Rotation2d(Degrees.of(126))));
 
                 //blue left source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 13),
-                        new Pose2d(1.064, 7.299, new Rotation2d(Degrees.of(-54))));
+                        new Pose2d(1.171, 7.067, new Rotation2d(Degrees.of(-54))));
 
                 //blue right source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 12),
-                        new Pose2d(1.34, 0.69, new Rotation2d(Degrees.of(54))));
+                        new Pose2d(1.306, 0.865, new Rotation2d(Degrees.of(54))));
 
                 // red barge front
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 5),
@@ -1306,19 +1306,19 @@ public class Constants {
         public static final double Y_Kd = 0d;
 
         // Posebased gains
-        public static final double POSEBASED_DRIVE_P = 1.5d; // 2
+        public static final double POSEBASED_DRIVE_P = 0.8d; // 1.5
         public static final double POSEBASED_DRIVE_I = 0;
-        public static final double POSEBASED_DRIVE_D = 0.08; // 0.06
-        public static final double POSEBASED_DRIVE_TOLERANCE = 0.025; // 0.03
-        public static final double POSEBASED_DRIVE_KS = 0.08; // 0.01
+        public static final double POSEBASED_DRIVE_D = 0.035; // 0.08
+        public static final double POSEBASED_DRIVE_TOLERANCE = 0.025;
+        public static final double POSEBASED_DRIVE_KS = 0.1; // 0.08
 
         public static final double POSEBASED_ROT_P = 0.03;
         public static final double POSEBASED_ROT_I = 0;
         public static final double POSEBASED_ROT_D = 0;
         public static final double POSEBASED_ROT_TOLERANCE = 1.5; // 2.5
-        public static final double POSEBASED_ROT_KS = 0; // 0.01 NOT APPIED
+        public static final double POSEBASED_ROT_KS = 0; // 0.01 NOT APPLIED
 
-        public static final double DEPLOY_VEL = 0.45;
+        public static final double DEPLOY_VEL = 0.35; // 0.45
         public static final double BARGE_DEPLY_VEL = 0.35;
 
         public static final double targetTX = 720d;

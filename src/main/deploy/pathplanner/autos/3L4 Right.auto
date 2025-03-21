@@ -24,15 +24,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "RodL4"
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ScoreCoral"
+            "name": "RodL4"
           }
         },
         {

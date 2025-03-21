@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Inches;
@@ -92,10 +93,10 @@ public class Constants {
 
     public static class EncoderConstants {
         // Nautilus values
-        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.2431640625);
-        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(0.412353515625);
-        private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(0.0693359375);
-        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(0.2509765625);
+        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.24853515625);
+        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(-0.147216796875);
+        private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(-0.046875);
+        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(0.254150390625);
 
         // Triton values
         private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);
@@ -532,8 +533,9 @@ public class Constants {
         public static final Transform3d robotRightToCamera = new Transform3d(
                 new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
+        // MIDDLE is only used for algae on the reef!! 
         public enum Camera {
-            LEFT, RIGHT
+            LEFT, RIGHT, MIDDLE
         }
 
         public static final double VISION_X_STDEV = 1;
@@ -602,6 +604,14 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22), new Pose2d(5.27564233319572, 2.98929631425915, new Rotation2d(Degrees.of(-60))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22), new Pose2d(4.99383766680426, 2.82659631425915, new Rotation2d(Degrees.of(-60))));
 
+
+                //R4AG
+                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 10), new Pose2d(11.758, 4.021, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 21), new Pose2d(5.781, 4.021, new Rotation2d(Degrees.of(0))));
+                //R5AG
+                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 11), new Pose2d(12.403, 2.880, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 20), new Pose2d(5.143, 5.164, new Rotation2d(Degrees.of(60))));
+
                 //red right source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 2),
                         new Pose2d(16.379, 7.067, new Rotation2d(Degrees.of(-126))));
@@ -620,19 +630,19 @@ public class Constants {
 
                 // red barge front
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 5),
-                    new Pose2d(9.998, 1.621, new Rotation2d(Degrees.of(0))));
+                    new Pose2d(9.982, 1.621, new Rotation2d(Degrees.of(0))));
 
                 // blue barge front
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 14),
-                    new Pose2d(7.612, 6.201, new Rotation2d(Degrees.of(-180))));
+                    new Pose2d(7.681, 6.201, new Rotation2d(Degrees.of(-180))));
 
-                // red barge back
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 15),
-                    new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
+                // // red barge back
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 15),
+                //     new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
 
-                // blue barge back
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 4),
-                    new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
+                // // blue barge back
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 4),
+                //     new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
             }
 
         };
@@ -728,8 +738,7 @@ public class Constants {
             RightSource(2, 12),
             LeftSource(1, 13),
 
-            BargeFront(5, 14),
-            BargeBack(15, 4);
+            BargeFront(5, 14);
 
             public final int redID;
             public final int blueID;
@@ -1325,7 +1334,7 @@ public class Constants {
         public static final double POSEBASED_ROT_KS = 0; // 0.01 NOT APPLIED
 
         public static final double DEPLOY_VEL = 0.35; // 0.45
-        public static final double BARGE_DEPLY_VEL = 0.35;
+        public static final double BARGE_DEPLY_VEL = 0.25;
 
         // public static final double targetTX = 720d;
 

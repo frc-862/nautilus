@@ -20,6 +20,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.Camera;
@@ -113,12 +114,12 @@ public class PhotonVision extends SubsystemBase {
     public boolean hasTarget(Camera camera) {
         if(isCameraInitialized(camera)) {
             switch(camera) {
-                case LEFT: 
+                case LEFT:
                     return leftThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
-                    
+
                 case RIGHT:
                     return rightThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
-                
+
                 default:
                     return false;
             }
@@ -144,12 +145,12 @@ public class PhotonVision extends SubsystemBase {
     public double getTY(VisionConstants.Camera camera, double offset) {
         if(isCameraInitialized(camera)) {
             switch(camera) {
-                case LEFT: 
+                case LEFT:
                     return leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
-                    
+
                 case RIGHT:
                     return rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
-                
+
                 default:
                     return 0;
             }
@@ -167,12 +168,12 @@ public class PhotonVision extends SubsystemBase {
     public double getTX(Camera camera, double offset) {
         if(isCameraInitialized(camera)) {
             switch(camera) {
-                case LEFT: 
+                case LEFT:
                     return leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
-                    
+
                 case RIGHT:
                     return rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
-                
+
                 default:
                     return 0;
             }
@@ -248,20 +249,29 @@ public class PhotonVision extends SubsystemBase {
         // LightningShuffleboard.setDouble("Vision", "left dist", leftUpdates.v);
         // LightningShuffleboard.setDouble("Vision", "right dist", rightUpdates.v);
 
+        final double maxDist = 3d;
+        boolean shouldUpdateLeft = true;
+        boolean shouldUpdateRight = true;
+
+        if (DriverStation.isAutonomous() && DriverStation.isEnabled()) {
+            shouldUpdateLeft = leftUpdates.v < maxDist;
+            shouldUpdateRight = rightUpdates.v < maxDist;
+        }
+
         // prefer the camera that called the function (has known good values)
         // if the other camera has a target, prefer the one with the lower distance to best tag
         switch (caller) {
             case LEFT:
-                if(rightThread.hasTarget() && rightUpdates.v < leftUpdates.v) {
+                if((rightThread.hasTarget() && rightUpdates.v < leftUpdates.v) && shouldUpdateRight) {
                     drivetrain.addVisionMeasurement(rightUpdates.k, rightUpdates.v);
-                } else {
+                } else if (shouldUpdateLeft) {
                     drivetrain.addVisionMeasurement(leftUpdates.k, leftUpdates.v);
                 }
             break;
             case RIGHT:
-                if(leftThread.hasTarget() && leftUpdates.v < rightUpdates.v) {
+                if((leftThread.hasTarget() && leftUpdates.v < rightUpdates.v) && shouldUpdateLeft) {
                     drivetrain.addVisionMeasurement(leftUpdates.k, rightUpdates.v);
-                } else {
+                } else if (shouldUpdateRight) {
                     drivetrain.addVisionMeasurement(rightUpdates.k, rightUpdates.v);
                 }
             break;
@@ -336,7 +346,7 @@ public class PhotonVision extends SubsystemBase {
                                 // the local hasTarget variable will turn true if ANY PipelineResult within this loop has a target
                                 hasTarget = true;
 
-                                if(!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
+                                if (!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
                                     poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose,
                                             () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed"));
                                 } else {

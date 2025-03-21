@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.97,
-        "y": 2.799
+        "x": 7.5269570037270705,
+        "y": 1.1169308112276315
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.469999999999998,
-        "y": 3.6650254037844374
+        "x": 6.772326354817858,
+        "y": 1.736114933409548
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.296,
-        "y": 2.952
+        "x": 5.427535839454004,
+        "y": 2.7229396281369804
       },
       "prevControl": {
-        "x": 4.796,
-        "y": 3.8180254037844383
+        "x": 5.9306229387268115,
+        "y": 2.2682262884096347
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "RodL4",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodL4"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 4.0,
@@ -42,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": -58.5231606504159
   },
   "reversed": false,
   "folder": "Test Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": -45.67403689798468
   },
   "useDefaultConstraints": true
 }

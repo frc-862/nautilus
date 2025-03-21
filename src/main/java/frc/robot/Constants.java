@@ -1293,17 +1293,17 @@ public class Constants {
     }
 
     public class AutoAlignConstants {
-        public static final double AutoAlignTolerance = 0.02d;
+        // public static final double AutoAlignTolerance = 0.02d;
 
-        // X PID
-        public static final double X_Kp = 0.035d;
-        public static final double X_Ki = 0d;
-        public static final double X_Kd = 0d;
+        // // X PID
+        // public static final double X_Kp = 0.035d;
+        // public static final double X_Ki = 0d;
+        // public static final double X_Kd = 0d;
 
-        // Y PID
-        public static final double Y_Kp = 0.1d;
-        public static final double Y_Ki = 0d;
-        public static final double Y_Kd = 0d;
+        // // Y PID
+        // public static final double Y_Kp = 0.1d;
+        // public static final double Y_Ki = 0d;
+        // public static final double Y_Kd = 0d;
 
         // auton gains for posebased (if needed)
         public static final double AUTON_DRIVE_P = 0.8d; // 1.5
@@ -1311,12 +1311,12 @@ public class Constants {
         public static final double AUTON_DRIVE_D = 0.035; // 0.08
         public static final double AUTON_DRIVE_KS = 0.1; // 0.08
 
-        // Posebased gains
-        public static final double POSEBASED_DRIVE_P = 0.8d; // 1.5
-        public static final double POSEBASED_DRIVE_I = 0;
-        public static final double POSEBASED_DRIVE_D = 0.035; // 0.08
-        public static final double POSEBASED_DRIVE_TOLERANCE = 0.025;
-        public static final double POSEBASED_DRIVE_KS = 0.1; // 0.08
+        // tele gains
+        public static final double TELE_DRIVE_P = 0.8d; // 1.5
+        public static final double TELE_DRIVE_I = 0;
+        public static final double TELE_DRIVE_D = 0.035; // 0.08
+        public static final double TELE_DRIVE_TOLERANCE = 0.025;
+        public static final double TELE_DRIVE_KS = 0.1; // 0.08
 
         public static final double POSEBASED_ROT_P = 0.03;
         public static final double POSEBASED_ROT_I = 0;
@@ -1327,14 +1327,14 @@ public class Constants {
         public static final double DEPLOY_VEL = 0.35; // 0.45
         public static final double BARGE_DEPLY_VEL = 0.35;
 
-        public static final double targetTX = 720d;
+        // public static final double targetTX = 720d;
 
-        public static final HashMap<Integer, Double> tagAngles = new HashMap<Integer, Double>() {
-            {
-                put(6, 0d);
-                put(9, 0d);
-            }
-        };
+        // public static final HashMap<Integer, Double> tagAngles = new HashMap<Integer, Double>() {
+        //     {
+        //         put(6, 0d);
+        //         put(9, 0d);
+        //     }
+        // };
     }
 
     public class SimGamePeicesConstants {

@@ -96,7 +96,7 @@ public class Constants {
         private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.24853515625);
         private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(-0.147216796875);
         private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(-0.046875);
-        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(0.254150390625);
+        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(0.385009765625);
 
         // Triton values
         private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);
@@ -614,19 +614,19 @@ public class Constants {
 
                 //red right source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 2),
-                        new Pose2d(16.379, 7.067, new Rotation2d(Degrees.of(-126))));
+                        new Pose2d(16.468, 7.199, new Rotation2d(Degrees.of(-126))));
 
                 //red left source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 1),
-                        new Pose2d(16.408, 0.991, new Rotation2d(Degrees.of(126))));
+                        new Pose2d(16.468, 0.838, new Rotation2d(Degrees.of(126))));
 
                 //blue left source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 13),
-                        new Pose2d(1.171, 7.067, new Rotation2d(Degrees.of(-54))));
+                        new Pose2d(1.091, 7.208, new Rotation2d(Degrees.of(-54))));
 
                 //blue right source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 12),
-                        new Pose2d(1.306, 0.865, new Rotation2d(Degrees.of(54))));
+                        new Pose2d(1.215, 0.728, new Rotation2d(Degrees.of(54))));
 
                 // red barge front
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 5),

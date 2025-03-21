@@ -614,19 +614,19 @@ public class Constants {
 
                 //red right source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 2),
-                        new Pose2d(16.468, 7.199, new Rotation2d(Degrees.of(-126))));
+                        new Pose2d(16.486, 7.263, new Rotation2d(Degrees.of(-126))));
 
                 //red left source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 1),
-                        new Pose2d(16.468, 0.838, new Rotation2d(Degrees.of(126))));
+                        new Pose2d(16.518, 0.757, new Rotation2d(Degrees.of(126))));
 
                 //blue left source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 13),
-                        new Pose2d(1.091, 7.208, new Rotation2d(Degrees.of(-54))));
+                        new Pose2d(1.070, 7.236, new Rotation2d(Degrees.of(-54))));
 
                 //blue right source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 12),
-                        new Pose2d(1.215, 0.728, new Rotation2d(Degrees.of(54))));
+                        new Pose2d(1.089, 0.744, new Rotation2d(Degrees.of(54))));
 
                 // red barge front
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 5),
@@ -1320,6 +1320,11 @@ public class Constants {
         public static final double AUTON_DRIVE_D = 0.035;
         public static final double AUTON_DRIVE_KS = 0.1;
 
+        public static final double AUTON_ROT_P = 0.03d;
+        public static final double AUTON_ROT_I = 0;
+        public static final double AUTON_ROT_D = 0;
+        public static final double AUTON_ROT_KS = 0;
+
         // tele gains
         public static final double TELE_DRIVE_P = 1.5d;
         public static final double TELE_DRIVE_I = 0;
@@ -1333,7 +1338,7 @@ public class Constants {
         public static final double POSEBASED_ROT_TOLERANCE = 1.5; // 2.5
         public static final double POSEBASED_ROT_KS = 0; // 0.01 NOT APPLIED
 
-        public static final double DEPLOY_VEL = 0.35; // 0.45
+        public static final double DEPLOY_VEL = 0.2; // 0.45
         public static final double BARGE_DEPLY_VEL = 0.25;
 
         // public static final double targetTX = 720d;

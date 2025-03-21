@@ -249,7 +249,7 @@ public class PhotonVision extends SubsystemBase {
         // LightningShuffleboard.setDouble("Vision", "left dist", leftUpdates.v);
         // LightningShuffleboard.setDouble("Vision", "right dist", rightUpdates.v);
 
-        final double maxDist = 3d;
+        final double maxDist = 4d;
         boolean shouldUpdateLeft = true;
         boolean shouldUpdateRight = true;
 

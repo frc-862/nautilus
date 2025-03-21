@@ -96,7 +96,7 @@ public class Constants {
         private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.24853515625);
         private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(-0.147216796875);
         private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(-0.046875);
-        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(0.385009765625);
+        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.427490234375);
 
         // Triton values
         private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);

@@ -1305,6 +1305,12 @@ public class Constants {
         public static final double Y_Ki = 0d;
         public static final double Y_Kd = 0d;
 
+        // auton gains for posebased (if needed)
+        public static final double AUTON_DRIVE_P = 0.8d; // 1.5
+        public static final double AUTON_DRIVE_I = 0;
+        public static final double AUTON_DRIVE_D = 0.035; // 0.08
+        public static final double AUTON_DRIVE_KS = 0.1; // 0.08
+
         // Posebased gains
         public static final double POSEBASED_DRIVE_P = 0.8d; // 1.5
         public static final double POSEBASED_DRIVE_I = 0;

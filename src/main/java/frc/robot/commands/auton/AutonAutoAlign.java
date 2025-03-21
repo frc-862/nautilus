@@ -141,6 +141,15 @@ public class AutonAutoAlign extends Command {
             }
         }
 
+        if (DriverStation.isAutonomous()) {
+            xPID.setPID(AutoAlignConstants.AUTON_DRIVE_P, AutoAlignConstants.AUTON_DRIVE_I, AutoAlignConstants.AUTON_DRIVE_D);
+            yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
+        } else {
+            xPID.setPID(AutoAlignConstants.POSEBASED_DRIVE_P,
+                AutoAlignConstants.POSEBASED_DRIVE_I, AutoAlignConstants.POSEBASED_DRIVE_D);
+            yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
+        }
+
         xPID.setTolerance(driveTolerance);
 
         yPID.setTolerance(driveTolerance);

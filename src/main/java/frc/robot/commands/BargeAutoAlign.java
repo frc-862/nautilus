@@ -56,9 +56,6 @@ public class BargeAutoAlign extends Command {
 
     private DoubleSupplier yVelSupplier;
 
-    private final DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
-    private final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
-
     /**
      * Used to align to Tag
      * will always use PID Controllers
@@ -105,9 +102,9 @@ public class BargeAutoAlign extends Command {
         invokeCancel = false;
         // Get tagID from codeID
         if (codeID != null) {
-            tagID = alliance != blue
-                    ? codeID.redID
-                    : codeID.blueID;
+            tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red
+                ? codeID.redID
+                : codeID.blueID;
         }
 
         // Get the tag in front of the robot

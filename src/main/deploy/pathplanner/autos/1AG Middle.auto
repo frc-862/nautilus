@@ -36,9 +36,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "RodLow"
+            "pathName": "R4AG-SMidTeehee"
           }
         },
         {
@@ -56,14 +56,14 @@
                 "data": {
                   "waitTime": 4.0
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeAlgae"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
           }
         },
         {

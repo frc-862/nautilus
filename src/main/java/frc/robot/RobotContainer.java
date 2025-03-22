@@ -421,7 +421,10 @@ public class RobotContainer extends LightningContainer {
                 new BargeAutoAlign(drivetrain, leds, rod).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         NamedCommands.registerCommand("IntakeCoral",
-                new IntakeCoral(coralCollector, 1));
+                new IntakeCoral(coralCollector, 1, CoralCollectorConstants.CORAL_HOLD_POWER));
+        
+        NamedCommands.registerCommand("IntakeAlgae",
+                new IntakeCoral(coralCollector, 1, CoralCollectorConstants.ALGAE_HOLD_POWER));
 
         NamedCommands.registerCommand("IntuahCoral",
                 new RunCommand(() -> coralCollector.setPower(1), coralCollector));

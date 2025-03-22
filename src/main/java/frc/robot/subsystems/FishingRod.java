@@ -79,9 +79,12 @@ public class FishingRod extends SubsystemBase {
                     }
                     break;
                 case WRIST_DOWN_THEN_ELE: // wrist down, move ele
-                    wrist.setState(targetState);
+                    wrist.setState(RodStates.INVERSE_STOW);
                     if (wrist.isOnTarget()) {
-                        transitionState = RodTransitionStates.DEFAULT; // finalize transition
+                        elevator.setState(targetState);
+                        if (elevator.isOnTarget()) {
+                            transitionState = RodTransitionStates.DEFAULT; // finalize transition
+                        }
                     }
                     break;
                 case CORAL_SAFE_ZONE: // transition to L4, moves wrist earlier than onTarget()

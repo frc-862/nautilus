@@ -281,7 +281,7 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(new InstantCommand(() -> rod.setCoralMode(true)));
 
         // coral mode
-        // new Trigger(driver::getYButton).onTrxue(new SetRodState(rod, RodStates.INVERSE_STOW));
+        new Trigger(() -> rod.isCoralMode() && driver.getYButton()).onTrue(new SetRodState(rod, RodStates.INVERSE_STOW));
         new Trigger(() -> rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.L1));
         new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
         new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));

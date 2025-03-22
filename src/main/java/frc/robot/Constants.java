@@ -199,7 +199,7 @@ public class Constants {
         public static final double STOW_SAFEZONE_ANGLE = -30d; //wrist angle to move elevator
 
         public enum RodStates {
-            STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
+            STOW(false), INVERSE_STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
             BARGE(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false);
 
             private boolean scoring;
@@ -228,6 +228,7 @@ public class Constants {
         public static final HashMap<RodStates, Double> WRIST_MAP = new HashMap<RodStates, Double>() {
             {
                 put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
+                put(RodStates.INVERSE_STOW, -70d); // Lower angle is safer for nautilus
                 put(RodStates.L1, 6d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -36d);
@@ -243,6 +244,7 @@ public class Constants {
         public static final HashMap<RodStates, Double> ELEVATOR_MAP = new HashMap<RodStates, Double>() {
             {
                 put(RodStates.STOW, 2d);
+                put(RodStates.INVERSE_STOW, 4d);
                 put(RodStates.L1, 2d);
                 put(RodStates.L2, 13.5d);
                 put(RodStates.L3, 26d);
@@ -634,7 +636,7 @@ public class Constants {
 
                 // blue barge front
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 14),
-                    new Pose2d(7.681, 6.201, new Rotation2d(Degrees.of(-180))));
+                    new Pose2d(7.625, 6.201, new Rotation2d(Degrees.of(-180))));
 
                 // // red barge back
                 // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 15),
@@ -1418,3 +1420,4 @@ public class Constants {
         public static final boolean BREAK_MODE = true;
     }
 }
+

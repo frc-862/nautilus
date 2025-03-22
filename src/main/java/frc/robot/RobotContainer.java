@@ -281,6 +281,7 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(new InstantCommand(() -> rod.setCoralMode(true)));
 
         // coral mode
+        // new Trigger(driver::getYButton).onTrxue(new SetRodState(rod, RodStates.INVERSE_STOW));
         new Trigger(() -> rod.isCoralMode() && copilot.getAButton()).onTrue(new SetRodState(rod, RodStates.L1));
         new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
         new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));
@@ -436,6 +437,9 @@ public class RobotContainer extends LightningContainer {
         // psst! we should use a for loop like we did with LightningTagID!
         NamedCommands.registerCommand("RodStow",
                 (new InstantCommand(() -> rod.setCoralMode(true)).alongWith(new SetRodState(rod, RodStates.STOW)))
+                        .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
+        NamedCommands.registerCommand("RodInverseStow",
+                (new InstantCommand(() -> rod.setCoralMode(true)).alongWith(new SetRodState(rod, RodStates.INVERSE_STOW)))
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
         NamedCommands.registerCommand("RodL1",
                 new SetRodState(rod, RodStates.L1)

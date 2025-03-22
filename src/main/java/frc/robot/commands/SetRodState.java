@@ -51,6 +51,9 @@ public class SetRodState extends Command {
                     rod.setState(state);
                 }
                 break;
+            case INVERSE_STOW:
+                rod.setState(state, RodTransitionStates.WRIST_UP_THEN_ELE);
+                break;
             case L2, L3:
                 if (rod.getState() == RodStates.STOW) {
                     rod.setState(state, RodTransitionStates.CORAL_SAFE_ZONE);

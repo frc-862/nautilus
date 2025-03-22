@@ -11,6 +11,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "RodInverseStow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "AlignToThreeLeft"
                 }
               },

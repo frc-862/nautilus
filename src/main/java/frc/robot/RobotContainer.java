@@ -258,7 +258,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getBButton)
                 .whileTrue(new BargeAutoAlign(drivetrain, leds, rod, LightningTagID.BargeFront)
                         .withYSpeed(() -> -driver.getLeftX())
-                    .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // source autoalign
         // new Trigger(() -> driver.getPOV() == 0)
@@ -372,12 +372,12 @@ public class RobotContainer extends LightningContainer {
             switch (tagID) {
                 case LeftSource, RightSource:
                     // NamedCommands.registerCommand("AlignTo" + tagID.name(),
-                    // new ParallelDeadlineGroup(new ParallelRaceGroup(new
-                    // IntakeCoral(coralCollector, 1), new WaitCommand(4d)),
-                    // new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
-                    // tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)),
-                    // new SetRodState(rod, RodStates.SOURCE)
-                    // .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING))));
+                    //         new ParallelDeadlineGroup(
+                    //                 new ParallelRaceGroup(new IntakeCoral(coralCollector, 1), new WaitCommand(4d)),
+                    //                 new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
+                    //                         tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)),
+                    //                 new SetRodState(rod, RodStates.SOURCE)
+                    //                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING))));
 
                     NamedCommands.registerCommand("AlignTo" + tagID.name(),
                             new PoseBasedAutoAlign(drivetrain, Camera.RIGHT, leds,
@@ -410,17 +410,18 @@ public class RobotContainer extends LightningContainer {
 
         // test for algae
         NamedCommands.registerCommand("AlignToFourMiddle",
-            new PoseBasedAutoAlign(drivetrain, Camera.MIDDLE, leds,
-                    LightningTagID.Four).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                new PoseBasedAutoAlign(drivetrain, Camera.MIDDLE, leds,
+                        LightningTagID.Four).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         NamedCommands.registerCommand("AlignToFiveMiddle",
-            new PoseBasedAutoAlign(drivetrain, Camera.MIDDLE, leds,
-                    LightningTagID.Four).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        
-        NamedCommands.registerCommand("AlignToBarge", new BargeAutoAlign(drivetrain, leds, rod).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                new PoseBasedAutoAlign(drivetrain, Camera.MIDDLE, leds,
+                        LightningTagID.Four).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+        NamedCommands.registerCommand("AlignToBarge",
+                new BargeAutoAlign(drivetrain, leds, rod).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1));
-        
+
         NamedCommands.registerCommand("IntuahCoral",
                 new RunCommand(() -> coralCollector.setPower(1), coralCollector));
 

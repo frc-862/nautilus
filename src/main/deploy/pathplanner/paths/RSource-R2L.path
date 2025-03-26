@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4545029485914993,
-        "y": 1.794608416248873
+        "x": 2.573307528848714,
+        "y": 2.2002860830295186
       },
       "isLocked": false,
       "linkedName": "RightSRC"
@@ -20,8 +20,8 @@
         "y": 2.57242574851606
       },
       "prevControl": {
-        "x": 3.4442116980900463,
-        "y": 1.9586342273186745
+        "x": 3.784406641941692,
+        "y": 2.3291498744569834
       },
       "nextControl": null,
       "isLocked": false,
@@ -63,8 +63,19 @@
       }
     },
     {
+      "name": "RodInverseStow",
+      "waypointRelativePos": 0.37166037087912096,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodInverseStow"
+        }
+      }
+    },
+    {
       "name": "RodL4",
-      "waypointRelativePos": 0.8679515796703302,
+      "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -83,7 +94,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
+    "velocity": 0.0,
     "rotation": -119.99999999999999
   },
   "reversed": false,

@@ -435,6 +435,11 @@ public class RobotContainer extends LightningContainer {
         NamedCommands.registerCommand("ScoreCoral",
                 new ScoreCoral(coralCollector));
 
+
+        NamedCommands.registerCommand("WristThenStow",
+                new InstantCommand(() -> rod.setState(RodStates.STOW, RodTransitionStates.WRIST_UP_THEN_ELE)));
+
+
         NamedCommands.registerCommand("WaitOnTarget", new WaitUntilCommand(rod::onTarget));
 
         // psst! we should use a for loop like we did with LightningTagID!
@@ -442,7 +447,7 @@ public class RobotContainer extends LightningContainer {
                 (new InstantCommand(() -> rod.setCoralMode(true)).alongWith(new SetRodState(rod, RodStates.STOW)))
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
         NamedCommands.registerCommand("RodInverseStow",
-                (new InstantCommand(() -> rod.setCoralMode(true)).alongWith(new SetRodState(rod, RodStates.INVERSE_STOW)))
+                (new InstantCommand(() -> rod.setCoralMode(true)).alongWith(new InstantCommand(() -> rod.setState(RodStates.INVERSE_STOW), rod)))
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
         NamedCommands.registerCommand("RodL1",
                 new SetRodState(rod, RodStates.L1)

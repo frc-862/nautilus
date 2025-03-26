@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.573307528848714,
-        "y": 2.2002860830295186
+        "x": 2.730633766424402,
+        "y": 2.1916882719151984
       },
       "isLocked": false,
       "linkedName": "RightSRC"
@@ -20,8 +20,8 @@
         "y": 2.57242574851606
       },
       "prevControl": {
-        "x": 3.784406641941692,
-        "y": 2.3291498744569834
+        "x": 3.7717192233751007,
+        "y": 2.3325074492017217
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6511962748838769,
-      "rotationDegrees": -119.99999999999999
+      "waypointRelativePos": 0.4748878286147624,
+      "rotationDegrees": -137.07289915231436
     }
   ],
   "constraintZones": [

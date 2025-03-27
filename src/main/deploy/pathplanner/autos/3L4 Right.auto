@@ -104,7 +104,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToTwoLeft"
+                  "name": "AUTONAlignToTwoLeft"
                 }
               },
               {
@@ -203,7 +203,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToTwoRight"
+                  "name": "AUTONAlignToTwoRight"
                 }
               },
               {

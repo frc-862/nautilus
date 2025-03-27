@@ -8,32 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.730633766424402,
-        "y": 2.1916882719151984
+        "x": 1.8953857965729513,
+        "y": 1.6745161466900034
       },
       "isLocked": false,
       "linkedName": "RightSRC"
     },
     {
       "anchor": {
-        "x": 3.841998734287709,
-        "y": 2.57242574851606
+        "x": 3.468713992667597,
+        "y": 2.2021410723638257
       },
       "prevControl": {
-        "x": 3.7717192233751007,
-        "y": 2.3325074492017217
+        "x": 3.3542073122565745,
+        "y": 1.9384866500314744
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Reef1Left"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.4748878286147624,
-      "rotationDegrees": -137.07289915231436
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
@@ -52,17 +47,6 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "RodStow",
-      "waypointRelativePos": 0.11267170329670316,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "RodStow"
-        }
-      }
-    },
-    {
       "name": "RodInverseStow",
       "waypointRelativePos": 0.37166037087912096,
       "endWaypointRelativePos": null,
@@ -70,17 +54,6 @@
         "type": "named",
         "data": {
           "name": "RodInverseStow"
-        }
-      }
-    },
-    {
-      "name": "RodL4",
-      "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "RodL4"
         }
       }
     }
@@ -94,7 +67,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 1.0,
     "rotation": -119.99999999999999
   },
   "reversed": false,

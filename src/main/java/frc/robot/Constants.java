@@ -93,10 +93,10 @@ public class Constants {
 
     public static class EncoderConstants {
         // Nautilus values
-        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.24853515625);
-        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(-0.147216796875);
-        private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(-0.046875);
-        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.427490234375);
+        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.252685546875);
+        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(-0.1484375);
+        private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(-0.031494140625);
+        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.427978515625);
 
         // Triton values
         private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);
@@ -851,8 +851,10 @@ public class Constants {
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                .withKP(0.6507).withKI(0).withKD(0)
-                .withKS(0.33986).withKV(0.12318).withKA(0.0059707);
+                .withKP(0.1751).withKI(0).withKD(0)
+                .withKS(0.057834).withKV(0.12065).withKA(0.020309);
+                // .withKP(0.6507).withKI(0).withKD(0)
+                // .withKS(0.33986).withKV(0.12318).withKA(0.0059707);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
@@ -905,7 +907,7 @@ public class Constants {
             // This may need to be tuned to your individual robot
             private static final double kCoupleRatio = 3.5714285714285716;
 
-            private static final double kDriveGearRatio = 6.3492063492063;
+            private static final double kDriveGearRatio = 6.746031746031747;
             private static final double kSteerGearRatio = 21.428571428571427;
             private static final Distance kWheelRadius = Inches.of(2);
 
@@ -1320,7 +1322,7 @@ public class Constants {
         public static final double AUTON_DRIVE_P = 0.8d;
         public static final double AUTON_DRIVE_I = 0;
         public static final double AUTON_DRIVE_D = 0.035;
-        public static final double AUTON_DRIVE_KS = 0.1;
+        public static final double AUTON_DRIVE_KS = 0;//0.1;
 
         public static final double AUTON_ROT_P = 0.03d;
         public static final double AUTON_ROT_I = 0;
@@ -1332,7 +1334,7 @@ public class Constants {
         public static final double TELE_DRIVE_I = 0;
         public static final double TELE_DRIVE_D = 0.08;
         public static final double TELE_DRIVE_TOLERANCE = 0.025;
-        public static final double TELE_DRIVE_KS = 0.08;
+        public static final double TELE_DRIVE_KS = 0;//0.08;
 
         public static final double POSEBASED_ROT_P = 0.03;
         public static final double POSEBASED_ROT_I = 0;

@@ -5,19 +5,19 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "RodInverseStow"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "RodInverseStow"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AlignToThreeLeft"
+                  "name": "AUTONAlignToThreeRight"
                 }
               },
               {
@@ -32,13 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "RodL4"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
+            "name": "WaitOnTarget"
           }
         },
         {
@@ -98,9 +92,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "StowTuah"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignRange"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSource-R2L"
+                }
+              }
+            ]
           }
         },
         {
@@ -126,6 +133,12 @@
           "type": "named",
           "data": {
             "name": "WaitOnTarget"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
@@ -191,6 +204,25 @@
           }
         },
         {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignRange"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSource-R2R"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -216,6 +248,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "ScoreCoral"
@@ -224,7 +262,7 @@
         {
           "type": "named",
           "data": {
-            "name": "RodStow"
+            "name": "WristThenStow"
           }
         }
       ]

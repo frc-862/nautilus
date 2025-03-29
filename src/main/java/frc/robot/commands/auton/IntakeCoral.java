@@ -8,10 +8,12 @@ public class IntakeCoral extends Command {
 
     private CoralCollector collector;
     private double power;
+    private double holdPower;
 
-    public IntakeCoral(CoralCollector collector, double power) {
+    public IntakeCoral(CoralCollector collector, double power, double holdPower) {
         this.collector = collector;
         this.power = power;
+        this.holdPower = holdPower;
 
         addRequirements(collector);
     }
@@ -28,7 +30,7 @@ public class IntakeCoral extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        collector.setPower(CoralCollectorConstants.CORAL_HOLD_POWER);
+        collector.setPower(holdPower);
     }
 
     @Override

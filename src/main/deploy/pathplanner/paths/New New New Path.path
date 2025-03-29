@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 12.272,
-        "y": 2.98929631425915
+        "x": 9.982,
+        "y": 2.885411892261885
       },
       "prevControl": null,
       "nextControl": {
-        "x": 13.272,
-        "y": 2.9892963142591498
+        "x": 10.982000000000001,
+        "y": 2.885411892261885
       },
       "isLocked": false,
       "linkedName": null
@@ -48,7 +48,7 @@
   "folder": "Test Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.326328997905027,
-        "y": 2.8156863761347757
+        "x": 5.3814141783813865,
+        "y": 2.7711720458783042
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.266565610362907,
-        "y": 1.9876584830459523
+        "x": 4.321650790839266,
+        "y": 1.9431441527894808
       },
       "isLocked": false,
       "linkedName": "Reef3Left"
@@ -100,5 +100,5 @@
     "velocity": 0,
     "rotation": -59.99999999999999
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

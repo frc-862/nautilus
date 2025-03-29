@@ -20,9 +20,10 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.Robot;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.thunder.util.Tuple;
@@ -45,8 +46,8 @@ public class PhotonVision extends SubsystemBase {
     public PhotonVision(Swerve drivetrain) {
         this.drivetrain = drivetrain;
 
-        leftThread = new CameraThread(Camera.LEFT);
-        rightThread = new CameraThread(Camera.RIGHT);
+        leftThread = new CameraThread(ReefPose.LEFT);
+        rightThread = new CameraThread(ReefPose.RIGHT);
 
         leftThread.start();
         rightThread.start();
@@ -110,15 +111,15 @@ public class PhotonVision extends SubsystemBase {
      * @param camera - the camera to check
      * @return boolean - if the camera has a target
      */
-    public boolean hasTarget(Camera camera) {
+    public boolean hasTarget(ReefPose camera) {
         if(isCameraInitialized(camera)) {
             switch(camera) {
-                case LEFT: 
+                case LEFT:
                     return leftThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
-                    
+
                 case RIGHT:
                     return rightThread.getCameraObject().getCameraTable().getEntry("hasTarget").getBoolean(false);
-                
+
                 default:
                     return false;
             }
@@ -132,7 +133,7 @@ public class PhotonVision extends SubsystemBase {
      * @return boolean - if the camera has a target
      */
     public boolean hasTarget() {
-        return hasTarget(Camera.LEFT) || hasTarget(Camera.RIGHT);
+        return hasTarget(ReefPose.LEFT) || hasTarget(ReefPose.RIGHT);
     }
 
     /**
@@ -141,15 +142,15 @@ public class PhotonVision extends SubsystemBase {
      * @param offset - the offset to add to the value
      * @return double - the target's Y position in pixels
      */
-    public double getTY(VisionConstants.Camera camera, double offset) {
+    public double getTY(VisionConstants.ReefPose camera, double offset) {
         if(isCameraInitialized(camera)) {
             switch(camera) {
-                case LEFT: 
+                case LEFT:
                     return leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
-                    
+
                 case RIGHT:
                     return rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsY").getDouble(0) + offset;
-                
+
                 default:
                     return 0;
             }
@@ -164,15 +165,15 @@ public class PhotonVision extends SubsystemBase {
      * @param offset - the offset to add to the value
      * @return double - the target's X position in pixels
      */
-    public double getTX(Camera camera, double offset) {
+    public double getTX(ReefPose camera, double offset) {
         if(isCameraInitialized(camera)) {
             switch(camera) {
-                case LEFT: 
+                case LEFT:
                     return leftThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
-                    
+
                 case RIGHT:
                     return rightThread.getCameraObject().getCameraTable().getEntry("targetPixelsX").getDouble(0) + offset;
-                
+
                 default:
                     return 0;
             }
@@ -186,7 +187,7 @@ public class PhotonVision extends SubsystemBase {
      * @param camera - the camera to check
      * @return FiducialID of tag with least ambiguity (-1 if no tag found)
      */
-    public int getTagNum(Camera camera) {
+    public int getTagNum(ReefPose camera) {
         //this is performed independently of the thread, mainly because its a simple operation and happens regardless of pose
         try {
             if(!hasTarget(camera)){
@@ -214,7 +215,7 @@ public class PhotonVision extends SubsystemBase {
      * @param camera - the camera to check
      * @return FiducialID of tag with least ambiguity (-1 if no tag found)
      */
-    public Transform3d getTransformToTag(Camera camera) throws Exception {
+    public Transform3d getTransformToTag(ReefPose camera) throws Exception {
         //this is performed independently of the thread, mainly because its a simple operation and happens regardless of pose
         if(!hasTarget(camera)){
             throw new Exception("No target found");
@@ -231,8 +232,8 @@ public class PhotonVision extends SubsystemBase {
         }
     }
 
-    private boolean isCameraInitialized(Camera camName) {
-        return camName == Camera.LEFT ? leftThread.cameraInitialized : rightThread.cameraInitialized;
+    private boolean isCameraInitialized(ReefPose camName) {
+        return camName == ReefPose.LEFT ? leftThread.cameraInitialized : rightThread.cameraInitialized;
     }
 
     @Override
@@ -241,27 +242,36 @@ public class PhotonVision extends SubsystemBase {
         LightningShuffleboard.send("Vision", "Field_SIM", visionSim.getDebugField());
     }
 
-    private synchronized void updateVision(Camera caller) {
+    private synchronized void updateVision(ReefPose caller) {
         Tuple<EstimatedRobotPose, Double> leftUpdates = leftThread.getUpdates();
         Tuple<EstimatedRobotPose, Double> rightUpdates = rightThread.getUpdates();
 
         // LightningShuffleboard.setDouble("Vision", "left dist", leftUpdates.v);
         // LightningShuffleboard.setDouble("Vision", "right dist", rightUpdates.v);
 
+        final double maxDist = 4d;
+        boolean shouldUpdateLeft = true;
+        boolean shouldUpdateRight = true;
+
+        if (DriverStation.isAutonomous() && DriverStation.isEnabled()) {
+            shouldUpdateLeft = leftUpdates.v < maxDist;
+            shouldUpdateRight = rightUpdates.v < maxDist;
+        }
+
         // prefer the camera that called the function (has known good values)
         // if the other camera has a target, prefer the one with the lower distance to best tag
         switch (caller) {
             case LEFT:
-                if(rightThread.hasTarget() && rightUpdates.v < leftUpdates.v) {
+                if((rightThread.hasTarget() && rightUpdates.v < leftUpdates.v) && shouldUpdateRight) {
                     drivetrain.addVisionMeasurement(rightUpdates.k, rightUpdates.v);
-                } else {
+                } else if (shouldUpdateLeft) {
                     drivetrain.addVisionMeasurement(leftUpdates.k, leftUpdates.v);
                 }
             break;
             case RIGHT:
-                if(leftThread.hasTarget() && leftUpdates.v < rightUpdates.v) {
+                if((leftThread.hasTarget() && leftUpdates.v < rightUpdates.v) && shouldUpdateLeft) {
                     drivetrain.addVisionMeasurement(leftUpdates.k, rightUpdates.v);
-                } else {
+                } else if (shouldUpdateRight) {
                     drivetrain.addVisionMeasurement(rightUpdates.k, rightUpdates.v);
                 }
             break;
@@ -274,20 +284,20 @@ public class PhotonVision extends SubsystemBase {
         private PhotonPoseEstimator poseEstimator;
         private PhotonCamera camera;
         private Double averageDistance = 0d;
-        private Camera camName;
+        private ReefPose camName;
         private Tuple<EstimatedRobotPose, Double> updates;
         private boolean hasTarget = false;
         private AprilTagFieldLayout tags;
 
         public boolean cameraInitialized = false;
 
-        CameraThread(Camera camName) {
+        CameraThread(ReefPose camName) {
             this.camName = camName;
 
             initializeCamera();
 
             poseEstimator = new PhotonPoseEstimator(VisionConstants.tagLayout,
-                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camName == Camera.LEFT ? VisionConstants.robotLeftToCamera : VisionConstants.robotRightToCamera);
+                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camName == ReefPose.LEFT ? VisionConstants.robotLeftToCamera : VisionConstants.robotRightToCamera);
             poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
             tags = poseEstimator.getFieldTags();
@@ -336,7 +346,7 @@ public class PhotonVision extends SubsystemBase {
                                 // the local hasTarget variable will turn true if ANY PipelineResult within this loop has a target
                                 hasTarget = true;
 
-                                if(!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
+                                if (!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
                                     poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose,
                                             () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed"));
                                 } else {
@@ -410,7 +420,7 @@ public class PhotonVision extends SubsystemBase {
 
         private void initializeCamera() {
             try {
-                camera = new PhotonCamera(camName == Camera.LEFT ? VisionConstants.leftCamName : VisionConstants.rightCamName);
+                camera = new PhotonCamera(camName == ReefPose.LEFT ? VisionConstants.leftCamName : VisionConstants.rightCamName);
                 cameraInitialized = true;
             } catch (Exception e) {
                 DataLogManager.log("warning: camera not initialized");
@@ -423,18 +433,18 @@ public class PhotonVision extends SubsystemBase {
     //keeping these here to prevent build errors, don't mind em for now
     //TODO: remove these when the time comes
     public double getLeftTY() {
-        return getTY(Camera.LEFT, 0);
+        return getTY(ReefPose.LEFT, 0);
     }
 
     public double getLeftTX() {
-        return getTX(Camera.LEFT, 0);
+        return getTX(ReefPose.LEFT, 0);
     }
 
     public int getLeftTagNum() {
-        return getTagNum(Camera.LEFT);
+        return getTagNum(ReefPose.LEFT);
     }
 
     public boolean leftHasTarget() {
-        return hasTarget(Camera.LEFT);
+        return hasTarget(ReefPose.LEFT);
     }
 }

@@ -45,11 +45,25 @@ public class SetRodState extends Command {
                 // Use fast stow if in L4 or Barge otherwise use default stow
                 if (rod.getState() == RodStates.L4 || rod.getState() == RodStates.BARGE) {
                     rod.setState(state, RodTransitionStates.DEFAULT);
+                } else if (rod.getState() == RodStates.L2 || rod.getState() == RodStates.L3) {
+                    rod.setState(state, RodTransitionStates.DEFAULT);
                 } else {
                     rod.setState(state);
                 }
                 break;
-            case L2, L3, L4:
+            case INVERSE_STOW:
+                rod.setState(state, RodTransitionStates.WRIST_UP_THEN_ELE);
+                break;
+            case L2, L3:
+                if (rod.getState() == RodStates.STOW) {
+                    rod.setState(state, RodTransitionStates.CORAL_SAFE_ZONE);
+                } else if (rod.getState() == RodStates.INVERSE_STOW) {
+                    rod.setState(state, RodTransitionStates.WRIST_DOWN_THEN_ELE);
+                } else {
+                    rod.setState(state);
+                }
+                break;
+            case L4:
                 rod.setState(state, RodTransitionStates.CORAL_SAFE_ZONE);
                 break;
             default:

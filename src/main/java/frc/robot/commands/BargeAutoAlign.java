@@ -21,7 +21,7 @@ import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.PoseConstants.LightningTagID;
-import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Swerve;
@@ -34,13 +34,13 @@ public class BargeAutoAlign extends Command {
     private LEDs leds;
     private FishingRod rod;
 
-    private double tolerance = AutoAlignConstants.POSEBASED_DRIVE_TOLERANCE;
+    private double tolerance = AutoAlignConstants.TELE_DRIVE_TOLERANCE;
 
-    private PIDController xPID = new PIDController(AutoAlignConstants.POSEBASED_DRIVE_P, AutoAlignConstants.POSEBASED_DRIVE_I,
-            AutoAlignConstants.POSEBASED_DRIVE_D);
+    private PIDController xPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P, AutoAlignConstants.TELE_DRIVE_I,
+            AutoAlignConstants.TELE_DRIVE_D);
 
-    private PIDController rPID = new PIDController(AutoAlignConstants.POSEBASED_ROT_D, AutoAlignConstants.POSEBASED_ROT_I,
-            AutoAlignConstants.POSEBASED_ROT_D);
+    private PIDController rPID = new PIDController(AutoAlignConstants.TELE_ROT_D, AutoAlignConstants.TELE_ROT_I,
+            AutoAlignConstants.TELE_ROT_D);
 
     private Pose2d targetPose = new Pose2d();
 
@@ -55,9 +55,6 @@ public class BargeAutoAlign extends Command {
     private boolean reachedDeployVelOnce = false;
 
     private DoubleSupplier yVelSupplier;
-
-    private final DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
-    private final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
 
     /**
      * Used to align to Tag
@@ -105,9 +102,9 @@ public class BargeAutoAlign extends Command {
         invokeCancel = false;
         // Get tagID from codeID
         if (codeID != null) {
-            tagID = alliance != blue
-                    ? codeID.redID
-                    : codeID.blueID;
+            tagID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red
+                ? codeID.redID
+                : codeID.blueID;
         }
 
         // Get the tag in front of the robot
@@ -120,7 +117,7 @@ public class BargeAutoAlign extends Command {
             invokeCancel = true;
             CommandScheduler.getInstance().cancel(this);
         } else {
-            targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(Camera.RIGHT, tagID));
+            targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(ReefPose.RIGHT, tagID));
 
             LightningShuffleboard.setDouble("TestAutoAlign", "Tag", tagID);
 
@@ -131,7 +128,7 @@ public class BargeAutoAlign extends Command {
 
         xPID.setTolerance(tolerance);
 
-        rPID.setTolerance(AutoAlignConstants.POSEBASED_ROT_TOLERANCE);
+        rPID.setTolerance(AutoAlignConstants.TELE_ROT_TOLERANCE);
         rPID.enableContinuousInput(0, 360);
     }
 
@@ -140,12 +137,12 @@ public class BargeAutoAlign extends Command {
         Pose2d currentPose = drivetrain.getPose();
 
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
-                + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? AutoAlignConstants.POSEBASED_DRIVE_KS : 0));
+                + (Math.signum(xPID.getError()) * (!xPID.atSetpoint() ? AutoAlignConstants.TELE_DRIVE_KS : 0));
 
         double yVeloc = yVelSupplier != null ? yVelSupplier.getAsDouble() : 0;
 
         double rotationVeloc = rPID.calculate(currentPose.getRotation().getDegrees(),
-                targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? AutoAlignConstants.POSEBASED_ROT_KS : 0));
+                targetPose.getRotation().getDegrees()) + (Math.signum(rPID.getError()) * (!rPID.atSetpoint() ? AutoAlignConstants.TELE_ROT_KS : 0));
 
 
         //if speed goes above threshold, start checking if we go back below threshold

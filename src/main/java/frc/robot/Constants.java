@@ -1232,10 +1232,10 @@ public class Constants {
             ALIGNED(),
             ALGAE_MODE(),
             ALIGNING(),
-            READY_TO_ALIGN(),
             COLLECTING(),
             SCORING(),
             ROD_MOVING(),
+            READY_TO_ALIGN(),
             UPDATING_POSE(),
             POSE_BAD()
         }

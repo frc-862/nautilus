@@ -93,6 +93,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private double turnMult = 1d;
 
     private StowZone lastStowZone = StowZone.SOURCE;
+    private StowZone currentsStowZone = StowZone.SOURCE;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -378,9 +379,11 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             newZone = StowZone.SOURCE;
         }
 
-        if (lastStowZone != newZone) {
-            lastStowZone = newZone; // Update the last stow zone
+        if (currentsStowZone != newZone) {
+            lastStowZone = currentsStowZone; // Store the last stow zone
         }
+
+        currentsStowZone = newZone; // Update the current stow zone
         return newZone;
     }
 

@@ -27,6 +27,8 @@ public class CoralCollector extends SubsystemBase {
     private ThunderBird motor;
     private DigitalInput beamBreak;
 
+    private double targetPower = 0; // used to track the last power set to the motor
+
     // sim stuff
     private TalonFXSimState motorSim;
     private SimDevice beamBreakSim;
@@ -86,6 +88,7 @@ public class CoralCollector extends SubsystemBase {
      */
     public void setPower(double power) {
         motor.setControl(new DutyCycleOut(power));
+        targetPower = power; // store the current power for reference
     }
 
     /**
@@ -93,6 +96,7 @@ public class CoralCollector extends SubsystemBase {
      */
     public void stop() {
         motor.stopMotor();
+        targetPower = 0; // reset the current power since we stopped the motor
     }
 
     /**
@@ -104,6 +108,15 @@ public class CoralCollector extends SubsystemBase {
 
     public double getPower() {
         return motor.getMotorVoltage().getValueAsDouble();
+    }
+
+    /**
+     * @return the last power set to the motor. This may not be the actual power due to motor control loops
+     */
+    public double getTargetPower() {
+        // this returns the last power set to the motor
+        // this may not be the actual power due to motor control loops
+        return targetPower;
     }
 
     /**

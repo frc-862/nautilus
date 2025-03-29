@@ -50,6 +50,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.PoseConstants.StowZone;
 import frc.robot.Constants.EncoderConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.VisionConstants;
@@ -347,6 +348,11 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
         return 0;
     }
+
+    // public StowZone getCurrentStowZone() {
+    //     boolean isRedAlliance = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
+    //     // Pose2d centerReef = 
+    // }
 
     public Command leaveAuto() {
         return (applyRequest((DriveRequests.getRobotCentric(() -> 0d, () -> -0.5, () -> 0d))).withDeadline(new WaitCommand(3))).andThen(applyRequest(DriveRequests.getBrake()));

@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Inches;
@@ -94,10 +95,10 @@ public class Constants {
 
     public static class EncoderConstants {
         // Nautilus values
-        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(-0.39501953125);
-        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(0.412353515625);
-        private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(0.0693359375);
-        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.30517578125);
+        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.24853515625);
+        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(-0.147216796875);
+        private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(-0.046875);
+        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.427490234375);
 
         // Triton values
         private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);
@@ -200,7 +201,7 @@ public class Constants {
         public static final double STOW_SAFEZONE_ANGLE = -30d; //wrist angle to move elevator
 
         public enum RodStates {
-            STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
+            STOW(false), INVERSE_STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
             BARGE(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false);
 
             private boolean scoring;
@@ -229,10 +230,11 @@ public class Constants {
         public static final HashMap<RodStates, Double> WRIST_MAP = new HashMap<RodStates, Double>() {
             {
                 put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
+                put(RodStates.INVERSE_STOW, -70d); // Lower angle is safer for nautilus
                 put(RodStates.L1, 6d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -36d);
-                put(RodStates.L4, -48d);
+                put(RodStates.L4, -45d); // -48
                 put(RodStates.LOW, -29d);
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
@@ -244,6 +246,7 @@ public class Constants {
         public static final HashMap<RodStates, Double> ELEVATOR_MAP = new HashMap<RodStates, Double>() {
             {
                 put(RodStates.STOW, 2d);
+                put(RodStates.INVERSE_STOW, 4d);
                 put(RodStates.L1, 2d);
                 put(RodStates.L2, 13.5d);
                 put(RodStates.L3, 26d);
@@ -283,8 +286,8 @@ public class Constants {
         public static final double MOTORS_KA = 0.01; // temp
         public static final double MOTORS_KG = 0d; // temp
 
-        public static final double VELOC = 75d; // 80
-        public static final double ACCEL = 450d; // 200
+        public static final double VELOC = 72d; // 80
+        public static final double ACCEL = 250d; // 200
         public static final double JERK = 1600d; // temp
 
         public static final double POSITION_TOLERANCE = 0.1; // temp
@@ -534,8 +537,9 @@ public class Constants {
         public static final Transform3d robotRightToCamera = new Transform3d(
                 new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
+        // MIDDLE is only used for algae on the reef!! 
         public enum Camera {
-            LEFT, RIGHT
+            LEFT, RIGHT, MIDDLE
         }
 
         public static final double VISION_X_STDEV = 1;
@@ -604,37 +608,45 @@ public class Constants {
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22), new Pose2d(5.27564233319572, 2.98929631425915, new Rotation2d(Degrees.of(-60))));
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22), new Pose2d(4.99383766680426, 2.82659631425915, new Rotation2d(Degrees.of(-60))));
 
+
+                //R4AG
+                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 10), new Pose2d(11.758, 4.021, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 21), new Pose2d(5.781, 4.021, new Rotation2d(Degrees.of(0))));
+                //R5AG
+                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 11), new Pose2d(12.403, 2.880, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 20), new Pose2d(5.143, 5.164, new Rotation2d(Degrees.of(60))));
+
                 //red right source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 2),
-                        new Pose2d(16.598, 7.163, new Rotation2d(Degrees.of(-126))));
+                        new Pose2d(16.486, 7.263, new Rotation2d(Degrees.of(-126))));
 
                 //red left source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 1),
-                        new Pose2d(16.480, 0.549, new Rotation2d(Degrees.of(126))));
+                        new Pose2d(16.518, 0.757, new Rotation2d(Degrees.of(126))));
 
                 //blue left source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 13),
-                        new Pose2d(1.064, 7.299, new Rotation2d(Degrees.of(-54))));
+                        new Pose2d(1.070, 7.236, new Rotation2d(Degrees.of(-54))));
 
                 //blue right source
                 put(new Tuple<>(VisionConstants.Camera.RIGHT, 12),
-                        new Pose2d(1.34, 0.69, new Rotation2d(Degrees.of(54))));
+                        new Pose2d(1.089, 0.744, new Rotation2d(Degrees.of(54))));
 
                 // red barge front
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 5),
-                    new Pose2d(9.998, 1.621, new Rotation2d(Degrees.of(0))));
+                    new Pose2d(9.982, 1.621, new Rotation2d(Degrees.of(0))));
 
                 // blue barge front
                 put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 14),
-                    new Pose2d(7.612, 6.201, new Rotation2d(Degrees.of(-180))));
+                    new Pose2d(7.625, 6.201, new Rotation2d(Degrees.of(-180))));
 
-                // red barge back
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 15),
-                    new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
+                // // red barge back
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 15),
+                //     new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
 
-                // blue barge back
-                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 4),
-                    new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
+                // // blue barge back
+                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 4),
+                //     new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
             }
 
         };
@@ -730,8 +742,7 @@ public class Constants {
             RightSource(2, 12),
             LeftSource(1, 13),
 
-            BargeFront(5, 14),
-            BargeBack(15, 4);
+            BargeFront(5, 14);
 
             public final int redID;
             public final int blueID;
@@ -1295,42 +1306,53 @@ public class Constants {
     }
 
     public class AutoAlignConstants {
-        public static final double AutoAlignTolerance = 0.02d;
+        // public static final double AutoAlignTolerance = 0.02d;
 
-        // X PID
-        public static final double X_Kp = 0.035d;
-        public static final double X_Ki = 0d;
-        public static final double X_Kd = 0d;
+        // // X PID
+        // public static final double X_Kp = 0.035d;
+        // public static final double X_Ki = 0d;
+        // public static final double X_Kd = 0d;
 
-        // Y PID
-        public static final double Y_Kp = 0.1d;
-        public static final double Y_Ki = 0d;
-        public static final double Y_Kd = 0d;
+        // // Y PID
+        // public static final double Y_Kp = 0.1d;
+        // public static final double Y_Ki = 0d;
+        // public static final double Y_Kd = 0d;
 
-        // Posebased gains
-        public static final double POSEBASED_DRIVE_P = 1.5d; // 2
-        public static final double POSEBASED_DRIVE_I = 0;
-        public static final double POSEBASED_DRIVE_D = 0.08; // 0.06
-        public static final double POSEBASED_DRIVE_TOLERANCE = 0.025; // 0.03
-        public static final double POSEBASED_DRIVE_KS = 0.08; // 0.01
+        // auton gains for posebased (if needed)
+        public static final double AUTON_DRIVE_P = 0.8d;
+        public static final double AUTON_DRIVE_I = 0;
+        public static final double AUTON_DRIVE_D = 0.035;
+        public static final double AUTON_DRIVE_KS = 0.1;
+
+        public static final double AUTON_ROT_P = 0.03d;
+        public static final double AUTON_ROT_I = 0;
+        public static final double AUTON_ROT_D = 0;
+        public static final double AUTON_ROT_KS = 0;
+
+        // tele gains
+        public static final double TELE_DRIVE_P = 1.5d;
+        public static final double TELE_DRIVE_I = 0;
+        public static final double TELE_DRIVE_D = 0.08;
+        public static final double TELE_DRIVE_TOLERANCE = 0.025;
+        public static final double TELE_DRIVE_KS = 0.08;
 
         public static final double POSEBASED_ROT_P = 0.03;
         public static final double POSEBASED_ROT_I = 0;
         public static final double POSEBASED_ROT_D = 0;
         public static final double POSEBASED_ROT_TOLERANCE = 1.5; // 2.5
-        public static final double POSEBASED_ROT_KS = 0; // 0.01 NOT APPIED
+        public static final double POSEBASED_ROT_KS = 0; // 0.01 NOT APPLIED
 
-        public static final double DEPLOY_VEL = 0.45;
-        public static final double BARGE_DEPLY_VEL = 0.35;
+        public static final double DEPLOY_VEL = 0.2; // 0.45
+        public static final double BARGE_DEPLY_VEL = 0.25;
 
-        public static final double targetTX = 720d;
+        // public static final double targetTX = 720d;
 
-        public static final HashMap<Integer, Double> tagAngles = new HashMap<Integer, Double>() {
-            {
-                put(6, 0d);
-                put(9, 0d);
-            }
-        };
+        // public static final HashMap<Integer, Double> tagAngles = new HashMap<Integer, Double>() {
+        //     {
+        //         put(6, 0d);
+        //         put(9, 0d);
+        //     }
+        // };
     }
 
     public class SimGamePeicesConstants {
@@ -1400,3 +1422,4 @@ public class Constants {
         public static final boolean BREAK_MODE = true;
     }
 }
+

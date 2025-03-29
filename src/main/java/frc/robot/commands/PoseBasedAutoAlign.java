@@ -31,16 +31,16 @@ public class PoseBasedAutoAlign extends Command {
     private Camera camera;
     private LEDs leds;
 
-    private double driveTolerance = AutoAlignConstants.POSEBASED_DRIVE_TOLERANCE;
+    private double driveTolerance = AutoAlignConstants.TELE_DRIVE_TOLERANCE;
 
-    private PIDController xPID = new PIDController(AutoAlignConstants.POSEBASED_DRIVE_P,
-            AutoAlignConstants.POSEBASED_DRIVE_I, AutoAlignConstants.POSEBASED_DRIVE_D);
-    private PIDController yPID = new PIDController(AutoAlignConstants.POSEBASED_DRIVE_P,
-            AutoAlignConstants.POSEBASED_DRIVE_I, AutoAlignConstants.POSEBASED_DRIVE_D);
+    private PIDController xPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P,
+            AutoAlignConstants.TELE_DRIVE_I, AutoAlignConstants.TELE_DRIVE_D);
+    private PIDController yPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P,
+            AutoAlignConstants.TELE_DRIVE_I, AutoAlignConstants.TELE_DRIVE_D);
     private PIDController rPID = new PIDController(AutoAlignConstants.POSEBASED_ROT_P,
             AutoAlignConstants.POSEBASED_ROT_I, AutoAlignConstants.POSEBASED_ROT_D);
 
-    private double driveKS = AutoAlignConstants.POSEBASED_DRIVE_KS;
+    private double driveKS = AutoAlignConstants.TELE_DRIVE_KS;
     private double rotKS = AutoAlignConstants.POSEBASED_ROT_KS;
 
     private Pose2d targetPose = new Pose2d();
@@ -136,6 +136,17 @@ public class PoseBasedAutoAlign extends Command {
             }
         }
 
+        // if (DriverStation.isAutonomous()) {
+        xPID.setPID(AutoAlignConstants.AUTON_DRIVE_P, AutoAlignConstants.AUTON_DRIVE_I, AutoAlignConstants.AUTON_DRIVE_D);
+        yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
+        driveKS = AutoAlignConstants.AUTON_DRIVE_KS;
+        // } else {
+        //     xPID.setPID(AutoAlignConstants.TELE_DRIVE_P,
+        //         AutoAlignConstants.TELE_DRIVE_I, AutoAlignConstants.TELE_DRIVE_D);
+        //     yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
+        //     driveKS = AutoAlignConstants.TELE_DRIVE_KS;
+        // }
+
         xPID.setTolerance(driveTolerance);
 
         yPID.setTolerance(driveTolerance);
@@ -190,11 +201,11 @@ public class PoseBasedAutoAlign extends Command {
     private void setDriveGains() {
         String key = "DRV";
         xPID.setPID(
-                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.POSEBASED_DRIVE_P),
-                LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.POSEBASED_DRIVE_I),
-                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.POSEBASED_DRIVE_D));
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.TELE_DRIVE_P),
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.TELE_DRIVE_I),
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.TELE_DRIVE_D));
         driveKS = LightningShuffleboard.getDouble("TestAutoAlign", key + " KStatic",
-                AutoAlignConstants.POSEBASED_DRIVE_KS);
+                AutoAlignConstants.TELE_DRIVE_KS);
 
         yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
 

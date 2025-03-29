@@ -11,7 +11,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AUTONAlignToThreeLeft"
+                  "name": "RodInverseStow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToThreeLeft"
                 }
               },
               {
@@ -26,7 +32,13 @@
         {
           "type": "named",
           "data": {
-            "name": "WaitOnTarget"
+            "name": "RodL4"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
@@ -218,7 +230,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

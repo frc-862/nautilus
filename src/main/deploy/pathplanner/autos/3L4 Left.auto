@@ -11,13 +11,19 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AUTONAlignToFiveLeft"
+                  "name": "AlignToFiveLeft"
                 }
               },
               {
                 "type": "wait",
                 "data": {
                   "waitTime": 6.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RodInverseStow"
                 }
               }
             ]
@@ -26,7 +32,13 @@
         {
           "type": "named",
           "data": {
-            "name": "WaitOnTarget"
+            "name": "RodL4"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {

@@ -439,6 +439,13 @@ public class RobotContainer extends LightningContainer {
             }
         }
 
+        NamedCommands.registerCommand("AutoAlignRange", new Command() {
+                @Override
+                public boolean isFinished() {
+                        return (PoseConstants.getScorePose(drivetrain.getPose()) == 0);
+                };
+        });
+
         // test for algae
         NamedCommands.registerCommand("AlignToFourMiddle",
                 new PoseBasedAutoAlign(drivetrain, Camera.MIDDLE, leds,

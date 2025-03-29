@@ -17,7 +17,7 @@ public class ElevatorSyncStow extends Command {
     public ElevatorSyncStow(Elevator elevator) {
         this.elevator = elevator;
 
-        addRequirements(elevator);
+        // addRequirements(elevator);
     }
 
     @Override

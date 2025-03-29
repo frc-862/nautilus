@@ -750,6 +750,21 @@ public class Constants {
             }
         }
 
+        public static final Pose2d CENTER_REEF_RED = new Pose2d(13.058, 4.025, new Rotation2d(0));
+        public static final Pose2d CENTER_REEF_BLUE = new Pose2d(4.482, 4.025, new Rotation2d(0));
+
+        public enum StowZone {
+            REEF(1.75d),
+            SAFE(4.5d),
+            SOURCE(10d);
+
+            public final double radius;
+            StowZone(double radius) {
+                this.radius = radius;
+            }
+            
+        }
+
         public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);
 
         // POPULATE WITH REAL VALUES

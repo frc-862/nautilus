@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AUTONAlignToThreeLeft"
+                  "name": "AUTONAlignToThreeRight"
                 }
               },
               {
@@ -92,9 +92,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "RSource-R2L"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignRange"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSource-R2L"
+                }
+              }
+            ]
           }
         },
         {
@@ -191,9 +204,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "RSource-R2R"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlignRange"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSource-R2R"
+                }
+              }
+            ]
           }
         },
         {

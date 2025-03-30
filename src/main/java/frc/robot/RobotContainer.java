@@ -49,6 +49,7 @@ import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.Constants.PoseConstants.LightningTagID;
+import frc.robot.Constants.PoseConstants.StowZone;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
@@ -173,7 +174,7 @@ public class RobotContainer extends LightningContainer {
                 climber));
 
         // Sync elevator while in stow
-        new Trigger(() -> rod.getState() == RodStates.STOW).whileTrue(new ElevatorSyncStow(elevator));
+        new Trigger(() -> rod.getState() == RodStates.STOW).and(DriverStation::isTeleop).whileTrue(new ElevatorSyncStow(elevator));
 
         /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
@@ -439,12 +440,13 @@ public class RobotContainer extends LightningContainer {
             }
         }
 
-        NamedCommands.registerCommand("AutoAlignRange", new Command() {
-                @Override
-                public boolean isFinished() {
-                        return (PoseConstants.getScorePose(drivetrain.getPose()) == 0);
-                };
-        });
+        NamedCommands.registerCommand("AutoAlignRange", new WaitUntilCommand(() -> PoseConstants.getScorePose(drivetrain.getPose()) != 0));
+        
+        // NamedCommands.registerCommand("AutoAlignSourceRange", new WaitUntilCommand(() -> drivetrain.getCurrentStowZone().equals(StowZone.SOURCE)));
+
+
+        // god save me
+        NamedCommands.registerCommand("DriveTuah", drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(-3, 0, 0)).withTimeout(0.75));
 
         // test for algae
         NamedCommands.registerCommand("AlignToFourMiddle",

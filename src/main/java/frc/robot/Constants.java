@@ -498,7 +498,7 @@ public class Constants {
     }
 
     public static class AutonomousConstants {
-        public static final PIDConstants TRANSLATION_PID = new PIDConstants(10, 0, 0);
+        public static final PIDConstants TRANSLATION_PID = new PIDConstants(50, 0, 0);
         public static final PIDConstants ROTATION_PID = new PIDConstants(5, 0, 0);
 
         private static final double TRACK_WIDTH = Units.inchesToMeters(27); // TODO: make more accurate

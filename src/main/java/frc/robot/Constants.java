@@ -94,7 +94,7 @@ public class Constants {
     public static class EncoderConstants {
         // Nautilus values
         private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.252685546875);
-        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(-0.1484375);
+        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(0.408203125);
         private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(-0.031494140625);
         private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.427978515625);
 
@@ -535,7 +535,7 @@ public class Constants {
         public static final Transform3d robotRightToCamera = new Transform3d(
                 new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
-        // MIDDLE is only used for algae on the reef!! 
+        // MIDDLE is only used for algae on the reef!!
         public enum Camera {
             LEFT, RIGHT, MIDDLE
         }
@@ -758,11 +758,11 @@ public class Constants {
             SAFE(4.5d),
             SOURCE(10d);
 
-            public final double radius;
+            public final double radius; // In Meters
             StowZone(double radius) {
                 this.radius = radius;
             }
-            
+
         }
 
         public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);

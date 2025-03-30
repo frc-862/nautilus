@@ -55,6 +55,7 @@ import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.commands.BargeAutoAlign;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
+import frc.robot.commands.DefaultRodStow;
 import frc.robot.commands.OldElevatorSync;
 import frc.robot.commands.ElevatorSyncStow;
 import frc.robot.commands.PoseBasedAutoAlign;
@@ -156,6 +157,9 @@ public class RobotContainer extends LightningContainer {
                                 -(driver.getRightX() * drivetrain.getTurnMult()),
                                 ControllerConstants.JOYSTICK_DEADBAND))));
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        // Stow behavior based on the drivetrain's current stow zone
+        rod.setDefaultCommand(new DefaultRodStow(drivetrain, rod));
 
         // COPILOT INTAKE
         coralCollector.setDefaultCommand(new CollectCoral(coralCollector, leds,

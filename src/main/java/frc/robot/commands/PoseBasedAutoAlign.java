@@ -132,6 +132,9 @@ public class PoseBasedAutoAlign extends Command {
 
     @Override
     public boolean isFinished() {
+        if (isWithRodState) {
+            return onTarget() && rod.onTarget();
+        }
         return onTarget();
     }
 

@@ -459,7 +459,7 @@ public class RobotContainer extends LightningContainer {
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         NamedCommands.registerCommand("AlignToBarge",
-                new BargeAutoAlign(drivetrain, leds, rod)
+                new BargeAutoAlign(drivetrain, leds, rod, LightningTagID.BargeFront)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         NamedCommands.registerCommand("IntakeCoral",

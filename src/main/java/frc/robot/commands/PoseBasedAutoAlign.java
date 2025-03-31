@@ -117,6 +117,10 @@ public class PoseBasedAutoAlign extends Command {
     public void end(boolean interrupted) {
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
+
+            if (rod.getState() != targetRodState.get() && isWithRodState) {
+                invokeRod();
+            }
         }
         if (!DriverStation.isAutonomous() && onTarget()) {
             RobotContainer.hapticDriverCommand().schedule();

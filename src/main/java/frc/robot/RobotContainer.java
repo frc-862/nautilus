@@ -53,7 +53,6 @@ import frc.robot.Constants.PoseConstants.StowZone;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.Camera;
-import frc.robot.commands.BargeAutoAlign;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.OldElevatorSync;

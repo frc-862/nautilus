@@ -265,4 +265,10 @@ public class PoseBasedAutoAlign extends Command {
 
         return this; // return this to allow for method chaining
     }
+
+    public PoseBasedAutoAlign setRotationP(double p) {
+        rPID.setP(p);
+
+        return this;
+    }
 }

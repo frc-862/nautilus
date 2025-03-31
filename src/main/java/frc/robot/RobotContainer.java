@@ -182,7 +182,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> erroring && DriverStation.isDisabled())
                 .whileTrue(leds.strip.enableState(LEDStates.ERROR));
 
-        new Trigger(() -> !rod.isCoralMode()).whileTrue(leds.strip.enableState(LEDStates.ALGAE_MODE));
+        new Trigger(() -> !rod.isCoralMode() && DriverStation.isEnabled()).whileTrue(leds.strip.enableState(LEDStates.ALGAE_MODE));
 
         leds.strip.setState(LEDStates.POSE_BAD, true).schedule();
 
@@ -190,7 +190,7 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(leds.strip.setState(LEDStates.POSE_BAD, false))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
-        new Trigger(() -> (PoseConstants.getScorePose(drivetrain.getPose()) == 0))
+        new Trigger(() -> (PoseConstants.getScorePose(drivetrain.getPose()) == 0 && DriverStation.isEnabled()))
                 .whileFalse(leds.strip.enableState(LEDStates.READY_TO_ALIGN));
 
         new Trigger(() -> climber.getLimitSwitch()).whileTrue(leds.strip.enableState(LEDStates.CLIMBED));

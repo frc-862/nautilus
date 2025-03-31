@@ -36,11 +36,11 @@ public class BargeAutoAlign extends Command {
 
     private double tolerance = AutoAlignConstants.TELE_DRIVE_TOLERANCE;
 
-    private PIDController xPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P, AutoAlignConstants.TELE_DRIVE_I,
-            AutoAlignConstants.TELE_DRIVE_D);
+    private PIDController xPID = new PIDController(AutoAlignConstants.AUTON_DRIVE_P, AutoAlignConstants.AUTON_DRIVE_I,
+            AutoAlignConstants.AUTON_DRIVE_D);
 
-    private PIDController rPID = new PIDController(AutoAlignConstants.POSEBASED_ROT_D, AutoAlignConstants.POSEBASED_ROT_I,
-            AutoAlignConstants.POSEBASED_ROT_D);
+    private PIDController rPID = new PIDController(AutoAlignConstants.AUTON_ROT_P, AutoAlignConstants.AUTON_ROT_I,
+            AutoAlignConstants.AUTON_ROT_D);
 
     private Pose2d targetPose = new Pose2d();
 
@@ -174,13 +174,14 @@ public class BargeAutoAlign extends Command {
     public void end(boolean interrupted) {
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
-
-            if (rod.getState() != RodStates.BARGE) {
-                rod.setState(RodStates.BARGE);
-            }
         }
         if (!DriverStation.isAutonomous() && onTarget()) {
             RobotContainer.hapticDriverCommand().schedule();
+        }
+
+
+        if (rod.getState() != RodStates.BARGE) {
+            rod.setState(RodStates.BARGE);
         }
     }
 

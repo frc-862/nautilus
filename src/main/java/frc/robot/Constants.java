@@ -94,7 +94,7 @@ public class Constants {
     public static class EncoderConstants {
         // Nautilus values
         private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.252685546875);
-        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(-0.1484375);
+        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(0.408203125);
         private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(-0.031494140625);
         private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.427978515625);
 
@@ -498,7 +498,7 @@ public class Constants {
     }
 
     public static class AutonomousConstants {
-        public static final PIDConstants TRANSLATION_PID = new PIDConstants(10, 0, 0);
+        public static final PIDConstants TRANSLATION_PID = new PIDConstants(50, 0, 0);
         public static final PIDConstants ROTATION_PID = new PIDConstants(5, 0, 0);
 
         private static final double TRACK_WIDTH = Units.inchesToMeters(27); // TODO: make more accurate
@@ -526,7 +526,7 @@ public class Constants {
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
         public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout
-                .loadField(AprilTagFields.k2025Reefscape);
+                .loadField(AprilTagFields.k2025ReefscapeWelded);
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
         public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, Math.PI);
@@ -748,6 +748,21 @@ public class Constants {
                 this.redID = redID;
                 this.blueID = blueID;
             }
+        }
+
+        public static final Pose2d CENTER_REEF_RED = new Pose2d(13.058, 4.025, new Rotation2d(0));
+        public static final Pose2d CENTER_REEF_BLUE = new Pose2d(4.482, 4.025, new Rotation2d(0));
+
+        public enum StowZone {
+            REEF(1.75d),
+            SAFE(4.5d),
+            SOURCE(10d);
+
+            public final double radius;
+            StowZone(double radius) {
+                this.radius = radius;
+            }
+            
         }
 
         public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);

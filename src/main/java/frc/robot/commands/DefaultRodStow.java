@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FishingRodConstants.RodStates;
@@ -21,6 +22,8 @@ public class DefaultRodStow extends Command {
     private RodTransitionStates desiredTransition = RodTransitionStates.WRIST_UP_THEN_ELE;
     private StowZone currentZone = StowZone.SAFE;
     private StowZone lastZone = StowZone.SAFE;
+
+    private Debouncer stateDebouncer = new Debouncer(0.5);
 
     /**
      * Default Rod behavior for teleop
@@ -51,6 +54,8 @@ public class DefaultRodStow extends Command {
 
         desiredState = RodStates.STOW;
         desiredTransition = RodTransitionStates.WRIST_UP_THEN_ELE;
+
+        stateDebouncer.calculate(drivetrain.getCurrentStowZone() == drivetrain.getLastStowZone());
 
         // current must be called before last to update the last position
         currentZone = drivetrain.getCurrentStowZone();

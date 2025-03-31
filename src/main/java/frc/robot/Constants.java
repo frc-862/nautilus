@@ -751,7 +751,7 @@ public class Constants {
 
         public enum StowZone {
             REEF(1.75d),
-            SAFE(4.5d),
+            SAFE(4.2d),
             SOURCE(10d);
 
             public final double radius; // In Meters

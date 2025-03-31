@@ -552,6 +552,10 @@ public class Constants {
         public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
                 Units.feetToMeters(26.0));
 
+        public static final Pose2d RED_BARGE = new Pose2d(9.982, 1.621, new Rotation2d(Degrees.of(0)));
+
+        public static final Pose2d BLUE_BARGE = new Pose2d(7.625, 6.201, new Rotation2d(Degrees.of(-180)));
+
         public static HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.Camera, Integer>, Pose2d>() {
             {
 

@@ -4,15 +4,20 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
+import frc.robot.Constants.PoseConstants.StowZone;
 import frc.robot.subsystems.FishingRod;
 
 public class SetRodState extends Command {
 
     private final FishingRod rod;
     private final RodStates state;
+
+    private Supplier<StowZone> stowZone;
 
     /**
      * Creates a new SetRodState.
@@ -23,6 +28,7 @@ public class SetRodState extends Command {
     public SetRodState(FishingRod rod, RodStates state) {
         this.rod = rod;
         this.state = state;
+        this.stowZone = () -> StowZone.SAFE;
 
         addRequirements(rod);
     }
@@ -38,6 +44,12 @@ public class SetRodState extends Command {
         switch (state) {
             case STOW:
                 RodStates desiredStow = RodStates.STOW;
+
+                // If we are at the reef and in inverse stow.
+                if ((rod.getState() == RodStates.INVERSE_STOW && stowZone.get() == StowZone.REEF)) {
+                    cancel();
+                    return;
+                }
 
                 // Stow based on the current state of the rod
                 switch (rod.getState()) {
@@ -70,5 +82,11 @@ public class SetRodState extends Command {
     @Override
     public boolean isFinished() {
         return rod.onTarget();
+    }
+
+    public SetRodState withStowZoneCheck(Supplier<StowZone> stowZone) {
+        this.stowZone = stowZone;
+
+        return this;
     }
 }

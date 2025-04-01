@@ -99,7 +99,7 @@ public class PoseBasedAutoAlign extends Command {
             yVeloc = yVelSupplier.getAsDouble();
         }
 
-        if (isWithRodState) {
+        if (isWithRodState && rod != null) {
             // if we've reached the threshold once, and we're below the threshold, deploy the ele
             if (Math.abs(xVeloc) < AutoAlignConstants.DEPLOY_VEL && Math.abs(yVeloc) < AutoAlignConstants.DEPLOY_VEL && !hasDeployedRod) {
                 hasDeployedRod = true;
@@ -119,10 +119,12 @@ public class PoseBasedAutoAlign extends Command {
     public void end(boolean interrupted) {
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
-
-            if (rod.getState() != targetRodState.get() && isWithRodState) {
-                invokeRod();
+            if (isWithRodState && rod != null) {
+                if (rod.getState() != targetRodState.get()) {
+                    invokeRod();
+                }
             }
+            
         }
         if (!DriverStation.isAutonomous() && onTarget()) {
             RobotContainer.hapticDriverCommand().schedule();
@@ -134,7 +136,7 @@ public class PoseBasedAutoAlign extends Command {
 
     @Override
     public boolean isFinished() {
-        if (isWithRodState) {
+        if (isWithRodState && rod != null) {
             return onTarget() && rod.onTarget();
         }
         return onTarget();

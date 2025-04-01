@@ -744,7 +744,7 @@ public class Constants {
             RightSource(2, 12),
             LeftSource(1, 13),
 
-            BargeFront(5, 14),
+            Barge(5, 14),
             BargeBack(15, 4);
 
             public final int redID;

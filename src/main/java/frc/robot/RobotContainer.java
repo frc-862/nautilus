@@ -269,7 +269,7 @@ public class RobotContainer extends LightningContainer {
 
         // BARGE Autoalign
         new Trigger(driver::getBButton)
-                .whileTrue(PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.BargeFront)
+                .whileTrue(PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.Barge)
                         .withYControl(() -> driver.getLeftY())
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
@@ -409,6 +409,13 @@ public class RobotContainer extends LightningContainer {
 
                     break;
 
+                case Barge, BargeBack:
+                    NamedCommands.registerCommand("AlignTo" + tagID.name(),
+                        PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, tagID)
+                            .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+                    break;
+
                 default:
                     NamedCommands.registerCommand("AlignTo" + tagID.name() + "Left",
                         PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.LEFT, leds, tagID)
@@ -445,14 +452,6 @@ public class RobotContainer extends LightningContainer {
                         return (PoseConstants.getScorePose(drivetrain.getPose()) == 0);
                 };
         });
-
-        NamedCommands.registerCommand("AlignToBarge",
-                PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.BargeFront)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-
-        NamedCommands.registerCommand("AlignToBargeBack",
-                PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.BargeBack)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1, CoralCollectorConstants.CORAL_HOLD_POWER));

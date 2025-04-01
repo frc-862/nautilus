@@ -540,10 +540,6 @@ public class Constants {
             LEFT, RIGHT, MIDDLE
         }
 
-        public enum Camera {
-            LEFT, RIGHT
-        }
-
         public static final double VISION_X_STDEV = 1;
         public static final double VISION_Y_STDEV = 1;
         public static final double VISION_THETA_STDEV = 1;
@@ -644,11 +640,11 @@ public class Constants {
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 14),
                     new Pose2d(7.625, 6.201, new Rotation2d(Degrees.of(-180))));
 
-                //red barge back
+                // // red barge back
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 15),
                     new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
 
-                //blue barge back
+                // // blue barge back
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 4),
                     new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
             }

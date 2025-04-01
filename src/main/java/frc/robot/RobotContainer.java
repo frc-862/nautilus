@@ -190,8 +190,8 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(leds.strip.setState(LEDStates.POSE_BAD, false))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
-        new Trigger(() -> (PoseConstants.getScorePose(drivetrain.getPose()) == 0 && DriverStation.isEnabled()))
-                .whileFalse(leds.strip.enableState(LEDStates.READY_TO_ALIGN));
+        new Trigger(() -> (PoseConstants.getScorePose(drivetrain.getPose()) != 0 && DriverStation.isEnabled()))
+                .whileTrue(leds.strip.enableState(LEDStates.READY_TO_ALIGN));
 
         new Trigger(() -> climber.getLimitSwitch()).whileTrue(leds.strip.enableState(LEDStates.CLIMBED));
 

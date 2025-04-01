@@ -258,6 +258,7 @@ public class PoseBasedAutoAlign extends Command {
     public PoseBasedAutoAlign withRodState(FishingRod rod, Supplier<RodStates> state) {
         this.rod = rod; // set the fishing rod subsystem
         this.targetRodState = state; // set the target rod state to the one passed in
+        this.hasDeployedRod = false;
 
         isWithRodState = true; // set the flag to true to indicate we are using a rod state
 

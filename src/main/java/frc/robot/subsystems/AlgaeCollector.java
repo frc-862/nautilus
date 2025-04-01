@@ -140,7 +140,7 @@ public class AlgaeCollector extends SubsystemBase {
      * @return if the roller is stalling due to algae in the collector
      */
     public boolean getRollerHit() {
-        return rollerMotor.getStatorCurrent().getValueAsDouble() >= CoralCollectorConstants.COLLECTED_CURRENT;
+        return rollerMotor.getStatorCurrent().getValueAsDouble() >= CoralCollectorConstants.CORAL_COLLECTED_CURRENT;
     }
 
     /**

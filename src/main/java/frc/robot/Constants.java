@@ -540,10 +540,6 @@ public class Constants {
             LEFT, RIGHT, MIDDLE
         }
 
-        public enum Camera {
-            LEFT, RIGHT
-        }
-
         public static final double VISION_X_STDEV = 1;
         public static final double VISION_Y_STDEV = 1;
         public static final double VISION_THETA_STDEV = 1;
@@ -562,8 +558,6 @@ public class Constants {
 
         public static HashMap<Tuple<VisionConstants.ReefPose, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.ReefPose, Integer>, Pose2d>() {
             {
-
-
                 // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 6), new Pose2d(13.5760436668043, 2.80494567916454, new Rotation2d(Degrees.of(-60))));
                 // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6), new Pose2d(13.8578483331957, 2.96764567916454, new Rotation2d(Degrees.of(-60))));
                 // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 7), new Pose2d(14.375498, 3.8632, new Rotation2d(Degrees.of(0))));
@@ -764,14 +758,14 @@ public class Constants {
 
         public enum StowZone {
             REEF(1.75d),
-            SAFE(4.5d),
+            SAFE(4.2d),
             SOURCE(10d);
 
-            public final double radius;
+            public final double radius; // In Meters
             StowZone(double radius) {
                 this.radius = radius;
             }
-            
+
         }
 
         public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);

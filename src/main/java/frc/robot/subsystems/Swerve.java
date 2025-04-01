@@ -357,6 +357,11 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return 0;
     }
 
+    /**
+     * Gets the current StowZone based on how far away
+     * the robot is from the center of the alliance reef
+     * @return the current StowZone
+     */
     public StowZone getCurrentStowZone() {
         Pose2d centerReef = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red
                 ? PoseConstants.CENTER_REEF_RED
@@ -387,6 +392,11 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         return newZone;
     }
 
+    /**
+     * Gets the last StowZone that the robot was in.
+     * NOTE: getCurrentStowZone() must be called first to update the last
+     * @return the last StowZone
+     */
     public StowZone getLastStowZone() {
         return lastStowZone; // Return the last stow zone
     }

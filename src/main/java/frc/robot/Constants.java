@@ -232,7 +232,7 @@ public class Constants {
                 put(RodStates.L1, 6d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -36d);
-                put(RodStates.L4, -45d); // -48
+                put(RodStates.L4, -45d);
                 put(RodStates.LOW, -29d);
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
@@ -535,9 +535,13 @@ public class Constants {
         public static final Transform3d robotRightToCamera = new Transform3d(
                 new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
-        // MIDDLE is only used for algae on the reef!! 
+        // MIDDLE is only used for algae on the reef!!
         public enum ReefPose {
             LEFT, RIGHT, MIDDLE
+        }
+
+        public enum Camera {
+            LEFT, RIGHT
         }
 
         public static final double VISION_X_STDEV = 1;
@@ -1316,28 +1320,17 @@ public class Constants {
             ALIGNED(),
             ALGAE_MODE(),
             ALIGNING(),
-            READY_TO_ALIGN(),
             COLLECTING(),
             SCORING(),
             ROD_MOVING(),
+            READY_TO_ALIGN(),
             UPDATING_POSE(),
             POSE_BAD()
         }
     }
 
     public class AutoAlignConstants {
-        // public static final double AutoAlignTolerance = 0.02d;
-
-        // // X PID
-        // public static final double X_Kp = 0.035d;
-        // public static final double X_Ki = 0d;
-        // public static final double X_Kd = 0d;
-
-        // // Y PID
-        // public static final double Y_Kp = 0.1d;
-        // public static final double Y_Ki = 0d;
-        // public static final double Y_Kd = 0d;
-
+        
         // auton gains for posebased (if needed)
         public static final double AUTON_DRIVE_P = 0.8d;
         public static final double AUTON_DRIVE_I = 0;
@@ -1356,23 +1349,14 @@ public class Constants {
         public static final double TELE_DRIVE_TOLERANCE = 0.025;
         public static final double TELE_DRIVE_KS = 0;//0.08;
 
-        public static final double POSEBASED_ROT_P = 0.03;
-        public static final double POSEBASED_ROT_I = 0;
-        public static final double POSEBASED_ROT_D = 0;
-        public static final double POSEBASED_ROT_TOLERANCE = 1.5; // 2.5
-        public static final double POSEBASED_ROT_KS = 0; // 0.01 NOT APPLIED
+        public static final double TELE_ROT_P = 0.03;
+        public static final double TELE_ROT_I = 0;
+        public static final double TELE_ROT_D = 0;
+        public static final double TELE_ROT_TOLERANCE = 1.5;
+        public static final double TELE_ROT_KS = 0; // 0.01 NOT APPLIED
 
         public static final double DEPLOY_VEL = 0.45; // 0.45
         public static final double BARGE_DEPLY_VEL = 0.25;
-
-        // public static final double targetTX = 720d;
-
-        // public static final HashMap<Integer, Double> tagAngles = new HashMap<Integer, Double>() {
-        //     {
-        //         put(6, 0d);
-        //         put(9, 0d);
-        //     }
-        // };
     }
 
     public class SimGamePeicesConstants {

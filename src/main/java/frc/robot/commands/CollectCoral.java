@@ -48,27 +48,23 @@ public class CollectCoral extends Command {
     @Override
     public void execute() {
         double power = triggerPower.getAsDouble();
-        if (power == 0) {
-            power = useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER
-                    : CoralCollectorConstants.ALGAE_HOLD_POWER;
-        } else if (power < 0) {
-            power *= useLowSpitPower.getAsBoolean() ? 0.75 : 1;
+        if (triggerPower.getAsDouble() == 0) {
+            power = useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER;
         }
         collector.setPower(power * CoralCollectorConstants.CORAL_ROLLER_SPEED);
 
         if (collector.getCollectCurrentHit() && power >= 0) {
             RobotContainer.hapticCopilotCommand().schedule();
+            leds.strip.enableState(LEDStates.COLLECTED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-        collector.setPower(useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER
-                : CoralCollectorConstants.ALGAE_HOLD_POWER);
-        if (!interrupted) {
-            leds.strip.enableState(LEDStates.COLLECTED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME))
-                    .schedule();
-        }
+        // this likely almost never gets called
+
+        collector.setPower(useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER);
+
     }
 
     @Override

@@ -37,10 +37,12 @@ public class Robot extends LightningRobot {
         // WebServer.start(5800, Filesystem.getDeployDirectory().getPath() +
         // "/elastic");
 
-        try {
-            Process process = Runtime.getRuntime().exec("ssh pi@10.8.62.15 sudo systemctl restart photonvision");
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (Robot.isReal()) {
+            try {
+                Runtime.getRuntime().exec("ssh pi@10.8.62.15 sudo systemctl restart photonvision");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

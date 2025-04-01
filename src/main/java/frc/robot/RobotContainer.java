@@ -177,12 +177,14 @@ public class RobotContainer extends LightningContainer {
         /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
 
-        new Trigger(() -> elevator.isOverheating()).onTrue(new InstantCommand(() -> erroring = true));
+        new Trigger(() -> elevator.isOverheating()).onTrue(new InstantCommand(() -> erroring = true)); 
 
         new Trigger(() -> erroring && DriverStation.isDisabled())
                 .whileTrue(leds.strip.enableState(LEDStates.ERROR));
 
         new Trigger(() -> !rod.isCoralMode() && DriverStation.isEnabled()).whileTrue(leds.strip.enableState(LEDStates.ALGAE_MODE));
+
+        new Trigger(() -> (coralCollector.getTargetPower() > (rod.isCoralMode() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER))).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
         leds.strip.setState(LEDStates.POSE_BAD, true).schedule();
 
@@ -368,8 +370,7 @@ public class RobotContainer extends LightningContainer {
         // }
 
         // LED testing
-        // new Trigger(() -> leds.getTestState() !=
-        // null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
+        new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
 
         // SYSID
         new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));

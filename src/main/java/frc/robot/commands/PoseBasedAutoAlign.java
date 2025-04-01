@@ -37,7 +37,7 @@ public class PoseBasedAutoAlign extends Command {
 
     private PIDController xPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P, AutoAlignConstants.TELE_DRIVE_I, AutoAlignConstants.TELE_DRIVE_D);
     private PIDController yPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P, AutoAlignConstants.TELE_DRIVE_I, AutoAlignConstants.TELE_DRIVE_D);
-    private PIDController rPID = new PIDController(AutoAlignConstants.POSEBASED_ROT_P, AutoAlignConstants.POSEBASED_ROT_I, AutoAlignConstants.POSEBASED_ROT_D);
+    private PIDController rPID = new PIDController(AutoAlignConstants.TELE_ROT_P, AutoAlignConstants.TELE_ROT_I, AutoAlignConstants.TELE_ROT_D);
 
     private boolean overrideYPID = false;
 
@@ -80,7 +80,7 @@ public class PoseBasedAutoAlign extends Command {
 
         yPID.setTolerance(driveTolerance);
 
-        rPID.setTolerance(AutoAlignConstants.POSEBASED_ROT_TOLERANCE);
+        rPID.setTolerance(AutoAlignConstants.TELE_ROT_TOLERANCE);
         rPID.enableContinuousInput(0, 360);
     }
 
@@ -174,43 +174,43 @@ public class PoseBasedAutoAlign extends Command {
         String key = "ROT";
 
         rPID.setPID(
-                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.POSEBASED_ROT_P),
-                LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.POSEBASED_ROT_I),
-                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.POSEBASED_ROT_D));
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kp", AutoAlignConstants.TELE_ROT_P),
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Ki", AutoAlignConstants.TELE_ROT_I),
+                LightningShuffleboard.getDouble("TestAutoAlign", key + " Kd", AutoAlignConstants.TELE_ROT_D));
 
         rPID.setTolerance(LightningShuffleboard.getDouble("TestAutoAlign", key + " tolerance",
-                AutoAlignConstants.POSEBASED_ROT_TOLERANCE));
+                AutoAlignConstants.TELE_ROT_TOLERANCE));
     }
 
-    public static PoseBasedAutoAlign getLightningIDAutoAlign(Swerve drivetrain, ReefPose camera, LEDs leds, LightningTagID tagID) {
+    public static PoseBasedAutoAlign getLightningIDAutoAlign(Swerve drivetrain, ReefPose reefPose, LEDs leds, LightningTagID tagID) {
         return new PoseBasedAutoAlign(drivetrain, leds) 
         {
             @Override
             public void initialize() {
                 int ID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? tagID.redID : tagID.blueID;
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(camera, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, ID));
 
                 super.initialize();
             }
         };
     }
 
-    public static PoseBasedAutoAlign getOtherAllianceLightningIDAutoAlign(Swerve drivetrain, ReefPose camera, LEDs leds, LightningTagID tagID) {
+    public static PoseBasedAutoAlign getOtherAllianceLightningIDAutoAlign(Swerve drivetrain, ReefPose reefPose, LEDs leds, LightningTagID tagID) {
         return new PoseBasedAutoAlign(drivetrain, leds) 
         {
             @Override
             public void initialize() {
                 int ID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? tagID.blueID : tagID.redID;
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(camera, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, ID));
 
                 super.initialize();
             }
         };
     }
 
-    public static PoseBasedAutoAlign getPoseAutoAlign(Swerve drivetrain, ReefPose camera, LEDs leds) {
+    public static PoseBasedAutoAlign getPoseAutoAlign(Swerve drivetrain, ReefPose reefPose, LEDs leds) {
         return new PoseBasedAutoAlign(drivetrain, leds) 
         {
             @Override
@@ -221,14 +221,14 @@ public class PoseBasedAutoAlign extends Command {
                     return;
                 }
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(camera, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, ID));
 
                 super.initialize();
             }
         };
     }
 
-    public static PoseBasedAutoAlign getL1PoseAutoAlign(Swerve drivetrain, ReefPose camera, LEDs leds) {
+    public static PoseBasedAutoAlign getL1PoseAutoAlign(Swerve drivetrain, ReefPose reefPose, LEDs leds) {
         return new PoseBasedAutoAlign(drivetrain, leds) 
         {
             @Override
@@ -239,7 +239,7 @@ public class PoseBasedAutoAlign extends Command {
                     return;
                 }
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(camera, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, ID));
 
                 super.initialize();
             }

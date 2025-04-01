@@ -35,8 +35,10 @@ public class ElevatorSyncStow extends Command {
         // move down until we hit current limit
         elevator.setPower(ElevatorConstants.BOTTOM_RAW_POWER);
 
-        if (!rod.getDefaultCommand().equals(rod.getCurrentCommand())) {
-            cancel();
+        if (rod.getCurrentCommand() != null && rod.getDefaultCommand() != null) {
+            if (!rod.getCurrentCommand().getClass().equals(rod.getDefaultCommand().getClass())) {
+                cancel();
+            }
         }
     }
 
@@ -47,6 +49,8 @@ public class ElevatorSyncStow extends Command {
         if (!interrupted && DriverStation.isEnabled()) {
             elevator.setEncoder(0d);
             elevator.setState(RodStates.STOW);
+        } else {
+            elevator.stop();
         }
     }
 

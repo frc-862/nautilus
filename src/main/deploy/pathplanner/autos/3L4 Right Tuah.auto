@@ -50,7 +50,7 @@
         {
           "type": "named",
           "data": {
-            "name": "DriveTuah"
+            "name": "DriveRight"
           }
         },
         {
@@ -177,6 +177,12 @@
           "type": "named",
           "data": {
             "name": "StowTuah"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DriveBack"
           }
         },
         {

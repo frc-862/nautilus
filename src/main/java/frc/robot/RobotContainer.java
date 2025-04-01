@@ -502,6 +502,11 @@ public class RobotContainer extends LightningContainer {
                 new SetRodState(rod, RodStates.SOURCE)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
 
+        NamedCommands.registerCommand("DriveRight", drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(-2, 0.75, 0)).withTimeout(0.75));
+        NamedCommands.registerCommand("DriveBack", drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(0, 2, 0)).withTimeout(0.75));
+
+
+
         NamedCommands.registerCommand("SetCoralMode", new InstantCommand(() -> rod.setCoralMode(true)));
         NamedCommands.registerCommand("SetAlgaeMode", new InstantCommand(() -> rod.setCoralMode(false)));
 

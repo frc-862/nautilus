@@ -446,12 +446,7 @@ public class RobotContainer extends LightningContainer {
             }
         }
 
-        NamedCommands.registerCommand("AutoAlignRange", new Command() {
-                @Override
-                public boolean isFinished() {
-                        return (PoseConstants.getScorePose(drivetrain.getPose()) == 0);
-                };
-        });
+        NamedCommands.registerCommand("AutoAlignRange", new WaitUntilCommand(() -> PoseConstants.getScorePose(drivetrain.getPose()) != 0));
 
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1, CoralCollectorConstants.CORAL_HOLD_POWER));

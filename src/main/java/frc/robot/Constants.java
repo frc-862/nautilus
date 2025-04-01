@@ -105,7 +105,7 @@ public class Constants {
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
         public static final double tritonWristOffset = -0.227;
-        public static final double nautilusWristOffset = 0.7646484375;
+        public static final double nautilusWristOffset = 0.75586;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
@@ -1355,7 +1355,7 @@ public class Constants {
         public static final double TELE_ROT_TOLERANCE = 1.5;
         public static final double TELE_ROT_KS = 0; // 0.01 NOT APPLIED
 
-        public static final double DEPLOY_VEL = 0.45; // 0.45
+        public static final double DEPLOY_VEL = 0.2; // 0.45
         public static final double BARGE_DEPLY_VEL = 0.25;
     }
 

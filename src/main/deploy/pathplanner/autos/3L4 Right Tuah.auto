@@ -289,7 +289,19 @@
         {
           "type": "named",
           "data": {
-            "name": "WristThenStow"
+            "name": "RodLow"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeAlgae"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DriveBack"
           }
         }
       ]

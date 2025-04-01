@@ -196,11 +196,13 @@ public class PoseBasedAutoAlign extends Command {
         };
     }
 
-    public static PoseBasedAutoAlign getTagIDAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, int ID) {
+    public static PoseBasedAutoAlign getOtherAllianceLightningIDAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, LightningTagID tagID) {
         return new PoseBasedAutoAlign(drivetrain, leds) 
         {
             @Override
             public void initialize() {
+                int ID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? tagID.blueID : tagID.redID;
+
                 targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, ID));
 
                 super.initialize();
@@ -220,21 +222,6 @@ public class PoseBasedAutoAlign extends Command {
                 }
 
                 targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, ID));
-
-                super.initialize();
-            }
-        };
-    }
-
-    public static PoseBasedAutoAlign getBargeAutoAlign(Swerve drivetrain, LEDs leds, DoubleSupplier yVelSupplier) {
-        return new PoseBasedAutoAlign(drivetrain, leds) 
-        {
-            @Override
-            public void initialize() {
-                this.yVelSupplier = yVelSupplier;
-                this.isWithY = false;
-
-                targetPose = DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? PoseConstants.RED_BARGE : PoseConstants.BLUE_BARGE;
 
                 super.initialize();
             }
@@ -268,6 +255,13 @@ public class PoseBasedAutoAlign extends Command {
         addRequirements(rod); // add the fishing rod subsystem as a requirement to this command
 
         return this; // return this to allow for method chaining
+    }
+
+    public PoseBasedAutoAlign withYControl(DoubleSupplier yVelSupplier) {
+        this.yVelSupplier = yVelSupplier;
+        this.isWithY = false;
+
+        return this;
     }
 
     public PoseBasedAutoAlign setRotationP(double p) {

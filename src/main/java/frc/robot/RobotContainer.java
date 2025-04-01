@@ -269,7 +269,8 @@ public class RobotContainer extends LightningContainer {
 
         // BARGE Autoalign
         new Trigger(driver::getBButton)
-                .whileTrue(PoseBasedAutoAlign.getBargeAutoAlign(drivetrain, leds, () -> -driver.getLeftX())
+                .whileTrue(PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.BargeFront)
+                        .withYControl(() -> driver.getLeftY())
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // source autoalign
@@ -441,7 +442,11 @@ public class RobotContainer extends LightningContainer {
         });
 
         NamedCommands.registerCommand("AlignToBarge",
-                PoseBasedAutoAlign.getBargeAutoAlign(drivetrain, leds, () -> 0)
+                PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.BargeFront)
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+        NamedCommands.registerCommand("AlignToBargeBack",
+                PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.BargeBack)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         NamedCommands.registerCommand("IntakeCoral",

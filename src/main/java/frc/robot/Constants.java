@@ -643,12 +643,12 @@ public class Constants {
                     new Pose2d(7.625, 6.201, new Rotation2d(Degrees.of(-180))));
 
                 // // red barge back
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 15),
-                //     new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 15),
+                    new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
 
                 // // blue barge back
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 4),
-                //     new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 4),
+                    new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
             }
 
         };
@@ -744,7 +744,8 @@ public class Constants {
             RightSource(2, 12),
             LeftSource(1, 13),
 
-            BargeFront(5, 14);
+            BargeFront(5, 14),
+            BargeBack(15, 4);
 
             public final int redID;
             public final int blueID;

@@ -406,6 +406,7 @@ public class RobotContainer extends LightningContainer {
                         PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, tagID)
                             .withRodState(rod, () -> RodStates.SOURCE)
                             .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
                     break;
 
                 default:
@@ -429,6 +430,10 @@ public class RobotContainer extends LightningContainer {
                     NamedCommands.registerCommand("AlignTo" + tagID.name() + "Middle",
                         PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.MIDDLE, leds, tagID)
                             .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+                    NamedCommands.registerCommand("OpAlignTo" + tagID.name() + "Middle",
+                            PoseBasedAutoAlign.getOtherAllianceLightningIDAutoAlign(drivetrain, Camera.MIDDLE, leds, tagID)
+                                .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
                     break;
             }

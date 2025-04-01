@@ -612,8 +612,8 @@ public class Constants {
 
 
                 //R4AG
-                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 10), new Pose2d(11.758, 4.021, new Rotation2d(Degrees.of(180))));
-                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 21), new Pose2d(5.781, 4.021, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 10), new Pose2d(11.758, 4.020, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 21), new Pose2d(5.759, 4.020, new Rotation2d(Degrees.of(0))));
                 //R5AG
                 put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 11), new Pose2d(12.403, 2.880, new Rotation2d(Degrees.of(-120))));
                 put(new Tuple<Camera,Integer>(VisionConstants.Camera.MIDDLE, 20), new Pose2d(5.143, 5.164, new Rotation2d(Degrees.of(60))));

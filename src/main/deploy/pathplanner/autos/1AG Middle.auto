@@ -11,7 +11,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToFourLeft"
+                  "name": "AlignToFourRight"
                 }
               },
               {
@@ -36,25 +36,32 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "R4AG-SMidTeehee"
-          }
-        },
-        {
           "type": "race",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "parallel",
                 "data": {
-                  "name": "AlignToFourMiddle"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AlignToFourMiddle"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RodLow"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 6.0
                 }
               },
               {
@@ -67,15 +74,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "SetAlgaeMode"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "R4AG-Barge"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetAlgaeMode"
           }
         },
         {
@@ -124,7 +131,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

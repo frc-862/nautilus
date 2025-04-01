@@ -21,7 +21,7 @@ import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.PoseConstants.LightningTagID;
-import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
@@ -182,35 +182,35 @@ public class PoseBasedAutoAlign extends Command {
                 AutoAlignConstants.POSEBASED_ROT_TOLERANCE));
     }
 
-    public static PoseBasedAutoAlign getLightningIDAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, LightningTagID tagID) {
+    public static PoseBasedAutoAlign getLightningIDAutoAlign(Swerve drivetrain, ReefPose camera, LEDs leds, LightningTagID tagID) {
         return new PoseBasedAutoAlign(drivetrain, leds) 
         {
             @Override
             public void initialize() {
                 int ID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? tagID.redID : tagID.blueID;
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(camera, ID));
 
                 super.initialize();
             }
         };
     }
 
-    public static PoseBasedAutoAlign getOtherAllianceLightningIDAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, LightningTagID tagID) {
+    public static PoseBasedAutoAlign getOtherAllianceLightningIDAutoAlign(Swerve drivetrain, ReefPose camera, LEDs leds, LightningTagID tagID) {
         return new PoseBasedAutoAlign(drivetrain, leds) 
         {
             @Override
             public void initialize() {
                 int ID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? tagID.blueID : tagID.redID;
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(camera, ID));
 
                 super.initialize();
             }
         };
     }
 
-    public static PoseBasedAutoAlign getPoseAutoAlign(Swerve drivetrain, Camera camera, LEDs leds) {
+    public static PoseBasedAutoAlign getPoseAutoAlign(Swerve drivetrain, ReefPose camera, LEDs leds) {
         return new PoseBasedAutoAlign(drivetrain, leds) 
         {
             @Override
@@ -221,14 +221,14 @@ public class PoseBasedAutoAlign extends Command {
                     return;
                 }
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(camera, ID));
 
                 super.initialize();
             }
         };
     }
 
-    public static PoseBasedAutoAlign getL1PoseAutoAlign(Swerve drivetrain, Camera camera, LEDs leds) {
+    public static PoseBasedAutoAlign getL1PoseAutoAlign(Swerve drivetrain, ReefPose camera, LEDs leds) {
         return new PoseBasedAutoAlign(drivetrain, leds) 
         {
             @Override
@@ -239,7 +239,7 @@ public class PoseBasedAutoAlign extends Command {
                     return;
                 }
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(camera, ID));
 
                 super.initialize();
             }

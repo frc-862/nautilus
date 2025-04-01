@@ -71,6 +71,8 @@ public class PoseBasedAutoAlign extends Command {
     public void initialize() {
        LightningShuffleboard.setPose2d("TestAutoAlign", "Target Pose", targetPose);
 
+       hasDeployedRod = false;
+
         xPID.setPID(AutoAlignConstants.AUTON_DRIVE_P, AutoAlignConstants.AUTON_DRIVE_I, AutoAlignConstants.AUTON_DRIVE_D);
         yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
 
@@ -258,7 +260,6 @@ public class PoseBasedAutoAlign extends Command {
     public PoseBasedAutoAlign withRodState(FishingRod rod, Supplier<RodStates> state) {
         this.rod = rod; // set the fishing rod subsystem
         this.targetRodState = state; // set the target rod state to the one passed in
-        this.hasDeployedRod = false;
 
         isWithRodState = true; // set the flag to true to indicate we are using a rod state
 

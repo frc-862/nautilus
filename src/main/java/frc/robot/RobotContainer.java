@@ -46,10 +46,12 @@ import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.Constants.PoseConstants.LightningTagID;
+import frc.robot.Constants.PoseConstants.StowZone;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.commands.BargeAutoAlign;
+import frc.robot.Constants.VisionConstants.Camera;
 import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.DefaultRodStow;
@@ -59,7 +61,6 @@ import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
 import frc.robot.commands.SetRodStateReefAlgae;
 import frc.robot.commands.SysIdSequence;
-import frc.robot.commands.auton.AutonAutoAlign;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.subsystems.AlgaeCollector;
@@ -174,7 +175,7 @@ public class RobotContainer extends LightningContainer {
                 climber));
 
         // Sync elevator while in stow
-        new Trigger(() -> rod.getState() == RodStates.STOW).whileTrue(new ElevatorSyncStow(elevator));
+        new Trigger(() -> rod.getState() == RodStates.STOW).and(DriverStation::isTeleop).whileTrue(new ElevatorSyncStow(elevator));
 
         /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
@@ -184,7 +185,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> erroring && DriverStation.isDisabled())
                 .whileTrue(leds.strip.enableState(LEDStates.ERROR));
 
-        new Trigger(() -> !rod.isCoralMode()).whileTrue(leds.strip.enableState(LEDStates.ALGAE_MODE));
+        new Trigger(() -> !rod.isCoralMode() && DriverStation.isEnabled()).whileTrue(leds.strip.enableState(LEDStates.ALGAE_MODE));
 
         new Trigger(() -> (coralCollector.getTargetPower() > (rod.isCoralMode() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER))).whileTrue(leds.strip.enableState(LEDStates.COLLECTING));
 
@@ -194,8 +195,8 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(leds.strip.setState(LEDStates.POSE_BAD, false))
                 .whileTrue(leds.strip.enableState(LEDStates.UPDATING_POSE));
 
-        new Trigger(() -> (PoseConstants.getScorePose(drivetrain.getPose()) == 0))
-                .whileFalse(leds.strip.enableState(LEDStates.READY_TO_ALIGN));
+        new Trigger(() -> (PoseConstants.getScorePose(drivetrain.getPose()) != 0 && DriverStation.isEnabled()))
+                .whileTrue(leds.strip.enableState(LEDStates.READY_TO_ALIGN));
 
         new Trigger(() -> climber.getLimitSwitch()).whileTrue(leds.strip.enableState(LEDStates.CLIMBED));
 
@@ -252,10 +253,10 @@ public class RobotContainer extends LightningContainer {
 
         // AUTO ALIGN
         new Trigger(driver::getLeftBumperButton)
-                .whileTrue(new AutonAutoAlign(drivetrain, ReefPose.RIGHT, leds, rod, () -> queuedRodState)
+                .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, Camera.RIGHT, leds).withRodState(rod, () -> queuedRodState)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton)
-                .whileTrue(new AutonAutoAlign(drivetrain, ReefPose.LEFT, leds, rod, () -> queuedRodState)
+                .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, Camera.LEFT, leds).withRodState(rod, () -> queuedRodState)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // new Trigger(driver::getBButton)
@@ -265,16 +266,16 @@ public class RobotContainer extends LightningContainer {
 
         // L1 AUTOALIGN
         new Trigger(() -> (driver.getLeftBumperButton() && driver.getAButton()))
-                .whileTrue(new PoseBasedAutoAlign(drivetrain, ReefPose.RIGHT, true, leds)
+                .whileTrue(PoseBasedAutoAlign.getL1PoseAutoAlign(drivetrain, Camera.RIGHT, leds)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(() -> (driver.getRightBumperButton() && driver.getAButton()))
-                .whileTrue(new PoseBasedAutoAlign(drivetrain, ReefPose.LEFT, true, leds)
+                .whileTrue(PoseBasedAutoAlign.getL1PoseAutoAlign(drivetrain, Camera.LEFT, leds)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // BARGE Autoalign
         new Trigger(driver::getBButton)
-                .whileTrue(new BargeAutoAlign(drivetrain, leds, rod, LightningTagID.BargeFront)
-                        .withYSpeed(() -> -driver.getLeftX())
+                .whileTrue(PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, LightningTagID.Barge)
+                        .withYControl(() -> driver.getLeftY())
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // source autoalign
@@ -402,53 +403,54 @@ public class RobotContainer extends LightningContainer {
                     // .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING))));
 
                     NamedCommands.registerCommand("AlignTo" + tagID.name(),
-                            new PoseBasedAutoAlign(drivetrain, ReefPose.RIGHT, leds,
-                                    tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, tagID)
+                            .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
                     NamedCommands.registerCommand("AUTONAlignTo" + tagID.name(),
-                            new AutonAutoAlign(drivetrain, ReefPose.RIGHT, leds, rod,
-                                    tagID, () -> RodStates.SOURCE)
-                                    .deadlineFor(leds.strip.enableState(
-                                            LEDStates.ALIGNING)));
+                        PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, tagID)
+                            .withRodState(rod, () -> RodStates.SOURCE)
+                            .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+                    break;
+
+                case Barge, BargeBack:
+                    NamedCommands.registerCommand("AlignTo" + tagID.name(),
+                        PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, tagID)
+                            .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
                     break;
 
                 default:
                     NamedCommands.registerCommand("AlignTo" + tagID.name() + "Left",
-                            new PoseBasedAutoAlign(drivetrain, ReefPose.LEFT, leds,
-                                    tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.LEFT, leds, tagID)
+                            .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     NamedCommands.registerCommand("AlignTo" + tagID.name() + "Right",
-                            new PoseBasedAutoAlign(drivetrain, ReefPose.RIGHT, leds,
-                                    tagID).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, tagID)
+                            .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
                     NamedCommands.registerCommand("AUTONAlignTo" + tagID.name() + "Left",
-                            new AutonAutoAlign(drivetrain, ReefPose.LEFT, leds, rod,
-                                    tagID, () -> RodStates.L4).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.LEFT, leds, tagID)
+                            .withRodState(rod, () -> RodStates.L4)
+                            .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
                     NamedCommands.registerCommand("AUTONAlignTo" + tagID.name() + "Right",
-                            new AutonAutoAlign(drivetrain, ReefPose.RIGHT, leds, rod,
-                                    tagID, () -> RodStates.L4).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.RIGHT, leds, tagID)
+                            .withRodState(rod, () -> RodStates.L4)
+                            .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+                // test for algae
+                    // NamedCommands.registerCommand("AlignTo" + tagID.name() + "Middle",
+                    //     PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, Camera.MIDDLE, leds, tagID)
+                    //         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+
+                    // NamedCommands.registerCommand("OpAlignTo" + tagID.name() + "Middle",
+                    //         PoseBasedAutoAlign.getOtherAllianceLightningIDAutoAlign(drivetrain, Camera.MIDDLE, leds, tagID)
+                    //             .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
                     break;
             }
         }
 
-        NamedCommands.registerCommand("AutoAlignRange", new Command() {
-                @Override
-                public boolean isFinished() {
-                        return (PoseConstants.getScorePose(drivetrain.getPose()) == 0);
-                };
-        });
-
-        // test for algae
-        NamedCommands.registerCommand("AlignToFourMiddle",
-                new PoseBasedAutoAlign(drivetrain, ReefPose.MIDDLE, leds,
-                        LightningTagID.Four).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-        NamedCommands.registerCommand("AlignToFiveMiddle",
-                new PoseBasedAutoAlign(drivetrain, ReefPose.MIDDLE, leds,
-                        LightningTagID.Four).deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
-
-        NamedCommands.registerCommand("AlignToBarge",
-                new BargeAutoAlign(drivetrain, leds, rod)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+        NamedCommands.registerCommand("AutoAlignRange", new WaitUntilCommand(() -> PoseConstants.getScorePose(drivetrain.getPose()) != 0));
 
         NamedCommands.registerCommand("IntakeCoral",
                 new IntakeCoral(coralCollector, 1, CoralCollectorConstants.CORAL_HOLD_POWER));
@@ -478,7 +480,7 @@ public class RobotContainer extends LightningContainer {
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
         NamedCommands.registerCommand("RodInverseStow",
                 (new InstantCommand(() -> rod.setCoralMode(true)).alongWith(
-                        new InstantCommand(() -> rod.setState(RodStates.INVERSE_STOW), rod)))
+                        new InstantCommand(() -> rod.setState(RodStates.INVERSE_STOW))))
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
         NamedCommands.registerCommand("RodL1",
                 new SetRodState(rod, RodStates.L1)
@@ -507,6 +509,11 @@ public class RobotContainer extends LightningContainer {
         NamedCommands.registerCommand("RodSource",
                 new SetRodState(rod, RodStates.SOURCE)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
+
+        NamedCommands.registerCommand("DriveRight", drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(-2, 0.75, 0)).withTimeout(0.75));
+        NamedCommands.registerCommand("DriveBack", drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(0, 2, 0)).withTimeout(0.75));
+
+
 
         NamedCommands.registerCommand("SetCoralMode", new InstantCommand(() -> rod.setCoralMode(true)));
         NamedCommands.registerCommand("SetAlgaeMode", new InstantCommand(() -> rod.setCoralMode(false)));

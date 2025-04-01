@@ -67,15 +67,15 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "R4AG-Barge"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "SetAlgaeMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R4AG-Barge"
           }
         },
         {

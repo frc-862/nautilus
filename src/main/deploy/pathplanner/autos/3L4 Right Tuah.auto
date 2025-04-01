@@ -48,9 +48,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "R3-RSource"
+            "name": "DriveRight"
           }
         },
         {
@@ -102,15 +102,41 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "AutoAlignRange"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AUTONAlignToTwoLeft"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 5.0
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "RSource-R2L"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RodInverseStow"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -142,12 +168,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "ScoreCoral"
@@ -160,9 +180,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "R2-RSource"
+            "name": "DriveBack"
           }
         },
         {
@@ -214,34 +234,41 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "AutoAlignRange"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AUTONAlignToTwoRight"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 5.0
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "RSource-R2R"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "AUTONAlignToTwoRight"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RodInverseStow"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -251,12 +278,6 @@
           "type": "named",
           "data": {
             "name": "WaitOnTarget"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
           }
         },
         {

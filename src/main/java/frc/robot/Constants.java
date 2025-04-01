@@ -498,7 +498,7 @@ public class Constants {
     }
 
     public static class AutonomousConstants {
-        public static final PIDConstants TRANSLATION_PID = new PIDConstants(10, 0, 0);
+        public static final PIDConstants TRANSLATION_PID = new PIDConstants(50, 0, 0);
         public static final PIDConstants ROTATION_PID = new PIDConstants(5, 0, 0);
 
         private static final double TRACK_WIDTH = Units.inchesToMeters(27); // TODO: make more accurate
@@ -526,7 +526,7 @@ public class Constants {
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
         public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout
-                .loadField(AprilTagFields.k2025Reefscape);
+                .loadField(AprilTagFields.k2025ReefscapeWelded);
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
         public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, Math.PI);
@@ -556,10 +556,12 @@ public class Constants {
         public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
                 Units.feetToMeters(26.0));
 
+        public static final Pose2d RED_BARGE = new Pose2d(9.982, 1.621, new Rotation2d(Degrees.of(0)));
+
+        public static final Pose2d BLUE_BARGE = new Pose2d(7.625, 6.201, new Rotation2d(Degrees.of(-180)));
+
         public static HashMap<Tuple<VisionConstants.ReefPose, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.ReefPose, Integer>, Pose2d>() {
             {
-
-
                 // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 6), new Pose2d(13.5760436668043, 2.80494567916454, new Rotation2d(Degrees.of(-60))));
                 // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6), new Pose2d(13.8578483331957, 2.96764567916454, new Rotation2d(Degrees.of(-60))));
                 // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 7), new Pose2d(14.375498, 3.8632, new Rotation2d(Degrees.of(0))));
@@ -641,6 +643,14 @@ public class Constants {
                 // blue barge front
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 14),
                     new Pose2d(7.625, 6.201, new Rotation2d(Degrees.of(-180))));
+
+                //red barge back
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 15),
+                    new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
+
+                //blue barge back
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 4),
+                    new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
             }
 
         };
@@ -736,7 +746,8 @@ public class Constants {
             RightSource(2, 12),
             LeftSource(1, 13),
 
-            BargeFront(5, 14);
+            Barge(5, 14),
+            BargeBack(15, 4);
 
             public final int redID;
             public final int blueID;
@@ -1342,7 +1353,7 @@ public class Constants {
         public static final double TELE_ROT_TOLERANCE = 1.5;
         public static final double TELE_ROT_KS = 0; // 0.01 NOT APPLIED
 
-        public static final double DEPLOY_VEL = 0.2;
+        public static final double DEPLOY_VEL = 0.45; // 0.45
         public static final double BARGE_DEPLY_VEL = 0.25;
     }
 

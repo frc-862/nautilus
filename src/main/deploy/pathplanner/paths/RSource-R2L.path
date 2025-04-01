@@ -29,21 +29,7 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.8,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -59,16 +45,16 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 8.0,
-    "maxAcceleration": 8.0,
-    "maxAngularVelocity": 1000.0,
-    "maxAngularAcceleration": 1500.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 4.0,
-    "rotation": -118.30075576600638
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "RSource-Reef",
@@ -76,5 +62,5 @@
     "velocity": 2.0,
     "rotation": 54.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

@@ -3,60 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.041003622555865,
-        "y": 2.59518156424581
+        "x": 4.971204227042597,
+        "y": 2.7943667619587984
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.981240235013745,
-        "y": 1.7671536711569864
+        "x": 3.9799059990398042,
+        "y": 1.910304916637569
       },
       "isLocked": false,
       "linkedName": "Reef3Left"
     },
     {
       "anchor": {
-        "x": 1.9025840716655025,
-        "y": 1.2125982018156423
+        "x": 1.0887414747047526,
+        "y": 0.7442267843703246
       },
       "prevControl": {
-        "x": 3.5470334883061825,
-        "y": 1.5972074820744593
+        "x": 2.7331908913454326,
+        "y": 1.1288360646291418
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "GoodRightSource"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "SourceAndCollect",
-      "waypointRelativePos": 0.871235117537929,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "RodSource"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "IntuahCoral"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 4.0,
@@ -66,7 +41,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
+    "velocity": 4.0,
     "rotation": 54.0
   },
   "reversed": false,

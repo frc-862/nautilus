@@ -8,11 +8,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import java.time.Instant;
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -22,16 +18,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -40,22 +30,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.CoralCollectorConstants;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.LEDConstants;
-import frc.robot.Constants.PoseConstants;
-import frc.robot.Constants.RobotIdentifiers;
-import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.Constants.LEDConstants.LEDStates;
+import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.PoseConstants.LightningTagID;
-import frc.robot.Constants.PoseConstants.StowZone;
+import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.VisionConstants.ReefPose;
-import frc.robot.commands.CollectAlgae;
 import frc.robot.commands.CollectCoral;
-import frc.robot.commands.OldElevatorSync;
 import frc.robot.commands.ElevatorSyncStow;
 import frc.robot.commands.PoseBasedAutoAlign;
 import frc.robot.commands.SetRodState;
@@ -95,6 +80,7 @@ public class RobotContainer extends LightningContainer {
     private AlgaeCollector algaeCollector;
     private Climber climber;
 
+    @SuppressWarnings("unused")
     private SimGamePeices simGamePeices;
 
     private static XboxController driver;

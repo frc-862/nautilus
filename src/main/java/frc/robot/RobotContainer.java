@@ -278,7 +278,7 @@ public class RobotContainer extends LightningContainer {
                 .onTrue((new InstantCommand(() -> rod.setCoralMode(true))
                         .alongWith(new InstantCommand(
                                 () -> queuedRodState = RodStates.DEFAULT)))
-                        .andThen(new SetRodState(rod, RodStates.STOW).withStowZoneCheck(drivetrain::getCurrentStowZone)));
+                        .andThen(new SetRodState(rod, RodStates.STOW).withStowZoneCheck(drivetrain::getCurrentStowZone, drivetrain::getLastStowZone)));
 
         // Swap modes (TODO: add LED state notif)
         new Trigger(copilot::getBackButton)

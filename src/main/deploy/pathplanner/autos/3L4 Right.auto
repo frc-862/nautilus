@@ -270,19 +270,19 @@
         {
           "type": "named",
           "data": {
+            "name": "SetAlgaeMode"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "RodLow"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "IntakeAlgae"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DriveBack"
+            "name": "AlignToTwoMiddle"
           }
         }
       ]

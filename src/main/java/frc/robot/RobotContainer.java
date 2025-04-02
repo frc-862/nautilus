@@ -403,6 +403,7 @@ public class RobotContainer extends LightningContainer {
                 case Barge, BargeBack:
                     NamedCommands.registerCommand("AlignTo" + tagID.name(),
                         PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, ReefPose.RIGHT, leds, tagID)
+                            .withRodState(rod, () -> RodStates.BARGE)
                             .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
                     break;

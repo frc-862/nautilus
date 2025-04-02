@@ -363,10 +363,10 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
 
         // SYSID
-        new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
-        new Trigger(driver::getAButton).whileTrue(new SysIdSequence(drivetrain,
-                DrivetrainConstants.SysIdTestType.DRIVE));
-        new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() -> SignalLogger.stop()));
+        // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() -> SignalLogger.start()));
+        // new Trigger(driver::getAButton).whileTrue(new SysIdSequence(drivetrain,
+        //         DrivetrainConstants.SysIdTestType.DRIVE));
+        // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() -> SignalLogger.stop()));
 
     }
 

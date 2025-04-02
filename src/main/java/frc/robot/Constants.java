@@ -232,7 +232,7 @@ public class Constants {
                 put(RodStates.L1, 6d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -36d);
-                put(RodStates.L4, -45d);
+                put(RodStates.L4, -42d);
                 put(RodStates.LOW, -29d);
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);

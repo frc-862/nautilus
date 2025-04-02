@@ -65,7 +65,6 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 public class RobotContainer extends LightningContainer {
 
     public PowerDistribution pdh;
-    // public boolean allowPDHLeds = true;
 
     public Swerve drivetrain;
     public PhotonVision vision;
@@ -167,7 +166,7 @@ public class RobotContainer extends LightningContainer {
         /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
 
-        new Trigger(() -> elevator.isOverheating()).onTrue(new InstantCommand(() -> erroring = true)); 
+        new Trigger(() -> elevator.isOverheating()).onTrue(new InstantCommand(() -> erroring = true));
 
         new Trigger(() -> erroring && DriverStation.isDisabled())
                 .whileTrue(leds.strip.enableState(LEDStates.ERROR));
@@ -186,22 +185,6 @@ public class RobotContainer extends LightningContainer {
                 .whileTrue(leds.strip.enableState(LEDStates.READY_TO_ALIGN));
 
         new Trigger(() -> climber.getLimitSwitch()).whileTrue(leds.strip.enableState(LEDStates.CLIMBED));
-
-        /* PDH LED TRIGGERSS */
-        // if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
-        // // Allow the Rio userbutton to toggle the pdh leds
-        // new Trigger(RobotController::getUserButton).onTrue(new InstantCommand(() -> {
-        // allowPDHLeds = !allowPDHLeds;
-        // pdh.setSwitchableChannel(allowPDHLeds);
-        // }));
-
-        // // Turn off the PDH leds if the voltage ever dips below a certain value
-        // new Trigger(() -> pdh.getVoltage() < LEDConstants.PDH_LED_POWEROFF_VOLTAGE)
-        // .onTrue(new InstantCommand(() -> {
-        // allowPDHLeds = false;
-        // pdh.setSwitchableChannel(false);
-        // }));
-        // }
     }
 
     @Override

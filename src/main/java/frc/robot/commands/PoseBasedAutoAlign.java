@@ -36,9 +36,12 @@ public class PoseBasedAutoAlign extends Command {
 
     private double driveTolerance = AutoAlignConstants.TELE_DRIVE_TOLERANCE;
 
-    private PIDController xPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P, AutoAlignConstants.TELE_DRIVE_I, AutoAlignConstants.TELE_DRIVE_D);
-    private PIDController yPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P, AutoAlignConstants.TELE_DRIVE_I, AutoAlignConstants.TELE_DRIVE_D);
-    private PIDController rPID = new PIDController(AutoAlignConstants.TELE_ROT_P, AutoAlignConstants.TELE_ROT_I, AutoAlignConstants.TELE_ROT_D);
+    private PIDController xPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P, AutoAlignConstants.TELE_DRIVE_I,
+            AutoAlignConstants.TELE_DRIVE_D);
+    private PIDController yPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P, AutoAlignConstants.TELE_DRIVE_I,
+            AutoAlignConstants.TELE_DRIVE_D);
+    private PIDController rPID = new PIDController(AutoAlignConstants.TELE_ROT_P, AutoAlignConstants.TELE_ROT_I,
+            AutoAlignConstants.TELE_ROT_D);
 
     private boolean overrideYPID = false;
 
@@ -46,7 +49,7 @@ public class PoseBasedAutoAlign extends Command {
 
     protected boolean isWithY = true;
     protected DoubleSupplier yVelSupplier = () -> 0.0;
-    
+
     private FishingRod rod;
     private Supplier<RodStates> targetRodState;
     private boolean isWithRodState = false;
@@ -57,23 +60,23 @@ public class PoseBasedAutoAlign extends Command {
      * will always use PID Controllers
      *
      * @param drivetrain
-     * @param camera
      * @param leds
      */
     public PoseBasedAutoAlign(Swerve drivetrain, LEDs leds) {
         this.drivetrain = drivetrain;
         this.leds = leds;
-        
+
         addRequirements(drivetrain);
     }
 
     @Override
     public void initialize() {
-       LightningShuffleboard.setPose2d("TestAutoAlign", "Target Pose", targetPose);
+        LightningShuffleboard.setPose2d("TestAutoAlign", "Target Pose", targetPose);
 
-       hasDeployedRod = false;
+        hasDeployedRod = false;
 
-        xPID.setPID(AutoAlignConstants.AUTON_DRIVE_P, AutoAlignConstants.AUTON_DRIVE_I, AutoAlignConstants.AUTON_DRIVE_D);
+        xPID.setPID(AutoAlignConstants.AUTON_DRIVE_P, AutoAlignConstants.AUTON_DRIVE_I,
+                AutoAlignConstants.AUTON_DRIVE_D);
         yPID.setPID(xPID.getP(), xPID.getI(), xPID.getD());
 
         xPID.setTolerance(driveTolerance);
@@ -100,19 +103,21 @@ public class PoseBasedAutoAlign extends Command {
         }
 
         if (isWithRodState && rod != null) {
-            // if we've reached the threshold once, and we're below the threshold, deploy the ele
-            if (Math.abs(xVeloc) < AutoAlignConstants.DEPLOY_VEL && Math.abs(yVeloc) < AutoAlignConstants.DEPLOY_VEL && !hasDeployedRod) {
+            // if we've reached the threshold once, and we're below the threshold, deploy
+            // the ele
+            if (Math.abs(xVeloc) < AutoAlignConstants.DEPLOY_VEL && Math.abs(yVeloc) < AutoAlignConstants.DEPLOY_VEL
+                    && !hasDeployedRod) {
                 hasDeployedRod = true;
                 invokeRod();
             }
-       }
+        }
 
         drivetrain.setControl(DriveRequests.getAutoAlign(xVeloc, yVeloc, rotationVeloc));
 
         LightningShuffleboard.setDouble("TestAutoAlign", "X veloc", xVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "Y veloc", yVeloc);
         LightningShuffleboard.setDouble("TestAutoAlign", "R veloc", rotationVeloc);
-        
+
     }
 
     @Override
@@ -124,7 +129,7 @@ public class PoseBasedAutoAlign extends Command {
                     invokeRod();
                 }
             }
-            
+
         }
         if (!DriverStation.isAutonomous() && onTarget()) {
             RobotContainer.hapticDriverCommand().schedule();
@@ -185,21 +190,26 @@ public class PoseBasedAutoAlign extends Command {
     }
 
     /**
-     * Factory method to create a PoseBasedAutoAlign command for Lightning ID based auto-aligning.
+     * Factory method to create a PoseBasedAutoAlign command for Lightning ID based
+     * auto-aligning.
+     * 
      * @param drivetrain
      * @param reefPose
      * @param leds
      * @param tagID
-     * @return
+     * @return get the PoseBasedAutoAlign instance for Lightning ID based
+     *         auto-aligning
      */
-    public static PoseBasedAutoAlign getLightningIDAutoAlign(Swerve drivetrain, ReefPose reefPose, LEDs leds, LightningTagID tagID) {
-        return new PoseBasedAutoAlign(drivetrain, leds) 
-        {
+    public static PoseBasedAutoAlign getLightningIDAutoAlign(Swerve drivetrain, ReefPose reefPose, LEDs leds,
+            LightningTagID tagID) {
+        return new PoseBasedAutoAlign(drivetrain, leds) {
             @Override
             public void initialize() {
-                int ID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? tagID.redID : tagID.blueID;
+                int newId = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red
+                        ? tagID.redID
+                        : tagID.blueID;
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, newId));
 
                 super.initialize();
             }
@@ -207,21 +217,26 @@ public class PoseBasedAutoAlign extends Command {
     }
 
     /**
-     * Factory method to create a PoseBasedAutoAlign command for the other alliance's Lightning ID based auto-aligning.
+     * Factory method to create a PoseBasedAutoAlign command for the other
+     * alliance's Lightning ID based auto-aligning.
+     * 
      * @param drivetrain
      * @param reefPose
      * @param leds
      * @param tagID
-     * @return
+     * @return get the PoseBasedAutoAlign instance for the other alliance's
+     *         Lightning ID auto-aligning
      */
-    public static PoseBasedAutoAlign getOtherAllianceLightningIDAutoAlign(Swerve drivetrain, ReefPose reefPose, LEDs leds, LightningTagID tagID) {
-        return new PoseBasedAutoAlign(drivetrain, leds) 
-        {
+    public static PoseBasedAutoAlign getOtherAllianceLightningIDAutoAlign(Swerve drivetrain, ReefPose reefPose,
+            LEDs leds, LightningTagID tagID) {
+        return new PoseBasedAutoAlign(drivetrain, leds) {
             @Override
             public void initialize() {
-                int ID = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red ? tagID.blueID : tagID.redID;
+                int newId = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Red
+                        ? tagID.blueID
+                        : tagID.redID;
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, newId));
 
                 super.initialize();
             }
@@ -229,24 +244,25 @@ public class PoseBasedAutoAlign extends Command {
     }
 
     /**
-     * Factory method to create a PoseBasedAutoAlign command for the given drivetrain and reefPose.
+     * Factory method to create a PoseBasedAutoAlign command for the given
+     * drivetrain and reefPose.
+     * 
      * @param drivetrain
      * @param reefPose
      * @param leds
-     * @return
+     * @return PoseBasedAutoAlign instance for normal pose auto-aligning
      */
     public static PoseBasedAutoAlign getPoseAutoAlign(Swerve drivetrain, ReefPose reefPose, LEDs leds) {
-        return new PoseBasedAutoAlign(drivetrain, leds) 
-        {
+        return new PoseBasedAutoAlign(drivetrain, leds) {
             @Override
             public void initialize() {
-                int ID = PoseConstants.getScorePose(drivetrain.getPose());
-                if (ID == 0) {
+                int newId = PoseConstants.getScorePose(drivetrain.getPose());
+                if (newId == 0) {
                     CommandScheduler.getInstance().cancel(this);
                     return;
                 }
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, newId));
 
                 super.initialize();
             }
@@ -254,24 +270,25 @@ public class PoseBasedAutoAlign extends Command {
     }
 
     /**
-     * Factory method to create a PoseBasedAutoAlign command for L1 pose auto-aligning only.
+     * Factory method to create a PoseBasedAutoAlign command for L1 pose
+     * auto-aligning only.
+     * 
      * @param drivetrain
      * @param reefPose
      * @param leds
-     * @return
+     * @return PoseBasedAutoAlign instance for L1 pose auto-aligning
      */
     public static PoseBasedAutoAlign getL1PoseAutoAlign(Swerve drivetrain, ReefPose reefPose, LEDs leds) {
-        return new PoseBasedAutoAlign(drivetrain, leds) 
-        {
+        return new PoseBasedAutoAlign(drivetrain, leds) {
             @Override
             public void initialize() {
-                int ID = PoseConstants.getScorePose(drivetrain.getPose());
-                if (ID == 0) {
+                int newId = PoseConstants.getScorePose(drivetrain.getPose());
+                if (newId == 0) {
                     CommandScheduler.getInstance().cancel(this);
                     return;
                 }
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, ID));
+                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, newId));
 
                 super.initialize();
             }
@@ -280,9 +297,10 @@ public class PoseBasedAutoAlign extends Command {
 
     /**
      * Method to add a rod state based on deplyVelocity when we are almost there
+     * 
      * @param rod
      * @param state
-     * @return
+     * @return PoseBasedAutoAlign instance with the rod state set for deployment
      */
     public PoseBasedAutoAlign withRodState(FishingRod rod, Supplier<RodStates> state) {
         this.rod = rod; // set the fishing rod subsystem
@@ -297,8 +315,10 @@ public class PoseBasedAutoAlign extends Command {
 
     /**
      * Disables the Y Pid and overrides it with yVelSupplier
+     * 
      * @param yVelSupplier
-     * @return
+     * @return PoseBasedAutoAlign instance with the Y PID disabled and overridden by
+     *         the provided yVelSupplier
      */
     public PoseBasedAutoAlign withYControl(DoubleSupplier yVelSupplier) {
         this.yVelSupplier = yVelSupplier;
@@ -309,8 +329,9 @@ public class PoseBasedAutoAlign extends Command {
 
     /**
      * Override the rotation P gain
+     * 
      * @param p
-     * @return
+     * @return new PoseBasedAutoAlign instance with the updated rotation P gain
      */
     public PoseBasedAutoAlign setRotationP(double p) {
         rPID.setP(p);

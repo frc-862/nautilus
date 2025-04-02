@@ -278,7 +278,7 @@ public class RobotContainer extends LightningContainer {
                 .onTrue((new InstantCommand(() -> rod.setCoralMode(true))
                         .alongWith(new InstantCommand(
                                 () -> queuedRodState = RodStates.DEFAULT)))
-                        .andThen(new SetRodState(rod, RodStates.STOW).withStowZoneCheck(drivetrain::getCurrentStowZone)));
+                        .andThen(new SetRodState(rod, RodStates.STOW).withStowZoneCheck(drivetrain::getCurrentStowZone, drivetrain::getLastStowZone)));
 
         // Swap modes (TODO: add LED state notif)
         new Trigger(copilot::getBackButton)
@@ -403,6 +403,7 @@ public class RobotContainer extends LightningContainer {
                 case Barge, BargeBack:
                     NamedCommands.registerCommand("AlignTo" + tagID.name(),
                         PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, ReefPose.RIGHT, leds, tagID)
+                            .withRodState(rod, () -> RodStates.BARGE)
                             .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
                     break;
@@ -486,9 +487,10 @@ public class RobotContainer extends LightningContainer {
                         .alongWith(new SetRodState(rod, RodStates.HIGH)))
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
         NamedCommands.registerCommand("RodLow",
-                (new InstantCommand(() -> rod.setCoralMode(false))
-                        .alongWith(new SetRodState(rod, RodStates.LOW)))
-                        .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
+                (new InstantCommand(() -> {
+                    rod.setCoralMode(false);
+                    rod.setState(RodStates.LOW);
+                }).deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING))));
         NamedCommands.registerCommand("RodProcessor",
                 (new InstantCommand(() -> rod.setCoralMode(false))
                         .alongWith(new SetRodState(rod, RodStates.PROCESSOR)))

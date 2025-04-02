@@ -3,64 +3,52 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.812477735702889,
-        "y": 3.87716234986475
+        "x": 7.192850554611631,
+        "y": 5.312525814402172
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.2620421599506555,
-        "y": 4.044540513755284
+        "x": 8.188001930426484,
+        "y": 5.303915629717271
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Barge"
     },
     {
       "anchor": {
-        "x": 6.203039886209138,
-        "y": 4.0257973383165195
+        "x": 10.349585223770955,
+        "y": 5.616
       },
       "prevControl": {
-        "x": 5.753416439388824,
-        "y": 3.8606118437695875
+        "x": 9.639234170818057,
+        "y": 5.630710826473652
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "BargeBack"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "RodLow",
-      "waypointRelativePos": 0.14837737487087566,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "RodLow"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 1.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.5,
+    "rotation": -179.44374777291927
   },
   "reversed": false,
   "folder": "Algae Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": false
 }

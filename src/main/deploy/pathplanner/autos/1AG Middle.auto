@@ -11,7 +11,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToFourLeft"
+                  "name": "AlignToFourRight"
                 }
               },
               {
@@ -36,6 +36,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "SetAlgaeMode"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "R4AG-SMidTeehee"
@@ -54,7 +60,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 6.0
                 }
               },
               {
@@ -64,18 +70,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetAlgaeMode"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "R4AG-Barge"
           }
         },
         {
@@ -124,7 +118,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

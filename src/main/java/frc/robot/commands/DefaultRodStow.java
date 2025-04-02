@@ -47,6 +47,11 @@ public class DefaultRodStow extends Command {
             return;
         }
 
+        // Return if algae mode
+        if (!rod.isCoralMode()) {
+            return;
+        }
+
         // Return if we are not in either stow position
         if (rod.getState() != RodStates.STOW && rod.getState() != RodStates.INVERSE_STOW) {
             return;

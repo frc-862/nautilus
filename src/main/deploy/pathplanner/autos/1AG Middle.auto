@@ -36,6 +36,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "SetAlgaeMode"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "R4AG-SMidTeehee"
@@ -67,12 +73,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "R4AG-Barge"
-          }
-        },
-        {
           "type": "race",
           "data": {
             "commands": [
@@ -95,12 +95,6 @@
           "type": "named",
           "data": {
             "name": "WaitOnTarget"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetAlgaeMode"
           }
         },
         {

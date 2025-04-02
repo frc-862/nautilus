@@ -153,9 +153,9 @@ public class PoseBasedAutoAlign extends Command {
 
         if (targetRodState.get() == RodStates.L4) {
             rod.setState(RodStates.L4, RodTransitionStates.CORAL_SAFE_ZONE);
-        } //else {
-        //     rod.setState(targetRodState.get());
-        // }
+        } else {
+            rod.setState(targetRodState.get());
+        }
     }
 
     @SuppressWarnings("unused")

@@ -611,7 +611,7 @@ public class Constants {
 
 
                 //R4AG
-                put(new Tuple<ReefPose,Integer>(VisionConstants.ReefPose.MIDDLE, 10), new Pose2d(11.758, 4.020, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<ReefPose,Integer>(VisionConstants.ReefPose.MIDDLE, 10), new Pose2d(11.800, 4.020, new Rotation2d(Degrees.of(180))));
                 put(new Tuple<ReefPose,Integer>(VisionConstants.ReefPose.MIDDLE, 21), new Pose2d(5.759, 4.020, new Rotation2d(Degrees.of(0))));
                 //R5AG
                 put(new Tuple<ReefPose,Integer>(VisionConstants.ReefPose.MIDDLE, 11), new Pose2d(12.403, 2.880, new Rotation2d(Degrees.of(-120))));

@@ -9,13 +9,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.FishingRod;
 
 public class ElevatorSyncStow extends Command {
 
     private Elevator elevator;
+    private FishingRod rod;
 
-    public ElevatorSyncStow(Elevator elevator) {
+    public ElevatorSyncStow(Elevator elevator, FishingRod rod) {
         this.elevator = elevator;
+        this.rod = rod;
 
         addRequirements(elevator);
     }
@@ -31,6 +34,12 @@ public class ElevatorSyncStow extends Command {
     public void execute() {
         // move down until we hit current limit
         elevator.setPower(ElevatorConstants.BOTTOM_RAW_POWER);
+
+        if (rod.getCurrentCommand() != null && rod.getDefaultCommand() != null) {
+            if (!rod.getCurrentCommand().getClass().equals(rod.getDefaultCommand().getClass())) {
+                cancel();
+            }
+        }
     }
 
     @Override
@@ -40,6 +49,8 @@ public class ElevatorSyncStow extends Command {
         if (!interrupted && DriverStation.isEnabled()) {
             elevator.setEncoder(0d);
             elevator.setState(RodStates.STOW);
+        } else {
+            elevator.stop();
         }
     }
 

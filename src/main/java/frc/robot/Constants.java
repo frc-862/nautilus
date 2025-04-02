@@ -1,7 +1,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Inches;
@@ -93,10 +92,10 @@ public class Constants {
 
     public static class EncoderConstants {
         // Nautilus values
-        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.24853515625);
-        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(-0.147216796875);
-        private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(-0.046875);
-        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.427490234375);
+        private static final Angle nautilusKFrontLeftEncoderOffset = Rotations.of(0.252685546875);
+        private static final Angle nautilusKFrontRightEncoderOffset = Rotations.of(0.408203125);
+        private static final Angle nautilusKBackLeftEncoderOffset = Rotations.of(-0.031494140625);
+        private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.427978515625);
 
         // Triton values
         private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);
@@ -105,7 +104,7 @@ public class Constants {
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
         public static final double tritonWristOffset = -0.227;
-        public static final double nautilusWristOffset = 0.7646484375;
+        public static final double nautilusWristOffset = 0.75586;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
@@ -232,7 +231,7 @@ public class Constants {
                 put(RodStates.L1, 6d);
                 put(RodStates.L2, -30d);
                 put(RodStates.L3, -36d);
-                put(RodStates.L4, -45d);
+                put(RodStates.L4, -42d);
                 put(RodStates.LOW, -29d);
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
@@ -386,7 +385,8 @@ public class Constants {
 
         // 2.5 constants
         public static final boolean INVERTED = true;
-        public static final double COLLECTED_CURRENT = 40d; //40
+        public static final double CORAL_COLLECTED_CURRENT = 40d; //40
+        public static final double ALGAE_COLLECTED_CURRENT = 70d; //40
         public static final double CORAL_HOLD_POWER = 0.07d;
         public static final double ALGAE_HOLD_POWER = 0.2d;
     }
@@ -498,7 +498,7 @@ public class Constants {
     }
 
     public static class AutonomousConstants {
-        public static final PIDConstants TRANSLATION_PID = new PIDConstants(10, 0, 0);
+        public static final PIDConstants TRANSLATION_PID = new PIDConstants(50, 0, 0);
         public static final PIDConstants ROTATION_PID = new PIDConstants(5, 0, 0);
 
         private static final double TRACK_WIDTH = Units.inchesToMeters(27); // TODO: make more accurate
@@ -526,7 +526,7 @@ public class Constants {
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
         public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout
-                .loadField(AprilTagFields.k2025Reefscape);
+                .loadField(AprilTagFields.k2025ReefscapeWelded);
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
         public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, Math.PI);
@@ -535,13 +535,9 @@ public class Constants {
         public static final Transform3d robotRightToCamera = new Transform3d(
                 new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
-        
+        // MIDDLE is only used for algae on the reef!!
         public enum ReefPose {
             LEFT, RIGHT, MIDDLE
-        }
-
-        public enum Camera {
-            LEFT, RIGHT
         }
 
         public static final double VISION_X_STDEV = 1;
@@ -554,37 +550,13 @@ public class Constants {
         static final double blueRedTransform = 8.575;
 
         public static final Translation2d FIELD_LIMIT = new Translation2d(Units.feetToMeters(54.0),
-                Units.feetToMeters(26.0));
+                Units.feetToMeters(26.0)); // This is WRONG!!!! This should be 57 feet! but im not going to change it now :)
+
+        public static final Pose2d RED_BARGE = new Pose2d(9.982, 1.621, new Rotation2d(Degrees.of(0)));
+        public static final Pose2d BLUE_BARGE = new Pose2d(7.625, 6.201, new Rotation2d(Degrees.of(-180)));
 
         public static HashMap<Tuple<VisionConstants.ReefPose, Integer>, Pose2d> poseHashMap = new HashMap<Tuple<VisionConstants.ReefPose, Integer>, Pose2d>() {
             {
-
-
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 6), new Pose2d(13.5760436668043, 2.80494567916454, new Rotation2d(Degrees.of(-60))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 6), new Pose2d(13.8578483331957, 2.96764567916454, new Rotation2d(Degrees.of(-60))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 7), new Pose2d(14.375498, 3.8632, new Rotation2d(Degrees.of(0))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 7), new Pose2d(14.375498, 4.1886, new Rotation2d(Degrees.of(0))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 8), new Pose2d(13.8578483331957, 5.08415432083545, new Rotation2d(Degrees.of(60))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 8), new Pose2d(13.5760436668043, 5.24685432083545, new Rotation2d(Degrees.of(60))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 9), new Pose2d(12.5417603331957, 5.24685432083545, new Rotation2d(Degrees.of(120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 9), new Pose2d(12.2599556668043, 5.08415432083545, new Rotation2d(Degrees.of(120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 10), new Pose2d(11.7423059999999, 4.1886, new Rotation2d(Degrees.of(180))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 10), new Pose2d(11.7423059999999, 3.8632, new Rotation2d(Degrees.of(180))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 11), new Pose2d(12.2599556668043, 2.96764567916454, new Rotation2d(Degrees.of(-120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 11), new Pose2d(12.5417603331957, 2.80494567916454, new Rotation2d(Degrees.of(-120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 17), new Pose2d(3.97230833319572, 2.80494567916454, new Rotation2d(Degrees.of(-120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 17), new Pose2d(3.69050366680426, 2.96764567916454, new Rotation2d(Degrees.of(-120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 18), new Pose2d(3.1726, 3.8632, new Rotation2d(Degrees.of(180))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 18), new Pose2d(3.1726, 4.1886, new Rotation2d(Degrees.of(180))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 19), new Pose2d(3.69050366680426, 5.08415432083545, new Rotation2d(Degrees.of(120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 19), new Pose2d(3.97230833319572, 5.24685432083545, new Rotation2d(Degrees.of(120))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 20), new Pose2d(5.00633766680426, 5.24685432083545, new Rotation2d(Degrees.of(60))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 20), new Pose2d(5.28814233319572, 5.08415432083545, new Rotation2d(Degrees.of(60))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 21), new Pose2d(5.806046, 4.1886, new Rotation2d(Degrees.of(0))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 21), new Pose2d(5.806046, 3.8632, new Rotation2d(Degrees.of(0))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.LEFT, 22), new Pose2d(5.28814233319572, 2.96764567916454, new Rotation2d(Degrees.of(-60))));
-                // put(new Tuple<Camera, Integer>(VisionConstants.Camera.RIGHT, 22), new Pose2d(5.00633766680426, 2.80494567916454, new Rotation2d(Degrees.of(-60))));
-
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 6), new Pose2d(13.5635436668043, 2.82659631425915, new Rotation2d(Degrees.of(-60))));
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.LEFT, 6), new Pose2d(13.8453483331957, 2.98929631425915, new Rotation2d(Degrees.of(-60))));
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 7), new Pose2d(14.350498, 3.8632, new Rotation2d(Degrees.of(0))));
@@ -610,18 +582,23 @@ public class Constants {
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.LEFT, 22), new Pose2d(5.27564233319572, 2.98929631425915, new Rotation2d(Degrees.of(-60))));
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 22), new Pose2d(4.99383766680426, 2.82659631425915, new Rotation2d(Degrees.of(-60))));
 
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 6), new Pose2d(13.689446, 2.93392707637268, new Rotation2d(Degrees.of(-60))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 7), new Pose2d(14.320498, 4.0259, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 8), new Pose2d(13.689446, 5.11787292362731, new Rotation2d(Degrees.of(60))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 9), new Pose2d(12.428358, 5.11787292362731, new Rotation2d(Degrees.of(120))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 10), new Pose2d(11.7973059999999, 4.0259, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 11), new Pose2d(12.428358, 2.93392707637268, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 17), new Pose2d(3.85890599999999, 2.93392707637268, new Rotation2d(Degrees.of(-120))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 18), new Pose2d(3.2276, 4.0259, new Rotation2d(Degrees.of(180))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 19), new Pose2d(3.85890599999999, 5.11787292362731, new Rotation2d(Degrees.of(120))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 20), new Pose2d(5.11973999999999, 5.11787292362731, new Rotation2d(Degrees.of(60))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 21), new Pose2d(5.751046, 4.0259, new Rotation2d(Degrees.of(0))));
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.MIDDLE, 22), new Pose2d(5.11973999999999, 2.93392707637268, new Rotation2d(Degrees.of(-60))));
 
-                //R4AG
-                put(new Tuple<ReefPose,Integer>(VisionConstants.ReefPose.MIDDLE, 10), new Pose2d(11.758, 4.021, new Rotation2d(Degrees.of(180))));
-                put(new Tuple<ReefPose,Integer>(VisionConstants.ReefPose.MIDDLE, 21), new Pose2d(5.781, 4.021, new Rotation2d(Degrees.of(0))));
-                //R5AG
-                put(new Tuple<ReefPose,Integer>(VisionConstants.ReefPose.MIDDLE, 11), new Pose2d(12.403, 2.880, new Rotation2d(Degrees.of(-120))));
-                put(new Tuple<ReefPose,Integer>(VisionConstants.ReefPose.MIDDLE, 20), new Pose2d(5.143, 5.164, new Rotation2d(Degrees.of(60))));
-
+                
                 //red right source
                 put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 2),
                         new Pose2d(16.486, 7.263, new Rotation2d(Degrees.of(-126))));
-
                 //red left source
                 put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 1),
                         new Pose2d(16.518, 0.757, new Rotation2d(Degrees.of(126))));
@@ -629,7 +606,6 @@ public class Constants {
                 //blue left source
                 put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 13),
                         new Pose2d(1.070, 7.236, new Rotation2d(Degrees.of(-54))));
-
                 //blue right source
                 put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 12),
                         new Pose2d(1.089, 0.744, new Rotation2d(Degrees.of(54))));
@@ -637,65 +613,22 @@ public class Constants {
                 // red barge front
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 5),
                     new Pose2d(9.982, 1.621, new Rotation2d(Degrees.of(0))));
-
                 // blue barge front
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 14),
-                    new Pose2d(7.625, 6.201, new Rotation2d(Degrees.of(-180))));
+                    new Pose2d(7.625, 5.5, new Rotation2d(Degrees.of(-180))));
+
+                // red barge back
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 15),
+                    new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
+                // blue barge back
+                put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 4),
+                    new Pose2d(10.034, 6.009, new Rotation2d(Degrees.of(0))));
             }
 
         };
 
         public static HashMap<Tuple<VisionConstants.ReefPose, Integer>, Pose2d> l1PoseHashMap = new HashMap<Tuple<VisionConstants.ReefPose, Integer>, Pose2d>() {
         {
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 6),
-                //         new Pose2d(13.869, 2.845, new Rotation2d(Degrees.of(150))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 6),
-                //         new Pose2d(13.749, 2.725, new Rotation2d(Degrees.of(90))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 7),
-                //         new Pose2d(14.545, 4.048, new Rotation2d(Degrees.of(-150))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 7),
-                //         new Pose2d(14.560, 4.002, new Rotation2d(Degrees.of(150))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 8),
-                //         new Pose2d(13.809, 5.310, new Rotation2d(Degrees.of(-90))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 8),
-                //         new Pose2d(13.824, 5.250, new Rotation2d(Degrees.of(-150))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 9),
-                //         new Pose2d(12.216, 5.235, new Rotation2d(Degrees.of(-30))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 9),
-                //         new Pose2d(12.441, 5.325, new Rotation2d(Degrees.of(-90))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 10),
-                //         new Pose2d(11.621, 3.966, new Rotation2d(Degrees.of(30))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 10),
-                //         new Pose2d(11.562, 4.099, new Rotation2d(Degrees.of(-30))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 11),
-                //         new Pose2d(12.377, 2.721, new Rotation2d(Degrees.of(90))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 11),
-                //         new Pose2d(12.273, 2.765, new Rotation2d(Degrees.of(30))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 17),
-                //         new Pose2d(3.661, 2.765, new Rotation2d(Degrees.of(30))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 17),
-                //         new Pose2d(3.824, 2.721, new Rotation2d(Degrees.of(90))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 18),
-                //         new Pose2d(3.068, 4.040, new Rotation2d(Degrees.of(-30))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 18),
-                //         new Pose2d(3.024, 3.921, new Rotation2d(Degrees.of(30))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 19),
-                //         new Pose2d(3.795, 5.329, new Rotation2d(Degrees.of(-90))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 19),
-                //         new Pose2d(3.809, 5.300, new Rotation2d(Degrees.of(-30))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 20),
-                //         new Pose2d(5.262, 5.240, new Rotation2d(Degrees.of(-150))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 20),
-                //         new Pose2d(5.129, 5.329, new Rotation2d(Degrees.of(-90))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 21),
-                //         new Pose2d(5.974, 3.892, new Rotation2d(Degrees.of(150))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 21),
-                //         new Pose2d(5.914, 3.995, new Rotation2d(Degrees.of(-150))));
-                // put(new Tuple<>(VisionConstants.Camera.LEFT, 22),
-                //         new Pose2d(5.173, 2.750, new Rotation2d(Degrees.of(90))));
-                // put(new Tuple<>(VisionConstants.Camera.RIGHT, 22),
-                //         new Pose2d(5.321, 2.810, new Rotation2d(Degrees.of(150))));
-
                 // mathematically deduced ones
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.LEFT, 6), new Pose2d(13.7168434596216, 2.68647328430983, new Rotation2d(Degrees.of(-90))));
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 6), new Pose2d(13.8900485403784, 2.78647328430983, new Rotation2d(Degrees.of(-30))));
@@ -736,7 +669,8 @@ public class Constants {
             RightSource(2, 12),
             LeftSource(1, 13),
 
-            BargeFront(5, 14);
+            Barge(5, 14),
+            BargeBack(15, 4);
 
             public final int redID;
             public final int blueID;
@@ -744,6 +678,21 @@ public class Constants {
                 this.redID = redID;
                 this.blueID = blueID;
             }
+        }
+
+        public static final Pose2d CENTER_REEF_RED = new Pose2d(13.058, 4.025, new Rotation2d(0));
+        public static final Pose2d CENTER_REEF_BLUE = new Pose2d(4.482, 4.025, new Rotation2d(0));
+
+        public enum StowZone {
+            REEF(1.75d),
+            SAFE(4.2d),
+            SOURCE(10d);
+
+            public final double radius; // In Meters
+            StowZone(double radius) {
+                this.radius = radius;
+            }
+
         }
 
         public static final PathConstraints PATHFINDING_CONSTRAINTS = new PathConstraints(2.0, 1.0, 3.0, 1.5);
@@ -847,8 +796,10 @@ public class Constants {
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                .withKP(0.6507).withKI(0).withKD(0)
-                .withKS(0.33986).withKV(0.12318).withKA(0.0059707);
+                .withKP(0.1751).withKI(0).withKD(0)
+                .withKS(0.057834).withKV(0.12065).withKA(0.020309);
+                // .withKP(0.6507).withKI(0).withKD(0)
+                // .withKS(0.33986).withKV(0.12318).withKA(0.0059707);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
@@ -1305,7 +1256,7 @@ public class Constants {
         public static final double AUTON_DRIVE_P = 0.8d;
         public static final double AUTON_DRIVE_I = 0;
         public static final double AUTON_DRIVE_D = 0.035;
-        public static final double AUTON_DRIVE_KS = 0.1;
+        public static final double AUTON_DRIVE_KS = 0;//0.1;
 
         public static final double AUTON_ROT_P = 0.03d;
         public static final double AUTON_ROT_I = 0;
@@ -1317,7 +1268,7 @@ public class Constants {
         public static final double TELE_DRIVE_I = 0;
         public static final double TELE_DRIVE_D = 0.08;
         public static final double TELE_DRIVE_TOLERANCE = 0.025;
-        public static final double TELE_DRIVE_KS = 0.08;
+        public static final double TELE_DRIVE_KS = 0;//0.08;
 
         public static final double TELE_ROT_P = 0.03;
         public static final double TELE_ROT_I = 0;
@@ -1325,7 +1276,7 @@ public class Constants {
         public static final double TELE_ROT_TOLERANCE = 1.5;
         public static final double TELE_ROT_KS = 0; // 0.01 NOT APPLIED
 
-        public static final double DEPLOY_VEL = 0.2;
+        public static final double DEPLOY_VEL = 0.2; // 0.45
         public static final double BARGE_DEPLY_VEL = 0.25;
     }
 

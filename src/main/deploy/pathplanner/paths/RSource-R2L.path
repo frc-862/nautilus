@@ -3,73 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5262354333973462,
-        "y": 0.8709418099685752
+        "x": 1.0887414747047526,
+        "y": 0.7442267843703246
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4545029485914993,
-        "y": 1.794608416248873
+        "x": 1.5712336910415092,
+        "y": 1.6381755671732172
       },
       "isLocked": false,
-      "linkedName": "RightSRC"
+      "linkedName": "GoodRightSource"
     },
     {
       "anchor": {
-        "x": 3.841998734287709,
-        "y": 2.57242574851606
+        "x": 3.6908361486486485,
+        "y": 2.928125
       },
       "prevControl": {
-        "x": 3.4442116980900463,
-        "y": 1.9586342273186745
+        "x": 3.3361106125577926,
+        "y": 2.685309859292529
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Reef1Left"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.6511962748838769,
-      "rotationDegrees": -119.99999999999999
-    }
-  ],
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.7630794986263736,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "rotationTargets": [],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "RodStow",
-      "waypointRelativePos": 0.11267170329670316,
+      "name": "RodInverseStow",
+      "waypointRelativePos": 0.14617940199335536,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "RodStow"
-        }
-      }
-    },
-    {
-      "name": "RodL4",
-      "waypointRelativePos": 0.8679515796703302,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "RodL4"
+          "name": "RodInverseStow"
         }
       }
     }
@@ -83,13 +53,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
+    "velocity": 4.0,
     "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "RSource-Reef",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 54.0
   },
   "useDefaultConstraints": true

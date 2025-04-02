@@ -5,19 +5,18 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
+
 import java.io.IOException;
+
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.Constants.RobotIdentifiers;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
-import frc.robot.Constants.FishingRodConstants.RodStates;
+import frc.robot.Constants.RobotIdentifiers;
 import frc.thunder.LightningRobot;
 
 public class Robot extends LightningRobot {
@@ -34,13 +33,12 @@ public class Robot extends LightningRobot {
     public void robotInit() {
         super.robotInit();
 
-        // WebServer.start(5800, Filesystem.getDeployDirectory().getPath() +
-        // "/elastic");
-
-        try {
-            Process process = Runtime.getRuntime().exec("ssh pi@10.8.62.15 sudo systemctl restart photonvision");
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (Robot.isReal()) {
+            try {
+                Runtime.getRuntime().exec("ssh pi@10.8.62.15 sudo systemctl restart photonvision");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -55,7 +53,7 @@ public class Robot extends LightningRobot {
         if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
             ledCmd = new RepeatCommand(
                     new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel()))
-                            .alongWith(new WaitCommand(0.15)));
+                            .alongWith(new WaitCommand(0.35)));
             ledCmd.schedule();
         }
     }
@@ -71,7 +69,7 @@ public class Robot extends LightningRobot {
         if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
             ledCmd = new RepeatCommand(
                     new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel()))
-                            .alongWith(new WaitCommand(0.35)));
+                            .alongWith(new WaitCommand(0.15)));
             ledCmd.schedule();
         }
     }

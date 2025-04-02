@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6908361486486485,
-        "y": 2.928125
+        "x": 7.192850554611631,
+        "y": 5.312525814402172
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3850209644656877,
-        "y": 2.782398415677375
+        "x": 8.188001930426484,
+        "y": 5.303915629717271
       },
       "isLocked": false,
-      "linkedName": "Reef1Left"
+      "linkedName": "Barge"
     },
     {
       "anchor": {
-        "x": 1.0887414747047526,
-        "y": 0.7442267843703246
+        "x": 10.349585223770955,
+        "y": 5.616
       },
       "prevControl": {
-        "x": 2.0988379852669032,
-        "y": 1.4722213941817768
+        "x": 9.639234170818057,
+        "y": 5.630710826473652
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "GoodRightSource"
+      "linkedName": "BargeBack"
     }
   ],
   "rotationTargets": [],
@@ -33,22 +33,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": 54.0
+    "velocity": 0.5,
+    "rotation": -179.44374777291927
   },
   "reversed": false,
-  "folder": "RSource-Reef",
+  "folder": "Algae Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

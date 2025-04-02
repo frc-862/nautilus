@@ -36,12 +36,12 @@ public class PoseBasedAutoAlign extends Command {
 
     private double driveTolerance = AutoAlignConstants.TELE_DRIVE_TOLERANCE;
 
-    private PIDController xPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P, AutoAlignConstants.TELE_DRIVE_I,
-            AutoAlignConstants.TELE_DRIVE_D);
-    private PIDController yPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P, AutoAlignConstants.TELE_DRIVE_I,
-            AutoAlignConstants.TELE_DRIVE_D);
-    private PIDController rPID = new PIDController(AutoAlignConstants.TELE_ROT_P, AutoAlignConstants.TELE_ROT_I,
-            AutoAlignConstants.TELE_ROT_D);
+    private PIDController xPID = new PIDController(AutoAlignConstants.AUTON_DRIVE_P, AutoAlignConstants.AUTON_DRIVE_I,
+            AutoAlignConstants.AUTON_DRIVE_D);
+    private PIDController yPID = new PIDController(AutoAlignConstants.AUTON_DRIVE_P, AutoAlignConstants.AUTON_DRIVE_I,
+            AutoAlignConstants.AUTON_DRIVE_D);
+    private PIDController rPID = new PIDController(AutoAlignConstants.AUTON_ROT_P, AutoAlignConstants.AUTON_ROT_I,
+            AutoAlignConstants.AUTON_ROT_D);
 
     private boolean overrideYPID = false;
 

@@ -245,7 +245,7 @@ public class RobotContainer extends LightningContainer {
         // BARGE Autoalign
         new Trigger(driver::getBButton)
                 .whileTrue(PoseBasedAutoAlign.getLightningIDAutoAlign(drivetrain, ReefPose.RIGHT, leds, LightningTagID.Barge)
-                        .withYControl(() -> driver.getLeftY())
+                        .withYControl(() -> -driver.getLeftX())
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // source autoalign

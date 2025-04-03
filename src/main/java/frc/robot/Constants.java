@@ -229,8 +229,8 @@ public class Constants {
                 put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
                 put(RodStates.INVERSE_STOW, -70d); // Lower angle is safer for nautilus
                 put(RodStates.L1, 6d);
-                put(RodStates.L2, -30d);
-                put(RodStates.L3, -36d);
+                put(RodStates.L2, -30d); // -30
+                put(RodStates.L3, -36d); // -36
                 put(RodStates.L4, -42d);
                 put(RodStates.LOW, -29d);
                 put(RodStates.HIGH, -29d);
@@ -245,8 +245,8 @@ public class Constants {
                 put(RodStates.STOW, 2d);
                 put(RodStates.INVERSE_STOW, 4d);
                 put(RodStates.L1, 2d);
-                put(RodStates.L2, 13.5d);
-                put(RodStates.L3, 26d);
+                put(RodStates.L2, 14d);
+                put(RodStates.L3, 26.5d);
                 put(RodStates.L4, 46.25d);
                 put(RodStates.LOW, 15d);
                 put(RodStates.HIGH, 28d);
@@ -598,17 +598,17 @@ public class Constants {
                 
                 //red right source
                 put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 2),
-                        new Pose2d(16.486, 7.263, new Rotation2d(Degrees.of(-126))));
+                        new Pose2d(16.676, 7.536, new Rotation2d(Degrees.of(-126))));
                 //red left source
                 put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 1),
-                        new Pose2d(16.518, 0.757, new Rotation2d(Degrees.of(126))));
+                        new Pose2d(16.740, 0.523, new Rotation2d(Degrees.of(126))));
 
                 //blue left source
                 put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 13),
-                        new Pose2d(1.070, 7.236, new Rotation2d(Degrees.of(-54))));
+                        new Pose2d(0.918, 7.539, new Rotation2d(Degrees.of(-54))));
                 //blue right source
                 put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 12),
-                        new Pose2d(1.089, 0.744, new Rotation2d(Degrees.of(54))));
+                        new Pose2d(0.880, 0.494, new Rotation2d(Degrees.of(54))));
 
                 // red barge front
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 5),
@@ -1253,9 +1253,9 @@ public class Constants {
     public class AutoAlignConstants {
         
         // auton gains for posebased (if needed)
-        public static final double AUTON_DRIVE_P = 0.8d;
+        public static final double AUTON_DRIVE_P = 1.5d; //0.8
         public static final double AUTON_DRIVE_I = 0;
-        public static final double AUTON_DRIVE_D = 0.035;
+        public static final double AUTON_DRIVE_D = 0.08; // 0.035
         public static final double AUTON_DRIVE_KS = 0;//0.1;
 
         public static final double AUTON_ROT_P = 0.03d;

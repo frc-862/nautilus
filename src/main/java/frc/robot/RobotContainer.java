@@ -150,8 +150,7 @@ public class RobotContainer extends LightningContainer {
                 () -> MathUtil.applyDeadband(
                         copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis(),
                         CoralCollectorConstants.COLLECTOR_DEADBAND),
-                rod::isCoralMode, () -> rod.getState() == RodStates.L1 || rod.getState() == RodStates.L2
-                        || rod.getState() == RodStates.L3));
+                rod::isCoralMode, () -> rod.getState() == RodStates.L1));
 
         // COPILOT CLIMB
         climber.setDefaultCommand(new RunCommand(

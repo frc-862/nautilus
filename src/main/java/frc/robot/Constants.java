@@ -246,9 +246,9 @@ public class Constants {
                 put(RodStates.INVERSE_STOW, 4d);
                 put(RodStates.L1, 2d);
                 put(RodStates.L2, 14d);
-                put(RodStates.L3, 26.5d);
+                put(RodStates.L3, 27d); // 26.5
                 put(RodStates.L4, 46.25d);
-                put(RodStates.LOW, 15d);
+                put(RodStates.LOW, 17d); // 15
                 put(RodStates.HIGH, 28d);
                 put(RodStates.SOURCE, 9.6d); // 9.1
                 put(RodStates.BARGE, 47d);
@@ -385,6 +385,8 @@ public class Constants {
 
         // 2.5 constants
         public static final boolean INVERTED = true;
+
+        public static final double LOW_SPIT_POWER_MULT = 0.75;
         public static final double CORAL_COLLECTED_CURRENT = 40d; //40
         public static final double ALGAE_COLLECTED_CURRENT = 70d; //40
         public static final double CORAL_HOLD_POWER = 0.07d;

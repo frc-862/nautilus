@@ -194,6 +194,8 @@ public class Constants {
         public static final double L2_SAFEZONE_ELE = 8d; //elevator height to move wrist
         public static final double L3_SAFEZONE_ELE = 18d; // TUNE THIS!!!!
         public static final double L4_SAFEZONE_ELE = 31d; //elevator height to move wrist
+        public static final double LOW_SAFEZONE_ELE = 13d; // 17 is setpoint
+        public static final double HIGH_SAFEZONE_ELE = 23d; // 28 is setpoint
 
         public static final double STOW_SAFEZONE_ANGLE = -30d; //wrist angle to move elevator
 

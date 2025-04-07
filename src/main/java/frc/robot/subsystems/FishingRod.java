@@ -92,6 +92,8 @@ public class FishingRod extends SubsystemBase {
                         case L2 -> FishingRodConstants.L2_SAFEZONE_ELE;
                         case L3 -> FishingRodConstants.L3_SAFEZONE_ELE;
                         case L4 -> FishingRodConstants.L4_SAFEZONE_ELE;
+                        case HIGH -> FishingRodConstants.HIGH_SAFEZONE_ELE;
+                        case LOW -> FishingRodConstants.LOW_SAFEZONE_ELE;
                         default -> throw new IllegalArgumentException("Target state not defined");
                     };
                     elevator.setState(targetState);

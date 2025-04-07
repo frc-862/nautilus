@@ -50,6 +50,8 @@ public class CollectCoral extends Command {
         double power = triggerPower.getAsDouble();
         if (triggerPower.getAsDouble() == 0) {
             power = useLowHoldPower.getAsBoolean() ? CoralCollectorConstants.CORAL_HOLD_POWER : CoralCollectorConstants.ALGAE_HOLD_POWER;
+        } else if (triggerPower.getAsDouble() < 0 && useLowSpitPower.getAsBoolean()) {
+            power *= CoralCollectorConstants.LOW_SPIT_POWER_MULT;
         }
         collector.setPower(power * CoralCollectorConstants.CORAL_ROLLER_SPEED);
 

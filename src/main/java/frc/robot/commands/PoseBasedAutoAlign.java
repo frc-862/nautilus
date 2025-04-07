@@ -288,7 +288,7 @@ public class PoseBasedAutoAlign extends Command {
                     return;
                 }
 
-                targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, newId));
+                targetPose = PoseConstants.l1PoseHashMap.get(new Tuple<ReefPose, Integer>(reefPose, newId));
 
                 super.initialize();
             }

@@ -153,7 +153,11 @@ public class FishingRod extends SubsystemBase {
                                                                                     // algae
             transitionState = RodTransitionStates.WITH_WRIST_SLOW;
         } else if (currState.isScoring() || targetState.isScoring()) { // any scoring state wrist up first to not skewer
-            transitionState = RodTransitionStates.WRIST_UP_THEN_ELE;
+            if (targetState != RodStates.L1) {
+                transitionState = RodTransitionStates.WRIST_UP_THEN_ELE;
+            } else {
+                transitionState = RodTransitionStates.DEFAULT;
+            }
         } else { // default state (i hate triton)
             transitionState = Constants.IS_TRITON ? RodTransitionStates.TRITON : RodTransitionStates.DEFAULT;
         }

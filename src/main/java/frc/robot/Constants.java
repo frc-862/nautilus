@@ -526,6 +526,7 @@ public class Constants {
     public static class VisionConstants {
         public static final String leftCamName = "leftCam";
         public static final String rightCamName = "rightCam";
+        public static final String middleCamName = "backCam";
         public static final TargetModel targetModel = TargetModel.kAprilTag36h11;
         public static final Pose3d targetPose = new Pose3d(16, 4, 2, new Rotation3d(0, 0, Math.PI));
         public static final VisionTargetSim visionTarget = new VisionTargetSim(targetPose, targetModel);
@@ -538,6 +539,8 @@ public class Constants {
                 new Translation3d(-5.772, 11.281, 12).times(0.0254), robotToCameraRot);
         public static final Transform3d robotRightToCamera = new Transform3d(
                 new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
+            public static final Transform3d robotMiddleToCamera = new Transform3d(
+                        new Translation3d(5, -6.35, 12).times(0.0254), robotToCameraRot);
 
         // MIDDLE is only used for algae on the reef!!
         public enum ReefPose {

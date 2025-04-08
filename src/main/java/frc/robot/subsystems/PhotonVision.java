@@ -43,11 +43,15 @@ public class PhotonVision extends SubsystemBase {
     private CameraThread leftThread;
     private CameraThread rightThread;
 
+    private CameraThread middleThread;
+
     public PhotonVision(Swerve drivetrain) {
         this.drivetrain = drivetrain;
 
         leftThread = new CameraThread(ReefPose.LEFT);
         rightThread = new CameraThread(ReefPose.RIGHT);
+
+        middleThread = new CameraThread(ReefPose.MIDDLE);
 
         leftThread.start();
         rightThread.start();
@@ -245,6 +249,7 @@ public class PhotonVision extends SubsystemBase {
     private synchronized void updateVision(ReefPose caller) {
         Tuple<EstimatedRobotPose, Double> leftUpdates = leftThread.getUpdates();
         Tuple<EstimatedRobotPose, Double> rightUpdates = rightThread.getUpdates();
+        Tuple<EstimatedRobotPose, Double> middleUpdates = middleThread.getUpdates();
 
         // LightningShuffleboard.setDouble("Vision", "left dist", leftUpdates.v);
         // LightningShuffleboard.setDouble("Vision", "right dist", rightUpdates.v);
@@ -252,27 +257,39 @@ public class PhotonVision extends SubsystemBase {
         final double maxDist = 4d;
         boolean shouldUpdateLeft = true;
         boolean shouldUpdateRight = true;
+        boolean shouldUpdateMiddle = true;
 
         if (DriverStation.isAutonomous() && DriverStation.isEnabled()) {
             shouldUpdateLeft = leftUpdates.v < maxDist;
             shouldUpdateRight = rightUpdates.v < maxDist;
+            shouldUpdateMiddle = middleUpdates.v < maxDist;
         }
 
         // prefer the camera that called the function (has known good values)
         // if the other camera has a target, prefer the one with the lower distance to best tag
         switch (caller) {
             case LEFT:
-                if((rightThread.hasTarget() && rightUpdates.v < leftUpdates.v) && shouldUpdateRight) {
+                if((rightThread.hasTarget() && rightUpdates.v < leftUpdates.v && rightUpdates.v < middleUpdates.v) && shouldUpdateRight) {
                     drivetrain.addVisionMeasurement(rightUpdates.k, rightUpdates.v);
                 } else if (shouldUpdateLeft) {
                     drivetrain.addVisionMeasurement(leftUpdates.k, leftUpdates.v);
+                } else if (shouldUpdateMiddle) {
+                    drivetrain.addVisionMeasurement(middleUpdates.k, middleUpdates.v);
                 }
             break;
             case RIGHT:
-                if((leftThread.hasTarget() && leftUpdates.v < rightUpdates.v) && shouldUpdateLeft) {
+                if((leftThread.hasTarget() && leftUpdates.v < rightUpdates.v && leftUpdates.v < middleUpdates.v) && shouldUpdateLeft) {
                     drivetrain.addVisionMeasurement(leftUpdates.k, rightUpdates.v);
                 } else if (shouldUpdateRight) {
                     drivetrain.addVisionMeasurement(rightUpdates.k, rightUpdates.v);
+                } else if (shouldUpdateMiddle) {
+                    drivetrain.addVisionMeasurement(middleUpdates.k, middleUpdates.v);
+                }
+            break;
+
+            case MIDDLE:
+                if(shouldUpdateMiddle) {
+                    drivetrain.addVisionMeasurement(middleUpdates.k, middleUpdates.v);
                 }
             break;
         }
@@ -296,8 +313,24 @@ public class PhotonVision extends SubsystemBase {
 
             initializeCamera();
 
-            poseEstimator = new PhotonPoseEstimator(VisionConstants.tagLayout,
-                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camName == ReefPose.LEFT ? VisionConstants.robotLeftToCamera : VisionConstants.robotRightToCamera);
+            Transform3d cameraToMiddle = new Transform3d();
+
+            switch(camName) {
+                case LEFT:
+                    cameraToMiddle = VisionConstants.robotLeftToCamera;
+                    break;
+
+                case RIGHT:
+                    cameraToMiddle = VisionConstants.robotRightToCamera;
+                    break;
+
+                case MIDDLE:
+                    cameraToMiddle = VisionConstants.robotMiddleToCamera;
+                    break;
+            }
+
+            poseEstimator = new PhotonPoseEstimator(VisionConstants.tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraToMiddle);
+
             poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
             tags = poseEstimator.getFieldTags();
@@ -420,7 +453,12 @@ public class PhotonVision extends SubsystemBase {
 
         private void initializeCamera() {
             try {
-                camera = new PhotonCamera(camName == ReefPose.LEFT ? VisionConstants.leftCamName : VisionConstants.rightCamName);
+                String camIns = switch (camName) {
+                    case LEFT -> VisionConstants.leftCamName;
+                    case MIDDLE -> VisionConstants.middleCamName;
+                    case RIGHT -> VisionConstants.rightCamName;
+                };
+                camera = new PhotonCamera(camIns);
                 cameraInitialized = true;
             } catch (Exception e) {
                 DataLogManager.log("warning: camera not initialized");

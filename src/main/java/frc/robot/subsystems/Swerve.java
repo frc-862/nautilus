@@ -51,6 +51,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
+import frc.robot.Constants.PoseConstants.StowZone;
 import frc.robot.Constants.EncoderConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.VisionConstants;
@@ -91,6 +92,9 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     private double speedMult = 1d;
     private double turnMult = 1d;
+
+    private StowZone lastStowZone = StowZone.SOURCE;
+    private StowZone currentsStowZone = StowZone.SOURCE;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -166,7 +170,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         yFilter.calculate(pose.getY());
         rotFilter.calculate(pose.getRotation().getRadians());
 
-        // LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets", currentCANCoderValues);
+        // LightningShuffleboard.setDoubleArray("Diagnostic", "Swerve CANCoder Offsets",
+        // currentCANCoderValues);
 
         // update reef status booleans in the future
         SmartDashboard.putBooleanArray("Reef Level One", reef1Status);
@@ -176,6 +181,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         // LightningShuffleboard.setPose2d("Drivetrain", "pose", getState().Pose);
 
         LightningShuffleboard.setDouble("Drivetrain", "tag id", PoseConstants.getScorePose(pose));
+        LightningShuffleboard.setString("Drivetrain", "Last Stow Zone", getLastStowZone().toString());
+        LightningShuffleboard.setString("Drivetrain", "Current Stow Zone", getCurrentStowZone().toString());
     }
 
     private void configurePathPlanner() {
@@ -209,10 +216,9 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     public boolean poseStable() {
         Pose2d pose = getPose();
-        return (
-            Math.abs(xFilter.calculate(pose.getX()) - pose.getX()) < 0.1 &&
-            Math.abs(yFilter.calculate(pose.getY()) - pose.getY()) < 0.1 &&
-            Math.abs(rotFilter.calculate(pose.getRotation().getRadians()) - pose.getRotation().getRadians()) < 1);
+        return (Math.abs(xFilter.calculate(pose.getX()) - pose.getX()) < 0.1 &&
+                Math.abs(yFilter.calculate(pose.getY()) - pose.getY()) < 0.1 &&
+                Math.abs(rotFilter.calculate(pose.getRotation().getRadians()) - pose.getRotation().getRadians()) < 1);
     }
 
     public void resetForwardWithOpPerspective(Rotation2d rotation) {
@@ -294,20 +300,23 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
                     VecBuilder.fill(0.1, 0.1, 0.1));
         } else {
-            // addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
-            //         VecBuilder.fill(VisionConstants.VISION_X_STDEV, VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV));
-        
+            // addVisionMeasurement(pose.estimatedPose.toPose2d(),
+            // Utils.fpgaToCurrentTime(pose.timestampSeconds),
+            // VecBuilder.fill(VisionConstants.VISION_X_STDEV,
+            // VisionConstants.VISION_Y_STDEV, VisionConstants.VISION_THETA_STDEV));
+
             // if(distance < 0.25) {
-            //     addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
-            //         VecBuilder.fill(0.01, 0.01, 0.01));
+            // addVisionMeasurement(pose.estimatedPose.toPose2d(),
+            // Utils.fpgaToCurrentTime(pose.timestampSeconds),
+            // VecBuilder.fill(0.01, 0.01, 0.01));
             // } else {
 
-                // for ambiguity-based (or distance-based) std deviations
-                addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
-                        VecBuilder.fill(distance / 2, distance / 2, distance / 2));
+            // for ambiguity-based (or distance-based) std deviations
+            addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
+                    VecBuilder.fill(distance / 2, distance / 2, distance / 2));
             // }
 
-            }
+        }
     }
 
     private void startSimThread() {
@@ -331,26 +340,71 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         // updateSimState(0.020, RobotController.getBatteryVoltage());
     }
 
-    public int reefTagToRobot(Pose2d pos){
-        for (Entry<Rectangle2d, Integer> entry : PoseConstants.aprilTagRegions.entrySet()){
-            if(entry.getKey().contains(pos.getTranslation())){
+    public int reefTagToRobot(Pose2d pos) {
+        for (Entry<Rectangle2d, Integer> entry : PoseConstants.aprilTagRegions.entrySet()) {
+            if (entry.getKey().contains(pos.getTranslation())) {
                 return entry.getValue().intValue();
             }
         }
         return 0;
     }
 
-    public int reefTagToRobot(){
+    public int reefTagToRobot() {
         for (Entry<Rectangle2d, Integer> entry : PoseConstants.aprilTagRegions.entrySet()) {
-            if(entry.getKey().contains(getPose().getTranslation())) {
+            if (entry.getKey().contains(getPose().getTranslation())) {
                 return entry.getValue().intValue();
             }
         }
         return 0;
+    }
+
+    /**
+     * Gets the current StowZone based on how far away
+     * the robot is from the center of the alliance reef
+     * @return the current StowZone
+     */
+    public StowZone getCurrentStowZone() {
+        Pose2d centerReef = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red
+                ? PoseConstants.CENTER_REEF_RED
+                : PoseConstants.CENTER_REEF_BLUE;
+
+        // check the differences
+        double distanceToCenterReef = getPose().getTranslation().getDistance(centerReef.getTranslation());
+
+        StowZone newZone = StowZone.SOURCE;
+
+        if (distanceToCenterReef <= StowZone.REEF.radius) {
+            // If the robot is within the radius of the center reef, return the
+            // corresponding StowZone
+            newZone = StowZone.REEF;
+        } else if (distanceToCenterReef <= StowZone.SAFE.radius && distanceToCenterReef > StowZone.REEF.radius) {
+            // If the robot is within the radius of the stow zone, return the corresponding
+            // StowZone
+            newZone = StowZone.SAFE;
+        } else {
+            newZone = StowZone.SOURCE;
+        }
+
+        if (currentsStowZone != newZone) {
+            lastStowZone = currentsStowZone; // Store the last stow zone
+        }
+
+        currentsStowZone = newZone; // Update the current stow zone
+        return newZone;
+    }
+
+    /**
+     * Gets the last StowZone that the robot was in.
+     * NOTE: getCurrentStowZone() must be called first to update the last
+     * @return the last StowZone
+     */
+    public StowZone getLastStowZone() {
+        return lastStowZone; // Return the last stow zone
     }
 
     public Command leaveAuto() {
-        return (applyRequest((DriveRequests.getRobotCentric(() -> 0d, () -> -0.5, () -> 0d))).withDeadline(new WaitCommand(3))).andThen(applyRequest(DriveRequests.getBrake()));
+        return (applyRequest((DriveRequests.getRobotCentric(() -> 0d, () -> -0.5, () -> 0d)))
+                .withDeadline(new WaitCommand(3))).andThen(applyRequest(DriveRequests.getBrake()));
     }
 
     // SYSID
@@ -421,19 +475,23 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
      * Runs the SysIdtest in the given direction for the routine
      * specified
      *
-     * @param testType Type of test to run (ex. DRIVE)
+     * @param testType  Type of test to run (ex. DRIVE)
      * @param direction Direction of the SysId Quasistatic test
-     * @param isDynamic Whether to run a dynamic/quasistatic test (both need to run for full sysid)
+     * @param isDynamic Whether to run a dynamic/quasistatic test (both need to run
+     *                  for full sysid)
      * @return Command to run
      */
-    public Command sysId(DrivetrainConstants.SysIdTestType testType, SysIdRoutine.Direction direction, boolean isDynamic) {
+    public Command sysId(DrivetrainConstants.SysIdTestType testType, SysIdRoutine.Direction direction,
+            boolean isDynamic) {
         switch (testType) {
             case DRIVE:
-                return isDynamic ? m_sysIdRoutineTranslation.dynamic(direction) : m_sysIdRoutineTranslation.quasistatic(direction);
+                return isDynamic ? m_sysIdRoutineTranslation.dynamic(direction)
+                        : m_sysIdRoutineTranslation.quasistatic(direction);
             case STEER:
                 return isDynamic ? m_sysIdRoutineSteer.dynamic(direction) : m_sysIdRoutineSteer.quasistatic(direction);
             case ROTATE:
-                return isDynamic ? m_sysIdRoutineRotation.dynamic(direction) : m_sysIdRoutineRotation.quasistatic(direction);
+                return isDynamic ? m_sysIdRoutineRotation.dynamic(direction)
+                        : m_sysIdRoutineRotation.quasistatic(direction);
             default:
                 return new InstantCommand();
         }

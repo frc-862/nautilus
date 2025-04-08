@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AUTONAlignToFiveRight"
+                  "name": "AUTONAlignToThreeRight"
                 }
               },
               {
@@ -48,9 +48,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "DriveLeft"
+            "pathName": "R3-RSource"
           }
         },
         {
@@ -79,7 +79,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToLeftSource"
+                  "name": "AlignToRightSource"
                 }
               },
               {
@@ -102,41 +102,34 @@
           "data": {
             "commands": [
               {
-                "type": "race",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "AUTONAlignToSixLeft"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 5.0
-                      }
-                    }
-                  ]
+                  "name": "AutoAlignRange"
                 }
               },
               {
-                "type": "sequential",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "RodInverseStow"
-                      }
-                    }
-                  ]
+                  "pathName": "RSource-R2L"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AUTONAlignToTwoLeft"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
                 }
               }
             ]
@@ -146,6 +139,12 @@
           "type": "named",
           "data": {
             "name": "WaitOnTarget"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
@@ -161,9 +160,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "DriveBackLeft"
+            "pathName": "R2-RSource"
           }
         },
         {
@@ -192,7 +191,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToLeftSource"
+                  "name": "AlignToRightSource"
                 }
               },
               {
@@ -215,41 +214,34 @@
           "data": {
             "commands": [
               {
-                "type": "race",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "AUTONAlignToSixRight"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 5.0
-                      }
-                    }
-                  ]
+                  "name": "AutoAlignRange"
                 }
               },
               {
-                "type": "sequential",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "RodInverseStow"
-                      }
-                    }
-                  ]
+                  "pathName": "RSource-R2R"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AUTONAlignToTwoRight"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
                 }
               }
             ]
@@ -262,6 +254,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "ScoreCoral"
@@ -270,19 +268,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SetAlgaeMode"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "RodLow"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignToSixMiddle"
+            "name": "WristThenStow"
           }
         }
       ]

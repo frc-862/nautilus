@@ -126,7 +126,7 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         currentPosition = getPosition();
-        filteredRangeDistance = getCANRangeDist();
+        // filteredRangeDistance = getCANRangeDist();
 
         LightningShuffleboard.setDouble("Diagnostic", "Elevator Filtered Value", filteredRangeMeters);
         LightningShuffleboard.setDouble("Diagnostic", "Elevator Calculated Value", filteredRangeDistance);
@@ -246,21 +246,21 @@ public class Elevator extends SubsystemBase {
      *
      * @return CANRange distance
      */
-    public double getCANRangeDist() {
-        filteredRangeMeters = rangeFilter.filter(rangeSensor.getDistance().getValueAsDouble());
+    // public double getCANRangeDist() {
+    //     filteredRangeMeters = rangeFilter.filter(rangeSensor.getDistance().getValueAsDouble());
 
-        if (rangeSensor.getDistance().getValueAsDouble() <= ElevatorConstants.CANRANGE_MAP.lastEntry().getKey()) {
-            rawRangeMeters = ElevatorConstants.CANRANGE_MAP.get(rangeSensor.getDistance().getValueAsDouble());
-        } else {
-            rawRangeMeters = ElevatorConstants.CANRANGE_MAP.lastEntry().getValue();
-        }
+    //     if (rangeSensor.getDistance().getValueAsDouble() <= ElevatorConstants.CANRANGE_MAP.lastEntry().getKey()) {
+    //         rawRangeMeters = ElevatorConstants.CANRANGE_MAP.get(rangeSensor.getDistance().getValueAsDouble());
+    //     } else {
+    //         rawRangeMeters = ElevatorConstants.CANRANGE_MAP.lastEntry().getValue();
+    //     }
 
-        if (filteredRangeMeters <= ElevatorConstants.CANRANGE_MAP.lastEntry().getKey()) {
-            return ElevatorConstants.CANRANGE_MAP.get(filteredRangeMeters);
-        } else {
-            return ElevatorConstants.CANRANGE_MAP.lastEntry().getValue();
-        }
-    }
+    //     if (filteredRangeMeters <= ElevatorConstants.CANRANGE_MAP.lastEntry().getKey()) {
+    //         return ElevatorConstants.CANRANGE_MAP.get(filteredRangeMeters);
+    //     } else {
+    //         return ElevatorConstants.CANRANGE_MAP.lastEntry().getValue();
+    //     }
+    // }
 
     public double getCANRangeRaw() {
         return rangeSensor.getDistance().getValueAsDouble();

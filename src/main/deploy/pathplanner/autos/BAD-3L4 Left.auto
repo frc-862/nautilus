@@ -5,25 +5,25 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "RodInverseStow"
-          }
-        },
-        {
           "type": "race",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "AUTONAlignToFiveRight"
+                  "name": "AlignToFiveLeft"
                 }
               },
               {
                 "type": "wait",
                 "data": {
                   "waitTime": 6.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RodInverseStow"
                 }
               }
             ]
@@ -32,7 +32,13 @@
         {
           "type": "named",
           "data": {
-            "name": "WaitOnTarget"
+            "name": "RodL4"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
@@ -48,9 +54,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "DriveLeft"
+            "pathName": "R5-LSource"
           }
         },
         {
@@ -98,45 +104,19 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "race",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "AUTONAlignToSixLeft"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 5.0
-                      }
-                    }
-                  ]
+                  "name": "AUTONAlignToSixLeft"
                 }
               },
               {
-                "type": "sequential",
+                "type": "wait",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "RodInverseStow"
-                      }
-                    }
-                  ]
+                  "waitTime": 6.0
                 }
               }
             ]
@@ -161,9 +141,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "DriveBackLeft"
+            "pathName": "R6-LSource"
           }
         },
         {
@@ -211,45 +191,19 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "race",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "AUTONAlignToSixRight"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 5.0
-                      }
-                    }
-                  ]
+                  "name": "AUTONAlignToSixRight"
                 }
               },
               {
-                "type": "sequential",
+                "type": "wait",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "RodInverseStow"
-                      }
-                    }
-                  ]
+                  "waitTime": 6.0
                 }
               }
             ]
@@ -270,19 +224,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SetAlgaeMode"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "RodLow"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignToSixMiddle"
+            "name": "RodStow"
           }
         }
       ]

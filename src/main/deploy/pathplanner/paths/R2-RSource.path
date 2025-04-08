@@ -3,71 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.841998734287709,
-        "y": 2.57242574851606
+        "x": 3.6908361486486485,
+        "y": 2.928125
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5361835501047483,
-        "y": 2.426699164193435
+        "x": 3.3850209644656877,
+        "y": 2.782398415677375
       },
       "isLocked": false,
       "linkedName": "Reef1Left"
     },
     {
       "anchor": {
-        "x": 1.9025840716655025,
-        "y": 1.2125982018156423
+        "x": 1.0042350710940469,
+        "y": 0.6646466189266608
       },
       "prevControl": {
-        "x": 2.912680582227653,
-        "y": 1.9405928116270945
+        "x": 2.0143315816561977,
+        "y": 1.3926412287381127
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "AutoRightSource"
+      "linkedName": "GoodRightSource"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Stow",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "RodStow"
-        }
-      }
-    },
-    {
-      "name": "SourceAndCollect",
-      "waypointRelativePos": 0.9372123969780225,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "RodSource"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "IntuahCoral"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 4.0,

@@ -21,7 +21,7 @@ import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.PoseConstants.LightningTagID;
-import frc.robot.Constants.VisionConstants.Camera;
+import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Swerve;
@@ -31,7 +31,7 @@ import frc.thunder.util.Tuple;
 public class AutonAutoAlign extends Command {
 
     private Swerve drivetrain;
-    private Camera camera;
+    private ReefPose camera;
     private LEDs leds;
     private FishingRod rod;
 
@@ -41,11 +41,11 @@ public class AutonAutoAlign extends Command {
             AutoAlignConstants.TELE_DRIVE_I, AutoAlignConstants.TELE_DRIVE_D);
     private PIDController yPID = new PIDController(AutoAlignConstants.TELE_DRIVE_P,
             AutoAlignConstants.TELE_DRIVE_I, AutoAlignConstants.TELE_DRIVE_D);
-    private PIDController rPID = new PIDController(AutoAlignConstants.POSEBASED_ROT_P,
-            AutoAlignConstants.POSEBASED_ROT_I, AutoAlignConstants.POSEBASED_ROT_D);
+    private PIDController rPID = new PIDController(AutoAlignConstants.TELE_ROT_P,
+            AutoAlignConstants.TELE_ROT_I, AutoAlignConstants.TELE_ROT_D);
 
     private double driveKS = AutoAlignConstants.TELE_DRIVE_KS;
-    private double rotKS = AutoAlignConstants.POSEBASED_ROT_KS;
+    private double rotKS = AutoAlignConstants.TELE_ROT_KS;
 
     private Pose2d targetPose = new Pose2d();
 
@@ -72,7 +72,7 @@ public class AutonAutoAlign extends Command {
      * @param codeID     the Lightning-specific ID code for the tag
      * @param targetRodState supplier for the rod state to go to when ready
      */
-    public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, LightningTagID codeID, Supplier<RodStates> targetRodState) {
+    public AutonAutoAlign(Swerve drivetrain, ReefPose camera, LEDs leds, FishingRod rod, LightningTagID codeID, Supplier<RodStates> targetRodState) {
         this(drivetrain, camera, leds, rod, targetRodState);
 
         customTagSet = true;
@@ -89,7 +89,7 @@ public class AutonAutoAlign extends Command {
      * @param rod
      * @param targetRodState supplier for the rod state to go to when ready
      */
-    public AutonAutoAlign(Swerve drivetrain, Camera camera, LEDs leds, FishingRod rod, Supplier<RodStates> targetRodState) {
+    public AutonAutoAlign(Swerve drivetrain, ReefPose camera, LEDs leds, FishingRod rod, Supplier<RodStates> targetRodState) {
         this.drivetrain = drivetrain;
         this.camera = camera;
         this.leds = leds;
@@ -132,7 +132,7 @@ public class AutonAutoAlign extends Command {
             invokeCancel = true;
             CommandScheduler.getInstance().cancel(this);
         } else {
-            targetPose = PoseConstants.poseHashMap.get(new Tuple<Camera, Integer>(camera, tagID));
+            targetPose = PoseConstants.poseHashMap.get(new Tuple<ReefPose, Integer>(camera, tagID));
 
             LightningShuffleboard.setDouble("TestAutoAlign", "Tag", tagID);
 
@@ -156,7 +156,7 @@ public class AutonAutoAlign extends Command {
 
         yPID.setTolerance(driveTolerance);
 
-        rPID.setTolerance(AutoAlignConstants.POSEBASED_ROT_TOLERANCE);
+        rPID.setTolerance(AutoAlignConstants.TELE_ROT_TOLERANCE);
         rPID.enableContinuousInput(0, 360);
     }
 

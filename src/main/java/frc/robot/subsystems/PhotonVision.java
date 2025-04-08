@@ -339,6 +339,7 @@ public class PhotonVision extends SubsystemBase {
                         double totalDistances = 0;
                         boolean hasTarget = false;
 
+                        double minDist = 100;
                         //fundamentally, this loop updates the pose and distance for each result. It also logs the data to shuffleboard
                         //this is done in a thread-safe manner, as global variables are only updated at the end of the loop (no race conditions)
                         for (PhotonPipelineResult result : results) {
@@ -353,7 +354,11 @@ public class PhotonVision extends SubsystemBase {
                                     DataLogManager.log("[PhotonVision] WARNING: " + camName.toString() + " pose ambiguity is high");
                                 }
                                 // grabs the distance to the best target (for the latest set of result)
-                                totalDistances += result.getBestTarget().getBestCameraToTarget().getTranslation().getNorm();
+                                double dist = result.getBestTarget().getBestCameraToTarget().getTranslation().getNorm();
+                                if (dist < minDist) {
+                                    minDist = dist;
+                                }
+                                totalDistances += dist;
 
                                 // LightningShuffleboard.setBool("Vision", camName.toString() + " targets found", !result.targets.isEmpty());
                                 // LightningShuffleboard.setPose2d("Vision", camName.toString() + " pose", pose.estimatedPose.toPose2d());
@@ -368,7 +373,7 @@ public class PhotonVision extends SubsystemBase {
 
                         // averages distance over all results
                         averageDistance = totalDistances / numberOfResults;
-                        updates = new Tuple<EstimatedRobotPose, Double>(pose, averageDistance);
+                        updates = new Tuple<EstimatedRobotPose, Double>(pose, minDist);
                         this.hasTarget = hasTarget;
                         if (hasTarget) {
                             updateVision(camName);

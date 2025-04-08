@@ -36,13 +36,13 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "R4AG-SMidTeehee"
+            "name": "RodLow"
           }
         },
         {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -54,7 +54,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 6.0
+                  "waitTime": 1.25
                 }
               },
               {
@@ -64,6 +64,18 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitOnTarget"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R4AG-Barge"
           }
         },
         {
@@ -98,15 +110,21 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "RodStow"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Barge-Center"
+            "name": "AUTONAlignToFiveMiddle"
           }
         }
       ]

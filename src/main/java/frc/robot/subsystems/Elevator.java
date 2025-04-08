@@ -60,7 +60,7 @@ public class Elevator extends SubsystemBase {
     private ElevatorSim elevatorSim;
     private TalonFXSimState leftSim;
     private TalonFXSimState rightSim;
-    private CANrangeSimState rangeSensorSim;
+    // private CANrangeSimState rangeSensorSim;
 
     public Elevator(ThunderBird leftMotor, ThunderBird rightMotor) {
         this.leftMotor = leftMotor;
@@ -295,7 +295,7 @@ public class Elevator extends SubsystemBase {
         double batteryVoltage = RobotController.getBatteryVoltage();
         leftSim.setSupplyVoltage(batteryVoltage);
         rightSim.setSupplyVoltage(batteryVoltage);
-        rangeSensorSim.setSupplyVoltage(batteryVoltage);
+        // rangeSensorSim.setSupplyVoltage(batteryVoltage);
 
         // TODO: I'm unclear if rightsim is necessary, or if this is correct. The WPILib
         // example code only implements one motor, even though it's attached to a
@@ -305,7 +305,7 @@ public class Elevator extends SubsystemBase {
 
         leftSim.setRawRotorPosition(
                 Units.metersToInches(elevatorSim.getPositionMeters()) * ElevatorConstants.ENCODER_TO_MECHANISM_RATIO);
-        rangeSensorSim.setDistance(elevatorSim.getPositionMeters());
+        // rangeSensorSim.setDistance(elevatorSim.getPositionMeters());
 
         LightningShuffleboard.setDouble("Elevator", "getPose", getPosition());
         LightningShuffleboard.setDouble("Elevator", "getRawPose",

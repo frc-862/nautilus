@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -15,6 +16,7 @@ import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.simulation.VisionTargetSim;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -26,6 +28,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.Robot;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.thunder.util.Triplet;
 import frc.thunder.util.Tuple;
 
 public class PhotonVision extends SubsystemBase {
@@ -243,19 +246,19 @@ public class PhotonVision extends SubsystemBase {
     }
 
     private synchronized void updateVision(ReefPose caller) {
-        Tuple<EstimatedRobotPose, Double> leftUpdates = leftThread.getUpdates();
-        Tuple<EstimatedRobotPose, Double> rightUpdates = rightThread.getUpdates();
+        Triplet<EstimatedRobotPose, Double, Boolean> leftUpdates = leftThread.getUpdates();
+        Triplet<EstimatedRobotPose, Double, Boolean> rightUpdates = rightThread.getUpdates();
 
         // LightningShuffleboard.setDouble("Vision", "left dist", leftUpdates.v);
         // LightningShuffleboard.setDouble("Vision", "right dist", rightUpdates.v);
 
-        final double maxDist = 4d;
+        final double maxAcceptableDist = 4d;
         boolean shouldUpdateLeft = true;
         boolean shouldUpdateRight = true;
 
         if (DriverStation.isAutonomous() && DriverStation.isEnabled()) {
-            shouldUpdateLeft = leftUpdates.v < maxDist;
-            shouldUpdateRight = rightUpdates.v < maxDist;
+            shouldUpdateLeft = leftUpdates.v < maxAcceptableDist;
+            shouldUpdateRight = rightUpdates.v < maxAcceptableDist;
         }
 
         // prefer the camera that called the function (has known good values)
@@ -284,8 +287,9 @@ public class PhotonVision extends SubsystemBase {
         private PhotonPoseEstimator poseEstimator;
         private PhotonCamera camera;
         private Double averageDistance = 0d;
+        private Boolean shouldUpdate = true;
         private ReefPose camName;
-        private Tuple<EstimatedRobotPose, Double> updates;
+        private Triplet<EstimatedRobotPose, Double, Boolean> updates;
         private boolean hasTarget = false;
         private AprilTagFieldLayout tags;
 
@@ -338,8 +342,8 @@ public class PhotonVision extends SubsystemBase {
                         double numberOfResults = results.size(); //double to prevent integer division errors
                         double totalDistances = 0;
                         boolean hasTarget = false;
-
                         double minDist = 100;
+                        double maxDist = 0;
                         //fundamentally, this loop updates the pose and distance for each result. It also logs the data to shuffleboard
                         //this is done in a thread-safe manner, as global variables are only updated at the end of the loop (no race conditions)
                         for (PhotonPipelineResult result : results) {
@@ -348,8 +352,11 @@ public class PhotonVision extends SubsystemBase {
                                 hasTarget = true;
 
                                 if (!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
-                                    poseEstimator.update(result).ifPresentOrElse((pose) -> this.pose = pose,
-                                            () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed"));
+                                    if(shouldDoSingleTag(result)) { //there is technically a one-line way to do this but I'd like to make my code readable without mr hurley <3
+                                        result.multitagResult = Optional.empty();
+                                        result.targets.removeIf((PhotonTrackedTarget target) -> VisionConstants.TAG_IGNORE_LIST.contains((short) target.getFiducialId()));
+                                    }
+                                    poseEstimator.update(result).ifPresent((pose) -> this.pose = pose);
                                 } else {
                                     DataLogManager.log("[PhotonVision] WARNING: " + camName.toString() + " pose ambiguity is high");
                                 }
@@ -358,6 +365,11 @@ public class PhotonVision extends SubsystemBase {
                                 if (dist < minDist) {
                                     minDist = dist;
                                 }
+
+                                if(dist > maxDist) {
+                                    maxDist = dist;
+                                }
+
                                 totalDistances += dist;
 
                                 // LightningShuffleboard.setBool("Vision", camName.toString() + " targets found", !result.targets.isEmpty());
@@ -373,7 +385,7 @@ public class PhotonVision extends SubsystemBase {
 
                         // averages distance over all results
                         averageDistance = totalDistances / numberOfResults;
-                        updates = new Tuple<EstimatedRobotPose, Double>(pose, minDist);
+                        updates = new Triplet<EstimatedRobotPose, Double, Boolean>(pose, minDist, shouldUpdate);
                         this.hasTarget = hasTarget;
                         if (hasTarget) {
                             updateVision(camName);
@@ -393,6 +405,13 @@ public class PhotonVision extends SubsystemBase {
             }
         }
 
+        private boolean shouldDoSingleTag(PhotonPipelineResult result) {
+            return result.getMultiTagResult()
+            //big complicated way to say "hey if the multitag result has an ignored tag, return true"
+            .map(multiTagResult -> multiTagResult.fiducialIDsUsed.stream().anyMatch(VisionConstants.TAG_IGNORE_LIST::contains))
+            .orElse(true);
+        }
+
         /**
          * Returns the most recent pose and average distance to the best target <p>
          *
@@ -401,7 +420,7 @@ public class PhotonVision extends SubsystemBase {
          *
          * @return Tuple<EstimatedRobotPose, Double> - the most recent pose and average distance to the best target
          */
-        public Tuple<EstimatedRobotPose, Double> getUpdates() {
+        public Triplet<EstimatedRobotPose, Double, Boolean> getUpdates() {
             return updates;
         }
 

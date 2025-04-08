@@ -13,6 +13,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.wpilibj2.command.Commands.race;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -751,7 +752,8 @@ public class Constants {
 
 
             final DriverStation.Alliance blue = DriverStation.Alliance.Blue;
-            DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(blue);
+            final DriverStation.Alliance red = DriverStation.Alliance.Red;
+            DriverStation.Alliance alliance = robotPose.getX() < blueRedTransform ? blue : red;
 
 
             Translation2d robotToReef = alliance == blue ? robotPose.getTranslation().minus(new Translation2d(4.5, 4.031))

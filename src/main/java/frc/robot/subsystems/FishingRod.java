@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import java.util.Currency;
+import java.util.concurrent.ConcurrentSkipListMap;
+
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.util.Units;
@@ -153,10 +156,10 @@ public class FishingRod extends SubsystemBase {
                                                                                     // algae
             transitionState = RodTransitionStates.WITH_WRIST_SLOW;
         } else if (currState.isScoring() || targetState.isScoring()) { // any scoring state wrist up first to not skewer
-            if (targetState != RodStates.L1) {
-                transitionState = RodTransitionStates.WRIST_UP_THEN_ELE;
-            } else {
+            if (targetState == RodStates.L1 && (currState == RodStates.STOW || currState == RodStates.INVERSE_STOW)) {
                 transitionState = RodTransitionStates.DEFAULT;
+            } else {
+                transitionState = RodTransitionStates.WRIST_UP_THEN_ELE;
             }
         } else { // default state (i hate triton)
             transitionState = Constants.IS_TRITON ? RodTransitionStates.TRITON : RodTransitionStates.DEFAULT;

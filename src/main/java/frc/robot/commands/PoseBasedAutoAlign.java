@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -23,6 +24,7 @@ import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.CoralCollector;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Swerve;
@@ -54,6 +56,9 @@ public class PoseBasedAutoAlign extends Command {
     private Supplier<RodStates> targetRodState;
     private boolean isWithRodState = false;
     private boolean hasDeployedRod = false; // used to check if we have deployed the fishing rod yet
+
+    private boolean usingRangeSensor = false;
+    private BooleanSupplier rangeSupplier = () -> false;
 
     /**
      * Used to align to Tag
@@ -109,6 +114,14 @@ public class PoseBasedAutoAlign extends Command {
                     && !hasDeployedRod) {
                 hasDeployedRod = true;
                 invokeRod();
+            }
+        }
+
+        if (usingRangeSensor && rangeSupplier != null) {
+            if (rangeSupplier.getAsBoolean()) {
+                xVeloc = 0;
+                yVeloc = 0;
+                rotationVeloc = 0;
             }
         }
 
@@ -323,6 +336,19 @@ public class PoseBasedAutoAlign extends Command {
     public PoseBasedAutoAlign withYControl(DoubleSupplier yVelSupplier) {
         this.yVelSupplier = yVelSupplier;
         this.isWithY = false;
+
+        return this;
+    }
+
+    public PoseBasedAutoAlign withRangeCheck(FishingRod rod, CoralCollector collector) {
+        this.usingRangeSensor = true;
+        this.rangeSupplier = () -> {
+            if (rod.getState() == RodStates.L4 || rod.getState() == RodStates.L3 || rod.getState() == RodStates.L2) {
+                return collector.reefAligned();
+            } else {
+                return false;
+            }
+        };
 
         return this;
     }

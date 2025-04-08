@@ -145,7 +145,8 @@ public class Constants {
 
         public static final int CORAL_COLLECTOR = 12;
         public static final int CORAL_COLLECTOR_ENCODER = 36;
-        public static final int CORAL_COLLECTOR_BEAM_BREAK_DIO = 1; // temp
+        public static final int CORAL_COLLECTOR_BEAM_BREAK_DIO = 1;
+        public static final int CORAL_COLLECTOR_CANRANGE = 42;
 
         public static final int ALGAE_COLLECTOR_ROLLER = 13; // temp
         public static final int ALGAE_COLLECTOR_PIVOT = 14; // temp
@@ -393,6 +394,8 @@ public class Constants {
         public static final double ALGAE_COLLECTED_CURRENT = 70d; //40
         public static final double CORAL_HOLD_POWER = 0.07d;
         public static final double ALGAE_HOLD_POWER = 0.2d;
+
+        public static final double RANGE_REEF_DISTANCE = 0.5d; // TUNE THIS TUNE THIS
     }
 
     public class DrivetrainConstants {

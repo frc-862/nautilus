@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.hardware.CANrange;
+import com.ctre.phoenix6.signals.UpdateModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.hal.SimBoolean;
@@ -26,6 +29,7 @@ public class CoralCollector extends SubsystemBase {
 
     private ThunderBird motor;
     private DigitalInput beamBreak;
+    private CANrange canRange;
 
     private double targetPower = 0; // used to track the last power set to the motor
 
@@ -39,6 +43,12 @@ public class CoralCollector extends SubsystemBase {
         this.motor = motor;
 
         beamBreak = new DigitalInput(RobotMap.CORAL_COLLECTOR_BEAM_BREAK_DIO);
+        canRange = new CANrange(RobotMap.CORAL_COLLECTOR_CANRANGE, RobotMap.CANIVORE_CAN_NAME);
+
+        CANrangeConfiguration rangeConfig = new CANrangeConfiguration();
+        rangeConfig.ToFParams.UpdateFrequency = 100;
+        rangeConfig.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
+        canRange.getConfigurator().apply(rangeConfig);
 
         if (RobotBase.isSimulation()) {
             // simulate motor
@@ -117,6 +127,24 @@ public class CoralCollector extends SubsystemBase {
         // this returns the last power set to the motor
         // this may not be the actual power due to motor control loops
         return targetPower;
+    }
+
+
+    /**
+     * Get the distance of the range senosr
+     * @return
+     */
+    public double getSensorDistance() {
+        return canRange.getDistance().getValueAsDouble();
+    }
+
+    /**
+     * If there is a reef in front of the range sensor
+     * note this does not check the rod state
+     * @return
+     */
+    public boolean reefAligned() {
+        return getSensorDistance() < CoralCollectorConstants.RANGE_REEF_DISTANCE;
     }
 
     /**

@@ -36,19 +36,32 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "parallel",
                 "data": {
-                  "name": "RodLow"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AlignToFourMiddle"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RodLow"
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "type": "named",
+                "type": "wait",
                 "data": {
-                  "name": "AlignToFourMiddle"
+                  "waitTime": 4.0
                 }
               }
             ]
@@ -71,7 +84,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.5
+                        "waitTime": 1.0
                       }
                     },
                     {

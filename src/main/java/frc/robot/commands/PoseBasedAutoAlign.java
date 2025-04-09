@@ -138,14 +138,14 @@ public class PoseBasedAutoAlign extends Command {
                 }
             }
 
-            Command rodStowCommand = isWithStow && isWithRodState && rod != null ? new SetRodState(rod, RodStates.STOW)
+            Command rodStowCommand = isWithStow && isWithRodState && rod != null ? new WaitCommand(1).andThen(new SetRodState(rod, RodStates.STOW))
                     : new InstantCommand();
 
             if (isWithSpit && collector != null) {
                 // Check the rod if it exists, otherwise
-                if (rod != null ? (rod.getState().isScoring() && rod.onTarget()) : true) {
+                if (rod != null ? (rod.getState().isScoring() && rod.onTarget() && rod.getState() != RodStates.LOW && rod.getState() != RodStates.HIGH) : true) {
                     new RunCommand(() -> collector.setPower(spitPower), collector).withDeadline(new WaitCommand(0.5))
-                            .andThen(collector::stop, collector).schedule();//.alongWith(rodStowCommand).schedule();
+                            .andThen(collector::stop, collector).alongWith(rodStowCommand).schedule();
                 }
             }
 

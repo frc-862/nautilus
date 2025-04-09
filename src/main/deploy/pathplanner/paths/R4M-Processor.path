@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 6.72648654243446,
-        "y": 3.5991690728858456
+        "x": 6.956146641090616,
+        "y": 3.603342051864396
       },
       "prevControl": {
-        "x": 6.6156922157924125,
-        "y": 4.189546679123913
+        "x": 6.845352314448568,
+        "y": 4.193719658102465
       },
       "nextControl": {
-        "x": 6.855186748843163,
-        "y": 2.913378364238862
+        "x": 7.0848468474993185,
+        "y": 2.9175513432174123
       },
       "isLocked": false,
       "linkedName": null
@@ -49,7 +49,7 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 1.200793890441632,
+      "maxWaypointRelativePos": 0.5956106640226919,
       "constraints": {
         "maxVelocity": 1.5,
         "maxAcceleration": 1.0,
@@ -64,7 +64,7 @@
   "eventMarkers": [
     {
       "name": "RodProcessor",
-      "waypointRelativePos": 0.6516461479503879,
+      "waypointRelativePos": 1.7424702350758623,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

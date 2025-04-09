@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AutoAlignConstants;
@@ -137,12 +138,13 @@ public class PoseBasedAutoAlign extends Command {
                 }
             }
 
-            // Command rodStowCommand = 
+            Command rodStowCommand = isWithStow && isWithRodState ? new RunCommand(() -> rod.setState(RodStates.STOW), rod)
+                    : new InstantCommand();
 
             if (isWithSpit) {
                 if (collector != null && rod.getState().isScoring() && rod.onTarget()) {
                     new RunCommand(() -> collector.setPower(spitPower), collector).withDeadline(new WaitCommand(0.5))
-                            .andThen(collector::stop, collector).schedule();
+                            .andThen(collector::stop, collector).alongWith(rodStowCommand).schedule();
                 }
             }
 

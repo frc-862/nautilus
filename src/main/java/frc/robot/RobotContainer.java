@@ -227,12 +227,14 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getLeftBumperButton) // Robot LEFT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        .withScoreSpit(coralCollector, -0.5)
+                        .withScoreSpit(coralCollector, -1)
+                        // .withStowAfter(rod)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton) // Robot RIGHT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        .withScoreSpit(coralCollector, -0.5)
+                        .withScoreSpit(coralCollector, -1)
+                        // .withStowAfter(rod)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getXButton) // Algae
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.MIDDLE, leds)

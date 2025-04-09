@@ -22,6 +22,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.CANrange;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -53,8 +54,10 @@ import frc.robot.Constants.DrivetrainConstants.DriveRequests;
 import frc.robot.Constants.PoseConstants.StowZone;
 import frc.robot.Constants.EncoderConstants;
 import frc.robot.Constants.PoseConstants;
+import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.VisionConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
+import frc.thunder.util.Tuple;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
@@ -94,6 +97,9 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     private StowZone lastStowZone = StowZone.SOURCE;
     private StowZone currentsStowZone = StowZone.SOURCE;
+
+    private CANrange rangeSensorLeft = new CANrange(RobotMap.CANRANGE_LEFT);
+    private CANrange rangeSensorRight = new CANrange(RobotMap.CANRANGE_RIGHT);
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -238,6 +244,12 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     private ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return getState().Speeds;
+    }
+
+    public Tuple<Double, Double> getRangeSensorValues() {
+        double left = rangeSensorLeft.getDistance().getValueAsDouble();
+        double right = rangeSensorRight.getDistance().getValueAsDouble();
+        return new Tuple<>(left, right);
     }
 
     /**

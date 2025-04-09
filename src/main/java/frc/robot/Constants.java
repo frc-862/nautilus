@@ -154,6 +154,9 @@ public class Constants {
         public static final int CLIMBER = 15;
         public static final int CLIMBER_LIMIT_SWITCH_DIO = 0;
 
+        public static final int CANRANGE_LEFT = 43;
+        public static final int CANRANGE_RIGHT = 44;
+
         public static final int PIGEON = 23;
 
         public static final String CANIVORE_CAN_NAME = "Canivore";

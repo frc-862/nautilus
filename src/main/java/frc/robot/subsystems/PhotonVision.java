@@ -256,10 +256,10 @@ public class PhotonVision extends SubsystemBase {
         boolean shouldUpdateLeft = true;
         boolean shouldUpdateRight = true;
 
-        if (DriverStation.isAutonomous() && DriverStation.isEnabled()) {
-            shouldUpdateLeft = leftUpdates.v < maxAcceptableDist;
-            shouldUpdateRight = rightUpdates.v < maxAcceptableDist;
-        }
+        // if (DriverStation.isAutonomous() && DriverStation.isEnabled()) {
+        //     shouldUpdateLeft = leftUpdates.v < maxAcceptableDist;
+        //     shouldUpdateRight = rightUpdates.v < maxAcceptableDist;
+        // }
 
         // prefer the camera that called the function (has known good values)
         // if the other camera has a target, prefer the one with the lower distance to best tag

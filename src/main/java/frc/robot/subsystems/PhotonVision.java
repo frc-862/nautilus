@@ -351,11 +351,14 @@ public class PhotonVision extends SubsystemBase {
                                 hasTarget = true;
 
                                 if (!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
-                                    if(shouldDoSingleTag(result)) { //there is technically a one-line way to do this but I'd like to make my code readable without mr hurley <3
-                                        result.multitagResult = Optional.empty();
-                                        result.targets.removeIf((PhotonTrackedTarget target) -> VisionConstants.TAG_IGNORE_LIST.contains((short) target.getFiducialId()));
-                                    }
-                                    poseEstimator.update(result).ifPresent((pose) -> this.pose = pose);
+                                    // if(shouldDoSingleTag(result)) { //there is technically a one-line way to do this but I'd like to make my code readable without mr hurley <3
+                                        // result.multitagResult = Optional.empty();
+                                        // result.targets.forEach((meow) -> System.out.println(meow.fiducialId));
+                                        // result.targets.removeIf((PhotonTrackedTarget target) -> VisionConstants.TAG_IGNORE_LIST.contains((short) target.getFiducialId()));
+                                    // }
+                                    poseEstimator.update(result).ifPresentOrElse(((pose) -> this.pose = pose), () -> {
+                                        DataLogManager.log("[PhotonVision] WARNING: " + camName.toString() + " pose not updated");
+                                    });
                                 } else {
                                     DataLogManager.log("[PhotonVision] WARNING: " + camName.toString() + " pose ambiguity is high");
                                 }

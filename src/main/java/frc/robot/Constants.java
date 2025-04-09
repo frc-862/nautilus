@@ -614,6 +614,12 @@ public class Constants {
                 put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 12),
                         new Pose2d(1.004, 0.665, new Rotation2d(Degrees.of(54))));
 
+                //red processor
+                put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 3),
+                        new Pose2d(11.519, 7.549, new Rotation2d(Degrees.of(-90))));
+                put(new Tuple<>(VisionConstants.ReefPose.MIDDLE, 3),
+                        new Pose2d(6.000, 0.501, new Rotation2d(Degrees.of(90))));
+
                 // red barge front
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 5),
                     new Pose2d(9.982, 1.621, new Rotation2d(Degrees.of(0))));

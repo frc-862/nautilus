@@ -274,21 +274,17 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(new InstantCommand(() -> rod.setCoralMode(true)));
 
         // coral mode
-        new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
         new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));
-
-        // new Trigger(() -> rod.isCoralMode() && copilot.getBButton())
-        // .whileTrue(setRodQueue(RodStates.L2))
-        // .onFalse(new SetRodState(rod,
-        // RodStates.L2).andThen(resetRodQueue(RodStates.L2)));
-        // new Trigger(() -> rod.isCoralMode() && copilot.getXButton())
-        // .whileTrue(setRodQueue(RodStates.L3))
-        // .onFalse(new SetRodState(rod,
-        // RodStates.L3).andThen(resetRodQueue(RodStates.L3)));
-
+        
         new Trigger(() -> rod.isCoralMode() && copilot.getAButton())
                 .whileTrue(setRodQueue(RodStates.L1))
                 .onFalse(new SetRodState(rod,RodStates.L1).andThen(resetRodQueue(RodStates.L1)));
+        // new Trigger(() -> rod.isCoralMode() && copilot.getBButton())
+        //         .whileTrue(setRodQueue(RodStates.L2))
+        //         .onFalse(new SetRodState(rod, RodStates.L2).andThen(resetRodQueue(RodStates.L2)));
+        // new Trigger(() -> rod.isCoralMode() && copilot.getXButton())
+        //         .whileTrue(setRodQueue(RodStates.L3))
+        //         .onFalse(new SetRodState(rod, RodStates.L3).andThen(resetRodQueue(RodStates.L3)));
         new Trigger(() -> rod.isCoralMode() && copilot.getYButton())
                 .whileTrue(setRodQueue(RodStates.L4))
                 .onFalse(new SetRodState(rod, RodStates.L4).andThen(resetRodQueue(RodStates.L4)));
@@ -435,8 +431,8 @@ public class RobotContainer extends LightningContainer {
         NamedCommands.registerCommand("StowTuah",
                 new InstantCommand(() -> rod.setState(RodStates.STOW, RodTransitionStates.DEFAULT)));
 
-        NamedCommands.registerCommand("ScoreCoral",
-                new ScoreCoral(coralCollector));
+        NamedCommands.registerCommand("ScoreCoral", new ScoreCoral(coralCollector, () -> -1));
+        NamedCommands.registerCommand("ScoreAlgae", new ScoreCoral(coralCollector, () -> -0.5));
 
         NamedCommands.registerCommand("WristThenStow",
                 new InstantCommand(() -> rod.setState(RodStates.STOW,
@@ -494,6 +490,8 @@ public class RobotContainer extends LightningContainer {
                 drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(1, 2, 0)).withTimeout(0.5));
         NamedCommands.registerCommand("DriveBackRight",
                 drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(-1, 2, 0)).withTimeout(0.5));
+        NamedCommands.registerCommand("DriveBack",
+                drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(0, -0.25, 0)).withTimeout(0.5));
 
         NamedCommands.registerCommand("SetCoralMode", new InstantCommand(() -> rod.setCoralMode(true)));
         NamedCommands.registerCommand("SetAlgaeMode", new InstantCommand(() -> rod.setCoralMode(false)));

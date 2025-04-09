@@ -16,6 +16,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -547,6 +548,9 @@ public class Constants {
         public static final double VISION_X_STDEV = 1;
         public static final double VISION_Y_STDEV = 1;
         public static final double VISION_THETA_STDEV = 1;
+
+        //this is lowkey stupid but its fine
+        public static final List<Short> TAG_IGNORE_LIST = List.of((short) 1, (short) 2, (short) 12, (short) 13);
     }
 
     public static class PoseConstants {

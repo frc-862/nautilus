@@ -246,8 +246,8 @@ public class PhotonVision extends SubsystemBase {
     }
 
     private synchronized void updateVision(ReefPose caller) {
-        Triplet<EstimatedRobotPose, Double, Boolean> leftUpdates = leftThread.getUpdates();
-        Triplet<EstimatedRobotPose, Double, Boolean> rightUpdates = rightThread.getUpdates();
+        Tuple<EstimatedRobotPose, Double> leftUpdates = leftThread.getUpdates();
+        Tuple<EstimatedRobotPose, Double> rightUpdates = rightThread.getUpdates();
 
         // LightningShuffleboard.setDouble("Vision", "left dist", leftUpdates.v);
         // LightningShuffleboard.setDouble("Vision", "right dist", rightUpdates.v);
@@ -287,9 +287,8 @@ public class PhotonVision extends SubsystemBase {
         private PhotonPoseEstimator poseEstimator;
         private PhotonCamera camera;
         private Double averageDistance = 0d;
-        private Boolean shouldUpdate = true;
         private ReefPose camName;
-        private Triplet<EstimatedRobotPose, Double, Boolean> updates;
+        private Tuple<EstimatedRobotPose, Double> updates;
         private boolean hasTarget = false;
         private AprilTagFieldLayout tags;
 
@@ -362,13 +361,13 @@ public class PhotonVision extends SubsystemBase {
                                 }
                                 // grabs the distance to the best target (for the latest set of result)
                                 double dist = result.getBestTarget().getBestCameraToTarget().getTranslation().getNorm();
-                                if (dist < minDist) {
-                                    minDist = dist;
-                                }
+                                // if (dist < minDist) {
+                                //     minDist = dist;
+                                // }
 
-                                if(dist > maxDist) {
-                                    maxDist = dist;
-                                }
+                                // if(dist > maxDist) {
+                                //     maxDist = dist;
+                                // }
 
                                 totalDistances += dist;
 
@@ -385,7 +384,7 @@ public class PhotonVision extends SubsystemBase {
 
                         // averages distance over all results
                         averageDistance = totalDistances / numberOfResults;
-                        updates = new Triplet<EstimatedRobotPose, Double, Boolean>(pose, minDist, shouldUpdate);
+                        updates = new Tuple<EstimatedRobotPose, Double>(pose, minDist);
                         this.hasTarget = hasTarget;
                         if (hasTarget) {
                             updateVision(camName);
@@ -420,7 +419,7 @@ public class PhotonVision extends SubsystemBase {
          *
          * @return Tuple<EstimatedRobotPose, Double> - the most recent pose and average distance to the best target
          */
-        public Triplet<EstimatedRobotPose, Double, Boolean> getUpdates() {
+        public Tuple<EstimatedRobotPose, Double> getUpdates() {
             return updates;
         }
 

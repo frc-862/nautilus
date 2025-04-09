@@ -1,0 +1,96 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.004741151582444,
+        "y": 4.016907920124803
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.4742766977883495,
+        "y": 3.9805595696677702
+      },
+      "isLocked": false,
+      "linkedName": "Reef4Middle"
+    },
+    {
+      "anchor": {
+        "x": 6.956146641090616,
+        "y": 3.603342051864396
+      },
+      "prevControl": {
+        "x": 6.845352314448568,
+        "y": 4.193719658102465
+      },
+      "nextControl": {
+        "x": 7.0848468474993185,
+        "y": 2.9175513432174123
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.190656714128254,
+        "y": 1.5199757194619405
+      },
+      "prevControl": {
+        "x": 6.363908599270787,
+        "y": 2.677631765938097
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.5956106640226919,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 125.0,
+        "maxAngularAcceleration": 350.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "RodProcessor",
+      "waypointRelativePos": 1.7424702350758623,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RodProcessor"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 200.0,
+    "maxAngularAcceleration": 350.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": 89.1449026037332
+  },
+  "reversed": false,
+  "folder": "Algae Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": false
+}

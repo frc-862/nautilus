@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -23,6 +24,7 @@ import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.CoralCollector;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Swerve;
@@ -54,6 +56,11 @@ public class PoseBasedAutoAlign extends Command {
     private Supplier<RodStates> targetRodState;
     private boolean isWithRodState = false;
     private boolean hasDeployedRod = false; // used to check if we have deployed the fishing rod yet
+    private boolean isWithStow = false;
+
+    private CoralCollector collector;
+    private boolean isWithSpit = false;
+    private double spitPower = 0;
 
     /**
      * Used to align to Tag
@@ -127,6 +134,15 @@ public class PoseBasedAutoAlign extends Command {
             if (isWithRodState && rod != null) {
                 if (rod.getState() != targetRodState.get()) {
                     invokeRod();
+                }
+            }
+
+            // Command rodStowCommand = 
+
+            if (isWithSpit) {
+                if (collector != null && rod.getState().isScoring() && rod.onTarget()) {
+                    new RunCommand(() -> collector.setPower(spitPower), collector).withDeadline(new WaitCommand(0.5))
+                            .andThen(collector::stop, collector).schedule();
                 }
             }
 
@@ -313,6 +329,15 @@ public class PoseBasedAutoAlign extends Command {
         return this; // return this to allow for method chaining
     }
 
+    public PoseBasedAutoAlign withStowAfter(FishingRod rod) {
+        if (rod != null) {
+            this.rod = rod;
+        }
+        isWithStow = true;
+
+        return this;
+    }
+
     /**
      * Disables the Y Pid and overrides it with yVelSupplier
      * 
@@ -338,4 +363,13 @@ public class PoseBasedAutoAlign extends Command {
 
         return this;
     }
+
+    public PoseBasedAutoAlign withScoreSpit(CoralCollector collector, double spitPower) {
+        this.isWithSpit = true;
+        this.spitPower = spitPower;
+        this.collector = collector;
+
+        return this;
+    }
+
 }

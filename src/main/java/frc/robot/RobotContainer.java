@@ -227,14 +227,17 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getLeftBumperButton) // Robot LEFT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
                         .withRodState(rod, () -> queuedRodState)
+                        .withScoreSpit(coralCollector, -0.5)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton) // Robot RIGHT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
+                        .withScoreSpit(coralCollector, -0.5)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getXButton) // Algae
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.MIDDLE, leds)
                         .withRodState(rod, () -> queuedRodState)
+                        .withScoreSpit(coralCollector, -0.5)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // L1 AUTOALIGN
@@ -274,6 +277,7 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(new InstantCommand(() -> rod.setCoralMode(true)));
 
         // coral mode
+        new Trigger(() -> rod.isCoralMode() && copilot.getBButton()).onTrue(new SetRodState(rod, RodStates.L2));
         new Trigger(() -> rod.isCoralMode() && copilot.getXButton()).onTrue(new SetRodState(rod, RodStates.L3));
         
         new Trigger(() -> rod.isCoralMode() && copilot.getAButton())

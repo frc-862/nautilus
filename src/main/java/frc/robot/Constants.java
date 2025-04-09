@@ -230,7 +230,7 @@ public class Constants {
             {
                 put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
                 put(RodStates.INVERSE_STOW, -70d); // Lower angle is safer for nautilus
-                put(RodStates.L1, 6d);
+                put(RodStates.L1, 12d); // 6d
                 put(RodStates.L2, -30d); // -30
                 put(RodStates.L3, -36d); // -36
                 put(RodStates.L4, -42d);

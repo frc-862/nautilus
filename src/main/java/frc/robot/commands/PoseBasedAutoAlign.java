@@ -138,13 +138,14 @@ public class PoseBasedAutoAlign extends Command {
                 }
             }
 
-            Command rodStowCommand = isWithStow && isWithRodState ? new RunCommand(() -> rod.setState(RodStates.STOW), rod)
+            Command rodStowCommand = isWithStow && isWithRodState && rod != null ? new SetRodState(rod, RodStates.STOW)
                     : new InstantCommand();
 
-            if (isWithSpit) {
-                if (collector != null && rod.getState().isScoring() && rod.onTarget()) {
+            if (isWithSpit && collector != null) {
+                // Check the rod if it exists, otherwise
+                if (rod != null ? (rod.getState().isScoring() && rod.onTarget()) : true) {
                     new RunCommand(() -> collector.setPower(spitPower), collector).withDeadline(new WaitCommand(0.5))
-                            .andThen(collector::stop, collector).alongWith(rodStowCommand).schedule();
+                            .andThen(collector::stop, collector).schedule();//.alongWith(rodStowCommand).schedule();
                 }
             }
 
@@ -331,11 +332,30 @@ public class PoseBasedAutoAlign extends Command {
         return this; // return this to allow for method chaining
     }
 
+    /**
+     * Method to stow the rod after a score
+     * @param rod
+     * @return
+     */
     public PoseBasedAutoAlign withStowAfter(FishingRod rod) {
-        if (rod != null) {
+        if (rod == null) {
             this.rod = rod;
         }
         isWithStow = true;
+
+        return this;
+    }
+
+    /**
+     * Apply spit power on end
+     * @param collector
+     * @param spitPower
+     * @return
+     */
+    public PoseBasedAutoAlign withScoreSpit(CoralCollector collector, double spitPower) {
+        this.isWithSpit = true;
+        this.spitPower = spitPower;
+        this.collector = collector;
 
         return this;
     }
@@ -362,14 +382,6 @@ public class PoseBasedAutoAlign extends Command {
      */
     public PoseBasedAutoAlign setRotationP(double p) {
         rPID.setP(p);
-
-        return this;
-    }
-
-    public PoseBasedAutoAlign withScoreSpit(CoralCollector collector, double spitPower) {
-        this.isWithSpit = true;
-        this.spitPower = spitPower;
-        this.collector = collector;
 
         return this;
     }

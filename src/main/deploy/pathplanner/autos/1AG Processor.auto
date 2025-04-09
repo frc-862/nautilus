@@ -26,6 +26,12 @@
         {
           "type": "named",
           "data": {
+            "name": "WaitOnTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "ScoreCoral"
           }
         },
@@ -36,19 +42,32 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "parallel",
                 "data": {
-                  "name": "RodLow"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AlignToFourMiddle"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RodLow"
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "type": "named",
+                "type": "wait",
                 "data": {
-                  "name": "AlignToFourMiddle"
+                  "waitTime": 4.0
                 }
               }
             ]
@@ -95,7 +114,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R4AG-Barge"
+            "pathName": "R4M-Processor"
           }
         },
         {
@@ -105,7 +124,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToBarge"
+                  "name": "AlignToProcessor"
                 }
               },
               {
@@ -132,19 +151,39 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.75
+            "waitTime": 1.5
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "RodStow"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignToFiveMiddle"
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RodStow"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AlignToThreeMiddle"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 6.0
+                }
+              }
+            ]
           }
         },
         {

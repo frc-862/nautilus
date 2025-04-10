@@ -4,9 +4,14 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Millivolt;
+
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.numbers.N1;
@@ -16,23 +21,26 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Robot;
-import frc.robot.Constants.AlgaeCollectorConstants;
+import frc.robot.Constants.TuskConstants;
 import frc.robot.Constants.RobotMap;
-import frc.robot.Constants.AlgaeCollectorConstants.AlgaePivotStates;
+import frc.robot.Constants.TuskConstants.TuskStates;
 import frc.robot.Constants.CoralCollectorConstants;
 
-public class AlgaeCollector extends SubsystemBase {
+public class Tusks extends SubsystemBase {
 
-    private ThunderBird rollerMotor;
     private ThunderBird pivotMotor;
+    private ThunderBird rollerMotor;
 
-    private double targetAngle = 0;
+    // private double targetAngle = 0;
 
-    private final PositionVoltage pivotPID = new PositionVoltage(0);
+    private TuskStates targetPivotState = TuskStates.STOWED;
+    private TuskStates currentPivotState = TuskStates.STOWED;
+    private final VoltageOut pivotPID = new VoltageOut(0);
 
     // sim stuff
     private TalonFXSimState rollerMotorSim;
@@ -43,15 +51,15 @@ public class AlgaeCollector extends SubsystemBase {
 
     private DCMotor pivotGearbox;
 
-    public AlgaeCollector(ThunderBird rollerMotor, ThunderBird pivotMotor) {
-        this.rollerMotor = rollerMotor;
+    public Tusks(ThunderBird pivotMotor, ThunderBird rollerMotor) {
         this.pivotMotor = pivotMotor;
+        this.rollerMotor = rollerMotor;
 
         TalonFXConfiguration pivotMotorConfig = pivotMotor.getConfig();
 
-        pivotMotorConfig.Slot0.kP = AlgaeCollectorConstants.PIVOT_KP;
-        pivotMotorConfig.Slot0.kI = AlgaeCollectorConstants.PIVOT_KI;
-        pivotMotorConfig.Slot0.kD = AlgaeCollectorConstants.PIVOT_KD;
+        pivotMotorConfig.Slot0.kP = TuskConstants.PIVOT_KP;
+        pivotMotorConfig.Slot0.kI = TuskConstants.PIVOT_KI;
+        pivotMotorConfig.Slot0.kD = TuskConstants.PIVOT_KD;
 
         pivotMotor.applyConfig(pivotMotorConfig);
 
@@ -63,35 +71,32 @@ public class AlgaeCollector extends SubsystemBase {
             pivotGearbox = DCMotor.getKrakenX60(1);
 
             // create physics sims
-            pivotSim = new SingleJointedArmSim(pivotGearbox, AlgaeCollectorConstants.PIVOT_GEAR_RATIO,
-                    AlgaeCollectorConstants.PIVOT_MOI, AlgaeCollectorConstants.PIVOT_LENGTH,
-                    Units.degreesToRadians(AlgaeCollectorConstants.PIVOT_MIN_ANGLE),
-                    Units.degreesToRadians(AlgaeCollectorConstants.PIVOT_MAX_ANGLE), true,
-                    AlgaeCollectorConstants.PIVOT_START_ANGLE, 0, 1);
+            pivotSim = new SingleJointedArmSim(pivotGearbox, TuskConstants.PIVOT_GEAR_RATIO,
+                    TuskConstants.PIVOT_MOI, TuskConstants.PIVOT_LENGTH,
+                    Units.degreesToRadians(TuskConstants.PIVOT_MIN_ANGLE),
+                    Units.degreesToRadians(TuskConstants.PIVOT_MAX_ANGLE), true,
+                    TuskConstants.PIVOT_START_ANGLE, 0, 1);
 
-            rollerSim = new LinearSystemSim<N1, N1, N1>(LinearSystemId.identifyVelocitySystem(AlgaeCollectorConstants.ROLLER_KV,
-                    AlgaeCollectorConstants.ROLLER_KA));
+            rollerSim = new LinearSystemSim<N1, N1, N1>(LinearSystemId.identifyVelocitySystem(TuskConstants.ROLLER_KV,
+                    TuskConstants.ROLLER_KA));
         }
     }
 
     @Override
     public void periodic() {
-        // LightningShuffleboard.setDouble("Algae Collector", "Pivot Angle", getPivotAngle());
-        // LightningShuffleboard.setDouble("Algae Collector", "Roller Velocity", getRollerVelocity());
-        // LightningShuffleboard.setDouble("Algae Collector", "Pivot Target", getTargetAngle());
-        // LightningShuffleboard.setDouble("Algae Collector", "Pivot Motor current", pivotMotorSim.getMotorVoltage());
-        // LightningShuffleboard.setDouble("Algae Collector", "Pivot raw rotor position", pivotSim.getAngleRads());
-        // LightningShuffleboard.setDouble("Diagnostic", "algae roller motor temp", rollerMotor.getDeviceTemp().getValueAsDouble());
-        // LightningShuffleboard.setDouble("Diagnostic", "algae pivot motor temp", pivotMotor.getDeviceTemp().getValueAsDouble());
-    }
+        if (pivotOnTarget()) {
+            currentPivotState = targetPivotState;
+        }
 
-    /**
-     * Set the power of the roller motor
-     *
-     * @param power
-     */
-    public void setRollerPower(double power) {
-        rollerMotor.setControl(new DutyCycleOut(power));
+        if (currentPivotState != TuskStates.MOVING) {
+            stopPivot();
+        }
+
+        LightningShuffleboard.setBool("Tusks", "onTarget", pivotOnTarget());
+        LightningShuffleboard.setDouble("Tusks", "Pivot Current", pivotMotor.getStatorCurrent().getValueAsDouble());
+        LightningShuffleboard.setDouble("Tusks", "Roller Velocity", getRollerVelocity());
+        LightningShuffleboard.setDouble("Diagnostic", "Tusks roller motor temp", rollerMotor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.setDouble("Diagnostic", "Tusks pivot motor temp", pivotMotor.getDeviceTemp().getValueAsDouble());
     }
 
     /**
@@ -103,23 +108,24 @@ public class AlgaeCollector extends SubsystemBase {
         pivotMotor.setControl(new DutyCycleOut(speed));
     }
 
+    public void setPivot(TuskStates state) {
+        setPivot(state, false);
+    }
+
     /**
      * set target state for pivot
      *
      * @param state to set
      */
-    public void setPivotState(AlgaePivotStates state) {
-        double angle = (state == AlgaePivotStates.DEPLOYED) ? AlgaeCollectorConstants.DEPLOY_ANGLE
-                : AlgaeCollectorConstants.STOW_ANGLE;
-        pivotMotor.setControl(pivotPID.withPosition(Units.degreesToRotations(angle)));
-        targetAngle = angle;
+    public void setPivot(TuskStates state, boolean slow) {
+        targetPivotState = state;
+        currentPivotState = TuskStates.MOVING;
+        double volts = slow ? TuskConstants.SLOW_VOLTAGE : TuskConstants.MOVEMENT_VOLTAGE;
+        pivotMotor.setControl(pivotPID.withOutput(volts * (state == TuskStates.DEPLOYED ? 1 : -1)));
     }
 
-    /**
-     * @return current target angle for pivot in degrees
-     */
-    public double getTargetAngle() {
-        return targetAngle;
+    public TuskStates getState() {
+        return targetPivotState;
     }
 
     /**
@@ -133,14 +139,37 @@ public class AlgaeCollector extends SubsystemBase {
      * @return if pivot is on target
      */
     public boolean pivotOnTarget() {
-        return Math.abs(getPivotAngle() - targetAngle) < AlgaeCollectorConstants.PIVOT_TOLERANCE;
+        double targetCurrent = targetPivotState == TuskStates.DEPLOYED ? TuskConstants.DEPLOY_CURRENT
+                : TuskConstants.STOW_CURRENT;
+        return pivotMotor.getStatorCurrent().getValueAsDouble() < targetCurrent;
+        // return Math.abs(getPivotAngle() - targetAngle) < TuskConstants.PIVOT_TOLERANCE;
+    }
+
+    /**
+     * Stops the pivot motor
+     */
+    public void stopPivot() {
+        pivotMotor.setControl(new DutyCycleOut(0d));
+    }
+
+    /**
+     * Set the power of the roller motor
+     *
+     * @param power
+     */
+    public void setRollerPower(double power) {
+        rollerMotor.setControl(new DutyCycleOut(power));
+    }
+
+    public Command runRoller(DoubleSupplier power) {
+        return run(() -> setRollerPower(power.getAsDouble()));
     }
 
     /**
      * @return if the roller is stalling due to algae in the collector
      */
     public boolean getRollerHit() {
-        return rollerMotor.getStatorCurrent().getValueAsDouble() >= CoralCollectorConstants.CORAL_COLLECTED_CURRENT;
+        return rollerMotor.getStatorCurrent().getValueAsDouble() >= TuskConstants.ROLLER_CURRENT;
     }
 
     /**
@@ -160,8 +189,8 @@ public class AlgaeCollector extends SubsystemBase {
     /**
      * stops the roller
      */
-    public void stop() {
-        rollerMotor.stopMotor();
+    public void stopRoller() {
+        rollerMotor.setControl(new DutyCycleOut(0d));
     }
 
     @Override

@@ -49,7 +49,9 @@ import frc.robot.commands.SetRodStateReefAlgae;
 import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
-import frc.robot.subsystems.AlgaeCollector;
+import frc.robot.commands.tusks.SetTusksState;
+import frc.robot.commands.tusks.TusksHandoff;
+import frc.robot.subsystems.Tusks;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CoralCollector;
 import frc.robot.subsystems.Elevator;
@@ -77,7 +79,7 @@ public class RobotContainer extends LightningContainer {
     private Wrist wrist;
     public FishingRod rod;
     private CoralCollector coralCollector;
-    private AlgaeCollector algaeCollector;
+    private Tusks tusks;
     private Climber climber;
 
     @SuppressWarnings("unused")
@@ -111,17 +113,14 @@ public class RobotContainer extends LightningContainer {
 
         climber = new Climber(RobotMotors.climberMotor);
 
-        // if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
-        // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
-        // RobotMotors.algaeCollectorPivotMotor);
-        // }
+        // tusks = new Tusks(RobotMotors.algaeCollectorRollerMotor, RobotMotors.algaeCollectorPivotMotor);
 
         if (Robot.isSimulation()) {
             // algae collector and climber are temp because not initialized above
-            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
-                    RobotMotors.algaeCollectorPivotMotor);
+            // tusks = new Tusks(RobotMotors.algaeCollectorRollerMotor,
+            //         RobotMotors.algaeCollectorPivotMotor);
 
-            simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector,
+            simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, tusks,
                     climber);
         }
     }
@@ -318,29 +317,9 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5)); // WRIST UP
 
         // algae control
-        // new Trigger(() -> copilot.getRightTriggerAxis() > -1)
-        // .whileTrue(new CollectAlgae(algaeCollector,
-        // copilot::getRightTriggerAxis).deadlineFor(leds.strip.enableState(LEDStates.COLLECTING)));
-
-        // sim stuff
-        // if (Robot.isSimulation()) {
-        // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() ->
-        // wrist.setRawPower(-1))))
-        // .onFalse(new InstantCommand(wrist::stop));
-        // new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((()
-        // -> wrist.setRawPower(1))))
-        // .onFalse(new InstantCommand(wrist::stop));
-
-        // new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision,
-        // drivetrain));
-
-        // new Trigger(() -> copilot.getXButton()).whileTrue(new InstantCommand((() ->
-        // coralCollector.setPower(0.75))))
-        // .onFalse(new InstantCommand(coralCollector::stop));
-        // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() ->
-        // coralCollector.setPower(-0.5))))
-        // .onFalse(new InstantCommand(coralCollector::stop));
-        // }
+        // new Trigger(copilot::getRightStickButton)
+        //     .onTrue(TusksHandoff.getHandoff(tusks, rod, leds, copilot::getRightTriggerAxis)
+        //         .deadlineFor(leds.strip.enableState(LEDStates.COLLECTING)));
 
         // LED testing
         new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
@@ -352,7 +331,6 @@ public class RobotContainer extends LightningContainer {
         // DrivetrainConstants.SysIdTestType.DRIVE));
         // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() ->
         // SignalLogger.stop()));
-
     }
 
     @Override

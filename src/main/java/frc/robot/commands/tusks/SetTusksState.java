@@ -4,11 +4,14 @@
 
 package frc.robot.commands.tusks;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.FishingRodConstants.RodStates;
 import frc.robot.Constants.TuskConstants.TuskStates;
+import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.Tusks;
 
 public class SetTusksState extends Command {
@@ -18,6 +21,10 @@ public class SetTusksState extends Command {
     private final DoubleSupplier rollerPower;
 
     private boolean withSlow = false;
+    private FishingRod rod;
+    private BooleanSupplier withRodCheck = () -> false; // check the rod state to determine if the tusks are safe to move
+
+    private boolean hasMovedPivot = false;
 
     public SetTusksState(Tusks tusks, Supplier<TuskStates> state, DoubleSupplier rollerPower) {
         this.tusks = tusks;
@@ -35,12 +42,25 @@ public class SetTusksState extends Command {
 
     @Override
     public void initialize() {
-        tusks.setPivot(state.get(), withSlow);
+        hasMovedPivot = false;
     }
 
     @Override
     public void execute() {
         tusks.setRollerPower(rollerPower.getAsDouble());
+
+        if (!hasMovedPivot) {
+            if (rod != null && withRodCheck.getAsBoolean()) {
+                switch (rod.getState()) {
+                    case STOW, INVERSE_STOW, PROCESSOR, L1: // States that are unsafe for the tusks
+                        return;
+                    default:
+                        break;
+                }
+            }
+            tusks.setPivot(state.get(), withSlow);
+            hasMovedPivot = true;
+        }
     }
 
     @Override
@@ -55,6 +75,13 @@ public class SetTusksState extends Command {
 
     public SetTusksState withSlow() {
         this.withSlow = true;
+
+        return this;
+    }
+
+    public SetTusksState withRodSafety(FishingRod rod) {
+        this.rod = rod;
+        this.withRodCheck = () -> true;
 
         return this;
     }

@@ -202,7 +202,7 @@ public class Constants {
 
         public enum RodStates {
             STOW(false), INVERSE_STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
-            BARGE(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false), TUSKS_INIT(false), TUSKS_PRECOLLECT(false), TUSKS_COLLECT(false);
+            BARGE(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false), FREE_TUSKS(false), TUSKS_COLLECT(false);
 
             private boolean scoring;
 
@@ -230,7 +230,7 @@ public class Constants {
         public static final HashMap<RodStates, Double> WRIST_MAP = new HashMap<RodStates, Double>() {
             {
                 put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
-                put(RodStates.INVERSE_STOW, -70d); // Lower angle is safer for nautilus
+                put(RodStates.INVERSE_STOW, -70d);
                 put(RodStates.L1, 12d); // 6d
                 put(RodStates.L2, -30d); // -30
                 put(RodStates.L3, -36d); // -36
@@ -240,9 +240,9 @@ public class Constants {
                 put(RodStates.SOURCE, 42d);
                 put(RodStates.PROCESSOR, -25.5d);
                 put(RodStates.BARGE, 57d);
-                put(RodStates.TUSKS_INIT, 75d);
-                put(RodStates.TUSKS_PRECOLLECT, -75d);
-                put(RodStates.TUSKS_COLLECT, -75d);
+                put(RodStates.FREE_TUSKS, -20d);
+                // put(RodStates.TUSKS_PRECOLLECT, -75d);
+                put(RodStates.TUSKS_COLLECT, -20d);
             }
         };
 
@@ -259,9 +259,9 @@ public class Constants {
                 put(RodStates.SOURCE, 9.6d); // 9.1
                 put(RodStates.PROCESSOR, 1.75d);
                 put(RodStates.BARGE, 47d);
-                put(RodStates.TUSKS_INIT, 6d);
-                put(RodStates.TUSKS_PRECOLLECT, 12d);
-                put(RodStates.TUSKS_COLLECT, 7d); // tune whatever this is
+                put(RodStates.FREE_TUSKS, 12d);
+                // put(RodStates.TUSKS_PRECOLLECT, 12d);
+                put(RodStates.TUSKS_COLLECT, 3d); // tune whatever this is
             }
         };
     }

@@ -44,6 +44,8 @@ public class Tusks extends SubsystemBase {
 
     private final VoltageOut pivotControl = new VoltageOut(0);
 
+    private boolean handoffMode = false;
+
     // sim stuff
     private TalonFXSimState rollerMotorSim;
     private TalonFXSimState pivotMotorSim;
@@ -111,6 +113,14 @@ public class Tusks extends SubsystemBase {
         LightningShuffleboard.setDouble("Tusks", "Roller Velocity", getRollerVelocity());
         LightningShuffleboard.setDouble("Diagnostic", "Tusks roller motor temp", rollerMotor.getDeviceTemp().getValueAsDouble());
         LightningShuffleboard.setDouble("Diagnostic", "Tusks pivot motor temp", pivotMotor.getDeviceTemp().getValueAsDouble());
+    }
+
+    public void setHandoffMode(boolean handoffMode) {
+        this.handoffMode = handoffMode;
+    }
+
+    public boolean isHandoffMode() {
+        return handoffMode;
     }
 
     /**

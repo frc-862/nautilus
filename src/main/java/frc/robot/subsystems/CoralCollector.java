@@ -133,6 +133,10 @@ public class CoralCollector extends SubsystemBase {
         return motor.getStatorCurrent().getValueAsDouble() >= CoralCollectorConstants.CORAL_COLLECTED_CURRENT;
     }
 
+    public boolean getAlgaeCurrentHit() {
+        return motor.getStatorCurrent().getValueAsDouble() >= CoralCollectorConstants.ALGAE_COLLECTED_CURRENT;
+    }
+
     /**
      * @return if we are stalling the motor
      * @param current to check if over

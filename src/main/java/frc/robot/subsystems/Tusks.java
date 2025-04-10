@@ -4,13 +4,12 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Millivolt;
+import static edu.wpi.first.units.Units.Degrees;
 
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -21,26 +20,29 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotMap;
+import frc.robot.Constants.TuskConstants;
+import frc.robot.Constants.TuskConstants.TuskStates;
+import frc.robot.Robot;
 import frc.thunder.hardware.ThunderBird;
 import frc.thunder.shuffleboard.LightningShuffleboard;
-import frc.robot.Robot;
-import frc.robot.Constants.TuskConstants;
-import frc.robot.Constants.RobotMap;
-import frc.robot.Constants.TuskConstants.TuskStates;
-import frc.robot.Constants.CoralCollectorConstants;
 
 public class Tusks extends SubsystemBase {
 
     private ThunderBird pivotMotor;
     private ThunderBird rollerMotor;
 
-    // private double targetAngle = 0;
-
     private TuskStates targetPivotState = TuskStates.STOWED;
     private TuskStates currentPivotState = TuskStates.STOWED;
-    private final VoltageOut pivotPID = new VoltageOut(0);
+
+    private final VoltageOut pivotControl = new VoltageOut(0);
 
     // sim stuff
     private TalonFXSimState rollerMotorSim;
@@ -50,6 +52,10 @@ public class Tusks extends SubsystemBase {
     private LinearSystemSim<N1, N1, N1> rollerSim;
 
     private DCMotor pivotGearbox;
+
+    private Mechanism2d mech2d;
+    private MechanismRoot2d mechRoot;
+    private MechanismLigament2d pivotArm;
 
     public Tusks(ThunderBird pivotMotor, ThunderBird rollerMotor) {
         this.pivotMotor = pivotMotor;
@@ -65,8 +71,8 @@ public class Tusks extends SubsystemBase {
 
         if (Robot.isSimulation()) {
             // simulate motors
-            rollerMotorSim = new TalonFXSimState(rollerMotor);
             pivotMotorSim = new TalonFXSimState(pivotMotor);
+            rollerMotorSim = new TalonFXSimState(rollerMotor);
 
             pivotGearbox = DCMotor.getKrakenX60(1);
 
@@ -79,6 +85,12 @@ public class Tusks extends SubsystemBase {
 
             rollerSim = new LinearSystemSim<N1, N1, N1>(LinearSystemId.identifyVelocitySystem(TuskConstants.ROLLER_KV,
                     TuskConstants.ROLLER_KA));
+            
+            pivotArm = new MechanismLigament2d("Pivot", 0.25, 90d, 5d, new Color8Bit(Color.kSkyBlue));
+
+            mech2d = new Mechanism2d(0.75, 0.5);
+            mechRoot = mech2d.getRoot("Tusk Root", 0.45, 0);
+            mechRoot.append(pivotArm);
         }
     }
 
@@ -93,6 +105,8 @@ public class Tusks extends SubsystemBase {
         }
 
         LightningShuffleboard.setBool("Tusks", "onTarget", pivotOnTarget());
+        LightningShuffleboard.setDouble("Tusks", "pivot motor angle", pivotMotor.getPosition().getValueAsDouble());
+        LightningShuffleboard.setString("Tusks", "Current State", getState().toString());
         LightningShuffleboard.setDouble("Tusks", "Pivot Current", pivotMotor.getStatorCurrent().getValueAsDouble());
         LightningShuffleboard.setDouble("Tusks", "Roller Velocity", getRollerVelocity());
         LightningShuffleboard.setDouble("Diagnostic", "Tusks roller motor temp", rollerMotor.getDeviceTemp().getValueAsDouble());
@@ -121,7 +135,11 @@ public class Tusks extends SubsystemBase {
         targetPivotState = state;
         currentPivotState = TuskStates.MOVING;
         double volts = slow ? TuskConstants.SLOW_VOLTAGE : TuskConstants.MOVEMENT_VOLTAGE;
-        pivotMotor.setControl(pivotPID.withOutput(volts * (state == TuskStates.DEPLOYED ? 1 : -1)));
+        pivotMotor.setControl(pivotControl.withOutput(volts * (switch (state) {
+            case DEPLOYED -> -1;
+            case STOWED -> 1;
+            default -> 0;
+        })));
     }
 
     public TuskStates getState() {
@@ -139,10 +157,13 @@ public class Tusks extends SubsystemBase {
      * @return if pivot is on target
      */
     public boolean pivotOnTarget() {
+        if (currentPivotState == targetPivotState) {
+            return true;
+        }
+
         double targetCurrent = targetPivotState == TuskStates.DEPLOYED ? TuskConstants.DEPLOY_CURRENT
                 : TuskConstants.STOW_CURRENT;
-        return pivotMotor.getStatorCurrent().getValueAsDouble() < targetCurrent;
-        // return Math.abs(getPivotAngle() - targetAngle) < TuskConstants.PIVOT_TOLERANCE;
+        return pivotMotor.getStatorCurrent().getValueAsDouble() > targetCurrent;
     }
 
     /**
@@ -219,5 +240,9 @@ public class Tusks extends SubsystemBase {
         // update physics simulations
         pivotSim.update(RobotMap.UPDATE_FREQ);
         rollerSim.update(RobotMap.UPDATE_FREQ);
+
+        pivotArm.setAngle(pivotMotor.getPosition().getValue().in(Degrees));
+
+        LightningShuffleboard.send("Tusks", "Mech2d", mech2d);
     }
 }

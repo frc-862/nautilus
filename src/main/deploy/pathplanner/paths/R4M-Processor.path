@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.4742766977883495,
-        "y": 3.9805595696677702
+        "x": 6.5486971130982,
+        "y": 3.9655308878208815
       },
       "isLocked": false,
       "linkedName": "Reef4Middle"
     },
     {
       "anchor": {
-        "x": 6.956146641090616,
-        "y": 3.603342051864396
+        "x": 6.98638802305239,
+        "y": 3.5676300605898006
       },
       "prevControl": {
-        "x": 6.845352314448568,
-        "y": 4.193719658102465
+        "x": 6.875593696410342,
+        "y": 4.158007666827871
       },
       "nextControl": {
-        "x": 7.0848468474993185,
-        "y": 2.9175513432174123
+        "x": 7.115088229461093,
+        "y": 2.881839351942817
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 1.5199757194619405
       },
       "prevControl": {
-        "x": 6.363908599270787,
-        "y": 2.677631765938097
+        "x": 6.842000359757733,
+        "y": 2.4485633962783537
       },
       "nextControl": null,
       "isLocked": false,
@@ -64,7 +64,7 @@
   "eventMarkers": [
     {
       "name": "RodProcessor",
-      "waypointRelativePos": 1.7424702350758623,
+      "waypointRelativePos": 1.9031052890018743,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

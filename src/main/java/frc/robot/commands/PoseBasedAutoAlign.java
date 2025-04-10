@@ -63,6 +63,8 @@ public class PoseBasedAutoAlign extends Command {
     private boolean isWithSpit = false;
     private double spitPower = 0;
 
+    private Runnable queueResetter = () -> {};
+
     /**
      * Used to align to Tag
      * will always use PID Controllers
@@ -138,7 +140,7 @@ public class PoseBasedAutoAlign extends Command {
                 }
             }
 
-            Command rodStowCommand = isWithStow && isWithRodState && rod != null ? new WaitCommand(1).andThen(new SetRodState(rod, RodStates.STOW))
+            Command rodStowCommand = isWithStow && isWithRodState && rod != null ? new WaitCommand(1).andThen(new InstantCommand(() -> rod.setState(RodStates.STOW)))
                     : new InstantCommand();
 
             if (isWithSpit && collector != null) {
@@ -147,6 +149,10 @@ public class PoseBasedAutoAlign extends Command {
                     new RunCommand(() -> collector.setPower(spitPower), collector).withDeadline(new WaitCommand(0.5))
                             .andThen(collector::stop, collector).alongWith(rodStowCommand).schedule();
                 }
+            }
+
+            if (queueResetter != null) {
+                queueResetter.run();
             }
 
         }
@@ -343,6 +349,17 @@ public class PoseBasedAutoAlign extends Command {
         }
         isWithStow = true;
 
+        return this;
+    }
+
+    /**
+     * I hate this method
+     * @param queueResetter bruh
+     * @return
+     */
+    public PoseBasedAutoAlign withResetQueue(Runnable queueResetter) {
+        this.queueResetter = queueResetter;
+        
         return this;
     }
 

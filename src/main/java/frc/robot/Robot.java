@@ -53,7 +53,7 @@ public class Robot extends LightningRobot {
         if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
             ledCmd = new RepeatCommand(
                     new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel()))
-                            .alongWith(new WaitCommand(0.35)));
+                            .alongWith(new WaitCommand(0.4)));
             ledCmd.schedule();
         }
     }
@@ -69,7 +69,7 @@ public class Robot extends LightningRobot {
         if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
             ledCmd = new RepeatCommand(
                     new InstantCommand(() -> container.pdh.setSwitchableChannel(!container.pdh.getSwitchableChannel()))
-                            .alongWith(new WaitCommand(0.15)));
+                            .alongWith(new WaitCommand(0.2)));
             ledCmd.schedule();
         }
     }

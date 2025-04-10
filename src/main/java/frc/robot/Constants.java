@@ -197,12 +197,14 @@ public class Constants {
         public static final double L4_SAFEZONE_ELE = 31d; //elevator height to move wrist
         public static final double LOW_SAFEZONE_ELE = 10d; // 17 is setpoint
         public static final double HIGH_SAFEZONE_ELE = 20d; // 28 is setpoint
-
         public static final double STOW_SAFEZONE_ANGLE = -30d; //wrist angle to move elevator
+        
+        public static final double BARGE_THROW_ELE = 20d; // 28 is setpoint
+        public static final double BARGE_THROW_ANGLE = 10d; //wrist angle to move elevator
 
         public enum RodStates {
             STOW(false), INVERSE_STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
-            BARGE(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false);
+            BARGE(true), BARGE_THROW(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false);
 
             private boolean scoring;
 
@@ -224,7 +226,9 @@ public class Constants {
             TRANSITIONING,
 
             CORAL_SAFE_ZONE, // transition to any coral score setpoint, moves wrist earlier than onTarget()
-            STOW_SAFE_ZONE // transition to stow, moves elevator earlier than onTarget()
+            STOW_SAFE_ZONE, // transition to stow, moves elevator earlier than onTarget()
+            
+            BARGE_THROW, // transition to barge throw, moves elevator earlier than onTarget()
         }
 
         public static final HashMap<RodStates, Double> WRIST_MAP = new HashMap<RodStates, Double>() {
@@ -240,6 +244,7 @@ public class Constants {
                 put(RodStates.SOURCE, 42d);
                 put(RodStates.PROCESSOR, -25.5d);
                 put(RodStates.BARGE, 57d);
+                put(RodStates.BARGE_THROW, 80d);
             }
         };
 
@@ -256,6 +261,7 @@ public class Constants {
                 put(RodStates.SOURCE, 9.6d); // 9.1
                 put(RodStates.BARGE, 47d);
                 put(RodStates.PROCESSOR, 1.75d);
+                put(RodStates.BARGE_THROW, 47d);
             }
         };
     }

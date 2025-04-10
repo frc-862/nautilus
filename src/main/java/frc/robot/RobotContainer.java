@@ -106,8 +106,8 @@ public class RobotContainer extends LightningContainer {
 
         elevator = new Elevator(RobotMotors.leftElevatorMotor, RobotMotors.rightElevatorMotor);
         wrist = new Wrist(RobotMotors.wristMotor);
-        rod = new FishingRod(wrist, elevator);
         coralCollector = new CoralCollector(RobotMotors.coralCollectorMotor);
+        rod = new FishingRod(wrist, elevator, coralCollector);
 
         climber = new Climber(RobotMotors.climberMotor);
 
@@ -253,14 +253,16 @@ public class RobotContainer extends LightningContainer {
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // BARGE Autoalign
+        new Trigger(driver::getYButton).whileTrue(new RunCommand(() -> rod.setState(RodStates.INVERSE_STOW, RodTransitionStates.DEFAULT)).until(rod::onTarget).andThen(new RunCommand(() -> rod.setState(RodStates.BARGE_THROW, RodTransitionStates.BARGE_THROW))));
+
         new Trigger(driver::getBButton)
                 .whileTrue(PoseBasedAutoAlign
                         .getLightningIDAutoAlign(drivetrain, ReefPose.RIGHT, leds, LightningTagID.Barge)
                         .withYControl(() -> -driver.getLeftX())
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
-        new Trigger(() -> rod.isCoralMode() && driver.getYButton())
-                .onTrue(new SetRodState(rod, RodStates.INVERSE_STOW));
+        // new Trigger(() -> rod.isCoralMode() && driver.getYButton())
+        //         .onTrue(new SetRodState(rod, RodStates.INVERSE_STOW));
 
         /* COPILOT BINDINGS */
 

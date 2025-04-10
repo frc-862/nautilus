@@ -12,20 +12,23 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.thunder.shuffleboard.LightningShuffleboard;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FishingRodConstants;
 import frc.robot.Constants.FishingRodConstants.*;
+import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.Constants.WristConstants;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
 public class FishingRod extends SubsystemBase {
 
-    private Wrist wrist;
-    private Elevator elevator;
+    private final Wrist wrist;
+    private final Elevator elevator;
+    private final CoralCollector collector;
 
     private RodStates currState = RodStates.DEFAULT;
     private RodStates targetState = RodStates.STOW;
@@ -44,9 +47,12 @@ public class FishingRod extends SubsystemBase {
 
     private boolean coralMode = true;
 
-    public FishingRod(Wrist wrist, Elevator elevator) {
+    public FishingRod(Wrist wrist, Elevator elevator, CoralCollector collector) {
         this.wrist = wrist;
         this.elevator = elevator;
+
+        // this is so cooked but its technically kind of read only
+        this.collector = collector;
 
         // simulation stuff
         if (Robot.isSimulation()) {
@@ -115,6 +121,19 @@ public class FishingRod extends SubsystemBase {
                             transitionState = RodTransitionStates.DEFAULT; // finalize transition
                         }
                     }
+                    break;
+                case BARGE_THROW: // wrist up, move ele, move wrist
+                    // basically our initial throw position
+                    // if (elevator.isOnTarget() && wrist.isOnTarget()) {
+                        elevator.setState(targetState);
+                        if (elevator.getPosition() > FishingRodConstants.BARGE_THROW_ELE) {
+                            wrist.setState(targetState);
+                            if(wrist.getAngle() > FishingRodConstants.BARGE_THROW_ANGLE) {
+                                CommandScheduler.getInstance().schedule(new ScoreCoral(collector, () -> -1d));
+                                transitionState = RodTransitionStates.DEFAULT; // finalize transition
+                            }
+                        }
+                    // }
                     break;
                 case DEFAULT, TRITON, WITH_WRIST_SLOW: // all states should end here
                     wrist.setPosition(FishingRodConstants.WRIST_MAP.get(targetState),

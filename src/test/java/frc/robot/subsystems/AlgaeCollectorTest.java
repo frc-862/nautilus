@@ -26,19 +26,19 @@ public class AlgaeCollectorTest implements AutoCloseable {
     ThunderBird pivotMotor;
     TalonFXSimState simPivotMotor;
 
-    AlgaeCollector algaeCollector;
+    Tusks algaeCollector;
 
     @BeforeEach
     void constructMotors() {
         assert HAL.initialize(500, 0);
 
-        rollerMotor = RobotMotors.algaeCollectorRollerMotor;
+        rollerMotor = RobotMotors.tuskRollerMotor;
         simRollerMotor = rollerMotor.getSimState();
 
-        pivotMotor = RobotMotors.algaeCollectorPivotMotor;
+        pivotMotor = RobotMotors.tuskPivotMotor;
         simPivotMotor = pivotMotor.getSimState();
 
-        algaeCollector = new AlgaeCollector(rollerMotor, pivotMotor);
+        algaeCollector = new Tusks(rollerMotor, pivotMotor);
 
         HAL.simPeriodicBefore();
         DriverStationSim.setEnabled(true);

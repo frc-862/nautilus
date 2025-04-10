@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -36,9 +37,11 @@ import frc.robot.Constants.FishingRodConstants.RodTransitionStates;
 import frc.robot.Constants.LEDConstants.LEDStates;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.PoseConstants.LightningTagID;
+import frc.robot.Constants.PoseConstants.StowZone;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.RobotMotors;
 import frc.robot.Constants.TunerConstants;
+import frc.robot.Constants.TuskConstants.TuskStates;
 import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.commands.CollectCoral;
 import frc.robot.commands.DefaultRodStow;
@@ -49,7 +52,9 @@ import frc.robot.commands.SetRodStateReefAlgae;
 import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.auton.IntakeCoral;
 import frc.robot.commands.auton.ScoreCoral;
-import frc.robot.subsystems.AlgaeCollector;
+import frc.robot.commands.tusks.SetTusksState;
+import frc.robot.commands.tusks.AlgaeHandoff;
+import frc.robot.subsystems.Tusks;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CoralCollector;
 import frc.robot.subsystems.Elevator;
@@ -73,11 +78,11 @@ public class RobotContainer extends LightningContainer {
 
     private SendableChooser<Command> autoChooser;
 
-    public Elevator elevator;
+    private Elevator elevator;
     private Wrist wrist;
-    public FishingRod rod;
+    private FishingRod rod;
     private CoralCollector coralCollector;
-    private AlgaeCollector algaeCollector;
+    private Tusks tusks;
     private Climber climber;
 
     @SuppressWarnings("unused")
@@ -111,17 +116,10 @@ public class RobotContainer extends LightningContainer {
 
         climber = new Climber(RobotMotors.climberMotor);
 
-        // if (Constants.ROBOT_IDENTIFIER != RobotIdentifiers.NAUTILUS) {
-        // algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
-        // RobotMotors.algaeCollectorPivotMotor);
-        // }
-
         if (Robot.isSimulation()) {
-            // algae collector and climber are temp because not initialized above
-            algaeCollector = new AlgaeCollector(RobotMotors.algaeCollectorRollerMotor,
-                    RobotMotors.algaeCollectorPivotMotor);
+            tusks = new Tusks(RobotMotors.tuskPivotMotor, RobotMotors.tuskRollerMotor);
 
-            simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, algaeCollector,
+            simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, tusks,
                     climber);
         }
     }
@@ -166,7 +164,8 @@ public class RobotContainer extends LightningContainer {
         /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
 
-        new Trigger(() -> elevator.isOverheating()).onTrue(new InstantCommand(() -> erroring = true));
+        new Trigger(elevator::isOverheating).or(coralCollector::isOverheating)
+                .onTrue(new InstantCommand(() -> erroring = true));
 
         new Trigger(() -> erroring && DriverStation.isDisabled())
                 .whileTrue(leds.strip.enableState(LEDStates.ERROR));
@@ -259,8 +258,8 @@ public class RobotContainer extends LightningContainer {
                         .withYControl(() -> -driver.getLeftX())
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
-        new Trigger(() -> rod.isCoralMode() && driver.getYButton())
-                .onTrue(new SetRodState(rod, RodStates.INVERSE_STOW));
+        // new Trigger(() -> rod.isCoralMode() && driver.getYButton())
+        //         .onTrue(new SetRodState(rod, RodStates.INVERSE_STOW));
 
         /* COPILOT BINDINGS */
 
@@ -312,35 +311,34 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(new SetRodStateReefAlgae(drivetrain, rod));
 
         // biases
-        new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d)); // ELE UP
-        new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-0.5d)); // ELE DOWN
-        new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5)); // WRIST DOWN
-        new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5)); // WRIST UP
+        // new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d)); // ELE UP
+        // new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-0.5d)); // ELE DOWN
+        // new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5)); // WRIST DOWN
+        // new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5)); // WRIST UP
 
-        // algae control
-        // new Trigger(() -> copilot.getRightTriggerAxis() > -1)
-        // .whileTrue(new CollectAlgae(algaeCollector,
-        // copilot::getRightTriggerAxis).deadlineFor(leds.strip.enableState(LEDStates.COLLECTING)));
+        // TUSK CONTROL
+        if (tusks != null) {
 
-        // sim stuff
-        // if (Robot.isSimulation()) {
-        // new Trigger(copilot::getLeftBumperButton).whileTrue(new InstantCommand((() ->
-        // wrist.setRawPower(-1))))
-        // .onFalse(new InstantCommand(wrist::stop));
-        // new Trigger(copilot::getRightBumperButton).whileTrue(new InstantCommand((()
-        // -> wrist.setRawPower(1))))
-        // .onFalse(new InstantCommand(wrist::stop));
+            // Initiate handoff
+            new Trigger(copilot::getRightStickButton)
+                    // .and(() -> drivetrain.getCurrentStowZone() != StowZone.REEF)
+                    .onTrue(new AlgaeHandoff(tusks, rod, coralCollector, elevator,
+                                    () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis())
+                            .deadlineFor(leds.strip.enableState(LEDStates.HANDOFF)));
 
-        // new Trigger(driver::getYButton).whileTrue(new TagAutoAlign(vision,
-        // drivetrain));
+            // new Trigger(() -> copilot.getPOV() == 0).whileTrue(new SetTusksState(tusks, () -> TuskStates.STOWED));
+            // new Trigger(() -> copilot.getPOV() == 180)
+            //         .whileTrue(new SetTusksState(tusks, () -> TuskStates.DEPLOYED, () -> 1));
 
-        // new Trigger(() -> copilot.getXButton()).whileTrue(new InstantCommand((() ->
-        // coralCollector.setPower(0.75))))
-        // .onFalse(new InstantCommand(coralCollector::stop));
-        // new Trigger(() -> copilot.getBButton()).whileTrue(new InstantCommand((() ->
-        // coralCollector.setPower(-0.5))))
-        // .onFalse(new InstantCommand(coralCollector::stop));
-        // }
+            // Copilot right Y controls tusks (does not move if rod is in the way)
+            new Trigger(() -> copilot.getRightY() > 0.25 && !tusks.isHandoffMode()).whileTrue(
+                    new SetTusksState(tusks, () -> TuskStates.STOWED).withRodSafety(rod));
+            new Trigger(() -> copilot.getRightY() < -0.25 && !tusks.isHandoffMode()).whileTrue(
+                    new SetTusksState(tusks, () -> TuskStates.DEPLOYED).withRodSafety(rod));
+                    
+            // Copilot can press the stick button to override and move the rod to safety
+            // new Trigger(copilot::getRightStickButton).onTrue(new SetRodState(rod, RodStates.FREE_TUSKS));
+        }
 
         // LED testing
         new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
@@ -352,7 +350,6 @@ public class RobotContainer extends LightningContainer {
         // DrivetrainConstants.SysIdTestType.DRIVE));
         // new Trigger(driver::getBackButton).whileTrue(new InstantCommand(() ->
         // SignalLogger.stop()));
-
     }
 
     @Override

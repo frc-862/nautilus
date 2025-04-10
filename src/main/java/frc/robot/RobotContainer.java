@@ -163,7 +163,8 @@ public class RobotContainer extends LightningContainer {
         /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
 
-        new Trigger(() -> elevator.isOverheating()).onTrue(new InstantCommand(() -> erroring = true));
+        new Trigger(elevator::isOverheating).or(coralCollector::isOverheating)
+                .onTrue(new InstantCommand(() -> erroring = true));
 
         new Trigger(() -> erroring && DriverStation.isDisabled())
                 .whileTrue(leds.strip.enableState(LEDStates.ERROR));

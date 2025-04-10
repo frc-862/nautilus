@@ -387,6 +387,8 @@ public class Constants {
         public static final double KV = 0.24; // temp
         public static final double KA = 0.8; // temp
 
+        public static final double OVERHEAT_TEMP = 55d; // Celsius
+
         public static final double BEAMBREAK_DEBOUNCE = 0.1; // unused
 
         // public static final double COLLECTED_CURRENT = 35d;

@@ -141,6 +141,10 @@ public class CoralCollector extends SubsystemBase {
         return motor.getStatorCurrent().getValueAsDouble() >= current;
     }
 
+    public boolean isOverheating() {
+        return motor.getDeviceTemp().getValueAsDouble() >= CoralCollectorConstants.OVERHEAT_TEMP;
+    }
+    
     /**
      * can be used to set beambreak value to simulate beambreak
      *

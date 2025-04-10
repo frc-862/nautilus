@@ -411,7 +411,7 @@ public class PhotonVision extends SubsystemBase {
             return result.getMultiTagResult()
             //big complicated way to say "hey if the multitag result has an ignored tag, return true"
             .map(multiTagResult -> multiTagResult.fiducialIDsUsed.stream().anyMatch(VisionConstants.TAG_IGNORE_LIST::contains))
-            .orElse(true);
+            .orElse(false);
         }
 
         /**

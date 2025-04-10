@@ -37,6 +37,8 @@ public class LEDs extends Thunderbolt {
 
 				case ALIGNED -> blink(LightningColors.GREEN);
 
+				case HANDOFF -> pulse(LightningColors.WHITE); // Nate your leds suck
+
 				case ALGAE_MODE -> blink(LightningColors.WHITE);
 
 				case ALIGNING -> pulse(LightningColors.BLUE);
@@ -76,8 +78,6 @@ public class LEDs extends Thunderbolt {
 			setDefaultOption("None", null);
 		}};
 		LightningShuffleboard.send("LEDs", "Test State", ledChooser);
-
-		// pdh = new PowerDistribution(1, ModuleType.kRev);
 
 		addStrip(strip);
 	}

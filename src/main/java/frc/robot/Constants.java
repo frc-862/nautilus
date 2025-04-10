@@ -178,10 +178,10 @@ public class Constants {
         public static final ThunderBird coralCollectorMotor = new ThunderBird(RobotMap.CORAL_COLLECTOR,
             RobotMap.CANIVORE_CAN_NAME, CoralCollectorConstants.INVERTED,
             CoralCollectorConstants.STATOR_CURRENT_LIMIT, CoralCollectorConstants.BRAKE_MODE);
-        public static final ThunderBird algaeCollectorPivotMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_PIVOT,
+        public static final ThunderBird tuskPivotMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_PIVOT,
             RobotMap.CANIVORE_CAN_NAME, TuskConstants.PIVOT_INVERTED,
             TuskConstants.PIVOT_STATOR_CURRENT_LIMIT, TuskConstants.PIVOT_BRAKE_MODE);
-        public static final ThunderBird algaeCollectorRollerMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_ROLLER,
+        public static final ThunderBird tuskRollerMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_ROLLER,
             RobotMap.CANIVORE_CAN_NAME, TuskConstants.ROLLER_INVERTED,
             TuskConstants.ROLLER_STATOR_CURRENT_LIMIT, TuskConstants.ROLLER_BRAKE_MODE);
         public static final ThunderBird climberMotor = new ThunderBird(RobotMap.CLIMBER, RobotMap.CANIVORE_CAN_NAME,
@@ -202,7 +202,7 @@ public class Constants {
 
         public enum RodStates {
             STOW(false), INVERSE_STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
-            BARGE(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false), TUSKS_CLEAR(false), TUSKS_COLLECT(false);
+            BARGE(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false), TUSKS_INIT(false), TUSKS_PRECOLLECT(false), TUSKS_COLLECT(false);
 
             private boolean scoring;
 
@@ -240,7 +240,8 @@ public class Constants {
                 put(RodStates.SOURCE, 42d);
                 put(RodStates.PROCESSOR, -25.5d);
                 put(RodStates.BARGE, 57d);
-                put(RodStates.TUSKS_CLEAR, 75d);
+                put(RodStates.TUSKS_INIT, 75d);
+                put(RodStates.TUSKS_PRECOLLECT, -75d);
                 put(RodStates.TUSKS_COLLECT, -75d);
             }
         };
@@ -258,8 +259,9 @@ public class Constants {
                 put(RodStates.SOURCE, 9.6d); // 9.1
                 put(RodStates.PROCESSOR, 1.75d);
                 put(RodStates.BARGE, 47d);
-                put(RodStates.TUSKS_CLEAR, 6d);
-                put(RodStates.TUSKS_COLLECT, 10d);
+                put(RodStates.TUSKS_INIT, 6d);
+                put(RodStates.TUSKS_PRECOLLECT, 12d);
+                put(RodStates.TUSKS_COLLECT, 7d); // tune whatever this is
             }
         };
     }
@@ -1260,6 +1262,7 @@ public class Constants {
             CLIMBED(),
             COLLECTED(),
             ALIGNED(),
+            HANDOFF(),
             ALGAE_MODE(),
             ALIGNING(),
             COLLECTING(),
@@ -1321,37 +1324,38 @@ public class Constants {
 
     public class TuskConstants {
         public static final double PIVOT_TOLERANCE = 5; // temp
-        public static final double PIVOT_GEAR_RATIO = 1; // temp
+        public static final double PIVOT_GEAR_RATIO = 20; // temp
         public static final double PIVOT_MOI = 0.01096; // temp
         public static final double PIVOT_MIN_ANGLE = 0; // temp
         public static final double PIVOT_MAX_ANGLE = 90; // temp
         public static final double PIVOT_LENGTH = 0.33; // temp
-        public static final double PIVOT_START_ANGLE = 0; // temp
-        public static final double ALGAE_ROLLER_SPEED = 1;
+        public static final double PIVOT_START_ANGLE = 90; // temp
+
+        public static final double ROLLER_SPEED = 1;
 
         public static final double ROLLER_KV = 0.24; // temp
         public static final double ROLLER_KA = 0.8; // temp
 
         public static final boolean PIVOT_INVERTED = false; // temp
-        public static final double PIVOT_STATOR_CURRENT_LIMIT = 100d; // temp
+        public static final double PIVOT_STATOR_CURRENT_LIMIT = 200d; // temp
         public static final boolean PIVOT_BRAKE_MODE = false; // temp
 
         public static final boolean ROLLER_INVERTED = false; // temp
         public static final double ROLLER_STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean ROLLER_BRAKE_MODE = false; // temp
 
-        public static final double PIVOT_KP = 3d; // temp
+        public static final double PIVOT_KP = 1d; // temp
         public static final double PIVOT_KI = 0d; // temp
         public static final double PIVOT_KD = 0d; // temp
 
         // public static final double DEPLOY_ANGLE = 90;
         // public static final double STOW_ANGLE = 0;
 
-        public static final double DEPLOY_CURRENT = 40d;
-        public static final double STOW_CURRENT = 40d;
+        public static final double DEPLOY_CURRENT = 200d;
+        public static final double STOW_CURRENT = 200d;
 
-        public static final double MOVEMENT_VOLTAGE = 10d;
-        public static final double SLOW_VOLTAGE = 5d;
+        public static final double MOVEMENT_VOLTAGE = 6d;
+        public static final double SLOW_VOLTAGE = 4d;
 
         public static final double ROLLER_CURRENT = 80d; // temp
 

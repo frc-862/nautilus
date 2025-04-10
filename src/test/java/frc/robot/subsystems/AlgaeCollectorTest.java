@@ -32,10 +32,10 @@ public class AlgaeCollectorTest implements AutoCloseable {
     void constructMotors() {
         assert HAL.initialize(500, 0);
 
-        rollerMotor = RobotMotors.algaeCollectorRollerMotor;
+        rollerMotor = RobotMotors.tuskRollerMotor;
         simRollerMotor = rollerMotor.getSimState();
 
-        pivotMotor = RobotMotors.algaeCollectorPivotMotor;
+        pivotMotor = RobotMotors.tuskPivotMotor;
         simPivotMotor = pivotMotor.getSimState();
 
         algaeCollector = new Tusks(rollerMotor, pivotMotor);

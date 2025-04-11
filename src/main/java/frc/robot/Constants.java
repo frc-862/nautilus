@@ -244,7 +244,6 @@ public class Constants {
                 put(RodStates.PROCESSOR, -25.5d);
                 put(RodStates.BARGE, 57d);
                 put(RodStates.FREE_TUSKS, -20d);
-                // put(RodStates.TUSKS_PRECOLLECT, -75d);
                 put(RodStates.TUSKS_COLLECT, -20d);
             }
         };
@@ -263,7 +262,6 @@ public class Constants {
                 put(RodStates.PROCESSOR, 1.75d);
                 put(RodStates.BARGE, 47d);
                 put(RodStates.FREE_TUSKS, 12d);
-                // put(RodStates.TUSKS_PRECOLLECT, 12d);
                 put(RodStates.TUSKS_COLLECT, 3d); // tune whatever this is
             }
         };

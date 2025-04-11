@@ -228,27 +228,31 @@ public class RobotContainer extends LightningContainer {
                         .withRodState(rod, () -> queuedRodState)
                         .withScoreSpit(coralCollector, -1)
                         .withStowAfter(rod)
+                        .withResetQueue(() -> resetRodQueue(queuedRodState))
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton) // Robot RIGHT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
                         .withScoreSpit(coralCollector, -1)
                         .withStowAfter(rod)
+                        .withResetQueue(() -> resetRodQueue(queuedRodState))
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getXButton) // Algae
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.MIDDLE, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        // .withScoreSpit(coralCollector, -0.5)
+                        .withScoreSpit(coralCollector, -0.5)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // L1 AUTOALIGN
         new Trigger(() -> (driver.getLeftBumperButton() && driver.getAButton()))
                 .whileTrue(PoseBasedAutoAlign.getL1PoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
                         .withRodState(rod, () -> queuedRodState)
+                        .withScoreSpit(coralCollector, -0.75)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(() -> (driver.getRightBumperButton() && driver.getAButton()))
                 .whileTrue(PoseBasedAutoAlign.getL1PoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
+                        .withScoreSpit(coralCollector, -0.75)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // BARGE Autoalign
@@ -294,7 +298,7 @@ public class RobotContainer extends LightningContainer {
         // RodStates.L3).andThen(resetRodQueue(RodStates.L3)));
         new Trigger(() -> rod.isCoralMode() && copilot.getYButton())
                 .whileTrue(setRodQueue(RodStates.L4))
-                .onFalse(new SetRodState(rod, RodStates.L4).andThen(resetRodQueue(RodStates.L4)));
+                .onFalse(new SetRodState(rod, queuedRodState).andThen(resetRodQueue(RodStates.L4)));
         new Trigger(() -> rod.isCoralMode() && copilot.getRightBumperButton())
                 .onTrue(new SetRodState(rod, RodStates.SOURCE));
 
@@ -341,7 +345,7 @@ public class RobotContainer extends LightningContainer {
         }
 
         // LED testing
-        new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
+        // new Trigger(() -> leds.getTestState() != null).whileTrue(leds.strip.enableState(LEDStates.MIXER));
 
         // SYSID
         // new Trigger(driver::getStartButton).whileTrue(new InstantCommand(() ->

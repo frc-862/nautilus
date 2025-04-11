@@ -3,9 +3,13 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Swerve;
+import frc.robot.Constants.VisionConstants.ReefPose;
+import frc.robot.subsystems.LEDs;
 
 public class ValidateAutoAlign extends Command {
     private final Swerve drivetrain;
+    private final LEDs leds;
+    private final ReefPose reefPose;
 
     /*
      * 3 states:
@@ -40,8 +44,10 @@ public class ValidateAutoAlign extends Command {
         }
     }
 
-    public ValidateAutoAlign(Swerve drivetrain) {
+    public ValidateAutoAlign(Swerve drivetrain, LEDs led, ReefPose reefPose) {
         this.drivetrain = drivetrain;
+        this.leds = led;
+        this.reefPose = reefPose;
     }
 
     @Override
@@ -52,14 +58,16 @@ public class ValidateAutoAlign extends Command {
         AutoAlignState state = AutoAlignState.getState(drivetrain.getRangeSensorAverage());
         switch(state) {
             case VALID:
-                this.cancel();
                 //probably gonna led
-                break;
+                this.cancel();
+                return;
             case CORAL:
                 //use secondary coral map
+                addRequirements(drivetrain);
                 break;
             case INVALID:
-                
+                CommandScheduler.getInstance().schedule(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, reefPose, leds));
+                this.cancel();
                 break;
         }
         
@@ -68,5 +76,11 @@ public class ValidateAutoAlign extends Command {
     @Override
     public boolean isFinished() {
         return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        // TODO Auto-generated method stub
+        CommandScheduler.getInstance().cancel(this);
     }
 }

@@ -65,7 +65,7 @@ public class PoseBasedAutoAlign extends Command {
      * @param drivetrain
      * @param leds
      */
-    public PoseBasedAutoAlign(Swerve drivetrain, LEDs leds) {
+    private PoseBasedAutoAlign(Swerve drivetrain, LEDs leds) {
         this.drivetrain = drivetrain;
         this.leds = leds;
 

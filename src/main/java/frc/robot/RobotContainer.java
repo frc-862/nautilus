@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -517,10 +518,10 @@ public class RobotContainer extends LightningContainer {
      * @param command
      * @return
      */
-    public Command withStowAfter(Command command) {
-        return new ConditionalCommand(command.andThen(new ScoreCoral(coralCollector, () -> -1)
+    public SequentialCommandGroup withStowAfter(Command command) {
+        return command.andThen(new ConditionalCommand(new ScoreCoral(coralCollector, () -> -1)
             .andThen(resetRodQueue(queuedRodState))
-            .andThen(new SetRodState(rod, RodStates.STOW))), new InstantCommand(), rod.getState()::isScoring);
+            .andThen(new SetRodState(rod, RodStates.STOW)), new InstantCommand(), () -> rod.getState().isScoring()));
     }
 
     /**

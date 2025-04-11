@@ -387,7 +387,7 @@ public class PhotonVision extends SubsystemBase {
 
                         // averages distance over all results
                         averageDistance = totalDistances / numberOfResults;
-                        updates = new Tuple<EstimatedRobotPose, Double>(pose, minDist);
+                        updates = new Tuple<EstimatedRobotPose, Double>(pose, averageDistance);
                         this.hasTarget = hasTarget;
                         if (hasTarget) {
                             updateVision(camName);

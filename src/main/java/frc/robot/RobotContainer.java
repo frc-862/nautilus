@@ -225,40 +225,27 @@ public class RobotContainer extends LightningContainer {
         // AUTO ALIGN
         // TODO: maybe automatically invoke coral/algae mode?
         new Trigger(driver::getLeftBumperButton) // Robot LEFT
-                .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
+                .whileTrue(withStowAfter(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        // .withScoreSpit(coralCollector, -1)
-                        // .withStowAfter(rod)
-                        // .withResetQueue(() -> resetRodQueue(queuedRodState))
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING))
-                        .andThen(new StartEndCommand(() -> coralCollector.setPower(-1), coralCollector::stop, coralCollector)
-                            .withDeadline(new WaitCommand(0.25)))
-                        .andThen(resetRodQueue(queuedRodState))
-                        .andThen(new SetRodState(rod, RodStates.STOW)));
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING))));
         new Trigger(driver::getRightBumperButton) // Robot RIGHT
-                .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
+                .whileTrue(withStowAfter(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        .withScoreSpit(coralCollector, -1)
-                        .withStowAfter(rod)
-                        .withResetQueue(() -> resetRodQueue(queuedRodState))
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING))));
         new Trigger(driver::getXButton) // Algae
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.MIDDLE, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        .withScoreSpit(coralCollector, -0.5)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // L1 AUTOALIGN
         new Trigger(() -> (driver.getLeftBumperButton() && driver.getAButton()))
-                .whileTrue(PoseBasedAutoAlign.getL1PoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
+                .whileTrue(withStowAfter(PoseBasedAutoAlign.getL1PoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        .withScoreSpit(coralCollector, -0.75)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING))));
         new Trigger(() -> (driver.getRightBumperButton() && driver.getAButton()))
-                .whileTrue(PoseBasedAutoAlign.getL1PoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
+                .whileTrue(withStowAfter(PoseBasedAutoAlign.getL1PoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        .withScoreSpit(coralCollector, -0.75)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING))));
 
         // BARGE Autoalign
         new Trigger(driver::getBButton)
@@ -523,6 +510,17 @@ public class RobotContainer extends LightningContainer {
     @Override
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
+    }
+
+    /**
+     * Spits + stows after the command is finished
+     * @param command
+     * @return
+     */
+    public Command withStowAfter(Command command) {
+        return new ConditionalCommand(command.andThen(new ScoreCoral(coralCollector, () -> -1)
+            .andThen(resetRodQueue(queuedRodState))
+            .andThen(new SetRodState(rod, RodStates.STOW))), new InstantCommand(), rod.getState()::isScoring);
     }
 
     /**

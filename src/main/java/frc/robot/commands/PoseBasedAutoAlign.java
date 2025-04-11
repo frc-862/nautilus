@@ -57,13 +57,6 @@ public class PoseBasedAutoAlign extends Command {
     private Supplier<RodStates> targetRodState;
     private boolean isWithRodState = false;
     private boolean hasDeployedRod = false; // used to check if we have deployed the fishing rod yet
-    private boolean isWithStow = false;
-
-    private CoralCollector collector;
-    private boolean isWithSpit = false;
-    private double spitPower = 0;
-
-    private Runnable queueResetter = () -> {};
 
     /**
      * Used to align to Tag
@@ -138,18 +131,6 @@ public class PoseBasedAutoAlign extends Command {
                 if (rod.getState() != targetRodState.get()) {
                     invokeRod();
                 }
-            }
-
-            if (isWithSpit && collector != null) {
-                // Check the rod if it exists, otherwise
-                // if (rod != null ? (rod.getState().isScoring() && rod.onTarget() && rod.getState() != RodStates.LOW && rod.getState() != RodStates.HIGH) : true) {
-                new RunCommand(() -> collector.setPower(spitPower), collector).withDeadline(new WaitCommand(0.5))
-                        .andThen(collector::stop, collector).schedule();
-                // }
-            }
-
-            if (queueResetter != null) {
-                queueResetter.run();
             }
 
         }
@@ -333,45 +314,6 @@ public class PoseBasedAutoAlign extends Command {
         addRequirements(rod); // add the fishing rod subsystem as a requirement to this command
 
         return this; // return this to allow for method chaining
-    }
-
-    /**
-     * Method to stow the rod after a score
-     * @param rod
-     * @return
-     */
-    public PoseBasedAutoAlign withStowAfter(FishingRod rod) {
-        if (rod == null) {
-            this.rod = rod;
-        }
-        isWithStow = true;
-
-        return this;
-    }
-
-    /**
-     * I hate this method
-     * @param queueResetter bruh
-     * @return
-     */
-    public PoseBasedAutoAlign withResetQueue(Runnable queueResetter) {
-        this.queueResetter = queueResetter;
-        
-        return this;
-    }
-
-    /**
-     * Apply spit power on end
-     * @param collector
-     * @param spitPower
-     * @return
-     */
-    public PoseBasedAutoAlign withScoreSpit(CoralCollector collector, double spitPower) {
-        this.isWithSpit = true;
-        this.spitPower = spitPower;
-        this.collector = collector;
-
-        return this;
     }
 
     /**

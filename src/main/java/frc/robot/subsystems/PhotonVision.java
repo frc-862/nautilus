@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -16,19 +15,16 @@ import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.simulation.VisionTargetSim;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.Robot;
 import frc.thunder.shuffleboard.LightningShuffleboard;
-import frc.thunder.util.Triplet;
 import frc.thunder.util.Tuple;
 
 public class PhotonVision extends SubsystemBase {
@@ -245,43 +241,6 @@ public class PhotonVision extends SubsystemBase {
         LightningShuffleboard.send("Vision", "Field_SIM", visionSim.getDebugField());
     }
 
-    private synchronized void updateVision(ReefPose caller) {
-        Tuple<EstimatedRobotPose, Double> leftUpdates = leftThread.getUpdates();
-        Tuple<EstimatedRobotPose, Double> rightUpdates = rightThread.getUpdates();
-
-        // LightningShuffleboard.setDouble("Vision", "left dist", leftUpdates.v);
-        // LightningShuffleboard.setDouble("Vision", "right dist", rightUpdates.v);
-
-        final double maxAcceptableDist = 4d;
-        boolean shouldUpdateLeft = true;
-        boolean shouldUpdateRight = true;
-
-        // if (DriverStation.isAutonomous() && DriverStation.isEnabled()) {
-        //     shouldUpdateLeft = leftUpdates.v < maxAcceptableDist;
-        //     shouldUpdateRight = rightUpdates.v < maxAcceptableDist;
-        // }
-
-        // prefer the camera that called the function (has known good values)
-        // if the other camera has a target, prefer the one with the lower distance to best tag
-        switch (caller) {
-            case LEFT:
-                if((rightThread.hasTarget() && rightUpdates.v < leftUpdates.v) && shouldUpdateRight) {
-                    drivetrain.addVisionMeasurement(rightUpdates.k, rightUpdates.v);
-                } else if (shouldUpdateLeft) {
-                    drivetrain.addVisionMeasurement(leftUpdates.k, leftUpdates.v);
-                }
-            break;
-            case RIGHT:
-                if((leftThread.hasTarget() && leftUpdates.v < rightUpdates.v) && shouldUpdateLeft) {
-                    drivetrain.addVisionMeasurement(leftUpdates.k, rightUpdates.v);
-                } else if (shouldUpdateRight) {
-                    drivetrain.addVisionMeasurement(rightUpdates.k, rightUpdates.v);
-                }
-            break;
-        }
-    }
-
-
     private class CameraThread extends Thread {
         private EstimatedRobotPose pose = new EstimatedRobotPose(new Pose3d(), 0, List.of(), PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR);
         private PhotonPoseEstimator poseEstimator;
@@ -304,114 +263,71 @@ public class PhotonVision extends SubsystemBase {
             poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
             tags = poseEstimator.getFieldTags();
-
-            // if(!DriverStation.getAlliance().isEmpty()) {
-            //     switch (DriverStation.getAlliance().get()) {
-            //         case Blue:
-            //             tags.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-            //             break;
-
-            //         case Red:
-            //             tags.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-            //             break;
-
-            //         default:
-            //             DataLogManager.log("[PhotonVision]: Failed to get driver station alliance");
-            //             break;
-            //     }
-            // }
-
             poseEstimator.setFieldTags(tags);
 
         }
 
+        private void pause(long milliseconds) {
+            try {
+                sleep(milliseconds);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
+
         @Override
         public void run() {
-            try {
-                sleep(3000);
-            } catch (InterruptedException e) {
-                DataLogManager.log(camName.toString() + " sleep inital failed");
-            }
+            pause(3000);
+
             while (true) {
                 if (!cameraInitialized) {
                     initializeCamera();
                 } else {
                     try {
                         List<PhotonPipelineResult> results = camera.getAllUnreadResults();
-                        double numberOfResults = results.size(); //double to prevent integer division errors
+                        poseEstimator.setReferencePose(drivetrain.getPose());
+                        int numberOfResults = 0;
                         double totalDistances = 0;
-                        boolean hasTarget = false;
-                        double minDist = 100;
-                        double maxDist = 0;
+
                         //fundamentally, this loop updates the pose and distance for each result. It also logs the data to shuffleboard
                         //this is done in a thread-safe manner, as global variables are only updated at the end of the loop (no race conditions)
                         for (PhotonPipelineResult result : results) {
                             if (result.hasTargets()) {
-                                // the local hasTarget variable will turn true if ANY PipelineResult within this loop has a target
-                                hasTarget = true;
+                                var bestTarget = result.getBestTarget();
+                                var ambiguity = bestTarget.getPoseAmbiguity();
 
-                                if (!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
-                                    if(shouldDoSingleTag(result)) { //there is technically a one-line way to do this but I'd like to make my code readable without mr hurley <3
-                                        result.multitagResult = Optional.empty();
-                                        // result.targets.forEach((meow) -> System.out.println(meow.fiducialId));
-                                        result.targets.removeIf((PhotonTrackedTarget target) -> VisionConstants.TAG_IGNORE_LIST.contains((short) target.getFiducialId()));
-                                    }
-                                    poseEstimator.update(result).ifPresentOrElse(((pose) -> this.pose = pose), () -> {
-                                        DataLogManager.log("[PhotonVision] WARNING: " + camName.toString() + " pose not updated");
-                                    });
+                                if (ambiguity < 0.3) {
+                                    poseEstimator.update(result).ifPresentOrElse(
+                                        (pose) -> this.pose = pose,
+                                        () -> DataLogManager.log("[PhotonVision] ERROR: " + camName.toString() + " pose update failed")
+                                    );
+
+                                    // grabs the distance to the best target (for the latest set of result)
+                                    totalDistances += result.getBestTarget().getBestCameraToTarget().getTranslation().getNorm();
+                                    numberOfResults += 1;
                                 } else {
-                                    DataLogManager.log("[PhotonVision] WARNING: " + camName.toString() + " pose ambiguity is high");
+                                    DataLogManager.log("[PhotonVision] WARNING: " + camName.toString() + " pose ambiguity is high " + ambiguity);
                                 }
-                                // grabs the distance to the best target (for the latest set of result)
-                                double dist = result.getBestTarget().getBestCameraToTarget().getTranslation().getNorm();
-                                if (dist < minDist) {
-                                    minDist = dist;
-                                }
-
-                                // if(dist > maxDist) {
-                                //     maxDist = dist;
-                                // }
-
-                                totalDistances += dist;
-
-                                // LightningShuffleboard.setBool("Vision", camName.toString() + " targets found", !result.targets.isEmpty());
-                                // LightningShuffleboard.setPose2d("Vision", camName.toString() + " pose", pose.estimatedPose.toPose2d());
-                                // LightningShuffleboard.setDouble("Vision", camName.toString() + " Timestamp", result.getTimestampSeconds());
-                                // LightningShuffleboard.setBool("Vision", camName.toString() + " hasTarget", true);
-                            } else {
-                                //note there is no hasTarget = false here, as the variable should not be set to false if a target was found in a previous iteration
-                                // LightningShuffleboard.setBool("Vision", camName.toString() + " hasTarget", false);
-                                // LightningShuffleboard.setBool("Vision", camName.toString() + " functional", true);
                             }
                         }
 
                         // averages distance over all results
-                        averageDistance = totalDistances / numberOfResults;
-                        updates = new Tuple<EstimatedRobotPose, Double>(pose, averageDistance);
-                        this.hasTarget = hasTarget;
+                        this.hasTarget = numberOfResults > 0;
                         if (hasTarget) {
-                            updateVision(camName);
+                            averageDistance = totalDistances / numberOfResults;
+                            drivetrain.addVisionMeasurement(pose, averageDistance);
+                        } else {
+                            averageDistance = 0d;
                         }
                     } catch (IndexOutOfBoundsException e) {
                         // if there are no results,
                         LightningShuffleboard.setBool("Vision", camName.toString() + " functional", false);
                         LightningShuffleboard.setBool("Vision", camName.toString() + " hasTarget", false);
-                        this.hasTarget = false;
+                        hasTarget = false;
                     }
-                    try {
-                        sleep(5);
-                    } catch (InterruptedException e) {
-                        DataLogManager.log(camName.toString() + " sleep failed");
-                    }
+                    pause(5);
                 }
             }
-        }
-
-        private boolean shouldDoSingleTag(PhotonPipelineResult result) {
-            return result.getMultiTagResult()
-            //big complicated way to say "hey if the multitag result has an ignored tag, return true"
-            .map(multiTagResult -> multiTagResult.fiducialIDsUsed.stream().anyMatch(VisionConstants.TAG_IGNORE_LIST::contains))
-            .orElse(false);
         }
 
         /**

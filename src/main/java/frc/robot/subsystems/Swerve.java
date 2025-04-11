@@ -294,7 +294,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
         }
     }
 
-    public void addVisionMeasurement(EstimatedRobotPose pose, double distance) {
+    public synchronized void addVisionMeasurement(EstimatedRobotPose pose, double distance) {
         if (DriverStation.isDisabled()) {
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
                     VecBuilder.fill(0.1, 0.1, 0.1));

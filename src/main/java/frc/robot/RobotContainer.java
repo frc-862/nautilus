@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -226,10 +227,14 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getLeftBumperButton) // Robot LEFT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        .withScoreSpit(coralCollector, -1)
-                        .withStowAfter(rod)
-                        .withResetQueue(() -> resetRodQueue(queuedRodState))
-                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
+                        // .withScoreSpit(coralCollector, -1)
+                        // .withStowAfter(rod)
+                        // .withResetQueue(() -> resetRodQueue(queuedRodState))
+                        .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING))
+                        .andThen(new StartEndCommand(() -> coralCollector.setPower(-1), coralCollector::stop, coralCollector)
+                            .withDeadline(new WaitCommand(0.25)))
+                        .andThen(resetRodQueue(queuedRodState))
+                        .andThen(new SetRodState(rod, RodStates.STOW)));
         new Trigger(driver::getRightBumperButton) // Robot RIGHT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
@@ -297,8 +302,8 @@ public class RobotContainer extends LightningContainer {
         // .onFalse(new SetRodState(rod,
         // RodStates.L3).andThen(resetRodQueue(RodStates.L3)));
         new Trigger(() -> rod.isCoralMode() && copilot.getYButton())
-                .whileTrue(setRodQueue(RodStates.L4))
-                .onFalse(new SetRodState(rod, queuedRodState).andThen(resetRodQueue(RodStates.L4)));
+                .onTrue(setRodQueue(RodStates.L4))
+                .onFalse(new ConditionalCommand(new SetRodState(rod, RodStates.L4), new InstantCommand(), () -> queuedRodState != RodStates.DEFAULT).andThen(resetRodQueue(RodStates.L4)));
         new Trigger(() -> rod.isCoralMode() && copilot.getRightBumperButton())
                 .onTrue(new SetRodState(rod, RodStates.SOURCE));
 
@@ -541,9 +546,9 @@ public class RobotContainer extends LightningContainer {
      */
     private Command resetRodQueue(RodStates checkState) {
         return new InstantCommand(() -> {
-            if (queuedRodState == checkState) {
+            // if (queuedRodState == checkState) {
                 queuedRodState = RodStates.DEFAULT;
-            }
+            // }
         });
     }
 

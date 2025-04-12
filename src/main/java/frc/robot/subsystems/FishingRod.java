@@ -212,6 +212,15 @@ public class FishingRod extends SubsystemBase {
         });
     }
 
+    public boolean canMoveTusks() {
+        switch (currState) {
+            case STOW, INVERSE_STOW, PROCESSOR, L1: // States that are unsafe for the tusks
+                return false;
+            default:
+                return true;
+        }
+    }
+
     /**
      * Gets the state of the fishing rod
      *

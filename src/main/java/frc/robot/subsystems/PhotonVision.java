@@ -350,7 +350,7 @@ public class PhotonVision extends SubsystemBase {
                                 // the local hasTarget variable will turn true if ANY PipelineResult within this loop has a target
                                 hasTarget = true;
 
-                                if (!(result.getBestTarget().getPoseAmbiguity() > 0.5)) {
+                                if (!(result.getBestTarget().getPoseAmbiguity() > 0.2)) {
                                     if(shouldDoSingleTag(result)) { //there is technically a one-line way to do this but I'd like to make my code readable without mr hurley <3
                                         result.multitagResult = Optional.empty();
                                         // result.targets.forEach((meow) -> System.out.println(meow.fiducialId));

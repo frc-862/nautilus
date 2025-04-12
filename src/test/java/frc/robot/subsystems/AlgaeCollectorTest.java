@@ -79,7 +79,7 @@ public class AlgaeCollectorTest implements AutoCloseable {
     public void testPivotSetPower() {
         var dutyCycle = pivotMotor.getDutyCycle();
 
-        algaeCollector.setPivotPower(0);
+        algaeCollector.setRawPivot(0);
 
         dutyCycle.waitForUpdate(0.1);
 

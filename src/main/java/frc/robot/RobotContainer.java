@@ -118,12 +118,13 @@ public class RobotContainer extends LightningContainer {
 
         climber = new Climber(RobotMotors.climberMotor);
 
+        tusks = new Tusks(RobotMotors.tuskPivotMotor, RobotMotors.tuskRollerMotor);
         if (Robot.isSimulation()) {
-            tusks = new Tusks(RobotMotors.tuskPivotMotor, RobotMotors.tuskRollerMotor);
 
-            simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, tusks,
-                    climber);
+            // simGamePeices = new SimGamePeices(elevator, wrist, drivetrain, coralCollector, tusks,
+            //         climber);
         }
+        
     }
 
     @Override
@@ -304,37 +305,39 @@ public class RobotContainer extends LightningContainer {
                 .onTrue(new SetRodState(rod, RodStates.HIGH));
         new Trigger(() -> !rod.isCoralMode() && copilot.getYButton())
                 .onTrue(new SetRodState(rod, RodStates.BARGE));
-        new Trigger(() -> !rod.isCoralMode() && copilot.getRightBumperButton())
-                .onTrue(new SetRodStateReefAlgae(drivetrain, rod));
+        // new Trigger(() -> !rod.isCoralMode() && copilot.getRightBumperButton())
+        //         .onTrue(new SetRodStateReefAlgae(drivetrain, rod));
 
         // biases
-        // new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d)); // ELE UP
-        // new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-0.5d)); // ELE DOWN
-        // new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5)); // WRIST DOWN
-        // new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5)); // WRIST UP
+        new Trigger(() -> copilot.getPOV() == 0).onTrue(rod.addElevatorBias(0.5d)); // ELE UP
+        new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-0.5d)); // ELE DOWN
+        new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5)); // WRIST DOWN
+        new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5)); // WRIST UP
 
         // TUSK CONTROL
         if (tusks != null) {
 
             // Initiate handoff
-            new Trigger(copilot::getRightStickButton)
+            new Trigger(copilot::getRightBumperButton).and(() -> !rod.isCoralMode())
                     // .and(() -> drivetrain.getCurrentStowZone() != StowZone.REEF)
-                    .onTrue(new AlgaeHandoff(tusks, rod, coralCollector, elevator,
+                    .whileTrue(AlgaeHandoff.getHandoff(tusks, rod, coralCollector, elevator,
                                     () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis())
                             .deadlineFor(leds.strip.enableState(LEDStates.HANDOFF)));
 
-            // new Trigger(() -> copilot.getPOV() == 0).whileTrue(new SetTusksState(tusks, () -> TuskStates.STOWED));
-            // new Trigger(() -> copilot.getPOV() == 180)
-            //         .whileTrue(new SetTusksState(tusks, () -> TuskStates.DEPLOYED, () -> 1));
-
             // Copilot right Y controls tusks (does not move if rod is in the way)
-            new Trigger(() -> copilot.getRightY() > 0.25 && !tusks.isHandoffMode()).whileTrue(
-                    new SetTusksState(tusks, () -> TuskStates.STOWED).withRodSafety(rod));
-            new Trigger(() -> copilot.getRightY() < -0.25 && !tusks.isHandoffMode()).whileTrue(
-                    new SetTusksState(tusks, () -> TuskStates.DEPLOYED).withRodSafety(rod));
+
+            // tusks.setDefaultCommand(new RunCommand(() -> tusks.(copilot.getRightY()), tusks));
+            // tusks.setDefaultCommand(new RunCommand(() -> tusks.setRollerPower(copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()), tusks));
+
+            tusks.setDefaultCommand(new SetTusksState(tusks, () -> copilot.getRightY() > 0.25 ? TuskStates.DEPLOYED : (copilot.getRightY() < 0.25 ? TuskStates.STOWED : TuskStates.MOVING), () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()).withRodSafety(rod));
+
+            // new Trigger(() -> copilot.getRightY() > -0.25).whileTrue(
+            //         new SetTusksState(tusks, () -> TuskStates.STOWED).withRodSafety(rod));
+            // new Trigger(() -> copilot.getRightY() < 0.25).whileTrue(
+            //         new SetTusksState(tusks, () -> TuskStates.DEPLOYED, () -> copilot.getRightTriggerAxis() - copilot.getLeftTriggerAxis()).withRodSafety(rod));
                     
             // Copilot can press the stick button to override and move the rod to safety
-            // new Trigger(copilot::getRightStickButton).onTrue(new SetRodState(rod, RodStates.FREE_TUSKS));
+            new Trigger(copilot::getRightStickButton).onTrue(new SetRodState(rod, RodStates.FREE_TUSKS));
         }
 
         // LED testing

@@ -16,17 +16,17 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 public class LEDs extends Thunderbolt {
 	
 	// LED testing
-	SendableChooser<LEDStates> ledChooser;
+	// SendableChooser<LEDStates> ledChooser;
 
 	public final ThunderStrip strip = new ThunderStrip(LEDConstants.LENGTH, 0, leds) {
 		@Override
 		public void updateLEDs(LEDStates state) {
 			switch (state) {
 				case MIXER -> {
-					LEDStates testState = getTestState();
-					if (testState != null) {
-						updateLEDs(testState);
-					}
+					// LEDStates testState = getTestState();
+					// if (testState != null) {
+					// 	updateLEDs(testState);
+					// }
 				}
 
 				case ERROR -> blink(LightningColors.RED);
@@ -68,23 +68,23 @@ public class LEDs extends Thunderbolt {
 	public LEDs() {
 		super(LEDConstants.PWM_PORT, LEDConstants.LENGTH, RobotMap.UPDATE_FREQ);
 
-		ledChooser = new SendableChooser<LEDStates>() {{
-			addOption("None", null);
-			for (LEDStates state : LEDStates.values()) {
-				if (state != LEDStates.MIXER) {
-					addOption(state.name(), state);
-				}
-			}
-			setDefaultOption("None", null);
-		}};
-		LightningShuffleboard.send("LEDs", "Test State", ledChooser);
+		// ledChooser = new SendableChooser<LEDStates>() {{
+		// 	addOption("None", null);
+		// 	for (LEDStates state : LEDStates.values()) {
+		// 		if (state != LEDStates.MIXER) {
+		// 			addOption(state.name(), state);
+		// 		}
+		// 	}
+		// 	setDefaultOption("None", null);
+		// }};
+		// LightningShuffleboard.send("LEDs", "Test State", ledChooser);
 
 		addStrip(strip);
 	}
 
-	public LEDStates getTestState() {
-		return ledChooser.getSelected();
-	}
+	// public LEDStates getTestState() {
+	// 	return ledChooser.getSelected();
+	// }
 	
 	@Override
 	public void periodic() {

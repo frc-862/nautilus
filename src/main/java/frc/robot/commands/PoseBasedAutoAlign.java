@@ -261,7 +261,8 @@ public class PoseBasedAutoAlign extends Command {
             public void initialize() {
                 int newId = PoseConstants.getScorePose(drivetrain.getPose());
                 if (newId == 0) {
-                    CommandScheduler.getInstance().cancel(this);
+                    cancel();
+                    // CommandScheduler.getInstance().cancel(this);
                     return;
                 }
 
@@ -287,7 +288,8 @@ public class PoseBasedAutoAlign extends Command {
             public void initialize() {
                 int newId = PoseConstants.getScorePose(drivetrain.getPose());
                 if (newId == 0) {
-                    CommandScheduler.getInstance().cancel(this);
+                    cancel();
+                    // CommandScheduler.getInstance().cancel(this);
                     return;
                 }
 

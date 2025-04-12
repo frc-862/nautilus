@@ -546,7 +546,7 @@ public class Constants {
                 new Translation3d(-5.772, 11.281, 12).times(0.0254), robotToCameraRot);
                 // new Translation3d(-5.772, 11.281, 12).times(0.0254), robotToCameraRot);
         public static final Transform3d robotRightToCamera = new Transform3d(
-                new Translation3d(-5.967, -11.581, 12).times(0.0254), newTiltRobotToCamera);
+                new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
         // MIDDLE is only used for algae on the reef!!
         public enum ReefPose {

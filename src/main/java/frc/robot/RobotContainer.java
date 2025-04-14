@@ -230,24 +230,29 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getLeftBumperButton) // Robot LEFT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
                         .withRodState(rod, () -> queuedRodState)
+                        .withScoreSpit(coralCollector, () -> -1)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton) // Robot RIGHT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
+                        .withScoreSpit(coralCollector, () -> -1)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getXButton) // Algae
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.MIDDLE, leds)
                         .withRodState(rod, () -> queuedRodState)
+                        .withScoreSpit(coralCollector, () -> -0.5)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // L1 AUTOALIGN
         new Trigger(() -> (driver.getLeftBumperButton() && driver.getAButton()))
                 .whileTrue(PoseBasedAutoAlign.getL1PoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
                         .withRodState(rod, () -> queuedRodState)
+                        .withScoreSpit(coralCollector, () -> -0.75)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(() -> (driver.getRightBumperButton() && driver.getAButton()))
                 .whileTrue(PoseBasedAutoAlign.getL1PoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
+                        .withScoreSpit(coralCollector, () -> -0.75)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // BARGE Autoalign

@@ -11,9 +11,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -57,6 +57,10 @@ public class PoseBasedAutoAlign extends Command {
     private Supplier<RodStates> targetRodState;
     private boolean isWithRodState = false;
     private boolean hasDeployedRod = false; // used to check if we have deployed the fishing rod yet
+
+    private boolean isWithSpit = false;
+    private CoralCollector collector;
+    private DoubleSupplier spitPower;
 
     /**
      * Used to align to Tag
@@ -130,6 +134,16 @@ public class PoseBasedAutoAlign extends Command {
             if (isWithRodState && rod != null) {
                 if (rod.getState() != targetRodState.get()) {
                     invokeRod();
+                }
+            }
+
+
+            if (isWithSpit && collector != null && spitPower != null) {
+                if (rod != null ? (rod.getState().isScoring() && rod.onTarget() && rod.getState() != RodStates.LOW && rod.getState() != RodStates.HIGH) : true) {
+                    new SequentialCommandGroup(
+                        new RunCommand(() -> collector.setPower(spitPower.getAsDouble()), collector).withDeadline(new WaitCommand(0.5)),
+                        new InstantCommand(collector::stop, collector)
+                    ).schedule();
                 }
             }
 
@@ -328,6 +342,14 @@ public class PoseBasedAutoAlign extends Command {
     public PoseBasedAutoAlign withYControl(DoubleSupplier yVelSupplier) {
         this.yVelSupplier = yVelSupplier;
         this.isWithY = false;
+
+        return this;
+    }
+
+    public PoseBasedAutoAlign withScoreSpit(CoralCollector collector, DoubleSupplier spitPower) {
+        isWithSpit = true;
+        this.collector = collector;
+        this.spitPower = spitPower;
 
         return this;
     }

@@ -62,6 +62,8 @@ public class PoseBasedAutoAlign extends Command {
     private CoralCollector collector;
     private DoubleSupplier spitPower;
 
+    private Command successCommand = new InstantCommand();
+
     /**
      * Used to align to Tag
      * will always use PID Controllers
@@ -139,10 +141,12 @@ public class PoseBasedAutoAlign extends Command {
 
 
             if (isWithSpit && collector != null && spitPower != null) {
+                // check the rod's current state if it exists, otherwise score anywya
                 if (rod != null ? (rod.getState().isScoring() && rod.onTarget() && rod.getState() != RodStates.LOW && rod.getState() != RodStates.HIGH) : true) {
                     new SequentialCommandGroup(
                         new RunCommand(() -> collector.setPower(spitPower.getAsDouble()), collector).withDeadline(new WaitCommand(0.5)),
-                        new InstantCommand(collector::stop, collector)
+                        new InstantCommand(collector::stop, collector),
+                        successCommand
                     ).schedule();
                 }
             }
@@ -351,6 +355,12 @@ public class PoseBasedAutoAlign extends Command {
         this.collector = collector;
         this.spitPower = spitPower;
 
+        return this;
+    }
+
+    public PoseBasedAutoAlign withSuccessCommand(Command command) {
+        this.successCommand = command;
+        
         return this;
     }
 

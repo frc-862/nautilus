@@ -231,13 +231,13 @@ public class RobotContainer extends LightningContainer {
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
                         .withRodState(rod, () -> queuedRodState)
                         .withScoreSpit(coralCollector, () -> -1)
-                        .withSuccessCommand(new SetRodState(rod, RodStates.STOW))
+                        // .withSuccessCommand(new InstantCommand(() -> queuedRodState = RodStates.STOW).andThen(new SetRodState(rod, RodStates.STOW)))
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton) // Robot RIGHT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
                         .withScoreSpit(coralCollector, () -> -1)
-                        .withSuccessCommand(new SetRodState(rod, RodStates.STOW))
+                        // .withSuccessCommand(new InstantCommand(() -> queuedRodState = RodStates.STOW).andThen(new SetRodState(rod, RodStates.STOW)))
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getXButton) // Algae
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.MIDDLE, leds)
@@ -301,7 +301,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> rod.isCoralMode() && copilot.getYButton())
                 .onTrue(setRodQueue(RodStates.L4))
                 .onFalse(new ConditionalCommand(new SetRodState(rod, RodStates.L4), new InstantCommand(),
-                        () -> queuedRodState != RodStates.DEFAULT).andThen(resetRodQueue(RodStates.L4)));
+                        () -> queuedRodState == RodStates.L4).andThen(resetRodQueue(RodStates.L4)));
         new Trigger(() -> rod.isCoralMode() && copilot.getRightBumperButton())
                 .onTrue(new SetRodState(rod, RodStates.SOURCE));
 
@@ -510,6 +510,8 @@ public class RobotContainer extends LightningContainer {
                 drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(-1, 2, 0)).withTimeout(0.5));
         NamedCommands.registerCommand("DriveBack",
                 drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(0, -0.25, 0)).withTimeout(0.5));
+        NamedCommands.registerCommand("DriveFwd",
+                drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(0, 0.25, 0)).withTimeout(0.75));
 
         NamedCommands.registerCommand("SetCoralMode", new InstantCommand(() -> rod.setCoralMode(true)));
         NamedCommands.registerCommand("SetAlgaeMode", new InstantCommand(() -> rod.setCoralMode(false)));

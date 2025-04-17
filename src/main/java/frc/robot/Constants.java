@@ -202,7 +202,7 @@ public class Constants {
 
         public enum RodStates {
             STOW(false), INVERSE_STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
-            BARGE(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false), FREE_TUSKS(false), TUSKS_COLLECT(false);
+            BARGE(true), PROCESSOR(false), LOLLIPOP(false), DEFAULT(false), UNKNOWN(false), FREE_TUSKS(false), TUSKS_COLLECT(false);
 
             private boolean scoring;
 
@@ -239,6 +239,7 @@ public class Constants {
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
                 put(RodStates.PROCESSOR, -25.5d);
+                put(RodStates.LOLLIPOP, -20d);
                 put(RodStates.BARGE, 57d);
                 put(RodStates.FREE_TUSKS, 0d);
                 put(RodStates.TUSKS_COLLECT, -20d);
@@ -257,6 +258,7 @@ public class Constants {
                 put(RodStates.HIGH, 28d);
                 put(RodStates.SOURCE, 9.6d); // 9.1
                 put(RodStates.PROCESSOR, 1.75d);
+                put(RodStates.LOLLIPOP, 1.75d);
                 put(RodStates.BARGE, 47d);
                 put(RodStates.FREE_TUSKS, 12d);
                 put(RodStates.TUSKS_COLLECT, 2d); // tune whatever this is

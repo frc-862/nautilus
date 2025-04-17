@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.004741151582444,
-        "y": 4.016907920124803
+        "x": 6.375886040499591,
+        "y": 4.008440900313504
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.5486971130982,
-        "y": 3.9655308878208815
+        "x": 6.919842002015347,
+        "y": 3.9570638680095827
       },
       "isLocked": false,
       "linkedName": "Reef4Middle"
     },
     {
       "anchor": {
-        "x": 7.120617423545188,
-        "y": 3.564643044228027
+        "x": 7.1542264796240955,
+        "y": 3.445219678032454
       },
       "prevControl": {
-        "x": 7.00982309690314,
-        "y": 4.155020650466097
+        "x": 7.043432152982048,
+        "y": 4.035597284270522
       },
       "nextControl": {
-        "x": 7.24931762995389,
-        "y": 2.878852335581043
+        "x": 7.282926686032798,
+        "y": 2.7594289693854703
       },
       "isLocked": false,
       "linkedName": null
@@ -49,7 +49,7 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.7861313093768245,
+      "maxWaypointRelativePos": 1.1186085140143756,
       "constraints": {
         "maxVelocity": 1.5,
         "maxAcceleration": 1.0,

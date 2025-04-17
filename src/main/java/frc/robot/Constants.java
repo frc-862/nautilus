@@ -239,7 +239,7 @@ public class Constants {
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
                 put(RodStates.PROCESSOR, -25.5d);
-                put(RodStates.LOLLIPOP, -20d);
+                put(RodStates.LOLLIPOP, -17d);
                 put(RodStates.BARGE, 57d);
                 put(RodStates.FREE_TUSKS, 0d);
                 put(RodStates.TUSKS_COLLECT, -20d);

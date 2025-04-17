@@ -143,7 +143,7 @@ public class PoseBasedAutoAlign extends Command {
             if (isWithSpit && collector != null && spitPower != null) {
                 // check the rod's current state if it exists, otherwise score anywya
                 if (rod != null ? (rod.getState().isScoring() && rod.onTarget() && rod.getState() != RodStates.LOW && rod.getState() != RodStates.HIGH) : false) {
-                    if (rod.getState() == RodStates.L4) {
+                    if (rod.getState() == RodStates.L4 || rod.getState() == RodStates.L3 || rod.getState() == RodStates.L2) {
 
                         new SequentialCommandGroup(
                             new RunCommand(() -> collector.setPower(spitPower.getAsDouble()), collector).withTimeout(0.5),

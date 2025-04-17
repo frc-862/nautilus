@@ -230,25 +230,25 @@ public class RobotContainer extends LightningContainer {
         new Trigger(driver::getLeftBumperButton) // Robot LEFT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.RIGHT, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        .withScoreSpit(coralCollector, () -> -1)
-                        .withSuccessCommand(() -> new InstantCommand(() -> {
-                            queuedRodState = RodStates.STOW;
-                            rod.setState(RodStates.STOW, RodTransitionStates.DEFAULT);
-                        }))
+                        // .withScoreSpit(coralCollector, () -> -1)
+                        // .withSuccessCommand(() -> new InstantCommand(() -> {
+                        //     queuedRodState = RodStates.STOW;
+                        //     rod.setState(RodStates.STOW, RodTransitionStates.DEFAULT);
+                        // }))
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getRightBumperButton) // Robot RIGHT
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.LEFT, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        .withScoreSpit(coralCollector, () -> -1)
-                        .withSuccessCommand(() -> new InstantCommand(() -> {
-                            queuedRodState = RodStates.STOW;
-                            rod.setState(RodStates.STOW, RodTransitionStates.DEFAULT);
-                        }))
+                        // .withScoreSpit(coralCollector, () -> -1)
+                        // .withSuccessCommand(() -> new InstantCommand(() -> {
+                        //     queuedRodState = RodStates.STOW;
+                        //     rod.setState(RodStates.STOW, RodTransitionStates.DEFAULT);
+                        // }))
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
         new Trigger(driver::getXButton) // Algae
                 .whileTrue(PoseBasedAutoAlign.getPoseAutoAlign(drivetrain, ReefPose.MIDDLE, leds)
                         .withRodState(rod, () -> queuedRodState)
-                        .withScoreSpit(coralCollector, () -> -0.5)
+                        // .withScoreSpit(coralCollector, () -> -0.5)
                         .deadlineFor(leds.strip.enableState(LEDStates.ALIGNING)));
 
         // L1 AUTOALIGN
@@ -518,6 +518,8 @@ public class RobotContainer extends LightningContainer {
                 drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(-1, 2, 0)).withTimeout(0.5));
         NamedCommands.registerCommand("DriveBack",
                 drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(0, -0.25, 0)).withTimeout(0.5));
+        NamedCommands.registerCommand("DriveBackSlow",
+                drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(0, -0.15, 0)).withTimeout(1.5));
         NamedCommands.registerCommand("DriveFwd",
                 drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(0, 0.25, 0)).withTimeout(0.75));
 

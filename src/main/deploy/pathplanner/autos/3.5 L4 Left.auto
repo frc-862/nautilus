@@ -77,9 +77,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "AlignToLeftSource"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AlignToLeftSource"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "DriveBackSlow"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -190,9 +203,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "AlignToLeftSource"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AlignToLeftSource"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "DriveBackSlow"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -297,9 +323,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "AlignToLeftSource"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AlignToLeftSource"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "DriveBackSlow"
+                      }
+                    }
+                  ]
                 }
               },
               {

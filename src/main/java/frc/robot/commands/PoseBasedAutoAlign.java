@@ -58,11 +58,11 @@ public class PoseBasedAutoAlign extends Command {
     private boolean isWithRodState = false;
     private boolean hasDeployedRod = false; // used to check if we have deployed the fishing rod yet
 
-    private boolean isWithSpit = false;
-    private CoralCollector collector;
-    private DoubleSupplier spitPower;
+    // private boolean isWithSpit = false;
+    // private CoralCollector collector;
+    // private DoubleSupplier spitPower;
 
-    private Supplier<InstantCommand> successCommand = () -> new InstantCommand();
+    // private Supplier<InstantCommand> successCommand = () -> new InstantCommand();
 
     /**
      * Used to align to Tag
@@ -140,19 +140,19 @@ public class PoseBasedAutoAlign extends Command {
             }
 
 
-            if (isWithSpit && collector != null && spitPower != null) {
-                // check the rod's current state if it exists, otherwise score anywya
-                if (rod != null ? (rod.getState().isScoring() && rod.onTarget() && rod.getState() != RodStates.LOW && rod.getState() != RodStates.HIGH) : false) {
-                    if (rod.getState() == RodStates.L4 || rod.getState() == RodStates.L3 || rod.getState() == RodStates.L2) {
+            // if (isWithSpit && collector != null && spitPower != null) {
+            //     // check the rod's current state if it exists, otherwise score anywya
+            //     if (rod != null ? (rod.getState().isScoring() && rod.onTarget() && rod.getState() != RodStates.LOW && rod.getState() != RodStates.HIGH) : false) {
+            //         if (rod.getState() == RodStates.L4 || rod.getState() == RodStates.L3 || rod.getState() == RodStates.L2) {
 
-                        new SequentialCommandGroup(
-                            new RunCommand(() -> collector.setPower(spitPower.getAsDouble()), collector).withTimeout(0.5),
-                            new InstantCommand(collector::stop, collector),
-                            successCommand.get()
-                        ).schedule();
-                    }
-                }
-            }
+            //             new SequentialCommandGroup(
+            //                 new RunCommand(() -> collector.setPower(spitPower.getAsDouble()), collector).withTimeout(0.5),
+            //                 new InstantCommand(collector::stop, collector),
+            //                 successCommand.get()
+            //             ).schedule();
+            //         }
+            //     }
+            // }
 
         }
         if (!DriverStation.isAutonomous() && onTarget()) {
@@ -353,19 +353,19 @@ public class PoseBasedAutoAlign extends Command {
         return this;
     }
 
-    public PoseBasedAutoAlign withScoreSpit(CoralCollector collector, DoubleSupplier spitPower) {
-        isWithSpit = true;
-        this.collector = collector;
-        this.spitPower = spitPower;
+    // public PoseBasedAutoAlign withScoreSpit(CoralCollector collector, DoubleSupplier spitPower) {
+    //     isWithSpit = true;
+    //     this.collector = collector;
+    //     this.spitPower = spitPower;
 
-        return this;
-    }
+    //     return this;
+    // }
 
-    public PoseBasedAutoAlign withSuccessCommand(Supplier<InstantCommand> command) {
-        this.successCommand = command;
+    // public PoseBasedAutoAlign withSuccessCommand(Supplier<InstantCommand> command) {
+    //     this.successCommand = command;
         
-        return this;
-    }
+    //     return this;
+    // }
 
     /**
      * Override the rotation P gain

@@ -62,7 +62,7 @@ public class PoseBasedAutoAlign extends Command {
     private CoralCollector collector;
     private DoubleSupplier spitPower;
 
-    private Command successCommand = new InstantCommand();
+    private Supplier<InstantCommand> successCommand = () -> new InstantCommand();
 
     /**
      * Used to align to Tag
@@ -142,12 +142,15 @@ public class PoseBasedAutoAlign extends Command {
 
             if (isWithSpit && collector != null && spitPower != null) {
                 // check the rod's current state if it exists, otherwise score anywya
-                if (rod != null ? (rod.getState().isScoring() && rod.onTarget() && rod.getState() != RodStates.LOW && rod.getState() != RodStates.HIGH) : true) {
-                    new SequentialCommandGroup(
-                        new RunCommand(() -> collector.setPower(spitPower.getAsDouble()), collector).withDeadline(new WaitCommand(0.5)),
-                        new InstantCommand(collector::stop, collector),
-                        successCommand
-                    ).schedule();
+                if (rod != null ? (rod.getState().isScoring() && rod.onTarget() && rod.getState() != RodStates.LOW && rod.getState() != RodStates.HIGH) : false) {
+                    if (rod.getState() == RodStates.L4) {
+
+                        new SequentialCommandGroup(
+                            new RunCommand(() -> collector.setPower(spitPower.getAsDouble()), collector).withTimeout(0.5),
+                            new InstantCommand(collector::stop, collector),
+                            successCommand.get()
+                        ).schedule();
+                    }
                 }
             }
 
@@ -358,7 +361,7 @@ public class PoseBasedAutoAlign extends Command {
         return this;
     }
 
-    public PoseBasedAutoAlign withSuccessCommand(Command command) {
+    public PoseBasedAutoAlign withSuccessCommand(Supplier<InstantCommand> command) {
         this.successCommand = command;
         
         return this;

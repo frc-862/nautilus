@@ -560,7 +560,7 @@ public class Constants {
         public static final double VISION_THETA_STDEV = 1;
 
         //this is lowkey stupid but its fine
-        public static final List<Short> TAG_IGNORE_LIST = List.of((short) 1, (short) 2, (short) 12, (short) 13);
+        public static final List<Short> TAG_IGNORE_LIST = List.of((short) 1, (short) 2, (short) 12, (short) 13, (short) 3, (short) 4, (short) 5, (short) 16, (short) 15, (short) 14);
     }
 
     public static class PoseConstants {

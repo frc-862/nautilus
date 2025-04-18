@@ -637,11 +637,12 @@ public class Constants {
 
                 // red barge front
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 5),
-                    new Pose2d(9.982, 1.621, new Rotation2d(Degrees.of(0))));
+                    new Pose2d(10.249, 1.621, new Rotation2d(Degrees.of(0))));
                 // blue barge front
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 14),
-                    new Pose2d(7.625, 5.5, new Rotation2d(Degrees.of(-180))));
+                    new Pose2d(7.355, 5.5, new Rotation2d(Degrees.of(-180))));
 
+                /* ts has not been touched in a while do not trust :) */
                 // red barge back
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 15),
                     new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));

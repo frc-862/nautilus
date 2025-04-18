@@ -49,6 +49,8 @@ public class Robot extends LightningRobot {
         container = (RobotContainer) getContainer();
         container.drivetrain.setOperatorPerspectiveForward(
                 new Rotation2d(Degrees.of(DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0)));
+            
+        container.drivetrain.setTakingVision(true);
 
         if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
             ledCmd = new RepeatCommand(
@@ -65,6 +67,8 @@ public class Robot extends LightningRobot {
         container = (RobotContainer) getContainer();
         container.drivetrain.setOperatorPerspectiveForward(new Rotation2d(
                 Degrees.of(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0)));
+        
+        container.drivetrain.setTakingVision(true);
 
         if (Constants.ROBOT_IDENTIFIER == RobotIdentifiers.NAUTILUS) {
             ledCmd = new RepeatCommand(

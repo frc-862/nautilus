@@ -508,6 +508,9 @@ public class RobotContainer extends LightningContainer {
         // new SetRodState(rod, RodStates.LOW)
         // .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
 
+        NamedCommands.registerCommand("EnableVision", new InstantCommand(() -> drivetrain.setTakingVision(true)));
+        NamedCommands.registerCommand("DisableVision", new InstantCommand(() -> drivetrain.setTakingVision(false)));
+
         NamedCommands.registerCommand("DriveLeft",
                 drivetrain.applyRequest(() -> DriveRequests.getRobotCentric(2, 1, 0)).withTimeout(0.5));
         NamedCommands.registerCommand("DriveRight",

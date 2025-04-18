@@ -95,6 +95,8 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     private StowZone lastStowZone = StowZone.SOURCE;
     private StowZone currentsStowZone = StowZone.SOURCE;
 
+    private boolean isTakingVision = true;
+
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
      * <p>
@@ -201,6 +203,14 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
                 this); // Subsystem for requirements
     }
 
+    public void setTakingVision(boolean isTaking) {
+        this.isTakingVision = isTaking;
+    }
+
+    public boolean isTakingVision() {
+        return this.isTakingVision;
+    }
+
     public boolean poseZero() {
         return Math.abs(getPose().getTranslation().getNorm()) <= 0.1;
     }
@@ -295,6 +305,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     }
 
     public void addVisionMeasurement(EstimatedRobotPose pose, double distance) {
+        if (!isTakingVision) {
+            return;
+        }
+
         if (DriverStation.isDisabled()) {
             addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds),
                     VecBuilder.fill(0.1, 0.1, 0.1));

@@ -16,7 +16,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import frc.robot.Constants.AlgaeCollectorConstants;
+import frc.robot.Constants.TuskConstants;
 import frc.robot.Constants.SimGamePeicesConstants;
 import frc.robot.Constants.WristConstants;
 import frc.thunder.shuffleboard.LightningShuffleboard;
@@ -36,7 +36,7 @@ public class SimGamePeices extends SubsystemBase {
     private Elevator elevator;
     private Wrist wrist;
     private CoralCollector coralCollector;
-    private AlgaeCollector algaeCollector;
+    private Tusks algaeCollector;
     private Climber climber;
 
     private HashMap<Integer, Peice> peices = new HashMap<Integer, Peice>();
@@ -110,7 +110,7 @@ public class SimGamePeices extends SubsystemBase {
         }
     }
 
-    public SimGamePeices(Elevator elevator, Wrist wrist, Swerve drivetrain, CoralCollector coralCollector, AlgaeCollector algaeCollector,
+    public SimGamePeices(Elevator elevator, Wrist wrist, Swerve drivetrain, CoralCollector coralCollector, Tusks algaeCollector,
             Climber climber) {
 
         this.drivetrain = drivetrain;
@@ -246,7 +246,7 @@ public class SimGamePeices extends SubsystemBase {
         double elevatorHeight = Units.inchesToMeters(elevator.getPosition());
 
         double wristLength = WristConstants.LENGTH.in(Meters) * 0.5;
-        double algaeCollectorLength = AlgaeCollectorConstants.PIVOT_LENGTH * 0.5;
+        double algaeCollectorLength = TuskConstants.PIVOT_LENGTH * 0.5;
 
         // add offsets to robot pose to get collector poses
 

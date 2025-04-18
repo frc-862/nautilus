@@ -133,6 +133,10 @@ public class CoralCollector extends SubsystemBase {
         return motor.getStatorCurrent().getValueAsDouble() >= CoralCollectorConstants.CORAL_COLLECTED_CURRENT;
     }
 
+    public boolean getAlgaeCurrentHit() {
+        return motor.getStatorCurrent().getValueAsDouble() >= CoralCollectorConstants.ALGAE_COLLECTED_CURRENT;
+    }
+
     /**
      * @return if we are stalling the motor
      * @param current to check if over
@@ -141,6 +145,10 @@ public class CoralCollector extends SubsystemBase {
         return motor.getStatorCurrent().getValueAsDouble() >= current;
     }
 
+    public boolean isOverheating() {
+        return motor.getDeviceTemp().getValueAsDouble() >= CoralCollectorConstants.OVERHEAT_TEMP;
+    }
+    
     /**
      * can be used to set beambreak value to simulate beambreak
      *

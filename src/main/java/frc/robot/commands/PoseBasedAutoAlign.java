@@ -11,7 +11,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
@@ -23,6 +25,7 @@ import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.PoseConstants.LightningTagID;
 import frc.robot.Constants.VisionConstants.ReefPose;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.CoralCollector;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Swerve;
@@ -54,6 +57,12 @@ public class PoseBasedAutoAlign extends Command {
     private Supplier<RodStates> targetRodState;
     private boolean isWithRodState = false;
     private boolean hasDeployedRod = false; // used to check if we have deployed the fishing rod yet
+
+    // private boolean isWithSpit = false;
+    // private CoralCollector collector;
+    // private DoubleSupplier spitPower;
+
+    // private Supplier<InstantCommand> successCommand = () -> new InstantCommand();
 
     /**
      * Used to align to Tag
@@ -129,6 +138,21 @@ public class PoseBasedAutoAlign extends Command {
                     invokeRod();
                 }
             }
+
+
+            // if (isWithSpit && collector != null && spitPower != null) {
+            //     // check the rod's current state if it exists, otherwise score anywya
+            //     if (rod != null ? (rod.getState().isScoring() && rod.onTarget() && rod.getState() != RodStates.LOW && rod.getState() != RodStates.HIGH) : false) {
+            //         if (rod.getState() == RodStates.L4 || rod.getState() == RodStates.L3 || rod.getState() == RodStates.L2) {
+
+            //             new SequentialCommandGroup(
+            //                 new RunCommand(() -> collector.setPower(spitPower.getAsDouble()), collector).withTimeout(0.5),
+            //                 new InstantCommand(collector::stop, collector),
+            //                 successCommand.get()
+            //             ).schedule();
+            //         }
+            //     }
+            // }
 
         }
         if (!DriverStation.isAutonomous() && onTarget()) {
@@ -258,7 +282,8 @@ public class PoseBasedAutoAlign extends Command {
             public void initialize() {
                 int newId = PoseConstants.getScorePose(drivetrain.getPose());
                 if (newId == 0) {
-                    CommandScheduler.getInstance().cancel(this);
+                    cancel();
+                    // CommandScheduler.getInstance().cancel(this);
                     return;
                 }
 
@@ -284,7 +309,8 @@ public class PoseBasedAutoAlign extends Command {
             public void initialize() {
                 int newId = PoseConstants.getScorePose(drivetrain.getPose());
                 if (newId == 0) {
-                    CommandScheduler.getInstance().cancel(this);
+                    cancel();
+                    // CommandScheduler.getInstance().cancel(this);
                     return;
                 }
 
@@ -327,6 +353,20 @@ public class PoseBasedAutoAlign extends Command {
         return this;
     }
 
+    // public PoseBasedAutoAlign withScoreSpit(CoralCollector collector, DoubleSupplier spitPower) {
+    //     isWithSpit = true;
+    //     this.collector = collector;
+    //     this.spitPower = spitPower;
+
+    //     return this;
+    // }
+
+    // public PoseBasedAutoAlign withSuccessCommand(Supplier<InstantCommand> command) {
+    //     this.successCommand = command;
+        
+    //     return this;
+    // }
+
     /**
      * Override the rotation P gain
      * 
@@ -338,4 +378,5 @@ public class PoseBasedAutoAlign extends Command {
 
         return this;
     }
+
 }

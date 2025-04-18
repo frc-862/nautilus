@@ -11,19 +11,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToFiveLeft"
+                  "name": "AUTONAlignToFourRight"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 6.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "RodInverseStow"
+                  "waitTime": 4.0
                 }
               }
             ]
@@ -32,75 +26,138 @@
         {
           "type": "named",
           "data": {
-            "name": "RodL4"
+            "name": "WaitOnTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetAlgaeMode"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AlignToFourMiddle"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RodLow"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 4.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitOnTarget"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeAlgae"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "DriveBack"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DriveFwd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R4M-Processor"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToProcessor"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 6.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitOnTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreAlgae"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StowTuah"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "R5-LSource"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeCoral"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 4.0
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AlignToLeftSource"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "RodSource"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StowTuah"
+            "waitTime": 1.25
           }
         },
         {
@@ -108,9 +165,22 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "parallel",
                 "data": {
-                  "name": "AUTONAlignToSixLeft"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RodStow"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AlignToThreeMiddle"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -125,106 +195,7 @@
         {
           "type": "named",
           "data": {
-            "name": "WaitOnTarget"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StowTuah"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "R6-LSource"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeCoral"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 4.5
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AlignToLeftSource"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "RodSource"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StowTuah"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "AUTONAlignToSixRight"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 6.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitOnTarget"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "RodStow"
+            "name": "RodHigh"
           }
         }
       ]

@@ -130,16 +130,29 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 6.0
+                  "waitTime": 4.0
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "WaitOnTarget"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "WaitOnTarget"
+                }
+              }
+            ]
           }
         },
         {

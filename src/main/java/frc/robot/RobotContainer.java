@@ -53,6 +53,7 @@ import frc.robot.commands.SetRodState;
 import frc.robot.commands.SetRodStateReefAlgae;
 import frc.robot.commands.SysIdSequence;
 import frc.robot.commands.auton.IntakeCoral;
+import frc.robot.commands.auton.ScoreAlgae;
 import frc.robot.commands.auton.ScoreCoral;
 import frc.robot.commands.tusks.SetTusksState;
 import frc.robot.commands.tusks.AlgaeHandoff;
@@ -454,7 +455,7 @@ public class RobotContainer extends LightningContainer {
                 new InstantCommand(() -> rod.setState(RodStates.STOW, RodTransitionStates.DEFAULT)));
 
         NamedCommands.registerCommand("ScoreCoral", new ScoreCoral(coralCollector, () -> -1));
-        NamedCommands.registerCommand("ScoreAlgae", new ScoreCoral(coralCollector, () -> -0.5));
+        NamedCommands.registerCommand("ScoreAlgae", new ScoreAlgae(coralCollector, () -> -1));
 
         NamedCommands.registerCommand("WristThenStow",
                 new InstantCommand(() -> rod.setState(RodStates.STOW,

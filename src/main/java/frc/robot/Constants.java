@@ -398,7 +398,7 @@ public class Constants {
         public static final boolean INVERTED = true;
 
         public static final double LOW_SPIT_POWER_MULT = 0.75;
-        public static final double CORAL_COLLECTED_CURRENT = 40d; //40
+        public static final double CORAL_COLLECTED_CURRENT = 45d; //40
         public static final double ALGAE_COLLECTED_CURRENT = 70d; //40
         public static final double CORAL_HOLD_POWER = 0.07d;
         public static final double ALGAE_HOLD_POWER = 0.2d;

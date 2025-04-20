@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CoralCollector;
 
-public class ScoreCoral extends SequentialCommandGroup {
-    public ScoreCoral(CoralCollector coral, DoubleSupplier power) {
+public class ScoreAlgae extends SequentialCommandGroup {
+    public ScoreAlgae(CoralCollector coral, DoubleSupplier power) {
         addCommands(
             new InstantCommand(() -> coral.setPower(power.getAsDouble()), coral),
-            new WaitCommand(0.25),
+            new WaitCommand(0.75),
             new InstantCommand(() -> coral.setPower(0), coral)
         );
     }

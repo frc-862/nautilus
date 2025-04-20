@@ -16,6 +16,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -104,7 +105,7 @@ public class Constants {
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
         public static final double tritonWristOffset = -0.227;
-        public static final double nautilusWristOffset = 0.75586;
+        public static final double nautilusWristOffset = 0.805908203125;//0.736328125;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
@@ -147,8 +148,8 @@ public class Constants {
         public static final int CORAL_COLLECTOR_ENCODER = 36;
         public static final int CORAL_COLLECTOR_BEAM_BREAK_DIO = 1; // temp
 
-        public static final int ALGAE_COLLECTOR_ROLLER = 13; // temp
-        public static final int ALGAE_COLLECTOR_PIVOT = 14; // temp
+        public static final int TUSKS_PIVOT = 13;
+        public static final int TUSKS_ROLLER = 14;
 
         public static final int CLIMBER = 15;
         public static final int CLIMBER_LIMIT_SWITCH_DIO = 0;
@@ -177,12 +178,12 @@ public class Constants {
         public static final ThunderBird coralCollectorMotor = new ThunderBird(RobotMap.CORAL_COLLECTOR,
             RobotMap.CANIVORE_CAN_NAME, CoralCollectorConstants.INVERTED,
             CoralCollectorConstants.STATOR_CURRENT_LIMIT, CoralCollectorConstants.BRAKE_MODE);
-        public static final ThunderBird algaeCollectorPivotMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_PIVOT,
-            RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.PIVOT_INVERTED,
-            AlgaeCollectorConstants.PIVOT_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.PIVOT_BRAKE_MODE);
-        public static final ThunderBird algaeCollectorRollerMotor = new ThunderBird(RobotMap.ALGAE_COLLECTOR_ROLLER,
-            RobotMap.CANIVORE_CAN_NAME, AlgaeCollectorConstants.ROLLER_INVERTED,
-            AlgaeCollectorConstants.ROLLER_STATOR_CURRENT_LIMIT, AlgaeCollectorConstants.ROLLER_BRAKE_MODE);
+        public static final ThunderBird tuskPivotMotor = new ThunderBird(RobotMap.TUSKS_PIVOT,
+            RobotMap.CANIVORE_CAN_NAME, TuskConstants.PIVOT_INVERTED,
+            TuskConstants.PIVOT_STATOR_CURRENT_LIMIT, TuskConstants.PIVOT_BRAKE_MODE);
+        public static final ThunderBird tuskRollerMotor = new ThunderBird(RobotMap.TUSKS_ROLLER,
+            RobotMap.CANIVORE_CAN_NAME, TuskConstants.ROLLER_INVERTED,
+            TuskConstants.ROLLER_STATOR_CURRENT_LIMIT, TuskConstants.ROLLER_BRAKE_MODE);
         public static final ThunderBird climberMotor = new ThunderBird(RobotMap.CLIMBER, RobotMap.CANIVORE_CAN_NAME,
             ClimberConstants.INVERTED,
             ClimberConstants.STATOR_CURRENT_LIMIT, ClimberConstants.BREAK_MODE);
@@ -201,7 +202,7 @@ public class Constants {
 
         public enum RodStates {
             STOW(false), INVERSE_STOW(false), L1(true), L2(true), L3(true), L4(true), SOURCE(false), LOW(true), HIGH(true),
-            BARGE(true), PROCESSOR(false), DEFAULT(false), UNKNOWN(false);
+            BARGE(true), PROCESSOR(false), LOLLIPOP(false), DEFAULT(false), UNKNOWN(false), FREE_TUSKS(false), TUSKS_COLLECT(false);
 
             private boolean scoring;
 
@@ -229,8 +230,8 @@ public class Constants {
         public static final HashMap<RodStates, Double> WRIST_MAP = new HashMap<RodStates, Double>() {
             {
                 put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
-                put(RodStates.INVERSE_STOW, -70d); // Lower angle is safer for nautilus
-                put(RodStates.L1, 6d);
+                put(RodStates.INVERSE_STOW, -70d);
+                put(RodStates.L1, 12d); // 6d
                 put(RodStates.L2, -30d); // -30
                 put(RodStates.L3, -36d); // -36
                 put(RodStates.L4, -42d);
@@ -238,14 +239,17 @@ public class Constants {
                 put(RodStates.HIGH, -29d);
                 put(RodStates.SOURCE, 42d);
                 put(RodStates.PROCESSOR, -25.5d);
+                put(RodStates.LOLLIPOP, -17d);
                 put(RodStates.BARGE, 57d);
+                put(RodStates.FREE_TUSKS, 0d);
+                put(RodStates.TUSKS_COLLECT, -20d);
             }
         };
 
         public static final HashMap<RodStates, Double> ELEVATOR_MAP = new HashMap<RodStates, Double>() {
             {
                 put(RodStates.STOW, 2d);
-                put(RodStates.INVERSE_STOW, 4d);
+                put(RodStates.INVERSE_STOW, 4.75d);
                 put(RodStates.L1, 2d);
                 put(RodStates.L2, 14d);
                 put(RodStates.L3, 27d); // 26.5
@@ -253,8 +257,11 @@ public class Constants {
                 put(RodStates.LOW, 17d); // 15
                 put(RodStates.HIGH, 28d);
                 put(RodStates.SOURCE, 9.6d); // 9.1
-                put(RodStates.BARGE, 47d);
                 put(RodStates.PROCESSOR, 1.75d);
+                put(RodStates.LOLLIPOP, 1.75d);
+                put(RodStates.BARGE, 47d);
+                put(RodStates.FREE_TUSKS, 12d);
+                put(RodStates.TUSKS_COLLECT, 2d); // tune whatever this is
             }
         };
     }
@@ -380,6 +387,8 @@ public class Constants {
         public static final double KV = 0.24; // temp
         public static final double KA = 0.8; // temp
 
+        public static final double OVERHEAT_TEMP = 55d; // Celsius
+
         public static final double BEAMBREAK_DEBOUNCE = 0.1; // unused
 
         // public static final double COLLECTED_CURRENT = 35d;
@@ -389,7 +398,7 @@ public class Constants {
         public static final boolean INVERTED = true;
 
         public static final double LOW_SPIT_POWER_MULT = 0.75;
-        public static final double CORAL_COLLECTED_CURRENT = 40d; //40
+        public static final double CORAL_COLLECTED_CURRENT = 45d; //40
         public static final double ALGAE_COLLECTED_CURRENT = 70d; //40
         public static final double CORAL_HOLD_POWER = 0.07d;
         public static final double ALGAE_HOLD_POWER = 0.2d;
@@ -534,8 +543,10 @@ public class Constants {
         public static final SimCameraProperties cameraProp = new SimCameraProperties();
         public static final Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
         public static final Rotation3d robotToCameraRot = new Rotation3d(0, 0, Math.PI);
+        public static final Rotation3d newTiltRobotToCamera = new Rotation3d(0, 0, Math.PI - (10d * (Math.PI / 180d)));
         public static final Transform3d robotLeftToCamera = new Transform3d(
                 new Translation3d(-5.772, 11.281, 12).times(0.0254), robotToCameraRot);
+                // new Translation3d(-5.772, 11.281, 12).times(0.0254), robotToCameraRot);
         public static final Transform3d robotRightToCamera = new Transform3d(
                 new Translation3d(-5.772, -11.281, 12).times(0.0254), robotToCameraRot);
 
@@ -547,6 +558,9 @@ public class Constants {
         public static final double VISION_X_STDEV = 1;
         public static final double VISION_Y_STDEV = 1;
         public static final double VISION_THETA_STDEV = 1;
+
+        //this is lowkey stupid but its fine
+        public static final List<Short> TAG_IGNORE_LIST = List.of((short) 1, (short) 2, (short) 12, (short) 13, (short) 3, (short) 4, (short) 5, (short) 16, (short) 15, (short) 14);
     }
 
     public static class PoseConstants {
@@ -614,13 +628,21 @@ public class Constants {
                 put(new Tuple<>(VisionConstants.ReefPose.RIGHT, 12),
                         new Pose2d(1.004, 0.665, new Rotation2d(Degrees.of(54))));
 
+                //red processor
+                put(new Tuple<>(VisionConstants.ReefPose.MIDDLE, 3),
+                        new Pose2d(11.519, 7.549, new Rotation2d(Degrees.of(-90))));
+                //blue processor
+                put(new Tuple<>(VisionConstants.ReefPose.MIDDLE, 16),
+                        new Pose2d(6.000, 0.501, new Rotation2d(Degrees.of(90))));
+
                 // red barge front
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 5),
-                    new Pose2d(9.982, 1.621, new Rotation2d(Degrees.of(0))));
+                    new Pose2d(10.198, 1.621, new Rotation2d(Degrees.of(0))));
                 // blue barge front
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 14),
-                    new Pose2d(7.625, 5.5, new Rotation2d(Degrees.of(-180))));
+                    new Pose2d(7.406, 5.5, new Rotation2d(Degrees.of(-180))));
 
+                /* ts has not been touched in a while do not trust :) */
                 // red barge back
                 put(new Tuple<ReefPose, Integer>(VisionConstants.ReefPose.RIGHT, 15),
                     new Pose2d(7.564, 2.005, new Rotation2d(Degrees.of(-180))));
@@ -669,6 +691,8 @@ public class Constants {
             Four(10, 21),
             Five(11, 20),
             Six(6, 19),
+
+            Processor(3, 16),
 
             RightSource(2, 12),
             LeftSource(1, 13),
@@ -1243,6 +1267,7 @@ public class Constants {
             CLIMBED(),
             COLLECTED(),
             ALIGNED(),
+            HANDOFF(),
             ALGAE_MODE(),
             ALIGNING(),
             COLLECTING(),
@@ -1302,38 +1327,50 @@ public class Constants {
                                                                                                      // relative
     }
 
-    public class AlgaeCollectorConstants {
-        public static final double PIVOT_TOLERANCE = 5; // temp
-        public static final double PIVOT_GEAR_RATIO = 1; // temp
+    public class TuskConstants {
+        public static final double PIVOT_GEAR_RATIO = 20; // temp
         public static final double PIVOT_MOI = 0.01096; // temp
-        public static final double PIVOT_MIN_ANGLE = 0; // temp
-        public static final double PIVOT_MAX_ANGLE = 90; // temp
+        public static final double PIVOT_MIN_ANGLE = -10; // temp
+        public static final double PIVOT_MAX_ANGLE = 100; // temp
         public static final double PIVOT_LENGTH = 0.33; // temp
-        public static final double PIVOT_START_ANGLE = 0; // temp
-        public static final double ALGAE_ROLLER_SPEED = 1;
+        public static final double PIVOT_START_ANGLE = 90; // temp
 
+        public static final double ENCODER_TO_MECHANISM_RATIO = (30d/16d) * (1d/360d);
+
+        public static final double ROLLER_SPEED = 0.6;
         public static final double ROLLER_KV = 0.24; // temp
         public static final double ROLLER_KA = 0.8; // temp
 
-        public static final boolean PIVOT_INVERTED = false; // temp
-        public static final double PIVOT_STATOR_CURRENT_LIMIT = 100d; // temp
-        public static final boolean PIVOT_BRAKE_MODE = false; // temp
+        public static final boolean PIVOT_INVERTED = true; // temp
+        public static final double PIVOT_STATOR_CURRENT_LIMIT = 150d; // temp
+        public static final boolean PIVOT_BRAKE_MODE = true; // temp
 
-        public static final boolean ROLLER_INVERTED = false; // temp
+        public static final boolean ROLLER_INVERTED = true; // temp
         public static final double ROLLER_STATOR_CURRENT_LIMIT = 100d; // temp
         public static final boolean ROLLER_BRAKE_MODE = false; // temp
 
-        public static final double PIVOT_KP = 3; // temp
-        public static final double PIVOT_KI = 0; // temp
-        public static final double PIVOT_KD = 0; // temp
+        public static final double PIVOT_KP = 0.3d; // temp
+        public static final double PIVOT_KI = 0d; // temp
+        public static final double PIVOT_KD = 0.02d; // temp
+        public static final double PIVOT_KG = 0.3d; // temp
 
-        public static final double DEPLOY_ANGLE = 90;
-        public static final double STOW_ANGLE = 0;
+        // public static final double DEPLOY_ANGLE = 90;
+        // public static final double STOW_ANGLE = 0;
 
-        public static final double COLLECTED_CURRENT = 80d; // temp
+        public static final double DEPLOY_CURRENT = 100d;
+        public static final double STOW_CURRENT = 100d;
 
-        public enum AlgaePivotStates {
-            DEPLOYED, STOWED
+        public static final double DEPLOY_ANGLE = -20d;
+        public static final double STOW_ANGLE = 78d;
+
+        public static final double PIVOT_TOLERANCE = 5d;
+
+        public static final double MOVEMENT_POWER = 1d;
+
+        public static final double ROLLER_CURRENT = 80d; // temp
+
+        public enum TuskStates {
+            DEPLOYED, STOWED, MOVING
         }
     }
 

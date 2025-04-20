@@ -42,16 +42,16 @@ public class Elevator extends SubsystemBase {
     private ThunderBird leftMotor;
     @SuppressWarnings("unused")
     private ThunderBird rightMotor;
-    private CANrange rangeSensor;
+    // private CANrange rangeSensor;
 
     private double targetPosition = 0;
     private double currentPosition = 0;
 
-    private double rawRangeMeters = 0;
-    private double filteredRangeDistance = 0;
-    private double filteredRangeMeters = 0;
+    // private double rawRangeMeters = 0;
+    // private double filteredRangeDistance = 0;
+    // private double filteredRangeMeters = 0;
 
-    private ExpoFilter rangeFilter = new ExpoFilter(0.1);
+    // private ExpoFilter rangeFilter = new ExpoFilter(0.1);
 
     private MotionMagicVoltage positionPID;
 
@@ -60,7 +60,7 @@ public class Elevator extends SubsystemBase {
     private ElevatorSim elevatorSim;
     private TalonFXSimState leftSim;
     private TalonFXSimState rightSim;
-    private CANrangeSimState rangeSensorSim;
+    // private CANrangeSimState rangeSensorSim;
 
     public Elevator(ThunderBird leftMotor, ThunderBird rightMotor) {
         this.leftMotor = leftMotor;
@@ -82,13 +82,13 @@ public class Elevator extends SubsystemBase {
         config.Feedback.RotorToSensorRatio = ElevatorConstants.ROTOR_TO_SENSOR_RATIO;
         config.Feedback.SensorToMechanismRatio = ElevatorConstants.ENCODER_TO_MECHANISM_RATIO;
 
-        rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE, RobotMap.CANIVORE_CAN_NAME);
+        // rangeSensor = new CANrange(RobotMap.ELEVATOR_CANRANGE, RobotMap.CANIVORE_CAN_NAME);
 
-        CANrangeConfiguration rangeConfig = new CANrangeConfiguration();
-        rangeConfig.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
-        rangeConfig.FovParams.FOVRangeX = 7;
-        rangeConfig.FovParams.FOVRangeY = 7;
-        rangeSensor.getConfigurator().apply(rangeConfig);
+        // CANrangeConfiguration rangeConfig = new CANrangeConfiguration();
+        // rangeConfig.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
+        // rangeConfig.FovParams.FOVRangeX = 7;
+        // rangeConfig.FovParams.FOVRangeY = 7;
+        // rangeSensor.getConfigurator().apply(rangeConfig);
 
         leftMotor.applyConfig(config);
         rightMotor.setControl(new Follower(RobotMap.L_ELEVATOR, true));
@@ -113,7 +113,7 @@ public class Elevator extends SubsystemBase {
 
             leftSim = new TalonFXSimState(leftMotor);
             rightSim = new TalonFXSimState(rightMotor);
-            rangeSensorSim = new CANrangeSimState(rangeSensor);
+            // rangeSensorSim = new CANrangeSimState(rangeSensor);
 
             // TalonFX sim states do not retain inverts.
             leftSim.Orientation = ElevatorConstants.L_INVERTED ? ChassisReference.Clockwise_Positive
@@ -128,11 +128,11 @@ public class Elevator extends SubsystemBase {
         currentPosition = getPosition();
         // filteredRangeDistance = getCANRangeDist();
 
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator Filtered Value", filteredRangeMeters);
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator Calculated Value", filteredRangeDistance);
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator Translated Raw", rawRangeMeters);
-        LightningShuffleboard.setDouble("Diagnostic", "Elevator raw value",
-                rangeSensor.getDistance().getValueAsDouble());
+        // LightningShuffleboard.setDouble("Diagnostic", "Elevator Filtered Value", filteredRangeMeters);
+        // LightningShuffleboard.setDouble("Diagnostic", "Elevator Calculated Value", filteredRangeDistance);
+        // LightningShuffleboard.setDouble("Diagnostic", "Elevator Translated Raw", rawRangeMeters);
+        // LightningShuffleboard.setDouble("Diagnostic", "Elevator raw value",
+        //         rangeSensor.getDistance().getValueAsDouble());
 
         LightningShuffleboard.setDouble("Elevator", "target pos", targetPosition);
         LightningShuffleboard.setDouble("Elevator", "current pos", currentPosition);
@@ -219,17 +219,17 @@ public class Elevator extends SubsystemBase {
         return Math.abs(targetPosition - currentPosition) <= ElevatorConstants.POSITION_TOLERANCE;
     }
 
-    /**
-     * checks if elevator position should start syncing with the CANrange sensor
-     *
-     * @return true if the elevator position is outside the tolerance of the
-     *         CANrange sensor
-     */
-    public boolean shouldSyncCANRange() {
-        return Math.abs(leftMotor.getVelocity().getValueAsDouble()) < 0.05 // checks elevator not moving
-                && filteredRangeDistance <= 4.8d; // if below 4.8 inches
-        // THE MAP GOES HIGHER THAN 4.8 I KNOW!! The map only updates the filtered value
-    }
+    // /**
+    //  * checks if elevator position should start syncing with the CANrange sensor
+    //  *
+    //  * @return true if the elevator position is outside the tolerance of the
+    //  *         CANrange sensor
+    //  */
+    // public boolean shouldSyncCANRange() {
+    //     return Math.abs(leftMotor.getVelocity().getValueAsDouble()) < 0.05 // checks elevator not moving
+    //             && filteredRangeDistance <= 4.8d; // if below 4.8 inches
+    //     // THE MAP GOES HIGHER THAN 4.8 I KNOW!! The map only updates the filtered value
+    // }
 
     /**
      * gets the position of the elevator motors
@@ -241,11 +241,6 @@ public class Elevator extends SubsystemBase {
         return leftMotor.getPosition().getValueAsDouble();
     }
 
-    /**
-     * gets the distance from the CANRange sensor
-     *
-     * @return CANRange distance
-     */
     // public double getCANRangeDist() {
     //     filteredRangeMeters = rangeFilter.filter(rangeSensor.getDistance().getValueAsDouble());
 
@@ -262,9 +257,9 @@ public class Elevator extends SubsystemBase {
     //     }
     // }
 
-    public double getCANRangeRaw() {
-        return rangeSensor.getDistance().getValueAsDouble();
-    }
+    // public double getCANRangeRaw() {
+    //     return rangeSensor.getDistance().getValueAsDouble();
+    // }
 
     /**
      * gets the basic percentage power of the elevator motors
@@ -295,7 +290,7 @@ public class Elevator extends SubsystemBase {
         double batteryVoltage = RobotController.getBatteryVoltage();
         leftSim.setSupplyVoltage(batteryVoltage);
         rightSim.setSupplyVoltage(batteryVoltage);
-        rangeSensorSim.setSupplyVoltage(batteryVoltage);
+        // rangeSensorSim.setSupplyVoltage(batteryVoltage);
 
         // TODO: I'm unclear if rightsim is necessary, or if this is correct. The WPILib
         // example code only implements one motor, even though it's attached to a
@@ -305,7 +300,7 @@ public class Elevator extends SubsystemBase {
 
         leftSim.setRawRotorPosition(
                 Units.metersToInches(elevatorSim.getPositionMeters()) * ElevatorConstants.ENCODER_TO_MECHANISM_RATIO);
-        rangeSensorSim.setDistance(elevatorSim.getPositionMeters());
+        // rangeSensorSim.setDistance(elevatorSim.getPositionMeters());
 
         LightningShuffleboard.setDouble("Elevator", "getPose", getPosition());
         LightningShuffleboard.setDouble("Elevator", "getRawPose",

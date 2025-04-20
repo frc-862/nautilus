@@ -43,6 +43,10 @@ public class SetRodState extends Command {
             return;
         }
 
+        if (rod.getState() == RodStates.DEFAULT) {
+            return;
+        }
+
         switch (state) {
             case STOW:
                 RodStates desiredStow = RodStates.STOW;

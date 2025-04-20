@@ -26,12 +26,12 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 /*
  * Premise - Defines the sequential group for the handoff sequence using the tusks
- * 
+ *
  * Sequence:
  *  1. Set the rod to the FREE_TUSKS state (higher stow ish)
  *  2. once the elevator is at a safe height, deploy the tusks ASAP
  *  3. Wait for the tusks to be deployed, then move the rod to collect pos ASAP
- * 
+ *
  * Written by Kyle Rush (WindowsVistaisCool)
  * 4.10.2025
  */
@@ -81,9 +81,9 @@ public class AlgaeHandoff extends SequentialCommandGroup {
     /**
      * Custom Rod command since the whole group requires rod, we cannot use
      * SetRodState
-     * 
+     *
      * @param state
-     * @return
+     * @return rod command
      */
     private Command setRod(RodStates state) {
         return new RunCommand(() -> rod.setState(state)).until(rod::onTarget);

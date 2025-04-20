@@ -541,19 +541,6 @@ public class RobotContainer extends LightningContainer {
     }
 
     /**
-     * Spits + stows after the command is finished
-     * 
-     * @param command
-     * @return
-     */
-    public SequentialCommandGroup withStowAfter(Command command) {
-        return command.andThen(new ConditionalCommand(new ScoreCoral(coralCollector, () -> -1)
-                .andThen(resetRodQueue(queuedRodState))
-                .andThen(new SetRodState(rod, RodStates.STOW)), new InstantCommand(),
-                () -> rod.getState().isScoring()));
-    }
-
-    /**
      * Sets queuedRodState to the new state
      *
      * @param newState

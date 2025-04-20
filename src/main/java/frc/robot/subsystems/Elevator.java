@@ -241,11 +241,6 @@ public class Elevator extends SubsystemBase {
         return leftMotor.getPosition().getValueAsDouble();
     }
 
-    /**
-     * gets the distance from the CANRange sensor
-     *
-     * @return CANRange distance
-     */
     // public double getCANRangeDist() {
     //     filteredRangeMeters = rangeFilter.filter(rangeSensor.getDistance().getValueAsDouble());
 

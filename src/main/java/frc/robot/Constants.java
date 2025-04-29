@@ -79,6 +79,8 @@ public class Constants {
 
     public static final String TRITON_IDENTIFIER = "/home/lvuser/triton"; // Differentiate between Triton and Nautlius
     public static final boolean IS_TRITON = Paths.get(TRITON_IDENTIFIER).toFile().exists();
+    public static final boolean tuningMode = false;
+    public static final double loopPeriodSecs = 0.02;
 
     public enum RobotIdentifiers {
         NAUTILUS, TRITON, SIM

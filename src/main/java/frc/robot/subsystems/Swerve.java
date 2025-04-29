@@ -16,6 +16,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
@@ -508,5 +509,25 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
             default:
                 return new InstantCommand();
         }
+    }
+
+    public ChassisSpeeds getFieldVelocity() {
+        var state = getState();
+        return state == null ? new ChassisSpeeds() : state.Speeds; 
+    }
+
+    static SwerveRequest.FieldCentric swerveRequest = new SwerveRequest.FieldCentric();
+    public void runVelocity(double xVeloc, double yVeloc, double rotationVeloc) {
+        var request = swerveRequest
+                            .withVelocityX(xVeloc)
+                            .withVelocityY(yVeloc)
+                            .withRotationalRate(rotationVeloc)
+                            .withDriveRequestType(DriveRequestType.Velocity)
+                            .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
+        setControl(request);
+    }
+
+    public void stop() {
+        setControl(DriveRequests.getAutoAlign(0, 0, 0));
     }
 }

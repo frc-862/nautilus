@@ -55,6 +55,8 @@ public class PoseBasedAutoAlign extends Command {
     private boolean isWithRodState = false;
     private boolean hasDeployedRod = false; // used to check if we have deployed the fishing rod yet
 
+    private boolean invokeCancel;
+
     /**
      * Used to align to Tag
      * will always use PID Controllers
@@ -71,6 +73,9 @@ public class PoseBasedAutoAlign extends Command {
 
     @Override
     public void initialize() {
+
+        if (invokeCancel) return;
+
         LightningShuffleboard.setPose2d("TestAutoAlign", "Target Pose", targetPose);
 
         hasDeployedRod = false;
@@ -85,10 +90,15 @@ public class PoseBasedAutoAlign extends Command {
 
         rPID.setTolerance(AutoAlignConstants.TELE_ROT_TOLERANCE);
         rPID.enableContinuousInput(0, 360);
+
+        invokeCancel = false;
     }
 
     @Override
     public void execute() {
+
+        if (invokeCancel) return;
+
         Pose2d currentPose = drivetrain.getPose();
 
         double xVeloc = xPID.calculate(currentPose.getX(), targetPose.getX())
@@ -122,6 +132,9 @@ public class PoseBasedAutoAlign extends Command {
 
     @Override
     public void end(boolean interrupted) {
+
+        if (invokeCancel) return;
+
         if (!interrupted) {
             leds.strip.enableState(LEDStates.ALIGNED).withDeadline(new WaitCommand(LEDConstants.PULSE_TIME)).schedule();
             if (isWithRodState && rod != null) {
@@ -258,7 +271,8 @@ public class PoseBasedAutoAlign extends Command {
             public void initialize() {
                 int newId = PoseConstants.getScorePose(drivetrain.getPose());
                 if (newId == 0) {
-                    CommandScheduler.getInstance().cancel(this);
+                    CommandScheduler.getInstance().cancel(this); // doesn't work
+                    super.invokeCancel = true; // set the flag to true to indicate we are canceling this command
                     return;
                 }
 
@@ -284,7 +298,8 @@ public class PoseBasedAutoAlign extends Command {
             public void initialize() {
                 int newId = PoseConstants.getScorePose(drivetrain.getPose());
                 if (newId == 0) {
-                    CommandScheduler.getInstance().cancel(this);
+                    CommandScheduler.getInstance().cancel(this); // doesn't work
+                    super.invokeCancel = true; // set the flag to true to indicate we are canceling this command
                     return;
                 }
 

@@ -762,11 +762,6 @@ public class Constants {
             double theta = MathUtil.inputModulus(robotToReef.getAngle().getRadians(), 0, Math.PI * 2);
             double r = robotToReef.getDistance(new Translation2d());
 
-            if (r > 3){
-                return 0;
-            }
-
-
             if (theta >= 0 && theta <= Math.PI/6){
                 return alliance == blue ? 21 : 7;
             } else if (theta > Math.PI/6 && theta <= 3 * Math.PI/6){

@@ -99,11 +99,13 @@ public class Constants {
         private static final Angle nautilusKBackRightEncoderOffset = Rotations.of(-0.427978515625);
 
         // Triton values
+        // TODO: reset using phoenix tuner
         private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);
         private static final Angle tritonKFrontRightEncoderOffset = Rotations.of(0.033447);
         private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(0.1350);
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
+        // TODO: reset using phoenix tuner
         public static final double tritonWristOffset = -0.227;
         public static final double nautilusWristOffset = 0.805908203125;//0.736328125;
 
@@ -229,7 +231,8 @@ public class Constants {
 
         public static final HashMap<RodStates, Double> WRIST_MAP = new HashMap<RodStates, Double>() {
             {
-                put(RodStates.STOW, IS_TRITON ? 80d : 75d); // Lower angle is safer for nautilus
+                // TODO: check/change when checking triton
+                put(RodStates.STOW, IS_TRITON ? 75d : 75d); // Lower angle is safer for nautilus (originally 80d for Triton)
                 put(RodStates.INVERSE_STOW, -70d);
                 put(RodStates.L1, 12d); // 6d
                 put(RodStates.L2, -30d); // -30
@@ -283,17 +286,19 @@ public class Constants {
         public static final double ROTOR_TO_SENSOR_RATIO = 1; // temp
         public static final double ENCODER_TO_MECHANISM_RATIO = DRUM_CIRCUMFERENCE / GEAR_RATIO;
 
-        public static final double MOTORS_KP = 6.5; // temp
+        // TODO: check/change when checking triton
+        public static final double MOTORS_KP = IS_TRITON ? 6.5 : 6.5; // temp
         public static final double MOTORS_KI = 0; // temp
         public static final double MOTORS_KD = 0; // temp
         public static final double MOTORS_KF = 0; // temp
-        public static final double MOTORS_KS = 1; // temp
-        public static final double MOTORS_KV = 0.18;// temp
-        public static final double MOTORS_KA = 0.01; // temp
+        public static final double MOTORS_KS = IS_TRITON ? 1 : 1; // temp
+        public static final double MOTORS_KV = IS_TRITON ? 0.18 : 0.18;// temp
+        public static final double MOTORS_KA = IS_TRITON ? 0.01 : 0.01; // temp
         public static final double MOTORS_KG = 0d; // temp
 
-        public static final double VELOC = 72d; // 80
-        public static final double ACCEL = 250d; // 200
+        // TODO: check/change when checking triton
+        public static final double VELOC = IS_TRITON ? 72d : 72d; // 80
+        public static final double ACCEL = IS_TRITON ? 250d : 250d; // 200
         public static final double JERK = 1600d; // temp
 
         public static final double POSITION_TOLERANCE = 0.1; // temp
@@ -351,16 +356,18 @@ public class Constants {
         public static final double ROTOR_TO_ENCODER_RATIO = 74;
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
-        public static final double MOTORS_KP = 60;
+        // TODO: check/change when checking triton
+        public static final double MOTORS_KP = IS_TRITON ? 60 : 60;
         public static final double MOTORS_KI = 0;
         public static final double MOTORS_KD = 0;
         public static final double MOTORS_KF = 0;
         public static final double MOTORS_KS = 0;
         public static final double MOTORS_KV = 0;
         public static final double MOTORS_KA = 0;
-        public static final double MOTORS_KG = 0.1;
+        public static final double MOTORS_KG = IS_TRITON ? 0.1 : 0.1;
 
-        public static final double MOTORS_KP_SLOW = 33;
+        // TODO: check/change when checking triton
+        public static final double MOTORS_KP_SLOW = IS_TRITON ? 33 : 33;
 
         public static final Angle MIN_ANGLE = Degrees.of(-85);
         public static final Angle MAX_ANGLE = Degrees.of(85);
@@ -398,8 +405,9 @@ public class Constants {
         public static final boolean INVERTED = true;
 
         public static final double LOW_SPIT_POWER_MULT = 0.75;
-        public static final double CORAL_COLLECTED_CURRENT = 45d; //40
-        public static final double ALGAE_COLLECTED_CURRENT = 70d; //40
+        // TODO: check/change when checking triton
+        public static final double CORAL_COLLECTED_CURRENT = IS_TRITON ? 45d : 45d; //40
+        public static final double ALGAE_COLLECTED_CURRENT = IS_TRITON ? 70d : 70d; //40
         public static final double CORAL_HOLD_POWER = 0.07d;
         public static final double ALGAE_HOLD_POWER = 0.2d;
     }
@@ -1192,7 +1200,7 @@ public class Constants {
         }
 
         // Combined Nautilus and Triton Tuner Constants
-
+        // TODO: check/change when checking triton (ESPECIALLY with help)
         public static final Current kSlipCurrent = IS_TRITON
                 ? TritonTunerConstants.kSlipCurrent
                 : NautliusTunerConstants.kSlipCurrent;

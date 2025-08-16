@@ -100,13 +100,13 @@ public class Constants {
 
         // Triton values
         // TODO: reset using phoenix tuner
-        private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0073);
-        private static final Angle tritonKFrontRightEncoderOffset = Rotations.of(0.033447);
-        private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(0.1350);
-        private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
+        private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.06884765625);
+        private static final Angle tritonKFrontRightEncoderOffset = Rotations.of(0.03955078125);
+        private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(-0.466796875);
+        private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.136962890625);
 
         // TODO: reset using phoenix tuner
-        public static final double tritonWristOffset = -0.227;
+        public static final double tritonWristOffset = 0.7397460938;
         public static final double nautilusWristOffset = 0.805908203125;//0.736328125;
 
         // Generic values
@@ -252,14 +252,14 @@ public class Constants {
         public static final HashMap<RodStates, Double> ELEVATOR_MAP = new HashMap<RodStates, Double>() {
             {
                 put(RodStates.STOW, 2d);
-                put(RodStates.INVERSE_STOW, 4.75d);
+                put(RodStates.INVERSE_STOW, 4.75d); 
                 put(RodStates.L1, 2d);
                 put(RodStates.L2, 14d);
                 put(RodStates.L3, 27d); // 26.5
                 put(RodStates.L4, 46.25d);
                 put(RodStates.LOW, 17d); // 15
                 put(RodStates.HIGH, 28d);
-                put(RodStates.SOURCE, 9.6d); // 9.1
+                put(RodStates.SOURCE, 9.1d); // 9.6
                 put(RodStates.PROCESSOR, 1.75d);
                 put(RodStates.LOLLIPOP, 1.75d);
                 put(RodStates.BARGE, 47d);
@@ -297,8 +297,8 @@ public class Constants {
         public static final double MOTORS_KG = 0d; // temp
 
         // TODO: check/change when checking triton
-        public static final double VELOC = IS_TRITON ? 72d : 72d; // 80
-        public static final double ACCEL = IS_TRITON ? 250d : 250d; // 200
+        public static final double VELOC = IS_TRITON ? 66d : 72d; // 80
+        public static final double ACCEL = IS_TRITON ? 225d : 250d; // 250
         public static final double JERK = 1600d; // temp
 
         public static final double POSITION_TOLERANCE = 0.1; // temp
@@ -402,7 +402,9 @@ public class Constants {
         public static final double COLLECTOR_DEADBAND = 0.1;
 
         // 2.5 constants
-        public static final boolean INVERTED = true;
+        public static final boolean INVERTED = true; 
+
+
 
         public static final double LOW_SPIT_POWER_MULT = 0.75;
         // TODO: check/change when checking triton
@@ -974,7 +976,6 @@ public class Constants {
 
             private static final Distance kBackRightXPos = Inches.of(-11);
             private static final Distance kBackRightYPos = Inches.of(-11);
-
             public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft = ConstantCreator
                     .createModuleConstants(
                             kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId,
@@ -1018,14 +1019,14 @@ public class Constants {
             // the
             // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
             private static final Slot0Configs steerGains = new Slot0Configs()
-                    .withKP(50).withKI(0).withKD(0.5)
-                    .withKS(0.27425).withKV(2.4308).withKA(0.094343)
+                    .withKP(100).withKI(0).withKD(0.5)
+                    .withKS(0.1).withKV(2.66).withKA(0)
                     .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
             // When using closed-loop control, the drive motor uses the control
             // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
             private static final Slot0Configs driveGains = new Slot0Configs()
-                .withKP(0.6507).withKI(0).withKD(0)
-                .withKS(0.33986).withKV(0.12318).withKA(0.0059707);
+                .withKP(0.1).withKI(0).withKD(0)
+                .withKS(0).withKV(0.124);
 
             // The closed-loop output type to use for the steer motors;
             // This affects the PID/FF gains for the steer motors
@@ -1071,7 +1072,7 @@ public class Constants {
 
             // Theoretical free speed (m/s) at 12 V applied output;
             // This needs to be tuned to your individual robot
-            public static final LinearVelocity kSpeedAt12Volts = FeetPerSecond.of(15.01);
+            public static final LinearVelocity kSpeedAt12Volts = FeetPerSecond.of(15.51837);
 
             // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
             // This may need to be tuned to your individual robot

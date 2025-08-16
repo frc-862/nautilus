@@ -52,6 +52,7 @@ public class Climber extends SubsystemBase {
         // LightningShuffleboard.setDouble("Climber", "targetPosition", targetPostion);
         LightningShuffleboard.setBool("Climber", "limit switch", getLimitSwitch());
         // LightningShuffleboard.setDouble("Diagnostic", "climber motor temp", motor.getDeviceTemp().getValueAsDouble());
+        LightningShuffleboard.getDouble("Climber", "power", motor.getDutyCycle().getValueAsDouble());
     }
 
     @Override

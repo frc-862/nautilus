@@ -105,7 +105,7 @@ public class Constants {
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.129395);
 
         public static final double tritonWristOffset = -0.227;
-        public static final double nautilusWristOffset = 0.805908203125;//0.736328125;
+        public static final double nautilusWristOffset = -0.177490;//0.736328125;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)
@@ -293,8 +293,8 @@ public class Constants {
         public static final double MOTORS_KG = 0d; // temp
 
         public static final double VELOC = 72d; // 80
-        public static final double ACCEL = 250d; // 200
-        public static final double JERK = 1600d; // temp
+        public static final double ACCEL = 240d; // 250
+        public static final double JERK = 1600; // 1600
 
         public static final double POSITION_TOLERANCE = 0.1; // temp
         public static final double CANRANGE_TOLERANCE = 0.25; // temp
@@ -1282,7 +1282,7 @@ public class Constants {
     public class AutoAlignConstants {
         
         // auton gains for posebased (if needed)
-        public static final double AUTON_DRIVE_P = 1.5d; //0.8
+        public static final double AUTON_DRIVE_P = 1.5d;
         public static final double AUTON_DRIVE_I = 0;
         public static final double AUTON_DRIVE_D = 0.08; // 0.035
         public static final double AUTON_DRIVE_KS = 0;//0.1;

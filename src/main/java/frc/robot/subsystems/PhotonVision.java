@@ -349,7 +349,7 @@ public class PhotonVision extends SubsystemBase {
                             if (result.hasTargets()) {
                                 // the local hasTarget variable will turn true if ANY PipelineResult within this loop has a target
                                 hasTarget = true;
-
+                                LightningShuffleboard.setDouble("Vision", "ambiguity", result.getBestTarget().getPoseAmbiguity());
                                 if (!(result.getBestTarget().getPoseAmbiguity() > 0.2)) {
                                     if(shouldDoSingleTag(result)) { //there is technically a one-line way to do this but I'd like to make my code readable without mr hurley <3
                                         result.multitagResult = Optional.empty();

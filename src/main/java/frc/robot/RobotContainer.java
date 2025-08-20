@@ -476,12 +476,12 @@ public class RobotContainer extends LightningContainer {
                 new SetRodState(rod, RodStates.L1)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
         NamedCommands.registerCommand("RodL2",
-                new SetRodState(rod, RodStates.L2)
-                        .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
-        NamedCommands.registerCommand("RodL3",
                 new SetRodState(rod, RodStates.L3)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
         NamedCommands.registerCommand("RodL4",
+                new SetRodState(rod, RodStates.L2)
+                        .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
+        NamedCommands.registerCommand("RodL3",
                 new SetRodState(rod, RodStates.L4)
                         .deadlineFor(leds.strip.enableState(LEDStates.ROD_MOVING)));
         NamedCommands.registerCommand("RodHigh",

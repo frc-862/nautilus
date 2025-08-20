@@ -4,8 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "2 PIECE PATHS",
-    "LSource-Reef",
     "Algae Paths",
+    "LSource-Reef",
+    "New Folder",
     "RSource-Reef",
     "Test Paths"
   ],

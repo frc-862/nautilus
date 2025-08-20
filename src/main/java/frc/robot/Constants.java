@@ -100,9 +100,9 @@ public class Constants {
 
         // Triton values
         // TODO: reset using phoenix tuner
-        private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.06884765625);
-        private static final Angle tritonKFrontRightEncoderOffset = Rotations.of(0.03955078125);
-        private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(-0.466796875);
+        private static final Angle tritonKFrontLeftEncoderOffset = Rotations.of(0.0556640625);
+        private static final Angle tritonKFrontRightEncoderOffset = Rotations.of(0.049072265625);
+        private static final Angle tritonKBackLeftEncoderOffset = Rotations.of(-0.432373046875);
         private static final Angle tritonKBackRightEncoderOffset = Rotations.of(0.136962890625);
 
         // TODO: reset using phoenix tuner
@@ -259,7 +259,7 @@ public class Constants {
                 put(RodStates.L4, 46.25d);
                 put(RodStates.LOW, 17d); // 15
                 put(RodStates.HIGH, 28d);
-                put(RodStates.SOURCE, 9.1d); // 9.6
+                put(RodStates.SOURCE, 9.2d); // 9.1
                 put(RodStates.PROCESSOR, 1.75d);
                 put(RodStates.LOLLIPOP, 1.75d);
                 put(RodStates.BARGE, 47d);
@@ -298,7 +298,7 @@ public class Constants {
 
         // TODO: check/change when checking triton
         public static final double VELOC = IS_TRITON ? 66d : 72d; // 80
-        public static final double ACCEL = IS_TRITON ? 225d : 250d; // 250
+        public static final double ACCEL = IS_TRITON ? 210d : 250d; // 225
         public static final double JERK = 1600d; // temp
 
         public static final double POSITION_TOLERANCE = 0.1; // temp
@@ -357,7 +357,7 @@ public class Constants {
         public static final double ENCODER_TO_MECHANISM_RATIO = 1d;
 
         // TODO: check/change when checking triton
-        public static final double MOTORS_KP = IS_TRITON ? 60 : 60;
+        public static final double MOTORS_KP = IS_TRITON ? 60 : 60; // 60
         public static final double MOTORS_KI = 0;
         public static final double MOTORS_KD = 0;
         public static final double MOTORS_KF = 0;
@@ -407,11 +407,11 @@ public class Constants {
 
 
         public static final double LOW_SPIT_POWER_MULT = 0.75;
-        // TODO: check/change when checking triton
+        // TODO: check/change when checking trito
         public static final double CORAL_COLLECTED_CURRENT = IS_TRITON ? 45d : 45d; //40
         public static final double ALGAE_COLLECTED_CURRENT = IS_TRITON ? 70d : 70d; //40
         public static final double CORAL_HOLD_POWER = 0.07d;
-        public static final double ALGAE_HOLD_POWER = 0.2d;
+        public static final double ALGAE_HOLD_POWER = 0.3d;
     }
 
     public class DrivetrainConstants {
@@ -1291,9 +1291,9 @@ public class Constants {
     public class AutoAlignConstants {
         
         // auton gains for posebased (if needed)
-        public static final double AUTON_DRIVE_P = 1.5d; //0.8
+        public static final double AUTON_DRIVE_P = 1.35d; //1.2
         public static final double AUTON_DRIVE_I = 0;
-        public static final double AUTON_DRIVE_D = 0.08; // 0.035
+        public static final double AUTON_DRIVE_D = 0.075d; // 0.08
         public static final double AUTON_DRIVE_KS = 0;//0.1;
 
         public static final double AUTON_ROT_P = 0.03d;

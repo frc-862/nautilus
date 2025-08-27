@@ -234,7 +234,12 @@ public class BetterPhotonVision extends SubsystemBase {
          */ @SuppressWarnings("removal")
         public double getTagId() {
             try {
-                return camera.getLatestResult().getBestTarget().getFiducialId();
+                try {
+                    return camera.getLatestResult().getBestTarget().getFiducialId();
+                } catch (NullPointerException e) {
+                    DataLogManager.log("[BetterPhotonVision] No targets found");
+                    return -1;
+                }
             } catch (IndexOutOfBoundsException e) {
                 DataLogManager.log("[BetterPhotonVision] Can't get tag-- no results");
                 return -1;

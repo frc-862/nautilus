@@ -64,6 +64,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FishingRod;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.PhotonVision;
+import frc.robot.subsystems.BetterPhotonVision;
 import frc.robot.subsystems.SimGamePeices;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
@@ -75,7 +76,7 @@ public class RobotContainer extends LightningContainer {
     public PowerDistribution pdh;
 
     public Swerve drivetrain;
-    public PhotonVision vision;
+    public BetterPhotonVision vision;
     private Telemetry logger;
     private LEDs leds;
 
@@ -107,7 +108,7 @@ public class RobotContainer extends LightningContainer {
         copilot = new XboxController(ControllerConstants.COPILOT_CONTROLLER);
 
         drivetrain = TunerConstants.createDrivetrain();
-        vision = new PhotonVision(drivetrain);
+        vision = new BetterPhotonVision(drivetrain);
         logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
         leds = new LEDs();

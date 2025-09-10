@@ -30,7 +30,7 @@ public class BetterPhotonVision extends SubsystemBase {
     private CameraThread leftCameraThread;
     private CameraThread rightCameraThread;
 
-    //  This is similar to a type in typescrip, it will store our vision data in our queue instead of using a tuple
+    // This is similar to a type in typescript, it will store our vision data in our queue instead of using a tuple
     private record VisionUpdate(EstimatedRobotPose pose, double distance) {}
 
     // Vision update as an atomic ref so its thread safe
@@ -203,7 +203,7 @@ public class BetterPhotonVision extends SubsystemBase {
                         }
 
                         // Get the average distance from all the best tags
-                        averageDistance = numberOfResults > 0d ? totalDistance / numberOfResults : 0d;
+                        averageDistance = numberOfResults > 0d ? totalDistance / numberOfResults : averageDistanceToTag;
 
                         // Set the global distance
                         this.averageDistanceToTag = averageDistance;
@@ -237,7 +237,6 @@ public class BetterPhotonVision extends SubsystemBase {
                 try {
                     return camera.getLatestResult().getBestTarget().getFiducialId();
                 } catch (NullPointerException e) {
-                    DataLogManager.log("[BetterPhotonVision] No targets found");
                     return -1;
                 }
             } catch (IndexOutOfBoundsException e) {

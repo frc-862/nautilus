@@ -461,7 +461,7 @@ public class RobotContainer extends LightningContainer {
                 new InstantCommand(() -> rod.setState(RodStates.STOW,
                         RodTransitionStates.WRIST_UP_THEN_ELE)));
 
-        NamedCommands.registerCommand("WaitOnTarget", new WaitUntilCommand(rod::onTarget));
+        NamedCommands.registerCommand("WaitOnTarget", new WaitUntilCommand(rod::onTarget).andThen(new WaitCommand(0.07)));
 
         // psst! we should use a for loop like we did with LightningTagID!
         NamedCommands.registerCommand("RodStow",

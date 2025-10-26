@@ -67,6 +67,7 @@ import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.BetterPhotonVision;
 import frc.robot.subsystems.SimGamePeices;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.TestVisionLogger;
 import frc.robot.subsystems.Wrist;
 import frc.thunder.LightningContainer;
 import frc.thunder.shuffleboard.LightningShuffleboard;
@@ -127,6 +128,8 @@ public class RobotContainer extends LightningContainer {
             // coralCollector, tusks,
             // climber);
         }
+
+        new TestVisionLogger();
 
     }
 

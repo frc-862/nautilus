@@ -1,46 +1,39 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*;
-
 import java.util.Map.Entry;
-import java.util.function.DoubleSupplier;
-import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-import org.ejml.simple.SimpleMatrix;
 import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.CANcoder;
-
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.PoseEstimator;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -50,13 +43,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.DrivetrainConstants.DriveRequests;
-import frc.robot.Constants.PoseConstants.StowZone;
 import frc.robot.Constants.EncoderConstants;
 import frc.robot.Constants.PoseConstants;
-import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.PoseConstants.StowZone;
 import frc.thunder.shuffleboard.LightningShuffleboard;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -91,6 +81,7 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
 
     private double speedMult = 1d;
     private double turnMult = 1d;
+    private double dashboardDriveMult = 1d;
 
     private StowZone lastStowZone = StowZone.SOURCE;
     private StowZone currentsStowZone = StowZone.SOURCE;
@@ -165,6 +156,10 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     @Override
     public void periodic() {
         updateCANcoderOffsets();
+        dashboardDriveMult = MathUtil.clamp(
+                LightningShuffleboard.getDouble("Demos", "Drive Multiplier", 1d),
+                0d,
+                1d);
 
         Pose2d pose = getPose();
         xFilter.calculate(pose.getX());
@@ -262,19 +257,19 @@ public class Swerve extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> impleme
     /**
      * gets the speed multiplier
      *
-     * @return speed multiplier (1.0 for normal, 0.4 for slow mode)
+     * @return slow-mode multiplier combined with the Shuffleboard drive multiplier
      */
     public double getSpeedMult() {
-        return speedMult;
+        return speedMult * dashboardDriveMult;
     }
 
     /**
      * gets the turn multiplier
      *
-     * @return turn multiplier (1.0 for normal, 0.7 for slow mode)
+     * @return slow-mode multiplier combined with the Shuffleboard drive multiplier
      */
     public double getTurnMult() {
-        return turnMult;
+        return turnMult * dashboardDriveMult;
     }
 
     /**

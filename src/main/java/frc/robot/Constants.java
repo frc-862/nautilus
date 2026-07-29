@@ -107,7 +107,7 @@ public class Constants {
 
         // TODO: reset using phoenix tuner
         public static final double tritonWristOffset = 0.7397460938;
-        public static final double nautilusWristOffset = 0.805908203125;//0.736328125;
+        public static final double nautilusWristOffset = 0.805908203125 - 1;//0.736328125;
 
         // Generic values
         public static final double frontLeftOffset = IS_TRITON ? tritonKFrontLeftEncoderOffset.in(Rotations)

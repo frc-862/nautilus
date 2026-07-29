@@ -73,6 +73,8 @@ import frc.thunder.shuffleboard.LightningShuffleboard;
 
 public class RobotContainer extends LightningContainer {
 
+    private static final boolean DEMO_MODE = true;
+
     public PowerDistribution pdh;
 
     public Swerve drivetrain;
@@ -198,6 +200,7 @@ public class RobotContainer extends LightningContainer {
 
     @Override
     protected void configureButtonBindings() {
+        if (!DEMO_MODE) {
         /* DRIVER BINDINGS */
         // robot centric driving
         new Trigger(() -> driver.getLeftTriggerAxis() > 0.25)
@@ -274,6 +277,7 @@ public class RobotContainer extends LightningContainer {
 
         // new Trigger(() -> rod.isCoralMode() && driver.getYButton())
         // .onTrue(new SetRodState(rod, RodStates.INVERSE_STOW));
+        }
 
         /* COPILOT BINDINGS */
 
@@ -330,7 +334,7 @@ public class RobotContainer extends LightningContainer {
         new Trigger(() -> copilot.getPOV() == 180).onTrue(rod.addElevatorBias(-0.5d)); // ELE DOWN
         new Trigger(() -> copilot.getPOV() == 90).onTrue(rod.addWristBias(-2.5)); // WRIST DOWN
         new Trigger(() -> copilot.getPOV() == 270).onTrue(rod.addWristBias(2.5)); // WRIST UP
-
+        
         // TUSK CONTROL
         // if (tusks != null) {
 
@@ -583,6 +587,7 @@ public class RobotContainer extends LightningContainer {
     }
 
     public static Command hapticCopilotCommand() {
+                new Trigger(() -> false);
         if (!DriverStation.isAutonomous()) {
             return new StartEndCommand(() -> {
                 copilot.setRumble(GenericHID.RumbleType.kRightRumble, 1d);

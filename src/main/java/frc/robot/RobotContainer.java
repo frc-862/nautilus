@@ -166,8 +166,10 @@ public class RobotContainer extends LightningContainer {
                 climber));
 
         // Sync elevator while in stow
-        new Trigger(() -> rod.getState() == RodStates.STOW).and(DriverStation::isTeleop)
-                .whileTrue(new ElevatorSyncStow(elevator, rod));
+        if (!DEMO_MODE) {
+            new Trigger(() -> rod.getState() == RodStates.STOW).and(DriverStation::isTeleop)
+                    .whileTrue(new ElevatorSyncStow(elevator, rod));
+        }
 
         /* LED TRIGGERS */
         new Trigger(() -> rod.onTarget()).whileFalse(leds.strip.enableState(LEDStates.ROD_MOVING));
